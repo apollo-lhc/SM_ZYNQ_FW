@@ -17,6 +17,19 @@ set_false_path -from [get_pins {i_system/xadc_wiz_0/U0/AXI_XADC_CORE_I/temperatu
 # -------------------------------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------------------------------
+# bank 13
+# -------------------------------------------------------------------------------------------------
+set_property -dict {PACKAGE_PIN AB21 IOSTANDARD LVCMOS33} [get_ports {XVC0_tck}]
+set_property -dict {PACKAGE_PIN AB19 IOSTANDARD LVCMOS33} [get_ports {XVC0_tdi}]
+set_property -dict {PACKAGE_PIN AA19 IOSTANDARD LVCMOS33} [get_ports {XVC0_tdo}]
+set_property -dict {PACKAGE_PIN AB22 IOSTANDARD LVCMOS33} [get_ports {XVC0_tms}]
+set_property -dict {PACKAGE_PIN Y20  IOSTANDARD LVCMOS33} [get_ports {XVC1_tck}]
+set_property -dict {PACKAGE_PIN W18  IOSTANDARD LVCMOS33} [get_ports {XVC1_tdi}]
+set_property -dict {PACKAGE_PIN V18  IOSTANDARD LVCMOS33} [get_ports {XVC1_tdo}]
+set_property -dict {PACKAGE_PIN V19  IOSTANDARD LVCMOS33} [get_ports {XVC1_tms}]
+
+
+# -------------------------------------------------------------------------------------------------
 # bank 33
 # -------------------------------------------------------------------------------------------------
 #set_property PACKAGE_PIN L5 [get_ports CLK200_P]
@@ -27,38 +40,47 @@ set_false_path -from [get_pins {i_system/xadc_wiz_0/U0/AXI_XADC_CORE_I/temperatu
 # -------------------------------------------------------------------------------------------------
 # bank 34
 # -------------------------------------------------------------------------------------------------
-#set_property PACKAGE_PIN G9 [get_ports DDR3_reset_n]
-#set_property IOSTANDARD LVCMOS18 [get_ports DDR3_reset_n]
-#
-#set_property PACKAGE_PIN K11 [get_ports ETH0_INT_N_PL]
-#set_property IOSTANDARD LVCMOS18 [get_ports ETH0_INT_N_PL]
 
 
 # -------------------------------------------------------------------------------------------------
 # fast ethernet
 # -------------------------------------------------------------------------------------------------
-set_property PACKAGE_PIN W6   [get_ports refclk_125Mhz_P]
-set_property PACKAGE_PIN W5   [get_ports refclk_125Mhz_N]
-set_property PACKAGE_PIN AA6  [get_ports refclk_TCDS_P]
-set_property PACKAGE_PIN AA5  [get_ports refclk_TCDS_N]
+set_property -dict {PACKAGE_PIN W6 }  [get_ports refclk_125Mhz_P]
+set_property -dict {PACKAGE_PIN W5 }  [get_ports refclk_125Mhz_N]
+set_property -dict {PACKAGE_PIN AA6}  [get_ports refclk_TCDS_P]
+set_property -dict {PACKAGE_PIN AA5}  [get_ports refclk_TCDS_N]
+				   
+set_property -dict {PACKAGE_PIN AF8}  [get_ports sgmii_tx_P]
+set_property -dict {PACKAGE_PIN AF7}  [get_ports sgmii_tx_N]
+set_property -dict {PACKAGE_PIN AD8}  [get_ports sgmii_rx_P]
+set_property -dict {PACKAGE_PIN AD7}  [get_ports sgmii_rx_N]
+				   
+set_property -dict {PACKAGE_PIN AF4}  [get_ports tts_P]
+set_property -dict {PACKAGE_PIN AF3}  [get_ports tts_N]
+set_property -dict {PACKAGE_PIN AE6}  [get_ports ttc_P]
+set_property -dict {PACKAGE_PIN AE5}  [get_ports ttc_N]
+				   
+set_property -dict {PACKAGE_PIN AE2}  [get_ports fake_ttc_P]
+set_property -dict {PACKAGE_PIN AE1}  [get_ports fake_ttc_N]
+set_property -dict {PACKAGE_PIN AC6}  [get_ports m1_tts_P]
+set_property -dict {PACKAGE_PIN AC5}  [get_ports m1_tts_N]
+				   
+set_property -dict {PACKAGE_PIN AD4}  [get_ports m2_tts_P]
+set_property -dict {PACKAGE_PIN AD3}  [get_ports m2_tts_N]
 
-set_property PACKAGE_PIN AF8  [get_ports sgmii_tx_P]
-set_property PACKAGE_PIN AF7  [get_ports sgmii_tx_N]
-set_property PACKAGE_PIN AD8  [get_ports sgmii_rx_P]
-set_property PACKAGE_PIN AD7  [get_ports sgmii_rx_N]
 
-set_property PACKAGE_PIN AF4  [get_ports tts_P]
-set_property PACKAGE_PIN AF3  [get_ports tts_N]
-set_property PACKAGE_PIN AE6  [get_ports ttc_P]
-set_property PACKAGE_PIN AE5  [get_ports ttc_N]
 
-set_property PACKAGE_PIN AE2  [get_ports fake_ttc_P]
-set_property PACKAGE_PIN AE1  [get_ports fake_ttc_N]
-set_property PACKAGE_PIN AC6  [get_ports m1_tts_P]
-set_property PACKAGE_PIN AC5  [get_ports m1_tts_N]
+# -------------------------------------------------------------------------------------------------
+# axi c2c
+# -------------------------------------------------------------------------------------------------
+set_property -dict {PACKAGE_PIN  R6}  [get_ports refclk_C2C_P[0] ]
+set_property -dict {PACKAGE_PIN  R5}  [get_ports refclk_C2C_N[0] ]
 
-set_property PACKAGE_PIN AD4  [get_ports m2_tts_P]
-set_property PACKAGE_PIN AD3  [get_ports m2_tts_N]
+set_property -dict {PACKAGE_PIN AA2}  [get_ports AXI_C2C_Tx_P[0] ]
+set_property -dict {PACKAGE_PIN AA1}  [get_ports AXI_C2C_Tx_N[0] ]
+set_property -dict {PACKAGE_PIN AB4}  [get_ports AXI_C2C_Rx_P[0] ]
+set_property -dict {PACKAGE_PIN AB3}  [get_ports AXI_C2C_Rx_N[0] ]
+
 
 
 # -------------------------------------------------------------------------------------------------

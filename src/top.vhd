@@ -37,6 +37,18 @@ entity top is
     XVC1_tms          : out   STD_LOGIC;
 
     -------------------------------------------------------------------------------------------
+    -- MGBT 1
+    -------------------------------------------------------------------------------------------
+    AXI_C2C_Rx_P      : in    std_logic_vector(0 downto 0);
+    AXI_C2C_Rx_N      : in    std_logic_vector(0 downto 0);
+    AXI_C2C_Tx_P      : out   std_logic_vector(0 downto 0);
+    AXI_C2C_Tx_N      : out   std_logic_vector(0 downto 0);
+
+    refclk_C2C_P      : in    std_logic_vector(0 downto 0);
+    refclk_C2C_N      : in    std_logic_vector(0 downto 0);
+
+    
+    -------------------------------------------------------------------------------------------
     -- MGBT 2
     -------------------------------------------------------------------------------------------
     refclk_125Mhz_P   : in    std_logic; 
@@ -59,7 +71,9 @@ entity top is
     m1_tts_P          : in    std_logic; 
     m1_tts_N          : in    std_logic;                       
     m2_tts_P          : in    std_logic; 
-    m2_tts_N          : in    std_logic 
+    m2_tts_N          : in    std_logic
+
+
     );    
 end entity top;
 
@@ -172,10 +186,34 @@ architecture structure of top is
   signal m1_tts_dv : std_logic;
   signal m2_tts_dv : std_logic;
 
+
+  -- AXI C2C
+  signal AXI_C2CM1_RX_data              : STD_LOGIC_VECTOR (63 downto 0 );
+  signal AXI_C2CM1_RX_dv                : STD_LOGIC;                          
+  signal AXI_C2CM1_TX_data              : STD_LOGIC_VECTOR (63 downto 0 );
+  signal AXI_C2CM1_TX_ready             : STD_LOGIC;                       
+  signal AXI_C2CM1_TX_dv                : STD_LOGIC;                         
+  signal AXI_C2C_aurora_init_clk        : STD_LOGIC;                  
+  signal AXI_C2C_aurora_mmcm_not_locked : STD_LOGIC;           
+  signal AXI_C2C_aurora_pma_init_out    : STD_LOGIC;             
+  signal AXI_C2C_reset                  : STD_LOGIC;                           
+  signal AXI_C2CM1_channel_up           : STD_LOGIC;                     
+  signal AXI_C2CM1_phy_clk              : STD_LOGIC;                        
+  signal AXI_C2CM1_phy_clk_raw          : std_logic;
+  
+  signal refclk_C2C        : std_logic;
+  
+  signal AXI_C2C_ReadMOSI  : AXIReadMOSI_array_t(0 to 0);
+  signal AXI_C2C_ReadMISO  : AXIReadMISO_array_t(0 to 0);
+  signal AXI_C2C_WriteMOSI : AXIWriteMOSI_array_t(0 to 0);
+  signal AXI_C2C_WriteMISO : AXIWriteMISO_array_t(0 to 0);
+  
+  
+
   
 begin  -- architecture structure
 
-  pl_reset_n <= not axi_reset_n ;
+  pl_reset_n <= axi_reset_n ;
   zynq_bd_wrapper_1: entity work.zynq_bd_wrapper
     port map (
       AXI_RST_N(0)         => axi_reset_n,
@@ -217,18 +255,45 @@ begin  -- architecture structure
       ENET1_MDIO_O_0            => MDIO_ETHERNET_mdio_o  ,
 --      PL_CLK                    => pl_clk,
 --      PL_RESET_N                => pl_reset_n,
-      tap_tck_0 => XVC0_tck,
-      tap_tdi_0 => XVC0_tdi,
-      tap_tdo_0 => XVC0_tdo,
-      tap_tms_0 => XVC0_tms,
-      tap_tck_1 => XVC1_tck,
-      tap_tdi_1 => XVC1_tdi,
-      tap_tdo_1 => XVC1_tdo,
-      tap_tms_1 => XVC1_tms
+      tap_tck_0                 => XVC0_tck,
+      tap_tdi_0                 => XVC0_tdi,
+      tap_tdo_0                 => XVC0_tdo,
+      tap_tms_0                 => XVC0_tms,
+      tap_tck_1                 => XVC1_tck,
+      tap_tdi_1                 => XVC1_tdi,
+      tap_tdo_1                 => XVC1_tdo,
+      tap_tms_1                 => XVC1_tms,
 
-
-
-
+      AXIS_RX_0_tdata             => AXI_C2CM1_RX_data(63 downto 0),
+      AXIS_RX_0_tvalid            => AXI_C2CM1_RX_dv,
+      AXIS_TX_0_tdata             => AXI_C2CM1_TX_data(63 downto 0),
+      AXIS_TX_0_tready            => AXI_C2CM1_TX_ready,
+      AXIS_TX_0_tvalid            => AXI_C2CM1_TX_dv,
+      aurora_init_clk_0           => AXI_C2C_aurora_init_clk,
+      aurora_mmcm_not_locked_0    => AXI_C2C_aurora_mmcm_not_locked,
+      aurora_pma_init_out_0       => AXI_C2C_aurora_pma_init_out,
+      aurora_reset_pb_0           => AXI_C2C_reset,
+      axi_c2c_aurora_channel_up_0 => AXI_C2CM1_channel_up,
+      axi_c2c_phy_clk_0           => AXI_C2CM1_phy_clk,
+      PL_CLK                      => pl_clk,
+      PL_RESET_N                  => pl_reset_n,
+      C2C1_GT_awaddr              => AXI_C2C_WriteMOSI(0).address,
+      C2C1_GT_rresp               => AXI_C2C_ReadMISO(0).response,
+      C2C1_GT_bresp               => AXI_C2C_WriteMISO(0).response,
+      C2C1_GT_wstrb               => AXI_C2C_WriteMOSI(0).data_write_strobe,
+      C2C1_GT_wdata               => AXI_C2C_WriteMOSI(0).data,
+      C2C1_GT_araddr              => AXI_C2C_ReadMOSI(0).address,
+      C2C1_GT_rdata               => AXI_C2C_ReadMISO(0).data,
+      C2C1_GT_bready              => AXI_C2C_WriteMOSI(0).ready_for_response,
+      C2C1_GT_awvalid             => AXI_C2C_WriteMOSI(0).address_valid,
+      C2C1_GT_awready             => AXI_C2C_WriteMISO(0).ready_for_address,
+      C2C1_GT_wvalid              => AXI_C2C_WriteMOSI(0).data_valid,
+      C2C1_GT_wready              => AXI_C2C_WriteMISO(0).ready_for_data,
+      C2C1_GT_bvalid              => AXI_C2C_WriteMISO(0).response_valid,
+      C2C1_GT_arvalid             => AXI_C2C_ReadMOSI(0).address_valid,
+      C2C1_GT_arready             => AXI_C2C_ReadMISO(0).ready_for_address,
+      C2C1_GT_rvalid              => AXI_C2C_ReadMISO(0).data_valid,
+      C2C1_GT_rready              => AXI_C2C_ReadMOSI(0).ready_for_data
       );
 
 
@@ -258,8 +323,8 @@ begin  -- architecture structure
   
   SGMII_INTF_1: entity work.SGMII_INTF
     port map (
-      gtrefclk               => refclk_125Mhz_P,
-      gtrefclk_bufg          => refclk_125Mhz_N,
+      gtrefclk               => refclk_125Mhz_IBUFG,
+      gtrefclk_bufg          => clk_125Mhz,
       txp                    => sgmii_tx_P,
       txn                    => sgmii_tx_N,
       rxp                    => sgmii_rx_P,
@@ -375,6 +440,79 @@ begin  -- architecture structure
       QPLLOUTREFCLK_OUT=> refclk_gt_qpllout, 
       QPLLREFCLKLOST_OUT => open,
       QPLLRESET_IN => reset_MGBT2);
+
+
+
+
+  AXI_C2C_aurora_init_clk <= pl_clk;
+
+  user_clk_bufg : bufg
+    port map (
+    i => AXI_C2CM1_phy_clk_raw,
+    o => AXI_C2CM1_phy_clk);
+  
+  aurora_64b66b_0_2: entity work.aurora_64b66b_0
+    port map (
+      gt_refclk1_p            => refclk_C2C_P(0),
+      gt_refclk1_n            => refclk_C2C_N(0),
+      gt_refclk1_out          => refclk_C2C,
+      hard_err                => open,
+      soft_err                => open,
+      channel_up              => AXI_C2CM1_channel_up,
+      lane_up                 => open,
+      user_clk_out            => open,
+      mmcm_not_locked_out     => AXI_C2C_aurora_mmcm_not_locked,
+      sync_clk_out            => open,
+      reset_pb                => AXI_C2C_reset,
+      gt_rxcdrovrden_in       => '0',
+      power_down              => '0',
+      loopback                => "000",
+      pma_init                => AXI_C2C_aurora_pma_init_out,
+      gt_pll_lock             => open,
+      drp_clk_in              => AXI_C2C_aurora_init_clk,
+      init_clk                => AXI_C2C_aurora_init_clk,
+      link_reset_out          => open,
+      gt_qpllclk_quad4_out    => open,
+      gt_qpllrefclk_quad4_out => open,
+      sys_reset_out           => open,
+      gt_reset_out            => open,
+      tx_out_clk              => AXI_C2CM1_phy_clk_raw,
+
+      rxp                    => AXI_C2C_Rx_P(0 downto 0),
+      rxn                    => AXI_C2C_Rx_N(0 downto 0),
+      txp                    => AXI_C2C_Tx_P(0 downto 0),
+      txn                    => AXI_C2C_Tx_N(0 downto 0),
+
+      s_axi_tx_tdata          => AXI_C2CM1_TX_data,
+--      s_axi_tx_tlast          => s_axi_tx_tlast,
+--      s_axi_tx_tkeep          => s_axi_tx_tkeep,
+      s_axi_tx_tvalid         => AXI_C2CM1_TX_dv,
+      s_axi_tx_tready         => AXI_C2CM1_TX_ready,
+      m_axi_rx_tdata          => AXI_C2CM1_RX_data,
+--      m_axi_rx_tlast          => m_axi_rx_tlast,
+--      m_axi_rx_tkeep          => m_axi_rx_tkeep,
+      m_axi_rx_tvalid         => AXI_C2CM1_RX_dv,
+
+
+      s_axi_awaddr           => AXI_C2C_WriteMOSI(0).address,
+      s_axi_rresp            => AXI_C2C_ReadMISO(0).response,
+      s_axi_bresp            => AXI_C2C_WriteMISO(0).response,
+      s_axi_wstrb            => AXI_C2C_WriteMOSI(0).data_write_strobe,
+      s_axi_wdata            => AXI_C2C_WriteMOSI(0).data,
+      s_axi_araddr           => AXI_C2C_ReadMOSI(0).address,
+      s_axi_rdata            => AXI_C2C_ReadMISO(0).data,
+      s_axi_bready           => AXI_C2C_WriteMOSI(0).ready_for_response,
+      s_axi_awvalid          => AXI_C2C_WriteMOSI(0).address_valid,
+      s_axi_awready          => AXI_C2C_WriteMISO(0).ready_for_address,
+      s_axi_wvalid           => AXI_C2C_WriteMOSI(0).data_valid,
+      s_axi_wready           => AXI_C2C_WriteMISO(0).ready_for_data,
+      s_axi_bvalid           => AXI_C2C_WriteMISO(0).response_valid,
+      s_axi_arvalid          => AXI_C2C_ReadMOSI(0).address_valid,
+      s_axi_arready          => AXI_C2C_ReadMISO(0).ready_for_address,
+      s_axi_rvalid           => AXI_C2C_ReadMISO(0).data_valid,
+      s_axi_rready           => AXI_C2C_ReadMOSI(0).ready_for_data
+
+      );
 
   
   

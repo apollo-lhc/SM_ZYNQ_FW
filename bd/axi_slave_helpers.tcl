@@ -159,12 +159,18 @@ proc AXI_DEV_CONNECT {device_name axi_master axi_clk axi_rst} {
     #Xilinx AXI slaves use different names for the AXI connection, this if/else tree will try to find the correct one. 
     if [llength [get_bd_intf_pins -quiet $device_name/S_AXI]] {
         connect_bd_intf_net [get_bd_intf_pins $device_name/S_AXI] -boundary_type upper [get_bd_intf_pins $axi_master]
-        connect_bd_net      [get_bd_pins $device_name/s_axi_aclk]             [get_bd_pins $axi_clk]
-        connect_bd_net      [get_bd_pins $device_name/s_axi_aresetn]          [get_bd_pins $axi_rst]
+	if [llength [get_bd_pins -quiet $device_name/s_axi_aclk]] {
+	    connect_bd_net      [get_bd_pins $device_name/s_axi_aclk]             [get_bd_pins $axi_clk]
+	    connect_bd_net      [get_bd_pins $device_name/s_axi_aresetn]          [get_bd_pins $axi_rst]
+	} else {        
+	    connect_bd_net      [get_bd_pins $device_name/s_aclk]             [get_bd_pins $axi_clk]
+	    connect_bd_net      [get_bd_pins $device_name/s_aresetn]          [get_bd_pins $axi_rst]
+	}
     } else {
         connect_bd_intf_net [get_bd_intf_pins $device_name/AXI_LITE] -boundary_type upper [get_bd_intf_pins $axi_master]
         connect_bd_net      [get_bd_pins $device_name/s_axi_aclk]             [get_bd_pins $axi_clk]
         connect_bd_net      [get_bd_pins $device_name/s_axi_aresetn]          [get_bd_pins $axi_rst]
     }
+
     endgroup
 }

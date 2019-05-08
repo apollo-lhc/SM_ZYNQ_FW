@@ -22,6 +22,7 @@ set xdc_files src/top.xdc
 set xci_files "\
     	      cores/SGMII_INTF/SGMII_INTF.xci
 	      cores/LHC/LHC.xci
+	      cores/aurora_64b66b_0/aurora_64b66b_0.xci
     	      "
     
     

@@ -19,6 +19,7 @@ if {[file isfile $projectDir/$top.xpr]} {
 create_project -force -part $FPGA_part $top $projectDir
 set_property target_language VHDL [current_project]
 
+
 #################################################################################
 # STEP#1: setup design sources and constraints
 #################################################################################
