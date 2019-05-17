@@ -1,9 +1,26 @@
 #================================================================================
 #  Add AXI connection names
 #================================================================================
+
+proc clear_global {variable} {
+    upvar $variable testVar
+    if { [info exists testVar] } {
+	puts "unsetting"
+	unset testVar
+    }
+}
+
+[clear_global AXI_BUS_M]
+[clear_global AXI_BUS_CLK]
+[clear_global AXI_BUS_RST]
+[clear_global AXI_ADDR]
+[clear_global AXI_ADDR_RANGE]
+
 array set AXI_BUS_M {}
 array set AXI_BUS_CLK {}
 array set AXI_BUS_RST {}
+array set AXI_ADDR {}
+array set AXI_ADDR_RANGE {}
 
 #This function adds a axi slave and its paramters to a global list of axi devices
 #This list is used to set how many ports there are on the axi interconnect
@@ -16,13 +33,18 @@ array set AXI_BUS_RST {}
 #  axi_rst:      This is the AXI reset (really AXI n_reset) that will be used
 #                for both slave and master sides of this devices axi connection.
 #  axi_freq:     This is the AXI clock frequency
+#  addr_offset:  Memory offset (default -1 means leave it up to vivado)
+#  addr_range:   Memory range at offset (default is 64K)
 
-proc AXI_DEVICE_ADD {device_name axi_master axi_clk axi_rst axi_freq} {
+proc AXI_DEVICE_ADD {device_name axi_master axi_clk axi_rst axi_freq {addr_offset -1} {addr_range 64K}} {
     #create entries in the necessary AXI connection arrays for this device
     global AXI_BUS_M
     global AXI_BUS_RST
     global AXI_BUS_CLK
     global AXI_BUS_FREQ
+    global AXI_ADDR
+    global AXI_ADDR_RANGE
+
     
     set AXI_BUS_M($device_name) $axi_master
 
@@ -32,6 +54,10 @@ proc AXI_DEVICE_ADD {device_name axi_master axi_clk axi_rst axi_freq} {
 
     set AXI_BUS_FREQ($device_name) $axi_freq
 
+    set AXI_ADDR($device_name) $addr_offset
+
+    set AXI_ADDR_RANGE($device_name) $addr_range
+    
     puts "adding stuff"
 }
 
@@ -56,13 +82,16 @@ proc AXI_PL_CONNECT {devices} {
     global AXI_BUS_RST
     global AXI_BUS_CLK
     global AXI_BUS_FREQ
+    global AXI_ADDR
+    global AXI_ADDR_RANGE
     global AXI_MASTER_CLK
     global AXI_MASTER_RST
     global AXI_INTERCONNECT_NAME
-
+  
+    
     #create connections for each PL device
     foreach dev $devices {
-	[AXI_PL_DEV_CONNECT $dev  $AXI_INTERCONNECT_NAME $AXI_BUS_M($dev)  $AXI_BUS_CLK($dev)  $AXI_BUS_RST($dev)  $AXI_BUS_FREQ($dev) ]
+	[AXI_PL_DEV_CONNECT $dev  $AXI_INTERCONNECT_NAME $AXI_BUS_M($dev)  $AXI_BUS_CLK($dev)  $AXI_BUS_RST($dev)  $AXI_BUS_FREQ($dev) $AXI_ADDR($dev) $AXI_ADDR_RANGE($dev)]
     }
 
     #this updates the address variables for dtsi_chunk generation, but can only be run after all AXI slaves are connected.
@@ -83,7 +112,7 @@ proc AXI_PL_CONNECT {devices} {
 #  axi_clk: the clock used for this axi slave/master channel
 #  axi_reset_n: the reset used for this axi slave/master channel
 #  axi_clk_freq: the frequency of the AXI clock used for slave/master
-proc AXI_PL_DEV_CONNECT {device_name axi_interconnect_name axi_master_name axi_clk axi_reset_n axi_clk_freq} {
+proc AXI_PL_DEV_CONNECT {device_name axi_interconnect_name axi_master_name axi_clk axi_reset_n axi_clk_freq axi_address axi_address_range} {
     startgroup
 
     #create axi port names
@@ -126,7 +155,15 @@ proc AXI_PL_DEV_CONNECT {device_name axi_interconnect_name axi_master_name axi_c
     
 
     #add addressing
-    assign_bd_address [get_bd_addr_segs {$device_name/Reg }]
+    if {$axi_address == -1} {
+	puts "Automatically setting $device_name address"
+	assign_bd_address [get_bd_addr_segs {$device_name/Reg }]
+    } else {
+	puts "Manually setting $device_name address to $axi_address $axi_address_range"
+
+	assign_bd_address -verbose -range $axi_address_range -offset $axi_address [get_bd_addr_segs $device_name/Reg]
+	
+    }
 
     endgroup
 }

@@ -48,6 +48,7 @@ clean_ip:
 clean_bd:
 	@echo "Cleaning up bd generated files"
 	@rm -rf ./bd/zynq_bd
+	@rm -rf ./bd/c2cSlave
 clean_bit:
 	@echo "Cleaning up bit files"
 	@rm -rf $(BIT)

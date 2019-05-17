@@ -208,7 +208,10 @@ architecture structure of top is
   signal AXI_C2C_WriteMOSI : AXIWriteMOSI_array_t(0 to 0);
   signal AXI_C2C_WriteMISO : AXIWriteMISO_array_t(0 to 0);
   
-  
+
+  signal C2C_gt_qpllclk_quad4 : std_logic;
+  signal C2C_gt_qpllrefclk_quad4 : std_logic;
+
 
   
 begin  -- architecture structure
@@ -411,16 +414,6 @@ begin  -- architecture structure
   fake_ttc_dv <= ttc_dv; 
 
 
---  --IBUFDS_GTE2
---  ibufds_instq3_clk1 : IBUFDS_GTE2 
---    port map 
---    (
---      O => refclk_TCDS,
---      ODIV2 => open, 
---      CEB => '0',
---      I => refclk_TCDS_P,
---      IB=> refclk_TCDS_N 
---      ); 
   
   MGBT2_common_reset_1: entity work.MGBT2_common_reset 
     generic map (
@@ -472,8 +465,8 @@ begin  -- architecture structure
       drp_clk_in              => AXI_C2C_aurora_init_clk,
       init_clk                => AXI_C2C_aurora_init_clk,
       link_reset_out          => open,
-      gt_qpllclk_quad4_out    => open,
-      gt_qpllrefclk_quad4_out => open,
+      gt_qpllclk_quad4_out    => C2C_gt_qpllclk_quad4,
+      gt_qpllrefclk_quad4_out => C2C_gt_qpllrefclk_quad4,
       sys_reset_out           => open,
       gt_reset_out            => open,
       tx_out_clk              => AXI_C2CM1_phy_clk_raw,
@@ -484,13 +477,9 @@ begin  -- architecture structure
       txn                    => AXI_C2C_Tx_N(0 downto 0),
 
       s_axi_tx_tdata          => AXI_C2CM1_TX_data,
---      s_axi_tx_tlast          => s_axi_tx_tlast,
---      s_axi_tx_tkeep          => s_axi_tx_tkeep,
       s_axi_tx_tvalid         => AXI_C2CM1_TX_dv,
       s_axi_tx_tready         => AXI_C2CM1_TX_ready,
       m_axi_rx_tdata          => AXI_C2CM1_RX_data,
---      m_axi_rx_tlast          => m_axi_rx_tlast,
---      m_axi_rx_tkeep          => m_axi_rx_tkeep,
       m_axi_rx_tvalid         => AXI_C2CM1_RX_dv,
 
 
@@ -513,6 +502,32 @@ begin  -- architecture structure
       s_axi_rready           => AXI_C2C_ReadMOSI(0).ready_for_data
 
       );
+
+
+
+
+
+
+
+
+  c2cSlave_1: entity work.c2cSlave
+    port map (
+      AXI_C2C_Rx_P => AXI_C2C_Rx_P(1),
+      AXI_C2C_Rx_N => AXI_C2C_Rx_N(1),
+      AXI_C2C_Tx_P => AXI_C2C_Tx_P(1),
+      AXI_C2C_Tx_N => AXI_C2C_Tx_N(1),
+      refclk       => refclk_C2C,
+
+      gt_qpllclk_quad4_in    => C2C_gt_qpllclk_quad4,
+      gt_qpllrefclk_quad4_in => C2C_gt_qpllrefclk_quad4,
+
+
+      );
+
+
+
+
+
 
   
   
