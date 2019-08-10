@@ -1,0 +1,26 @@
+#!/bin/bash
+
+
+outfile="petalinux-user-image.bbappend"
+
+echo "# petalinux-user-image.bbappend content" > $outfile
+echo "inherit extrausers"                      >> $outfile
+echo "EXTRA_USERS_PARAMS = \"\\"               >> $outfile
+
+
+#####################################
+#update root user password
+#####################################
+#pwhash=$(openssl passwd -1)
+pwhash=root
+echo "usermod -P "$pwhash" root; \\"           >> $outfile
+
+
+
+#####################################
+#create apollo account
+#####################################
+pwhash=apollo
+echo "useradd -P "$pwhash" apollo; \\"         >> $outfile
+
+echo "\""                                      >> $outfile

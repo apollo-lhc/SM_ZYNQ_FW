@@ -36,7 +36,7 @@ package AXIRegPkg is
                                                 protection_type => "000",
                                                 address_valid => '0',
                                                 burst_length => x"00",
-                                                burst_size => "00",
+                                                burst_size => "000",
                                                 burst_type => "01",
                                                 lock_type => '0',
                                                 cache_type => x"0",

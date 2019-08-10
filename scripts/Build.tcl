@@ -1,8 +1,5 @@
 source ../scripts/settings.tcl
 
-
-#open_project $outputDir/../proj/$top.xpr
-
 #################################################################################
 # STEP#2: run synthesis, report utilization and timing estimates, write checkpoint design
 #################################################################################
@@ -29,7 +26,7 @@ update_compile_order -fileset sources_1
 #synth design
 synth_design -top $top -part $FPGA_part -flatten rebuilt
 
-#write_checkpoint -force $outputDir/post_synth
+write_checkpoint -force $outputDir/post_synth
 #report_timing_summary -file $outputDir/post_synth_timing_summary.rpt
 #report_power -file $outputDir/post_synth_power.rpt
 
@@ -59,7 +56,7 @@ report_drc -file $outputDir/post_imp_drc.rpt
 write_verilog -force $outputDir/bft_impl_netlist.v
 write_xdc -no_fixed_only -force $outputDir/bft_impl.xdc
 #write_checkpoint -force $outputDir/post_route
-set pass [expr {[get_property SLACK [get_timing_paths]] >= 0}]
+#set pass [expr {[get_property SLACK [get_timing_paths]] >= 0}]
 write_checkpoint -force $outputDir/post_route
 
 

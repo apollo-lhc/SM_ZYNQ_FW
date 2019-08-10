@@ -20,8 +20,9 @@ set_property CONFIG.PCW_ENET0_GRP_MDIO_ENABLE {1}            [get_bd_cells proce
 set_property CONFIG.PCW_ENET0_GRP_MDIO_IO {MIO 52 .. 53}     [get_bd_cells processing_system7_0]
 
 #USB
-set_property CONFIG.PCW_USB0_PERIPHERAL_ENABLE {1}	     [get_bd_cells processing_system7_0]
-set_property CONFIG.PCW_USB0_USB0_IO {MIO 28 .. 39}	     [get_bd_cells processing_system7_0]
+set_property CONFIG.PCW_USB0_PERIPHERAL_ENABLE {0}           [get_bd_cells processing_system7_0]
+#set_property CONFIG.PCW_USB0_PERIPHERAL_ENABLE {1}	     [get_bd_cells processing_system7_0]
+#set_property CONFIG.PCW_USB0_USB0_IO {MIO 28 .. 39}	     [get_bd_cells processing_system7_0]
 
 #uart
 set_property CONFIG.PCW_UART0_PERIPHERAL_ENABLE {1}	     [get_bd_cells processing_system7_0]

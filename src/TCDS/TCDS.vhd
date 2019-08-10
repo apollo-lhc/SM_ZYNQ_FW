@@ -29,64 +29,6 @@ entity TCDS is
 end entity TCDS;
 
 architecture Behavioral of TCDS is
-  component LHC_support is
-    generic (
-      EXAMPLE_SIM_GTRESET_SPEEDUP : string;
-      STABLE_CLOCK_PERIOD         : integer);
-    port (
-      SOFT_RESET_TX_IN            : in  std_logic;
-      SOFT_RESET_RX_IN            : in  std_logic;
-      DONT_RESET_ON_DATA_ERROR_IN : in  std_logic;
-      GT0_TX_FSM_RESET_DONE_OUT   : out std_logic;
-      GT0_RX_FSM_RESET_DONE_OUT   : out std_logic;
-      GT0_DATA_VALID_IN           : in  std_logic;
-      GT0_TX_MMCM_LOCK_OUT        : out std_logic;
-      GT0_RX_MMCM_LOCK_OUT        : out std_logic;
-      GT0_TXUSRCLK_OUT            : out std_logic;
-      GT0_TXUSRCLK2_OUT           : out std_logic;
-      GT0_RXUSRCLK_OUT            : out std_logic;
-      GT0_RXUSRCLK2_OUT           : out std_logic;
-      gt0_cpllfbclklost_out       : out std_logic;
-      gt0_cplllock_out            : out std_logic;
-      gt0_cpllreset_in            : in  std_logic;
-      gt0_drpaddr_in              : in  std_logic_vector(8 downto 0);
-      gt0_drpdi_in                : in  std_logic_vector(15 downto 0);
-      gt0_drpdo_out               : out std_logic_vector(15 downto 0);
-      gt0_drpen_in                : in  std_logic;
-      gt0_drprdy_out              : out std_logic;
-      gt0_drpwe_in                : in  std_logic;
-      gt0_dmonitorout_out         : out std_logic_vector(7 downto 0);
-      gt0_eyescanreset_in         : in  std_logic;
-      gt0_rxuserrdy_in            : in  std_logic;
-      gt0_eyescandataerror_out    : out std_logic;
-      gt0_eyescantrigger_in       : in  std_logic;
-      gt0_rxdata_out              : out std_logic_vector(31 downto 0);
-      gt0_rxdisperr_out           : out std_logic_vector(3 downto 0);
-      gt0_rxnotintable_out        : out std_logic_vector(3 downto 0);
-      gt0_gtxrxp_in               : in  std_logic;
-      gt0_gtxrxn_in               : in  std_logic;
-      gt0_rxdfelpmreset_in        : in  std_logic;
-      gt0_rxmonitorout_out        : out std_logic_vector(6 downto 0);
-      gt0_rxmonitorsel_in         : in  std_logic_vector(1 downto 0);
-      gt0_rxoutclkfabric_out      : out std_logic;
-      gt0_gtrxreset_in            : in  std_logic;
-      gt0_rxpmareset_in           : in  std_logic;
-      gt0_rxcharisk_out           : out std_logic_vector(3 downto 0);
-      gt0_rxresetdone_out         : out std_logic;
-      gt0_gttxreset_in            : in  std_logic;
-      gt0_txuserrdy_in            : in  std_logic;
-      gt0_txdata_in               : in  std_logic_vector(31 downto 0);
-      gt0_gtxtxn_out              : out std_logic;
-      gt0_gtxtxp_out              : out std_logic;
-      gt0_txoutclkfabric_out      : out std_logic;
-      gt0_txoutclkpcs_out         : out std_logic;
-      gt0_txcharisk_in            : in  std_logic_vector(3 downto 0);
-      gt0_txresetdone_out         : out std_logic;
-      GT0_QPLLOUTCLK_OUT          : in  std_logic;
-      GT0_QPLLOUTREFCLK_OUT       : in  std_logic;
-      Q3_CLK1_GTREFCLK_OUT        : in  std_logic;
-      sysclk_in                   : in  std_logic);
-  end component LHC_support;
 
   type slv32_array_t is array (integer range <>) of std_logic_vector(31 downto 0);
   type slv4_array_t  is array (integer range <>) of std_logic_vector(3  downto 0);
@@ -121,6 +63,66 @@ begin  -- architecture Behavioral
   m2_tts_dv                 <= rx_dv(2);   
   
   Transcievers: for iTXRX in 0 to 2 generate
+    LHC_1: entity work.LHC
+      port map (
+        SYSCLK_IN                   => sysclk,
+        SOFT_RESET_TX_IN            => reset,
+        SOFT_RESET_RX_IN            => reset,
+        DONT_RESET_ON_DATA_ERROR_IN => '1'
+        GT0_TX_FSM_RESET_DONE_OUT   => open,
+        GT0_RX_FSM_RESET_DONE_OUT   => open,
+        GT0_DATA_VALID_IN           => tx_dv(iTXRX)
+        gt0_cpllfbclklost_out       => open,
+        gt0_cplllock_out            => open,
+        gt0_cplllockdetclk_in       => 
+        gt0_cpllreset_in            => reset,
+        gt0_gtrefclk0_in            => 
+        gt0_gtrefclk1_in            => 
+        gt0_drpaddr_in              => 
+        gt0_drpclk_in               => 
+        gt0_drpdi_in                => 
+        gt0_drpdo_out               => 
+        gt0_drpen_in                => 
+        gt0_drprdy_out              => 
+        gt0_drpwe_in                => 
+        gt0_dmonitorout_out         => 
+        gt0_eyescanreset_in         => 
+        gt0_rxuserrdy_in            => 
+        gt0_eyescandataerror_out    => 
+        gt0_eyescantrigger_in       => 
+        gt0_rxusrclk_in             => 
+        gt0_rxusrclk2_in            => 
+        gt0_rxdata_out              => 
+        gt0_gtxrxp_in               => 
+        gt0_gtxrxn_in               => 
+        gt0_rxdfelpmreset_in        => 
+        gt0_rxmonitorout_out        => 
+        gt0_rxmonitorsel_in         => 
+        gt0_rxoutclkfabric_out      => 
+        gt0_rxdatavalid_out         => 
+        gt0_rxheader_out            => 
+        gt0_rxheadervalid_out       => 
+        gt0_rxgearboxslip_in        => 
+        gt0_gtrxreset_in            => 
+        gt0_rxpmareset_in           => 
+        gt0_rxresetdone_out         => 
+        gt0_gttxreset_in            => 
+        gt0_txuserrdy_in            => 
+        gt0_txusrclk_in             => 
+        gt0_txusrclk2_in            => 
+        gt0_txdata_in               => 
+        gt0_gtxtxn_out              => 
+        gt0_gtxtxp_out              => 
+        gt0_txoutclk_out            => 
+        gt0_txoutclkfabric_out      => 
+        gt0_txoutclkpcs_out         => 
+        gt0_txgearboxready_out      => 
+        gt0_txheader_in             => 
+        gt0_txstartseq_in           => 
+        gt0_txresetdone_out         => 
+        GT0_QPLLOUTCLK_IN           => 
+        GT0_QPLLOUTREFCLK_IN        => 
+
     LHC_support_1: entity work.LHC_support
       port map (
         SOFT_RESET_TX_IN            => reset,

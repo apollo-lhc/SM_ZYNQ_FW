@@ -15,12 +15,19 @@ proc clear_global {variable} {
 [clear_global AXI_BUS_RST]
 [clear_global AXI_ADDR]
 [clear_global AXI_ADDR_RANGE]
+[clear_global AXI_INTERCONNECT_NAME]
 
 array set AXI_BUS_M {}
 array set AXI_BUS_CLK {}
 array set AXI_BUS_RST {}
 array set AXI_ADDR {}
 array set AXI_ADDR_RANGE {}
+
+proc SET_AXI_INTERCONNECT_NAME {name} {
+    global AXI_INTERCONNECT_NAME
+    set AXI_INTERCONNECT_NAME $name
+    puts "setting axi interconnect name"
+}
 
 #This function adds a axi slave and its paramters to a global list of axi devices
 #This list is used to set how many ports there are on the axi interconnect
@@ -58,7 +65,7 @@ proc AXI_DEVICE_ADD {device_name axi_master axi_clk axi_rst axi_freq {addr_offse
 
     set AXI_ADDR_RANGE($device_name) $addr_range
     
-    puts "adding stuff"
+    puts "adding $device_name to list"
 }
 
 
@@ -70,6 +77,7 @@ proc AXI_DEV_UIO_DTSI_POST_CHUNK {device_name} {
     set dtsi_file [open "../os/hw/${device_name}.dtsi_post_chunk" w+]
     puts $dtsi_file "  &${device_name}{"
     puts $dtsi_file "    compatible = \"generic-uio\";"
+    puts $dtsi_file "      label = \"$device_name\";"
     puts $dtsi_file "  };"
     close $dtsi_file
 }
@@ -85,13 +93,13 @@ proc AXI_PL_CONNECT {devices} {
     global AXI_ADDR
     global AXI_ADDR_RANGE
     global AXI_MASTER_CLK
-    global AXI_MASTER_RST
+    global AXI_MASTER_RSTN
     global AXI_INTERCONNECT_NAME
   
     
     #create connections for each PL device
     foreach dev $devices {
-	[AXI_PL_DEV_CONNECT $dev  $AXI_INTERCONNECT_NAME $AXI_BUS_M($dev)  $AXI_BUS_CLK($dev)  $AXI_BUS_RST($dev)  $AXI_BUS_FREQ($dev) $AXI_ADDR($dev) $AXI_ADDR_RANGE($dev)]
+	[AXI_PL_DEV_CONNECT $dev ]
     }
 
     #this updates the address variables for dtsi_chunk generation, but can only be run after all AXI slaves are connected.
@@ -112,16 +120,25 @@ proc AXI_PL_CONNECT {devices} {
 #  axi_clk: the clock used for this axi slave/master channel
 #  axi_reset_n: the reset used for this axi slave/master channel
 #  axi_clk_freq: the frequency of the AXI clock used for slave/master
-proc AXI_PL_DEV_CONNECT {device_name axi_interconnect_name axi_master_name axi_clk axi_reset_n axi_clk_freq axi_address axi_address_range} {
+
+proc AXI_PL_DEV_CONNECT {device_name} {
+    global AXI_BUS_M
+    global AXI_BUS_RST
+    global AXI_BUS_CLK
+    global AXI_INTERCONNECT_NAME
+    global AXI_BUS_FREQ
+    global AXI_ADDR
+    global AXI_ADDR_RANGE
+
     startgroup
 
     #create axi port names
     set AXIS_PORT_NAME $device_name
     append AXI_PORT_NAME "_AXIS"    
 
-    set AXIM_NAME $axi_interconnect_name
+    set AXIM_NAME $AXI_INTERCONNECT_NAME
     append AXIM_NAME "/" 
-    append AXIM_NAME $axi_master_name
+    append AXIM_NAME $AXI_BUS_M($device_name)
 
     set AXIM_PORT_NAME $AXIM_NAME
     append AXIM_PORT_NAME "_AXI"
@@ -136,32 +153,32 @@ proc AXI_PL_DEV_CONNECT {device_name axi_interconnect_name axi_master_name axi_c
     
 
     #create clk and reset (-q to skip error if it already exists)
-    create_bd_port -q -dir I -type clk $axi_clk
-    create_bd_port -q -dir I -type rst $axi_reset_n
+    create_bd_port -q -dir I -type clk $AXI_BUS_CLK($device_name)
+    create_bd_port -q -dir I -type rst $AXI_BUS_RST($device_name)
 
     #setup clk/reset parameters
-    set_property CONFIG.FREQ_HZ $axi_clk_freq [get_bd_ports $axi_clk]
-    set_property CONFIG.ASSOCIATED_RESET $axi_reset_n [get_bd_ports $axi_clk]
+    set_property CONFIG.FREQ_HZ $AXI_BUS_FREQ($device_name) [get_bd_ports $AXI_BUS_CLK($device_name)]
+    set_property CONFIG.ASSOCIATED_RESET $AXI_BUS_RST($device_name) [get_bd_ports $AXI_BUS_CLK($device_name)]
 
     #connect AXI clk/reest ports to AXI interconnect master
-    connect_bd_net [get_bd_ports $axi_reset_n] [get_bd_pins $AXIM_RSTN_NAME]
-    connect_bd_net [get_bd_ports $axi_clk]     [get_bd_pins $AXIM_CLK_NAME]
+    connect_bd_net [get_bd_ports $AXI_BUS_RST($device_name)]     [get_bd_pins $AXIM_RSTN_NAME]
+    connect_bd_net [get_bd_ports $AXI_BUS_CLK($device_name)]     [get_bd_pins $AXIM_CLK_NAME]
 
 
     #set bus properties
     set_property CONFIG.PROTOCOL AXI4LITE [get_bd_intf_ports $AXIS_PORT_NAME]
-    set_property CONFIG.ASSOCIATED_BUSIF  $device_name [get_bd_ports $axi_clk]
+    set_property CONFIG.ASSOCIATED_BUSIF  $device_name [get_bd_ports $AXI_BUS_CLK($device_name)]
 
     
 
     #add addressing
-    if {$axi_address == -1} {
+    if {$AXI_ADDR($device_name) == -1} {
 	puts "Automatically setting $device_name address"
 	assign_bd_address [get_bd_addr_segs {$device_name/Reg }]
     } else {
-	puts "Manually setting $device_name address to $axi_address $axi_address_range"
+	puts "Manually setting $device_name address to $AXI_ADDR($device_name) $AXI_ADDR_RANGE($device_name)"
 
-	assign_bd_address -verbose -range $axi_address_range -offset $axi_address [get_bd_addr_segs $device_name/Reg]
+	assign_bd_address -verbose -range $AXI_ADDR_RANGE($device_name) -offset $AXI_ADDR($device_name) [get_bd_addr_segs $device_name/Reg]
 	
     }
 
@@ -179,7 +196,7 @@ proc AXI_DEV_UIO_DTSI_CHUNK {axi_interconnect_name axi_master_name device_name} 
     #build dtsi file for this for later    
     set dtsi_file [open "../os/hw/$device_name.dtsi_chunk" w+]
     puts $dtsi_file "  amba_pl {"
-    puts $dtsi_file "    axiSlave$device_name: gpio@${addr} {"
+    puts $dtsi_file "    axiSlave$device_name: $device_name@${addr} {"
     puts $dtsi_file "      compatible = \"generic-uio\";"
     puts $dtsi_file "      reg = <0x${addr} 0x${addr_range}>;"
     puts $dtsi_file "      label = \"$device_name\";"
@@ -203,6 +220,10 @@ proc AXI_DEV_CONNECT {device_name axi_master axi_clk axi_rst} {
 	    connect_bd_net      [get_bd_pins $device_name/s_aclk]             [get_bd_pins $axi_clk]
 	    connect_bd_net      [get_bd_pins $device_name/s_aresetn]          [get_bd_pins $axi_rst]
 	}
+    } elseif [llength [get_bd_intf_pins -quiet $device_name/s_axi_lite]] {
+        connect_bd_intf_net [get_bd_intf_pins $device_name/s_axi_lite] -boundary_type upper [get_bd_intf_pins $axi_master]
+        connect_bd_net      [get_bd_pins $device_name/s_axi_aclk]             [get_bd_pins $axi_clk]
+        connect_bd_net      [get_bd_pins $device_name/s_axi_aresetn]          [get_bd_pins $axi_rst]
     } else {
         connect_bd_intf_net [get_bd_intf_pins $device_name/AXI_LITE] -boundary_type upper [get_bd_intf_pins $axi_master]
         connect_bd_net      [get_bd_pins $device_name/s_axi_aclk]             [get_bd_pins $axi_clk]
@@ -211,3 +232,32 @@ proc AXI_DEV_CONNECT {device_name axi_master axi_clk axi_rst} {
 
     endgroup
 }
+
+#This function is a simpler version of AXI_PL_DEV_CONNECT used for axi slaves in the bd.
+#The arguments are the device name, axi master name+channel and the clk/reset for the
+#channel
+proc AXI_LITE_DEV_CONNECT {device_name axi_master axi_clk axi_rst} {
+    startgroup
+    #Xilinx AXI slaves use different names for the AXI connection, this if/else tree will try to find the correct one. 
+    if [llength [get_bd_intf_pins -quiet $device_name/S_AXI_lite]] {
+	connect_bd_intf_net [get_bd_intf_pins $device_name/S_AXI_lite] -boundary_type upper [get_bd_intf_pins $axi_master]
+
+	if       [llength [get_bd_pins -quiet $device_name/s_axi_aclk]] {
+	    connect_bd_net      [get_bd_pins $device_name/s_axi_aclk]             [get_bd_pins $axi_clk]
+	    connect_bd_net      [get_bd_pins $device_name/s_axi_aresetn]          [get_bd_pins $axi_rst]
+	} elseif [llength [get_bd_pins -quiet $device_name/s_axi_lite_aclk]] {
+	    connect_bd_net      [get_bd_pins $device_name/s_axi_lite_aclk]        [get_bd_pins $axi_clk]
+	    connect_bd_net      [get_bd_pins $device_name/s_aresetn]     [get_bd_pins $axi_rst]	    
+        } else {	           
+	    connect_bd_net      [get_bd_pins $device_name/s_aclk]                 [get_bd_pins $axi_clk]
+	    connect_bd_net      [get_bd_pins $device_name/s_aresetn]              [get_bd_pins $axi_rst]	
+}
+    } else {
+        connect_bd_intf_net     [get_bd_intf_pins $device_name/AXI_LITE] -boundary_type upper [get_bd_intf_pins $axi_master]
+        connect_bd_net          [get_bd_pins $device_name/s_axi_aclk]             [get_bd_pins $axi_clk]
+        connect_bd_net          [get_bd_pins $device_name/s_axi_aresetn]          [get_bd_pins $axi_rst]
+    }
+
+    endgroup
+}
+

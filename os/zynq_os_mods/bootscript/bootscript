@@ -1,0 +1,19 @@
+#!/bin/sh
+
+echo "Hello PetaLinux World"
+
+#default mac (petalinux plus 1)
+MAC_ADDR="00:0A:35:00:1E:54" 
+#test for file existing
+
+if [ -e /fw/mac.dat ]; then
+    MAC_ADDR=$(cat /fw/mac.dat)
+fi
+
+echo "Using mac address: " $MAC_ADDR
+#change address
+ifconfig eth0 down
+ifconfig eth0 hw ether $MAC_ADDR
+ifconfig eth0 up
+
+
