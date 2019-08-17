@@ -60,7 +60,9 @@ proc AXI_IP_LOCAL_XVC {device_name} {
     create_bd_cell -type ip -vlnv xilinx.com:ip:debug_bridge:3.0 $device_name
     #configure the debug bridge to be 
     set_property CONFIG.C_DEBUG_MODE  {2}   [get_bd_cells $device_name]
-#    set_property CONFIG.C_NUM_BS_MASTER {4} [get_bd_cells $device_name]
+
+    #test
+    set_property CONFIG.C_NUM_BS_MASTER {1} [get_bd_cells $device_name]
 
     
     #connect to AXI, clk, and reset between slave and mastre
@@ -68,9 +70,23 @@ proc AXI_IP_LOCAL_XVC {device_name} {
     connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins $AXI_BUS_CLK($device_name)]
     connect_bd_net [get_bd_pins $AXI_SLAVE_RSTN] [get_bd_pins $AXI_BUS_RST($device_name)]
 
+
+    #test
+    create_bd_cell -type ip -vlnv xilinx.com:ip:debug_bridge:3.0 debug_bridge_0
+    connect_bd_intf_net [get_bd_intf_pins ${device_name}/m0_bscan] [get_bd_intf_pins debug_bridge_0/S_BSCAN]
+    connect_bd_net [get_bd_pins debug_bridge_0/clk] [get_bd_pins $AXI_BUS_CLK($device_name)]
+
+
+
+    
     #build the DTSI chunk for this device to be a UIO
     [AXI_DEV_UIO_DTSI_POST_CHUNK $device_name]
     puts "Added Xilinx Local XVC AXI Slave: $device_name"
+
+
+
+
+    
 }
 
 proc AXI_IP_UART {device_name baud_rate} {
@@ -102,6 +118,11 @@ proc AXI_IP_UART {device_name baud_rate} {
 }
 
 proc C2C_AURORA {device_name INIT_CLK} {
+    global AXI_BUS_M
+    global AXI_BUS_RST
+    global AXI_BUS_CLK
+    global AXI_MASTER_CLK
+    global AXI_SLAVE_RSTN
 
     set C2C ${device_name}
     set C2C_PHY ${C2C}_phy    
@@ -112,15 +133,19 @@ proc C2C_AURORA {device_name INIT_CLK} {
     set_property CONFIG.C_AURORA_LANES       {1}          [get_bd_cells ${C2C_PHY}]
     #set_property CONFIG.C_AURORA_LANES       {2}          [get_bd_cells ${C2C_PHY}]  
     set_property CONFIG.C_LINE_RATE          {5}          [get_bd_cells ${C2C_PHY}]
-    #set_property CONFIG.C_LINE_RATE          {10}          [get_bd_cells ${C2C_PHY}]  
+#    set_property CONFIG.C_LINE_RATE          {10}          [get_bd_cells ${C2C_PHY}]  
     set_property CONFIG.C_REFCLK_FREQUENCY   {100.000}    [get_bd_cells ${C2C_PHY}]  
     set_property CONFIG.interface_mode       {Streaming}  [get_bd_cells ${C2C_PHY}]  
     set_property CONFIG.SupportLevel         {1}          [get_bd_cells ${C2C_PHY}]  
     set_property CONFIG.SINGLEEND_INITCLK    {true}       [get_bd_cells ${C2C_PHY}]  
+    set_property CONFIG.C_USE_CHIPSCOPE      {true}       [get_bd_cells ${C2C_PHY}]
+#    set_property CONFIG.drp_mode             {AXI4_LITE}  [get_bd_cells ${C2C_PHY}]
+    set_property CONFIG.TransceiverControl   {false}      [get_bd_cells ${C2C_PHY}]  
 
-
+    
     set_property -dict [list CONFIG.C_GT_CLOCK_1 {GTXQ3} CONFIG.C_GT_LOC_9 {X} CONFIG.C_GT_LOC_15 {1}]          [get_bd_cells ${C2C_PHY}]
 
+    
 
     #expose the Aurora core signals to top   
     make_bd_intf_pins_external  -name ${C2C_PHY}_refclk         [get_bd_intf_pins ${C2C_PHY}/GT_DIFF_REFCLK1]    
@@ -133,6 +158,7 @@ proc C2C_AURORA {device_name INIT_CLK} {
     make_bd_pins_external       -name ${C2C_PHY}_lane_up        [get_bd_pins ${C2C_PHY}/lane_up]
     make_bd_pins_external       -name ${C2C_PHY}_mmcm_not_locked_out  [get_bd_pins ${C2C_PHY}/mmcm_not_locked_out]       
     make_bd_pins_external       -name ${C2C_PHY}_link_reset_out [get_bd_pins ${C2C_PHY}/link_reset_out]
+    make_bd_pins_external       -name ${C2C_PHY}_gt_refclk1_out [get_bd_pins ${C2C_PHY}/gt_refclk1_out]
 
     
     

@@ -112,10 +112,10 @@ entity top is
     -------------------------------------------------------------------------------------------
     -- MGBT 1
     -------------------------------------------------------------------------------------------
-    AXI_C2C_Rx_P      : in    std_logic_vector(0 to 0);--1);
-    AXI_C2C_Rx_N      : in    std_logic_vector(0 to 0);--1);
-    AXI_C2C_Tx_P      : out   std_logic_vector(0 to 0);--1);
-    AXI_C2C_Tx_N      : out   std_logic_vector(0 to 0);--1);
+    AXI_C2C_Rx_P      : in    std_logic_vector(0 to 0); --1);
+    AXI_C2C_Rx_N      : in    std_logic_vector(0 to 0); --1);
+    AXI_C2C_Tx_P      : out   std_logic_vector(0 to 0); --1);
+    AXI_C2C_Tx_N      : out   std_logic_vector(0 to 0); --1);
 
     refclk_C2C_P      : in    std_logic_vector(0 downto 0);
     refclk_C2C_N      : in    std_logic_vector(0 downto 0);
@@ -357,6 +357,8 @@ architecture structure of top is
   signal CM_enable_IOs   : std_logic_vector(1 downto 0);
   signal CM1_C2C_Ctrl : C2C_Control_t;
   signal CM2_C2C_Ctrl : C2C_Control_t;
+  signal C2C1_phy_gt_refclk1_out : std_logic;
+
   constant FP_REG_COUNT : integer := 4;
   signal FP_regs : slv8_array_t(0 to (FP_REG_COUNT - 1)) := (others => (others => '0'));
   signal HB_counter : unsigned(31 downto 0);
@@ -503,6 +505,7 @@ begin  -- architecture structure
       C2C1_phy_hard_err                 => CM1_C2C_Mon.phy_hard_err                ,
       C2C1_phy_lane_up                  => CM1_C2C_Mon.phy_lane_up                 ,
       C2C1_phy_link_reset_out           => CM1_C2C_Mon.phy_link_reset_out          ,
+      C2C1_phy_gt_refclk1_out           => C2C1_phy_gt_refclk1_out          ,
       C2C1_phy_mmcm_not_locked_out      => CM1_C2C_Mon.phy_mmcm_not_locked_out     ,
       C2C1_phy_soft_err                 => CM1_C2C_Mon.phy_soft_err                
       );
@@ -818,5 +821,17 @@ begin  -- architecture structure
       SCK           => FP_LED_CLK,
       SDA           => FP_LED_SDA,
       shutdownout   => open);
+
+
+--  c2c_ibert_1: entity work.c2c_ibert
+--    port map (
+--      TXN_O(0 to 1)       => AXI_C2C_Tx_N(0 to 1),
+--      TXP_O(0 to 1)       => AXI_C2C_Tx_P(0 to 1),
+--      RXOUTCLK_O  => open,
+--      RXN_I       => AXI_C2C_Rx_N(0 to 1),
+--      RXP_I       => AXI_C2C_Rx_P(0 to 1),
+--      GTREFCLK0_I => open,
+--      GTREFCLK1_I(0) => C2C1_phy_gt_refclk1_out,
+--      SYSCLK_I    => C2C1_phy_gt_refclk1_out);
   
 end architecture structure;

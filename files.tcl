@@ -37,6 +37,8 @@ set xdc_files src/top.xdc
 set xci_files "\
     	      cores/SGMII_INTF/SGMII_INTF.xci \
     	      cores/onboard_CLK/onboard_CLK.xci \
+	      cores/ila_0/ila_0.xci
+	      cores/ila_1/ila_1.xci
     	      "
-
+#	      cores/c2c_ibert/c2c_ibert.xci \
 #	      cores/aurora_64b66b_0/aurora_64b66b_0.xci \

@@ -3,6 +3,10 @@ use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
 use ieee.std_logic_misc.all;
 
+Library UNISIM;
+use UNISIM.vcomponents.all;
+
+
 -------------------------------------------------------------------------------
 -- I2C Slave
 -------------------------------------------------------------------------------
@@ -52,6 +56,7 @@ architecture Behavioral of i2c_slave is
   -----------------------------------------------------------------------------
   signal SDA_in_old : std_logic;
   signal SCL_old : std_logic;
+  signal scl_edge : std_logic_vector(1 downto 0);
   signal serial_monitor_counter : unsigned(31 downto 0);
   signal internal_reset : std_logic;
   
@@ -69,16 +74,76 @@ architecture Behavioral of i2c_slave is
                      STATE_REG_ADDR_SET,
                      STATE_MASTER_WRITE);
   signal state : i2c_state;
+  signal state_num : std_logic_vector(2 downto 0);
+  
+  signal ack : std_logic;
+  signal rw : std_logic;
 
-  signal ack_bit : std_logic;
-  signal lsb_bit : std_logic;
+  signal SDA_int : std_logic;
+  signal SCL_int : std_logic;
   
   signal address_detect : std_logic;
+  signal SDA_out_buffer : std_logic;
+  signal SDA_en_buffer : std_logic;
+  signal data_out_buffer : std_logic_vector(7 downto 0);
+  signal data_out_dv_buffer : std_logic;
 begin  -- Behavioral
 
+  state_num_proc: process (state,state_num) is
+  begin  -- process state_num_proc
+    case state is
+      when STATE_IDLE         => state_num <= "001";
+      when STATE_DEV_ADDR     => state_num <= "010";
+      when STATE_MASTER_READ  => state_num <= "011";
+      when STATE_REG_ADDR_SET => state_num <= "100";
+      when STATE_MASTER_WRITE => state_num <= "101";                         
+      when others => state_num <= "000";
+    end case;
+  end process state_num_proc;
+
+  sda_out <= sda_out_buffer;
+  sda_en <= sda_en_buffer;
+  data_out <= data_out_buffer;
+  data_out_dv <= data_out_dv_buffer;
+  ila_0_1: entity work.ila_0
+    port map(
+      clk    => clk,
+      probe0 => state_num,
+      probe1(0) => start,
+      probe2(0) => stop,
+      probe3(5 downto 0) => std_logic_vector(local_register_address),
+      probe4(0) => SDA_in,
+      probe5(0) => SDA_out_buffer,
+      probe6(0) => SDA_en_buffer,
+      probe7(0) => SCL,
+      probe8(0) => ack,
+      probe9(0) => address_detect,
+      probe10(7 downto 0) => input_byte,
+      probe11(7 downto 0) => data_in,
+      probe12(7 downto 0) => data_out_buffer,
+      probe13(0) => data_out_dv_buffer,
+      probe14(3 downto 0) => std_logic_vector(bit_count),
+      probe15(7 downto 0) => output_byte,
+      probe16(1 downto 0) => scl_edge,
+      probe17(0)          => internal_reset
+      );
+
+
+  
   -----------------------------------------------------------------------------
   -- Keep an copy of the previous states of SDA and SCL for edge detection
   -----------------------------------------------------------------------------
+  edge_detection: process (SCL_old,SCL_int) is
+  begin  -- process edge_detection
+    scl_edge <= "00";
+    if SCL_old = '0' and SCL_int = '1' then
+      scl_edge(0) <= '1';
+    end if;
+    if SCL_old = '1' and SCL_int = '0' then
+      scl_edge(1) <= '1';
+    end if;    
+  end process edge_detection;
+
   serial_monitor: process (clk, reset)
   begin  -- process serial_monitor
     if reset = '1' then                 -- asynchronous reset (active high)
@@ -86,15 +151,22 @@ begin  -- Behavioral
       SCL_old <= '1';
       serial_monitor_counter <= x"00000000";
       internal_reset <= '1';
+      SDA_int <= '1';
+      SCL_int <= '1';
     elsif clk'event and clk = '1' then  -- rising clock edge
-      -- keep track of SDA and SCL transitions      
-      SDA_in_old <= SDA_in;
-      SCL_old <= SCL;
 
+      --latch incomming signals
+      SDA_int <= SDA_in;
+      SCL_int <= SCL;
+      
+      -- keep track of SDA and SCL transitions      
+      SDA_in_old <= SDA_int;
+      SCL_old <= SCL_int;
+     
       --monitor the serial interface for an error
       serial_monitor_counter <= serial_monitor_counter + 1;
       internal_reset <= '0';
-      if SDA_in = '1' and SCL = '1' then
+      if SDA_int = '1' and SCL_int = '1' then
         serial_monitor_counter <= x"00000000";
       elsif serial_monitor_counter = TIMEOUT_COUNT then
         internal_reset <= '1';
@@ -112,12 +184,12 @@ begin  -- Behavioral
     elsif clk'event and clk = '1' then  -- rising clock edge      
       -- Look for a start sequence on falling SDA edge if we are not in start      
       if start = '0' then
-        if SDA_in_old = '1' and SDA_in = '0' then
-          start <= SCL;
+        if SDA_in_old = '1' and SDA_int = '0' then
+          start <= SCL_int;
         end if;
       -- if we are in start, look for SCL rising to internal_reset start
       else
-        if SCL_old = '1' and SCL = '0' then
+        if SCL_old = '1' and SCL_int = '0' then
           start <= '0';
         end if;
       end if;
@@ -133,11 +205,11 @@ begin  -- Behavioral
       stop <= '0';
     elsif clk'event and clk = '1' then  -- rising clock edge
       if stop = '0' then
-        if SDA_in_old = '0' and SDA_in = '1' then
-          stop <= SCL;
+        if SDA_in_old = '0' and SDA_int = '1' then
+          stop <= SCL_int;
         end if;
       else
-        if SCL = '1' then
+        if SCL_int = '1' then
           stop <= '0';
         end if;
       end if;
@@ -151,29 +223,17 @@ begin  -- Behavioral
   begin  -- process bit_clock
     if internal_reset = '1' then                 -- asynchronous internal_reset (active high)
       bit_count <= "0000";
-      lsb_bit <= '0';
-      ack_bit <= '0';
     elsif clk'event and clk = '1' then  -- rising clock edge
 
-      if start = '1' and SCL = '1' then
-        bit_count <= "0000";
-        lsb_bit <= '0';
-        ack_bit <= '0';                   
-      elsif SCL_old = '1' and SCL = '0' then  -- update on the falling edge so we
-                                           -- are ready for capture/output on
-                                           -- the rising edge
-        
+      if start = '1' and scl_edge(1) = '1' then
+        bit_count <= x"0";
+      elsif scl_edge(1) = '1' then  -- update on the falling edge so we
+                                    -- are ready for capture/output on
+                                    -- the rising edge        
         -- count which bit we are on in this 9 bit sequence
         bit_count <= bit_count + 1;
-
-        lsb_bit <= '0';
-        ack_bit <= '0';
-        if bit_count = 7 then
-          lsb_bit <= '1';
-        elsif bit_count = 8 then
-          ack_bit <= '1';
-          bit_count <= "0000";
-        elsif bit_count = 0 then
+        if bit_count = 8 then
+          bit_count <= x"0";
         end if;
       end if;
     end if;
@@ -187,9 +247,18 @@ begin  -- Behavioral
     if internal_reset = '1' then                 -- asynchronous internal_reset (active high)
       input_byte <= x"00";
     elsif clk'event and clk = '1' then  -- rising clock edge
-      if SCL_old = '0' and SCL = '1' then
+      if start = '1' then
+        input_byte <= (others => '0');
+      elsif scl_edge(0) = '1' then
         -- shift in new bit on rising clock
-        input_byte <= input_byte(6 downto 0) & SDA_in;
+        if bit_count /= 8 then 
+          input_byte <= input_byte(6 downto 0) & SDA_int;          
+          ack <= '0';
+        else
+          rw <= input_byte(0);
+          input_byte <= (others => '0');
+          ack <= not SDA_int;
+        end if;
       end if;
     end if;
   end process input_capture;
@@ -198,17 +267,17 @@ begin  -- Behavioral
   begin  -- process address_detect
     if internal_reset = '1' then                 -- asynchronous internal_reset (active high)
       address_detect <= '0';
-    elsif clk'event and clk = '1' then  -- rising clock edge
-      if SCL_old = '1' and SCL = '0' then
-        if bit_count = 7 then           -- we now have the full address
-          -- check if this is our address
-          if input_byte(6 downto 0) = address then
-            address_detect <= '1';
+    elsif clk'event and clk = '1' then  -- rising clock edge      
+      case state is
+        when STATE_IDLE => address_detect <= '0';
+        when STATE_DEV_ADDR =>
+          if to_integer(bit_count) = 6 then
+            if scl_edge(1) = '1' and input_byte(6 downto 0) = address then
+              address_detect <= '1';
+            end if;
           end if;
-        elsif bit_count = 0 then
-          address_detect <= '0';
-        end if;
-      end if;
+        when others => null;
+      end case; 
     end if;
   end process address_detector;
 
@@ -246,46 +315,54 @@ begin  -- Behavioral
     elsif clk'event and clk = '1' then  -- rising clock edge
       if stop = '1' then
         state <= STATE_IDLE;
-      elsif SCL_old = '1' and SCL = '0' then
-        if start = '1' then
+      elsif start = '1' then
           state <= STATE_DEV_ADDR;       
-        elsif ack_bit = '1' then
-          case state is
-            -------------------------------------------------------------------
-            when STATE_IDLE =>
-              state <= STATE_IDLE;
-            -------------------------------------------------------------------
-            when STATE_DEV_ADDR =>
-              if address_detect = '0' then
-                -- not our address, go back to idle
-                state <= STATE_IDLE;
-              elsif input_byte(0) = '0' then
-                -- master is going to write to us, so this is a new register address
-                state <= STATE_REG_ADDR_SET;                
-              else
-                -- master is going to read from us
+      elsif scl_edge(1) = '1' then
+        case state is
+          -------------------------------------------------------------------
+          when STATE_IDLE =>
+            state <= STATE_IDLE;
+          -------------------------------------------------------------------
+          when STATE_DEV_ADDR =>
+            case to_integer(bit_count) is
+              when 8 =>
+                if rw = '1' then
+                  -- master is going to read from us
+                  state <= STATE_MASTER_READ;
+                else
+                  -- master is going to write to us, so this is a new register address
+                  state <= STATE_REG_ADDR_SET;
+                end if;
+              when 7 => 
+                if input_byte(7 downto 1) = address then
+                  state <= STATE_DEV_ADDR;
+                else                    
+                  state <= STATE_IDLE;
+                end if;
+              when others => null;
+            end case;
+          ------------------------------------------------------------------
+          when STATE_MASTER_READ =>
+            if to_integer(bit_count) = 8 then
+              if ack = '1' then
+                -- master wants to read another byte
                 state <= STATE_MASTER_READ;
+              else
+                -- master is done reading
+                state <= STATE_IDLE;
               end if;
-            ------------------------------------------------------------------
-            when STATE_MASTER_READ =>
-              state <= STATE_MASTER_READ;
---              if input_byte(0) = '0' then
---                -- master wants to read another byte
---                state <= STATE_MASTER_READ;
---              else
---                -- master is done reading
---                state <= STATE_IDLE;
---              end if;
-            ------------------------------------------------------------------
-            when STATE_REG_ADDR_SET =>
-              state <= STATE_MASTER_WRITE;
-            ------------------------------------------------------------------             
-            when STATE_MASTER_WRITE =>
-                state <= STATE_MASTER_WRITE;
-            when others => state <= STATE_IDLE;
-          end case;
-        end if;
-      end if;
+            end if;                
+          ------------------------------------------------------------------
+          when STATE_REG_ADDR_SET =>
+            if to_integer(bit_count) = 8 then
+              state <= STATE_MASTER_WRITE;              
+            end if;
+          ------------------------------------------------------------------             
+          when STATE_MASTER_WRITE =>
+            state <= STATE_MASTER_WRITE;
+          when others => state <= STATE_IDLE;
+        end case;
+      end if;    
     end if;
   end process state_machine;
   
@@ -294,23 +371,24 @@ begin  -- Behavioral
   -----------------------------------------------------------------------------
   -- registers
   -----------------------------------------------------------------------------
+  register_address <= std_logic_vector(local_register_address);
   register_address_proc: process (clk, internal_reset)
   begin  -- process register_address
     if internal_reset = '1' then                 -- asynchronous internal_reset (active high)
       local_register_address <= (others => '0');
-    elsif clk'event and clk = '1' then  -- rising clock edge
-      if stop = '1' then
-        local_register_address <= (others => '0');
-      elsif SCL_old = '0' and SCL = '1' then
-        register_address <= std_logic_vector(local_register_address);
-        -- update the register address
-        if ack_bit = '1' then
-          if state = STATE_REG_ADDR_SET then
-            local_register_address <= unsigned(input_byte(REGISTER_COUNT_BIT_SIZE-1 downto 0));
-          else
-            local_register_address <= local_register_address + 1;
-          end if;          
-        end if;
+    elsif clk'event and clk = '1' then  -- rising clock edge      
+      if scl_edge(1) = '1' then
+        case state is
+          when STATE_REG_ADDR_SET =>
+            if to_integer(bit_count) = 7 then
+              local_register_address <= unsigned(input_byte(REGISTER_COUNT_BIT_SIZE-1 downto 0));  
+            end if;
+          when STATE_MASTER_WRITE | STATE_MASTER_READ  =>
+            if to_integer(bit_count) = 7 then
+              local_register_address <= local_register_address + 1;
+            end if;            
+          when others => null;
+        end case;
       end if;      
     end if;
   end process register_address_proc;
@@ -319,16 +397,17 @@ begin  -- Behavioral
   write_register: process (clk, internal_reset)
   begin  -- process write_registers
     if internal_reset = '1' then                 -- asynchronous internal_reset (active high)
-      data_out_dv <= '0';
+      data_out_dv_buffer <= '0';
     elsif clk'event and clk = '1' then  -- rising clock edge
       -- if the master has writen all the bits of this byte, set the write
       -- write out the data
-      if SCL_old = '0' and SCL = '1' then
-        if state = STATE_MASTER_WRITE and ack_bit = '1' then
-          data_out <= input_byte;
-          data_out_dv <= '1';
-        else
-          data_out_dv <= '0';        
+      data_out_dv_buffer <= '0';        
+      if scl_edge(0) = '1' then
+        if state = STATE_MASTER_WRITE then          
+          if to_integer(bit_count) = 7 then           
+            data_out_buffer <= input_byte(6 downto 0) & SDA_int;
+            data_out_dv_buffer <= '1';
+          end if;
         end if;
       end if;
     end if;
@@ -339,14 +418,14 @@ begin  -- Behavioral
     if internal_reset = '1' then                 -- asynchronous internal_reset (active low)
       output_byte <= x"00";
     elsif clk'event and clk = '1' then  -- rising clock edge
-      if SCL_old = '0' and SCL = '1' then
-        -- load next round of bits on the ack bit on the rising edge of the clock
-        if ack_bit = '1' then
+      if scl_edge(0) = '1' then
+        if to_integer(bit_count) = 8 then
+          -- load next round of bits on the ack bit on the rising edge of the clock
           output_byte <= data_in;
-        -- shift through the bits on other rising edges
         else
+          -- shift through the bits on other rising edges
           output_byte <= output_byte(6 downto 0) & '0';
-        end if;
+        end if;        
       end if;
     end if;
   end process read_register;
@@ -357,40 +436,45 @@ begin  -- Behavioral
   SDA_driver: process (clk, internal_reset)
   begin  -- process SDA_driver
     if internal_reset = '1' then                 -- asynchronous internal_reset (active high)
-      SDA_out <= '1';
-      SDA_en  <= '0';
+      sda_out_buffer <= '1';
+      SDA_en_buffer  <= '0';
     elsif clk'event and clk = '1' then  -- rising clock edge
-      if SCL_old = '1' and SCL = '0' then
-        SDA_out <= '1';
-        SDA_en  <= '0';
-        if lsb_bit = '1' then
-          if state = STATE_DEV_ADDR and address_detect = '1' then
-            -- acknowledge when being addressed
-            SDA_out <= '0';
-            SDA_en  <= '1';
-          elsif state = STATE_REG_ADDR_SET then
-            -- acknowledge an addressing word
-            SDA_out <= '0';
-            SDA_en  <= '1';
-          elsif state = STATE_MASTER_WRITE then
-            -- acknowledge a word from the master
-            SDA_out <= '0';
-            SDA_en  <= '1';
-          end if;
-        elsif ack_bit = '1' then
-          if (state = STATE_MASTER_READ and input_byte(0) = '0') or
-             (state = STATE_DEV_ADDR and address_detect = '1') then
-            if output_byte(7) = '0' then
-              SDA_out <= '0';
-              SDA_en  <= '1';
-            end if;                     
-          end if;
-        elsif state = STATE_MASTER_READ then
-          if output_byte(7) = '0' then
-            SDA_out <= '0';
-            SDA_en  <= '1';
-          end if;
-        end if;
+      if state = STATE_IDLE then
+        sda_out_buffer <= '1';
+        SDA_en_buffer  <= '0';        
+      elsif scl_edge(1) = '1' then
+        case state is
+          when STATE_DEV_ADDR | STATE_REG_ADDR_SET | STATE_MASTER_WRITE =>
+            if address_detect = '1' and to_integer(bit_count) = 7 then
+              sda_out_buffer <= '0';
+              SDA_en_buffer  <= '1';            
+            else
+              sda_out_buffer <= '1';
+              SDA_en_buffer  <= '0';              
+            end if;
+            --hande the first bit of a read at the end of the DEV_ADDR state
+            if (state = STATE_DEV_ADDR and address_detect = '1' and
+                to_integer(bit_count) = 8 and rw = '1')then
+              if output_byte(7) = '0' then
+                sda_out_buffer <= '0';
+                SDA_en_buffer  <= '1';
+              end if;
+            end if;
+          when STATE_MASTER_READ =>
+            if to_integer(bit_count) = 7 then
+              sda_out_buffer <= '1';
+              SDA_en_buffer  <= '0';                            
+            elsif output_byte(7) = '0' then
+              sda_out_buffer <= '0';
+              SDA_en_buffer  <= '1';
+            else
+              sda_out_buffer <= '1';
+              SDA_en_buffer  <= '0';              
+            end if;  
+          when others =>
+            sda_out_buffer <= '1';
+            SDA_en_buffer  <= '0';
+        end case;
       end if;
     end if;
   end process SDA_driver;

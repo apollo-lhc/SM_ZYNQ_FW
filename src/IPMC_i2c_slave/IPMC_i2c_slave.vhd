@@ -45,9 +45,11 @@ architecture behavioral of IPMC_i2c_slave is
   --------------------------------------
   -- AXI bridge signals
   signal localAddress : slv_32_t;
+  signal localAddress_latch : slv_32_t;
   signal localRdData  : slv_32_t;
   signal localRdData_latch  : slv_32_t;
   signal localWrData  : slv_32_t;
+  signal localWrData_latch  : slv_32_t;
   signal localWrEn    : std_logic;
   signal localRdReq   : std_logic;
   signal localRdAck   : std_logic;
@@ -62,19 +64,12 @@ architecture behavioral of IPMC_i2c_slave is
   signal SDA_en : std_logic;
 
   
-  signal enB : std_logic;
-  signal reg_data :  slv32_array_t(integer range 0 to REG32_COUNT-1);
-  constant Default_reg_data : slv32_array_t(integer range 0 to REG32_COUNT-1) :=
-    (0 => x"00000003",
-     4 => x"00000001",
-     5 => x"00001010",
-     8 => x"00000000",
-     others => x"00000000");
+  signal wenB : std_logic;
   
   
   
 begin  -- architecture behavioral
-
+      
   reset <= not reset_axi_n;
   SDA_t <= not SDA_en;
   i2c_slave_1: entity work.i2c_slave
@@ -91,9 +86,21 @@ begin  -- architecture behavioral
       address          => "1100000",
       data_out         => master_i2c_data,
       data_out_dv      => master_i2c_dv,
-      data_in          => x"a5",--slave_i2c_data,
+      data_in          => slave_i2c_data,
       register_address => i2c_address);
-  
+
+--  ila_1_1: entity work.ila_1
+--    port map (
+--      clk                 => clk_axi,
+--      probe0(31 downto 0) => localAddress,
+--      probe1(31 downto 0) => localRdData,
+--      probe2(31 downto 0) => localWrData,
+--      probe3(0)           => localWrEn,
+--      probe4(0)           => localRdReq,
+--      probe5(0)           => localRdAck,
+--      probe6(0)           => wenB);
+      
+
   AXIRegBridge : entity work.axiLiteReg
     port map (
       clk_axi     => clk_axi,
@@ -113,11 +120,19 @@ begin  -- architecture behavioral
     if reset_axi_n = '0' then           -- asynchronous reset (active high)
       localRdAck <= '0';
     elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
-      localRdAck <= localRdReq;
+      localRdAck <= localRdReq;      
+      localRdData_latch <= localRdData;
+      wenB <= '0';
+      if localRdReq = '1' then
+        localAddress_latch <= localAddress;
+      end if;
+      if localWrEn = '1' then
+        localWrData_latch <= localWrData;
+        wenB <= '1';
+      end if;
     end if;
   end process AXIRegProc;
 
-  enB <= localRdReq or localWrEn;
   asym_ram_tdp_1: entity work.asym_ram_tdp
     generic map (
       WIDTHB     => 32,
@@ -129,13 +144,13 @@ begin  -- architecture behavioral
     port map (
       clkA  => clk_axi,
       clkB  => clk_axi,
-      enB   => enB,
+      enB   => '1',--enB,
       enA   => '1',
-      weB   => localWrEn,
+      weB   => wenB,
       weA   => master_i2c_dv,
-      addrB => localAddress(3 downto 0),
+      addrB => localAddress_latch(3 downto 0),
       addrA => i2c_address,
-      diB   => localWrData,
+      diB   => localWrData_latch,
       diA   => master_i2c_data,
       doB   => localRdData,
       doA   => slave_i2c_data);
