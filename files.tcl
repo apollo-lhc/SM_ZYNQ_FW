@@ -30,7 +30,7 @@ set vhdl_files "\
      src/front_panel/LED_Encoder.vhd \
      src/front_panel/SR_Out.vhd \
      "
-
+#     src/misc/asym_dualport_ram_async_B_read.vhd \
 
 set xdc_files src/top.xdc
 

@@ -138,6 +138,10 @@ begin  -- architecture behavioral
       i2c_addr <= "0000000";
     elsif clk'event and clk = '1' then  -- rising clock edge
       counter <= counter + 1;
+      readMOSI.address_valid <= '0';
+      writeMOSI.address_valid <= '0';
+      writeMOSI.data_valid <= '0';
+
       run <= '0';
       case counter is
         when 10 =>
@@ -145,23 +149,40 @@ begin  -- architecture behavioral
 
         when 100 =>
           i2c_addr <= "1100000";
-          reg_addr <= x"fc";
+          reg_addr <= x"04";
           wr_data <= x"12345678";
           run <= '1';
           rw <= '0';
 
         when 1100 =>
           i2c_addr <= "1100000";
-          reg_addr <= x"fc";
+          reg_addr <= x"04";
           run <= '1';
           rw <= '1';
 
         when 3100 =>
           i2c_addr <= "1111000";
-          reg_addr <= x"fc";
+          reg_addr <= x"04";
           run <= '1';
           rw <= '1';
 
+        when 4000 =>
+          readMOSI.address <= x"00000004";
+          readMOSI.address_valid <= '1';
+          readMOSI.ready_for_data <= '1';
+
+        when 4200 =>
+          writeMOSI.address <= x"0000000c";
+          writeMOSI.address_valid <= '1';
+          writeMOSI.ready_for_response <= '1';
+        when 4202 =>
+          writeMOSI.data    <= x"deadbeef";
+          writeMOSI.data_valid <= '1';
+        when 4400 =>
+          readMOSI.address <= x"0000000c";
+          readMOSI.address_valid <= '1';
+          readMOSI.ready_for_data <= '1';
+          
         when others => null;
       end case;
     end if;

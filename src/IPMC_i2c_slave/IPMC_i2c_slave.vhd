@@ -63,8 +63,7 @@ architecture behavioral of IPMC_i2c_slave is
   signal reset : std_logic;
   signal SDA_en : std_logic;
 
-  
-  signal wenB : std_logic;
+  signal clk_b : std_logic;  
   
   
   
@@ -88,19 +87,7 @@ begin  -- architecture behavioral
       data_out_dv      => master_i2c_dv,
       data_in          => slave_i2c_data,
       register_address => i2c_address);
-
---  ila_1_1: entity work.ila_1
---    port map (
---      clk                 => clk_axi,
---      probe0(31 downto 0) => localAddress,
---      probe1(31 downto 0) => localRdData,
---      probe2(31 downto 0) => localWrData,
---      probe3(0)           => localWrEn,
---      probe4(0)           => localRdReq,
---      probe5(0)           => localRdAck,
---      probe6(0)           => wenB);
-      
-
+     
   AXIRegBridge : entity work.axiLiteReg
     port map (
       clk_axi     => clk_axi,
@@ -121,18 +108,10 @@ begin  -- architecture behavioral
       localRdAck <= '0';
     elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
       localRdAck <= localRdReq;      
-      localRdData_latch <= localRdData;
-      wenB <= '0';
-      if localRdReq = '1' then
-        localAddress_latch <= localAddress;
-      end if;
-      if localWrEn = '1' then
-        localWrData_latch <= localWrData;
-        wenB <= '1';
-      end if;
     end if;
   end process AXIRegProc;
 
+  clk_b <= not clk_axi;
   asym_ram_tdp_1: entity work.asym_ram_tdp
     generic map (
       WIDTHB     => 32,
@@ -143,14 +122,14 @@ begin  -- architecture behavioral
       ADDRWIDTHA => log2(4*REG32_COUNT))
     port map (
       clkA  => clk_axi,
-      clkB  => clk_axi,
-      enB   => '1',--enB,
+      clkB  => clk_b,
+      enB   => '1',
       enA   => '1',
-      weB   => wenB,
+      weB   => localWrEn,
       weA   => master_i2c_dv,
-      addrB => localAddress_latch(3 downto 0),
+      addrB => localAddress(3 downto 0),
       addrA => i2c_address,
-      diB   => localWrData_latch,
+      diB   => localWrData,
       diA   => master_i2c_data,
       doB   => localRdData,
       doA   => slave_i2c_data);
