@@ -40,7 +40,7 @@ architecture behavioral of IPMC_i2c_slave is
   
   --------------------------------------
   -- register map size
-  constant REG32_COUNT : integer := 16;  
+  constant REG32_COUNT : integer := 8;  
   
   --------------------------------------
   -- AXI bridge signals
@@ -56,10 +56,11 @@ architecture behavioral of IPMC_i2c_slave is
   
   --------------------------------------
   -- I2c Slave signals
+  constant SLAVE_COUNT : integer := 4;
   signal master_i2c_data : slv_8_t;
   signal master_i2c_dv : std_logic;
   signal slave_i2c_data : slv_8_t;
-  signal i2c_address : std_logic_vector(log2(4*REG32_COUNT)-1 downto 0);
+  signal i2c_address : std_logic_vector(log2(4*REG32_COUNT*SLAVE_COUNT)-1 downto 0);
   signal reset : std_logic;
   signal SDA_en : std_logic;
 
@@ -74,7 +75,8 @@ begin  -- architecture behavioral
   i2c_slave_1: entity work.i2c_slave
     generic map (
       REGISTER_COUNT_BIT_SIZE => log2(4*REG32_COUNT),
-      TIMEOUT_COUNT  =>  x"00100000")
+      TIMEOUT_COUNT  =>  x"00100000",
+      I2C_ADDR_WILDCARD_BITS => log2(SLAVE_COUNT))
     port map (
       reset            => reset,
       clk              => clk_axi,
@@ -115,11 +117,11 @@ begin  -- architecture behavioral
   asym_ram_tdp_1: entity work.asym_ram_tdp
     generic map (
       WIDTHB     => 32,
-      SIZEB      => REG32_COUNT,
-      ADDRWIDTHB => log2(REG32_COUNT),
+      SIZEB      => REG32_COUNT*SLAVE_COUNT,
+      ADDRWIDTHB => log2(REG32_COUNT*SLAVE_COUNT),
       WIDTHA     => 8,
-      SIZEA      => 4*REG32_COUNT,
-      ADDRWIDTHA => log2(4*REG32_COUNT))
+      SIZEA      => SLAVE_COUNT*4*REG32_COUNT,
+      ADDRWIDTHA => log2(SLAVE_COUNT*4*REG32_COUNT))
     port map (
       clkA  => clk_axi,
       clkB  => clk_b,
@@ -127,7 +129,7 @@ begin  -- architecture behavioral
       enA   => '1',
       weB   => localWrEn,
       weA   => master_i2c_dv,
-      addrB => localAddress(3 downto 0),
+      addrB => localAddress(log2(REG32_COUNT*SLAVE_COUNT)-1 downto 0),
       addrA => i2c_address,
       diB   => localWrData,
       diA   => master_i2c_data,

@@ -147,6 +147,7 @@ begin  -- architecture behavioral
         when 10 =>
           reset_axi_n <= '1';
 
+        -- Write 1 32bit word via i2c at slave 0 reg32_addr 1
         when 100 =>
           i2c_addr <= "1100000";
           reg_addr <= x"04";
@@ -154,27 +155,30 @@ begin  -- architecture behavioral
           run <= '1';
           rw <= '0';
 
+        -- read 1 32bit word via i2c at slave 0 reg32_addr 1
         when 1100 =>
           i2c_addr <= "1100000";
           reg_addr <= x"04";
           run <= '1';
           rw <= '1';
-
+        -- read 1 32bit word via i2c at invaid address 0x78
         when 3100 =>
           i2c_addr <= "1111000";
           reg_addr <= x"04";
           run <= '1';
           rw <= '1';
 
+        -- read register 1 from slave 0 via AXI
         when 4000 =>
           readMOSI.address <= x"00000004";
           readMOSI.address_valid <= '1';
           readMOSI.ready_for_data <= '1';
-
+        -- write register 3 of slave 0 via AXI
         when 4200 =>
           writeMOSI.address <= x"0000000c";
           writeMOSI.address_valid <= '1';
           writeMOSI.ready_for_response <= '1';
+        -- read register 3 from slave 0 via AXI
         when 4202 =>
           writeMOSI.data    <= x"deadbeef";
           writeMOSI.data_valid <= '1';
@@ -182,6 +186,46 @@ begin  -- architecture behavioral
           readMOSI.address <= x"0000000c";
           readMOSI.address_valid <= '1';
           readMOSI.ready_for_data <= '1';
+
+
+        -- Write 32bit word via i2c at slave 0 invalid register 17
+        -- Should update register 1  
+        when 5000 =>
+          i2c_addr <= "1100000";
+          reg_addr <= x"44";
+          wr_data <= x"a5a5a5a5";
+          run <= '1';
+          rw <= '0';
+        when 6000 =>
+          i2c_addr <= "1100000";
+          reg_addr <= x"04";
+          run <= '1';
+          rw <= '1';
+
+        -- Write 32bit word via i2c at slave 1 invalid register 0
+        when 8000 =>
+          i2c_addr <= "1100001";
+          reg_addr <= x"00";
+          wr_data <= x"aaaaaaaa";
+          run <= '1';
+          rw <= '0';
+        when 9000 =>
+          i2c_addr <= "1100001";
+          reg_addr <= x"00";
+          run <= '1';
+          rw <= '1';
+
+        -- read register 1 from slave 0 via AXI
+        when 11000 =>
+          readMOSI.address <= x"00000004";
+          readMOSI.address_valid <= '1';
+          readMOSI.ready_for_data <= '1';
+        -- read register 0 from slave 1 via AXI
+        when 11100 =>
+          readMOSI.address <= x"00000020";
+          readMOSI.address_valid <= '1';
+          readMOSI.ready_for_data <= '1';
+
           
         when others => null;
       end case;

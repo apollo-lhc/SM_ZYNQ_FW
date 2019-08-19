@@ -1,6 +1,6 @@
 create_wave_config
 
-#add_wave -regexp /tb_IPMC_i2c_slave/.*
+add_wave -regexp /tb_IPMC_i2c_slave/.*
 
 add_wave_divider IPMC_i2c_slave
 

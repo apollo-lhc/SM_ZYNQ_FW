@@ -24,12 +24,18 @@ use UNISIM.vcomponents.all;
 --   
 -- Notes for = '1' on inout derived signals.
 -- We need to put in /= '0' to replace this to cover the 'Z'/'H'/'1' issue
+--
+-- I2C_ADDR_WILDCARD_BITS 
+--   This allows for multiple I2C slaves that share the same MSB bits, but differ 
+--   in the I2C_ADDR_WILDCARD_BITS.  
+--   The I2C_ADDR bits of a transaction are added as the MSB of the register address
 -------------------------------------------------------------------------------
 
 entity i2c_slave is
   generic (
     REGISTER_COUNT_BIT_SIZE : integer range 1 to 8 := 4;
-    TIMEOUT_COUNT : unsigned(31 downto 0) := x"00100000");
+    TIMEOUT_COUNT : unsigned(31 downto 0) := x"00100000";
+    I2C_ADDR_WILDCARD_BITS : integer range 0 to 7 := 0);
   port (
     reset   : in std_logic;
     clk     : in std_logic;             -- several Mhz clock
@@ -44,7 +50,7 @@ entity i2c_slave is
     data_out : out std_logic_vector(7 downto 0);
     data_out_dv : out std_logic;
     data_in  : in std_logic_vector(7 downto 0);
-    register_address : out std_logic_vector(REGISTER_COUNT_BIT_SIZE-1 downto 0)
+    register_address : out std_logic_vector(I2C_ADDR_WILDCARD_BITS + REGISTER_COUNT_BIT_SIZE-1 downto 0)
     
     );        
 
@@ -63,7 +69,8 @@ architecture Behavioral of i2c_slave is
   signal start : std_logic;
   signal stop : std_logic;
 
-  signal local_register_address : unsigned(REGISTER_COUNT_BIT_SIZE-1 downto 0);
+  signal local_register_address : unsigned(I2C_ADDR_WILDCARD_BITS + REGISTER_COUNT_BIT_SIZE-1 downto 0);
+  signal transaction_i2c_address : std_logic_vector(6 downto 0);
   signal bit_count : unsigned(3 downto 0);
   signal input_byte : std_logic_vector(7 downto 0);
   signal output_byte : std_logic_vector(7 downto 0);
@@ -105,30 +112,6 @@ begin  -- Behavioral
   sda_en <= sda_en_buffer;
   data_out <= data_out_buffer;
   data_out_dv <= data_out_dv_buffer;
---  ila_0_1: entity work.ila_0
---    port map(
---      clk    => clk,
---      probe0 => state_num,
---      probe1(0) => start,
---      probe2(0) => stop,
---      probe3(5 downto 0) => std_logic_vector(local_register_address),
---      probe4(0) => SDA_in,
---      probe5(0) => SDA_out_buffer,
---      probe6(0) => SDA_en_buffer,
---      probe7(0) => SCL,
---      probe8(0) => ack,
---      probe9(0) => address_detect,
---      probe10(7 downto 0) => input_byte,
---      probe11(7 downto 0) => data_in,
---      probe12(7 downto 0) => data_out_buffer,
---      probe13(0) => data_out_dv_buffer,
---      probe14(3 downto 0) => std_logic_vector(bit_count),
---      probe15(7 downto 0) => output_byte,
---      probe16(1 downto 0) => scl_edge,
---      probe17(0)          => internal_reset
---      );
-
-
   
   -----------------------------------------------------------------------------
   -- Keep an copy of the previous states of SDA and SCL for edge detection
@@ -272,8 +255,12 @@ begin  -- Behavioral
         when STATE_IDLE => address_detect <= '0';
         when STATE_DEV_ADDR =>
           if to_integer(bit_count) = 6 then
-            if scl_edge(1) = '1' and input_byte(6 downto 0) = address then
+            --CHeck for a matching address.
+            --This may include some WILDCARD bits
+            if scl_edge(1) = '1' and input_byte(6 downto I2C_ADDR_WILDCARD_BITS) = address(6 downto I2C_ADDR_WILDCARD_BITS) then
               address_detect <= '1';
+              --keep track of the i2c address for this transaction
+              transaction_i2c_address <= input_byte(6 downto 0);
             end if;
           end if;
         when others => null;
@@ -334,7 +321,8 @@ begin  -- Behavioral
                   state <= STATE_REG_ADDR_SET;
                 end if;
               when 7 => 
-                if input_byte(7 downto 1) = address then
+--                if input_byte(7 downto 1) = address then
+                if input_byte(7 downto 1+I2C_ADDR_WILDCARD_BITS) = address(6 downto I2C_ADDR_WILDCARD_BITS) then
                   state <= STATE_DEV_ADDR;
                 else                    
                   state <= STATE_IDLE;
@@ -381,11 +369,30 @@ begin  -- Behavioral
         case state is
           when STATE_REG_ADDR_SET =>
             if to_integer(bit_count) = 7 then
-              local_register_address <= unsigned(input_byte(REGISTER_COUNT_BIT_SIZE-1 downto 0));  
+              if I2C_ADDR_WILDCARD_BITS = 0 then
+                local_register_address <= unsigned(input_byte(REGISTER_COUNT_BIT_SIZE-1 downto 0));
+              else
+                --I2C address part of the register address
+                local_register_address(I2C_ADDR_WILDCARD_BITS + REGISTER_COUNT_BIT_SIZE - 1 downto REGISTER_COUNT_BIT_SIZE)
+                  <= unsigned(transaction_i2c_address(I2C_ADDR_WILDCARD_BITS-1 downto 0));
+                --Register part of the register address
+                local_register_address(REGISTER_COUNT_BIT_SIZE-1 downto 0)
+                  <= unsigned(input_byte(REGISTER_COUNT_BIT_SIZE-1 downto 0));
+              end if;
+
             end if;
           when STATE_MASTER_WRITE | STATE_MASTER_READ  =>
             if to_integer(bit_count) = 7 then
-              local_register_address <= local_register_address + 1;
+              if I2C_ADDR_WILDCARD_BITS = 0 then                
+                local_register_address <= local_register_address + 1;
+              else
+                --I2C address part of the register address
+                local_register_address(I2C_ADDR_WILDCARD_BITS + REGISTER_COUNT_BIT_SIZE - 1 downto REGISTER_COUNT_BIT_SIZE)
+                  <= unsigned(transaction_i2c_address(I2C_ADDR_WILDCARD_BITS-1 downto 0));
+                --Register part of the register address
+                local_register_address(REGISTER_COUNT_BIT_SIZE-1 downto 0)
+                  <= local_register_address(REGISTER_COUNT_BIT_SIZE-1 downto 0) + 1;
+              end if;              
             end if;            
           when others => null;
         end case;
