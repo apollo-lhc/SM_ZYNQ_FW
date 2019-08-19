@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<node id="TOP">
+  <node id="MYREG0" address="0x01000000">
+    <node id="CONST_1"  address="0x00000000" permission="rw"/>
+    <node id="ADDRESS"  address="0x00000001" permission="rw"/>
+    <node id="CONST_2"  address="0x00000002" permission="rw"/>
+    <node id="CONST_3"  address="0x00000003" permission="rw"/>
+    <node id="RGB"  address="0x00000004">
+      <node id="R" mask="0xFF" permission="rw"/>
+      <node id="G" mask="0xFF00" permission="rw"/>
+      <node id="B" mask="0xFF0000" permission="rw"/>
+    </node>
+    <node id="REG_1"  address="0x00000005" permission="rw"/>
+    <node id="REG_2"  address="0x00000006" permission="rw"/>
+    <node id="REG_3"  address="0x00000007" permission="rw"/>
+  </node>
+  <node id="MYREG1" address="0x02000000">
+    <node id="CONST_1"  address="0x00000000" permission="rw"/>
+    <node id="ADDRESS"  address="0x00000001" permission="rw"/>
+    <node id="CONST_2"  address="0x00000002" permission="rw"/>
+    <node id="CONST_3"  address="0x00000003" permission="rw"/>
+    <node id="REG1"  address="0x00000004" permission="rw"/>
+    <node id="REG2"  address="0x00000005" permission="rw"/>
+    <node id="REG3"  address="0x00000006" permission="rw"/>
+    <node id="REG4"  address="0x00000007" permission="rw"/>
+  </node>
+  <node id="CM" address="0x03000000">
+    <node id="CM1">
+      <node id="ENABLE" address="0x00" mask="0x1" permission="rw" description="Tell CM to power-up"/>
+      <node id="PWR_GOOD" address="0x00" mask="0x40" permission="r" description="CM power is good"/>
+      <node id="OVERRIDE_PWR_GOOD" address="0x00" mask="0x4" permission="rw" description="Ignore power good from CM"/>
+      <node id="IOS_ENABLED" address="0x00" mask="0x10" permission="r" description="IOs to CM are enabled"/>
+      <node id="UART">
+	<node id="WR_DATA" address="0x10" mask="0xFF" permission="rw" description="UART char to write (send on write)"/>
+	<node id="WR_FIFO_HALF_FULL" address="0x10" mask="0x2000" permission="r" description="Send FIFO half full"/>
+	<node id="WR_FIFO_HALF_FULL" address="0x10" mask="0x4000" permission="r" description="Send FIFO half full"/>
+	<node id="RD_DATA" address="0x11" mask="0xFF" permission="r" description="UART received char"/>
+	<node id="RD_ACK" address="0x11" mask="0x100" permission="w" description="Read ack (updates RD_DATA)"/>
+	<node id="RD_VALID" address="0x11" mask="0x100" permission="w" description="Read data valid"/>
+	<node id="RD_FIFO_HALF_FULL" address="0x11" mask="0x2000" permission="r" description="Read FIFO half full"/>
+	<node id="RD_FIFO_HALF_FULL" address="0x11" mask="0x4000" permission="r" description="Read FIFO half full"/>
+      </node>      
+    </node>
+    <node id="CM2">
+      <node id="ENABLE" address="0x00" mask="0x2" permission="rw" description="Tell CM to power-up"/>
+      <node id="PWR_GOOD" address="0x00" mask="0x80" permission="r" description="CM power is good"/>
+      <node id="OVERRIDE_PWR_GOOD" address="0x00" mask="0x8" permission="rw" description="Ignore power good from CM"/>
+      <node id="IOS_ENABLED" address="0x00" mask="0x20" permission="r" description="IOs to CM are enabled"/>
+      <node id="UART">
+	<node id="WR_DATA" address="0x20" mask="0xFF" permission="rw" description="UART char to write (send on write)"/>
+	<node id="WR_FIFO_HALF_FULL" address="0x20" mask="0x2000" permission="r" description="Send FIFO half full"/>
+	<node id="WR_FIFO_HALF_FULL" address="0x20" mask="0x4000" permission="r" description="Send FIFO half full"/>
+	<node id="RD_DATA" address="0x21" mask="0xFF" permission="r" description="UART received char"/>
+	<node id="RD_ACK" address="0x21" mask="0x100" permission="w" description="Read ack (updates RD_DATA)"/>
+	<node id="RD_VALID" address="0x21" mask="0x100" permission="w" description="Read data valid"/>
+	<node id="RD_FIFO_HALF_FULL" address="0x21" mask="0x2000" permission="r" description="Read FIFO half full"/>
+	<node id="RD_FIFO_HALF_FULL" address="0x21" mask="0x4000" permission="r" description="Read FIFO half full"/>
+      </node>      
+    </node>
+  </node>
+  <node id="SERV" address="0x04000000">
+    <node id="SI5344"  address="0x00" permission="r">
+      <node id="OE" address="0x0" permission="rw" mask="0x1" description="Enable Si5344 outputs"/>
+      <node id="EN" address="0x0" permission="rw" mask="0x2" description="Power on Si5344"/>
+      <node id="SOMETHING" address="0x0" permission="rw" mask="0x4"/>
+      <node id="INT" address="0x0" permission="r" mask="0x10" description="Si5344 i2c interrupt"/>
+      <node id="LOL" address="0x0" permission="r" mask="0x20" description="Si5344 Loss of lock"/>
+      <node id="LOS" address="0x0" permission="r" mask="0x40" description="Si5344 Loss of signal"/>
+    </node>
+    <node id="TCDS" address="0x04" permission="r">
+      <node id="TTC_SOURCE" address="0x0" permission="rw" mask="0x1" description="TTC source select (0:TCDS,1:TTC_FAKE"/>
+    </node>
+    <node id="CLOCKING" address="0x05" permission="r">
+      <node id="LHC_LOS" permission="r" mask="0x3"/>
+      <node id="LHC_LOS.BP" permission="r" mask="0x1" description="Backplane LHC clk LOS"/>
+      <node id="LHC_LOS.OSC" permission="r" mask="0x2" description="Local Si LHC clk LOS"/>
+      <node id="SEL" permission="rw" mask="0x10" description="LHC clk source select" />
+      <node id="HQ_LOS" permission="r" mask="0x300"/>
+      <node id="HQ_LOS.BP" permission="r" mask="0x100" description="Backplane HQ clk LOS"/>
+      <node id="HQ_LOS.OSC" permission="r" mask="0x200" description="Local Si HQ clk LOS"/>
+      <node id="SEL" permission="rw" mask="0x1000" description="HQ clk source select" />
+    </node>
+    <node id="SWITCH">
+      <node id="STATUS" address="0x08" mask="0xFFFF0000" permission="r" description="Ethernet switch LEDs"/>
+      <node id="UART">
+	<node id="WR_DATA" address="0x0A" mask="0xFF" permission="rw" description="ESM UART char to write (send on write)"/>
+	<node id="WR_FIFO_HALF_FULL" address="0x0A" mask="0x2000" permission="r" description="Send FIFO half full"/>
+	<node id="WR_FIFO_HALF_FULL" address="0x0A" mask="0x4000" permission="r" description="Send FIFO half full"/>
+	<node id="RD_DATA" address="0x0B" mask="0xFF" permission="r" description="ESM UART received char"/>
+	<node id="RD_ACK" address="0x0B" mask="0x100" permission="rw" description="Read ack (updates RD_DATA)"/>
+	<node id="RD_VALID" address="0x0B" mask="0x1000" permission="r" description="Read data valid"/>
+	<node id="RD_FIFO_HALF_FULL" address="0x0B" mask="0x2000" permission="r" description="Read FIFO half full"/>
+	<node id="RD_FIFO_HALF_FULL" address="0x0B" mask="0x4000" permission="r" description="Read FIFO half full"/>
+      </node>
+    </node>
+    <node id="SGMII" address="0x0C" permission="r">
+      <node id="RESET" mask="0x1" permission="rw" description="Reset SGMII + SGMII clocking"/>
+      <node id="PMA_RESET" mask="0x2" permission="r" description="SGMII pma reset"/>
+      <node id="MMCM_RESET" mask="0x4" permission="r" description="SGMII mmcm reset"/>
+      <node id="RESET_DONE" mask="0x8" permission="r" description="SGMII reset sequence done"/>
+      <node id="CPLL_LOCK"  mask="0x10" permission="r" description="SGMII GT CPLL locked"/>
+      <node id="MMCM_LOCK"  mask="0x20" permission="r" description="SGMII MMCM locked"/>
+      <node id="SGMII_STATUS_VECTOR" mask="0xFFFF0000" permission="r" description="SGMII status vector"/>
+      <node id="SGMII_STATUS_VECTOR.LINK_STATUS" mask="0x10000" permission="r" description="This signal indicates the status of the link. When High, the link is valid:
+									synchronization of the link has been obtained and Auto-Negotiation (if present and enabled)
+									has successfully completed and the reset sequence of the transceiver (if present) has
+									completed."/>
+      <node id="SGMII_STATUS_VECTOR.LINK_SYNC" mask="0x20000" permission="r" description="When High, link synchronization has been obtained and in the synchronization state machine,
+								      sync_status=OK. When Low, synchronization has failed" />
+      <node id="SGMII_STATUS_VECTOR.RUDI_AUTONEG" mask="0x40000" permission="r" description="The core is receiving /C/ ordered sets (Auto-Negotiation Configuration sequences)
+									 as defined in IEEE 802.3-2008 clause 36.2.4.10." />
+      <node id="SGMII_STATUS_VECTOR.RUDI_IDLE" mask="0x80000" permission="r" description="The core is receiving /I/ ordered sets (Idles) as defined in IEEE 802.3-2008 clause
+								      36.2.4.12."/>
+      <node id="SGMII_STATUS_VECTOR.RUDI_INVALID" mask="0x100000" permission="r" description="The core has received invalid data while receiving/C/ or /I/ ordered set as
+									  defined in IEEE 802.3-2008 clause 36.2.5.1.6. This can be caused, for example, by bit errors
+									  occurring in any clock cycle of the /C/ or /I/ ordered set."/>
+      <node id="SGMII_STATUS_VECTOR.RX_DISP_ERR" mask="0x200000" permission="r" description="The core has received a running disparity error during the 8B/10B decoding
+									 function."/>
+      <node id="SGMII_STATUS_VECTOR.RX_NOT_IN_TABLE" mask="0x400000" permission="r" description="The core has received a code group which is not recognized from the 8B/10B
+									     coding tables."/>
+      <node id="SGMII_STATUS_VECTOR.PHY_LINK_STATUS" mask="0x800000" permission="r" description="this bit represents the
+									     link status of the external PHY device attached to the other end of the SGMII link (High
+									     indicates that the PHY has obtained a link with its link partner; Low indicates that is has not
+									     linked with its link partner). The value reflected is Link Partner Base AN Register 5 bit 15 in
+									     SGMII MAC mode and the Advertisement Ability register 4 bit 15 in PHY mode. However, this
+									     bit is only valid after successful completion of auto-negotiation across the SGMII link."/>
+      <node id="SGMII_STATUS_VECTOR.DUPLEX" mask="0x10000000" permission="r" description="1/0 Full/Half duplex"/>
+      <node id="SGMII_STATUS_VECTOR.REMOTE_FAULT" mask="0x20000000" permission="r" description=" When this bit is logic one, it indicates that a remote fault is detected and the
+									    type of remote fault is indicated by status_vector bits[9:8]. This bit reflects MDIO
+									    register bit 1.4."/>
+    </node>
+  </node>
+  <node id="SLAVE_I2C" address="0x05000000">
+    <node id="REG_01"  address="0x0" permission="rw"/>
+    <node id="REG_02"  address="0x1" permission="rw"/>
+    <node id="REG_03"  address="0x2" permission="rw"/>
+    <node id="REG_04"  address="0x3" permission="rw"/>
+    <node id="REG_05"  address="0x4" permission="rw"/>
+    <node id="REG_06"  address="0x5" permission="rw"/>
+    <node id="REG_07"  address="0x6" permission="rw"/>
+    <node id="REG_08"  address="0x7" permission="rw"/>
+    <node id="REG_09"  address="0x8" permission="rw"/>
+    <node id="REG_10"  address="0x9" permission="rw"/>
+    <node id="REG_11"  address="0xA" permission="rw"/>
+    <node id="REG_12"  address="0xB" permission="rw"/>
+    <node id="REG_13"  address="0xC" permission="rw"/>
+    <node id="REG_14"  address="0xD" permission="rw"/>
+    <node id="REG_15"  address="0xE" permission="rw"/>
+    <node id="REG_16"  address="0xF" permission="rw"/>
+  </node>
+  <node id="XVC1" address="0x06000000">
+    <node id="LENGTH"  address="0x0" permission="rw" description="Length of shift operation in bits"/>
+    <node id="TMS_VECTOR"  address="0x1" permission="rw" description="Test Mode Select (TMS) Bit Vector"/>
+    <node id="TDI_VECTOR"  address="0x2" permission="rw" description="Test Data In (TDI) Bit Vector"/>
+    <node id="TDO_VECTOR"  address="0x3" permission="rw" description="Test Data Out (TDO) Capture Vector"/>
+    <node id="GO"  address="0x4" mask="0x1" permission="rw" description="Enable shift operation"/>
+    <node id="LOOPBACK"  address="0x4" mask="0x2" permission="rw" description="Control bit to loopback TDI to TDO
+inside Debug Bridge IP"/>
+  </node>
+  <node id="XVC2" address="0x07000000">
+    <node id="LENGTH"  address="0x0" permission="rw" description="Length of shift operation in bits"/>
+    <node id="TMS_VECTOR"  address="0x1" permission="rw" description="Test Mode Select (TMS) Bit Vector"/>
+    <node id="TDI_VECTOR"  address="0x2" permission="rw" description="Test Data In (TDI) Bit Vector"/>
+    <node id="TDO_VECTOR"  address="0x3" permission="rw" description="Test Data Out (TDO) Capture Vector"/>
+    <node id="GO"  address="0x4" mask="0x1" permission="rw" description="Enable shift operation"/>
+    <node id="LOOPBACK"  address="0x4" mask="0x2" permission="rw" description="Control bit to loopback TDI to TDO
+inside Debug Bridge IP"/>
+  </node>
+  <node id="XVC_LOCAL" address="0x08000000">
+    <node id="LENGTH"  address="0x0" permission="rw" description="Length of shift operation in bits"/>
+    <node id="TMS_VECTOR"  address="0x1" permission="rw" description="Test Mode Select (TMS) Bit Vector"/>
+    <node id="TDI_VECTOR"  address="0x2" permission="rw" description="Test Data In (TDI) Bit Vector"/>
+    <node id="TDO_VECTOR"  address="0x3" permission="rw" description="Test Data Out (TDO) Capture Vector"/>
+    <node id="GO"  address="0x4" mask="0x1" permission="rw" description="Enable shift operation"/>
+    <node id="LOOPBACK"  address="0x4" mask="0x2" permission="rw" description="Control bit to loopback TDI to TDO
+inside Debug Bridge IP"/>
+  </node>
+  <node id="SI" address="0x08000000">
+  </node>
+  <node id="KINTEX_SYS_MGMT" address="0x08000000">
+    <node id="TEMP"        address="0x100" permission="ro" mask="0x3FF"/>
+    <node id="VCCINT"      address="0x101" permission="ro" mask="0x3FF"/>
+    <node id="VCCAUX"      address="0x102" permission="ro" mask="0x3FF"/>
+    <node id="VCCBRAM"     address="0x107" permission="ro" mask="0x3FF"/>
+    <node id="TEMP_MAX"    address="0x120" permission="ro" mask="0x3FF"/>
+    <node id="VCCINT_MAX"  address="0x121" permission="ro" mask="0x3FF"/>
+    <node id="VCCAUX_MAX"  address="0x122" permission="ro" mask="0x3FF"/>
+    <node id="VCCBRAM_MAX" address="0x123" permission="ro" mask="0x3FF"/>
+    <node id="TEMP_MIN"    address="0x124" permission="ro" mask="0x3FF"/>
+    <node id="VCCINT_MIN"  address="0x125" permission="ro" mask="0x3FF"/>
+    <node id="VCCAUX_MIN"  address="0x126" permission="ro" mask="0x3FF"/>
+    <node id="VCCBRAM_MIN" address="0x127" permission="ro" mask="0x3FF"/>
+  </node>
+  <node id="SM_INFO" address="0x09000000">
+    <node id="GIT_VALID" address="0x0" permission="ro" mask="0x2"/>
+    <node id="GIT_HASH_1" address="0x1" permission="ro" mask="0xFFFFFFFF"/>
+    <node id="GIT_HASH_2" address="0x2" permission="ro" mask="0xFFFFFFFF"/>
+    <node id="GIT_HASH_3" address="0x3" permission="ro" mask="0xFFFFFFFF"/>
+    <node id="GIT_HASH_4" address="0x4" permission="ro" mask="0xFFFFFFFF"/>
+    <node id="GIT_HASH_5" address="0x5" permission="ro" mask="0xFFFFFFFF"/>
+    <node id="BUILD_DATE" address="0x10">
+      <node id="YEAR" mask="0xFFFF0000"/>
+      <node id="MONTH" mask="0xFF00"/>
+      <node id="DAY" mask="0xFF"/>
+    </node>
+    <node id="BUILD_TIME" address="0x11">
+      <node id="SEC" mask="0xFF"/>
+      <node id="MIN" mask="0xFF00"/>
+      <node id="HOUR" mask="0xFF0000"/>
+    </node>
+  </node>
+</node>
