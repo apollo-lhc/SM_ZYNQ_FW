@@ -29,6 +29,7 @@ set vhdl_files "\
      src/front_panel/FrontPanel_UI.vhd \
      src/front_panel/LED_Encoder.vhd \
      src/front_panel/SR_Out.vhd \
+     src/SM_info/SM_info.vhd \
      "
 
 set xdc_files src/top.xdc

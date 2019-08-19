@@ -288,7 +288,7 @@ architecture structure of top is
   
 -- AXI BUS
   signal AXI_clk : std_logic;
-  constant PL_AXI_SLAVE_COUNT : integer := 3;
+  constant PL_AXI_SLAVE_COUNT : integer := 4;
   signal AXI_BUS_RMOSI :  AXIReadMOSI_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIReadMOSI);
   signal AXI_BUS_RMISO :  AXIReadMISO_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIReadMISO);
   signal AXI_BUS_WMOSI : AXIWriteMOSI_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIWriteMOSI);
@@ -476,6 +476,26 @@ begin  -- architecture structure
       CM_wready               => AXI_BUS_WMISO(2).ready_for_data,
       CM_wstrb                => AXI_BUS_WMOSI(2).data_write_strobe,
       CM_wvalid               => AXI_BUS_WMOSI(2).data_valid,
+
+      SM_INFO_araddr          => AXI_BUS_RMOSI(3).address,
+      SM_INFO_arprot          => AXI_BUS_RMOSI(3).protection_type,
+      SM_INFO_arready         => AXI_BUS_RMISO(3).ready_for_address,
+      SM_INFO_arvalid         => AXI_BUS_RMOSI(3).address_valid,
+      SM_INFO_awaddr          => AXI_BUS_WMOSI(3).address,
+      SM_INFO_awprot          => AXI_BUS_WMOSI(3).protection_type,
+      SM_INFO_awready         => AXI_BUS_WMISO(3).ready_for_address,
+      SM_INFO_awvalid         => AXI_BUS_WMOSI(3).address_valid,
+      SM_INFO_bready          => AXI_BUS_WMOSI(3).ready_for_response,
+      SM_INFO_bresp           => AXI_BUS_WMISO(3).response,
+      SM_INFO_bvalid          => AXI_BUS_WMISO(3).response_valid,
+      SM_INFO_rdata           => AXI_BUS_RMISO(3).data,
+      SM_INFO_rready          => AXI_BUS_RMOSI(3).ready_for_data,
+      SM_INFO_rresp           => AXI_BUS_RMISO(3).response,
+      SM_INFO_rvalid          => AXI_BUS_RMISO(3).data_valid,
+      SM_INFO_wdata           => AXI_BUS_WMOSI(3).data,
+      SM_INFO_wready          => AXI_BUS_WMISO(3).ready_for_data,
+      SM_INFO_wstrb           => AXI_BUS_WMOSI(3).data_write_strobe,
+      SM_INFO_wvalid          => AXI_BUS_WMOSI(3).data_valid,
 
 
       tap_tck_0                 => XVC0_tck,
@@ -711,6 +731,15 @@ begin  -- architecture structure
       ESM_UART_Tx     => ESM_UART_Tx,
       ESM_UART_Rx     => ESM_UART_Rx);
 
+  SM_info_1: entity work.SM_info
+    port map (
+      clk_axi     => axi_clk,
+      reset_axi_n => pl_reset_n,
+      readMOSI    => AXI_BUS_RMOSI(3),
+      readMISO    => AXI_BUS_RMISO(3),
+      writeMOSI   => AXI_BUS_WMOSI(3),
+      writeMISO   => AXI_BUS_WMISO(3));
+  
   IPMC_i2c_slave_1: entity work.IPMC_i2c_slave
     port map (
       clk_axi     => axi_clk,
@@ -822,6 +851,7 @@ begin  -- architecture structure
       SDA           => FP_LED_SDA,
       shutdownout   => open);
 
+  
 
 --  c2c_ibert_1: entity work.c2c_ibert
 --    port map (

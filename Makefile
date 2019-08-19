@@ -55,7 +55,7 @@ clean_bit:
 	@rm -rf $(BIT)
 clean_os:
 	@echo "Clean OS hw files"
-	@rm os/hw/*
+	@rm -f os/hw/*
 clean: clean_bd clean_ip clean_bit clean_os
 	@rm -rf ./proj/*
 	@echo "Cleaning up"
