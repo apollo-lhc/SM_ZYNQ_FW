@@ -112,6 +112,29 @@ begin  -- Behavioral
   sda_en <= sda_en_buffer;
   data_out <= data_out_buffer;
   data_out_dv <= data_out_dv_buffer;
+-- Uncomment for i2c debuggin.  (Also add ila_i2c_debug ip core to files.tcl)
+--  ila: entity work.ila_i2c_debug
+--    port map(
+--      clk    => clk,
+--      probe0 => state_num,
+--      probe1(0) => start,
+--      probe2(0) => stop,
+--      probe3(5 downto 0) => std_logic_vector(local_register_address),
+--      probe4(0) => SDA_in,
+--      probe5(0) => SDA_out_buffer,
+--      probe6(0) => SDA_en_buffer,
+--      probe7(0) => SCL,
+--      probe8(0) => ack,
+--      probe9(0) => address_detect,
+--      probe10(7 downto 0) => input_byte,
+--      probe11(7 downto 0) => data_in,
+--      probe12(7 downto 0) => data_out_buffer,
+--      probe13(0) => data_out_dv_buffer,
+--      probe14(3 downto 0) => std_logic_vector(bit_count),
+--      probe15(7 downto 0) => output_byte,
+--      probe16(1 downto 0) => scl_edge,
+--      probe17(0)          => internal_reset
+--      );
   
   -----------------------------------------------------------------------------
   -- Keep an copy of the previous states of SDA and SCL for edge detection

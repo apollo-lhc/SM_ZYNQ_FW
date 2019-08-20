@@ -38,5 +38,5 @@ set xci_files "\
     	      cores/SGMII_INTF/SGMII_INTF.xci \
     	      cores/onboard_CLK/onboard_CLK.xci \
     	      "
+#	      cores/ila_i2c_debug/ila_i2c_debug.xci \
 #	      cores/c2c_ibert/c2c_ibert.xci \
-#	      cores/aurora_64b66b_0/aurora_64b66b_0.xci \
