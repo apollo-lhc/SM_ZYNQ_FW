@@ -142,22 +142,166 @@
     </node>
   </node>
   <node id="SLAVE_I2C" address="0x05000000">
-    <node id="REG_01"  address="0x0" permission="rw"/>
-    <node id="REG_02"  address="0x1" permission="rw"/>
-    <node id="REG_03"  address="0x2" permission="rw"/>
-    <node id="REG_04"  address="0x3" permission="rw"/>
-    <node id="REG_05"  address="0x4" permission="rw"/>
-    <node id="REG_06"  address="0x5" permission="rw"/>
-    <node id="REG_07"  address="0x6" permission="rw"/>
-    <node id="REG_08"  address="0x7" permission="rw"/>
-    <node id="REG_09"  address="0x8" permission="rw"/>
-    <node id="REG_10"  address="0x9" permission="rw"/>
-    <node id="REG_11"  address="0xA" permission="rw"/>
-    <node id="REG_12"  address="0xB" permission="rw"/>
-    <node id="REG_13"  address="0xC" permission="rw"/>
-    <node id="REG_14"  address="0xD" permission="rw"/>
-    <node id="REG_15"  address="0xE" permission="rw"/>
-    <node id="REG_16"  address="0xF" permission="rw"/>
+    <node id="S1" address ="0x00">
+      <node id="SM" address="0x0">
+	<node id="STATUS" address="0x0">
+	  <node id="DONE"          permission="rw" mask="0x00000001"/>
+	  <node id="ERROR"         permission="rw" mask="0x00000002"/>
+	  <node id="ZYNQ_DONE"     permission="rw" mask="0x00000004"/>
+	  <node id="SHUTDOWN_REQ"  permission="rw" mask="0x00000010" description="If 1, petalinux will shut down"/>
+	  <node id="SHUTDOWN"      permission="rw" mask="0x00000020" description="1 when petalinux shuts down"/>
+	</node>
+      </node>      
+      <node id="CM1"  address="0x1" permission="rw">
+	<node id="EN"        permission="rw" mask="0x0001"/>
+	<node id="PWR_GOOD"  permission="rw" mask="0x0002"/>
+	<node id="FPGA_DONE" permission="rw" mask="0x0004"/>
+      </node>
+      <node id="CM2"  address="0x1" permission="rw">
+	<node id="EN"        permission="rw" mask="0x0001"/>
+	<node id="PWR_GOOD"  permission="rw" mask="0x0002"/>
+	<node id="FPGA_DONE" permission="rw" mask="0x0004"/>
+      </node>
+      <node id="3"  address="0x3" permission="rw"/>
+      <node id="4"  address="0x4" permission="rw"/>
+      <node id="5"  address="0x5" permission="rw"/>
+      <node id="6"  address="0x6" permission="rw"/>
+      <node id="7"  address="0x7" permission="rw"/>
+      <node id="8"  address="0x8" permission="rw"/>
+      <node id="9"  address="0x9" permission="rw"/>
+      <node id="A"  address="0xA" permission="rw"/>
+      <node id="B"  address="0xB" permission="rw"/>
+      <node id="C"  address="0xC" permission="rw"/>
+      <node id="D"  address="0xD" permission="rw"/>
+      <node id="E"  address="0xE" permission="rw"/>
+      <node id="F"  address="0xF" permission="rw"/>
+    </node>
+    <node id="S2" address ="0x10">
+      <node id="0"  address="0x0" permission="rw"/>
+      <node id="1"  address="0x1" permission="rw"/>
+      <node id="2"  address="0x2" permission="rw"/>
+      <node id="3"  address="0x3" permission="rw"/>
+      <node id="4"  address="0x4" permission="rw"/>
+      <node id="5"  address="0x5" permission="rw"/>
+      <node id="6"  address="0x6" permission="rw"/>
+      <node id="7"  address="0x7" permission="rw"/>
+      <node id="8"  address="0x8" permission="rw"/>
+      <node id="9"  address="0x9" permission="rw"/>
+      <node id="A"  address="0xA" permission="rw"/>
+      <node id="B"  address="0xB" permission="rw"/>
+      <node id="C"  address="0xC" permission="rw"/>
+      <node id="D"  address="0xD" permission="rw"/>
+      <node id="E"  address="0xE" permission="rw"/>
+      <node id="F"  address="0xF" permission="rw"/>
+    </node>
+    <node id="S3" address ="0x20">
+      <node id="0"  address="0x0" permission="rw"/>
+      <node id="1"  address="0x1" permission="rw"/>
+      <node id="2"  address="0x2" permission="rw"/>
+      <node id="3"  address="0x3" permission="rw"/>
+      <node id="4"  address="0x4" permission="rw"/>
+      <node id="5"  address="0x5" permission="rw"/>
+      <node id="6"  address="0x6" permission="rw"/>
+      <node id="7"  address="0x7" permission="rw"/>
+      <node id="8"  address="0x8" permission="rw"/>
+      <node id="9"  address="0x9" permission="rw"/>
+      <node id="A"  address="0xA" permission="rw"/>
+      <node id="B"  address="0xB" permission="rw"/>
+      <node id="C"  address="0xC" permission="rw"/>
+      <node id="D"  address="0xD" permission="rw"/>
+      <node id="E"  address="0xE" permission="rw"/>
+      <node id="F"  address="0xF" permission="rw"/>
+    </node>
+    <node id="S4" address ="0x30">
+      <node id="0"  address="0x0" permission="rw"/>
+      <node id="1"  address="0x1" permission="rw"/>
+      <node id="2"  address="0x2" permission="rw"/>
+      <node id="3"  address="0x3" permission="rw"/>
+      <node id="4"  address="0x4" permission="rw"/>
+      <node id="5"  address="0x5" permission="rw"/>
+      <node id="6"  address="0x6" permission="rw"/>
+      <node id="7"  address="0x7" permission="rw"/>
+      <node id="8"  address="0x8" permission="rw"/>
+      <node id="9"  address="0x9" permission="rw"/>
+      <node id="A"  address="0xA" permission="rw"/>
+      <node id="B"  address="0xB" permission="rw"/>
+      <node id="C"  address="0xC" permission="rw"/>
+      <node id="D"  address="0xD" permission="rw"/>
+      <node id="E"  address="0xE" permission="rw"/>
+      <node id="F"  address="0xF" permission="rw"/>
+    </node>
+    <node id="S5" address ="0x40">
+      <node id="0"  address="0x0" permission="rw"/>
+      <node id="1"  address="0x1" permission="rw"/>
+      <node id="2"  address="0x2" permission="rw"/>
+      <node id="3"  address="0x3" permission="rw"/>
+      <node id="4"  address="0x4" permission="rw"/>
+      <node id="5"  address="0x5" permission="rw"/>
+      <node id="6"  address="0x6" permission="rw"/>
+      <node id="7"  address="0x7" permission="rw"/>
+      <node id="8"  address="0x8" permission="rw"/>
+      <node id="9"  address="0x9" permission="rw"/>
+      <node id="A"  address="0xA" permission="rw"/>
+      <node id="B"  address="0xB" permission="rw"/>
+      <node id="C"  address="0xC" permission="rw"/>
+      <node id="D"  address="0xD" permission="rw"/>
+      <node id="E"  address="0xE" permission="rw"/>
+      <node id="F"  address="0xF" permission="rw"/>
+    </node>
+    <node id="S6" address ="0x50">
+      <node id="0"  address="0x0" permission="rw"/>
+      <node id="1"  address="0x1" permission="rw"/>
+      <node id="2"  address="0x2" permission="rw"/>
+      <node id="3"  address="0x3" permission="rw"/>
+      <node id="4"  address="0x4" permission="rw"/>
+      <node id="5"  address="0x5" permission="rw"/>
+      <node id="6"  address="0x6" permission="rw"/>
+      <node id="7"  address="0x7" permission="rw"/>
+      <node id="8"  address="0x8" permission="rw"/>
+      <node id="9"  address="0x9" permission="rw"/>
+      <node id="A"  address="0xA" permission="rw"/>
+      <node id="B"  address="0xB" permission="rw"/>
+      <node id="C"  address="0xC" permission="rw"/>
+      <node id="D"  address="0xD" permission="rw"/>
+      <node id="E"  address="0xE" permission="rw"/>
+      <node id="F"  address="0xF" permission="rw"/>
+    </node>
+    <node id="S7" address ="0x60">
+      <node id="0"  address="0x0" permission="rw"/>
+      <node id="1"  address="0x1" permission="rw"/>
+      <node id="2"  address="0x2" permission="rw"/>
+      <node id="3"  address="0x3" permission="rw"/>
+      <node id="4"  address="0x4" permission="rw"/>
+      <node id="5"  address="0x5" permission="rw"/>
+      <node id="6"  address="0x6" permission="rw"/>
+      <node id="7"  address="0x7" permission="rw"/>
+      <node id="8"  address="0x8" permission="rw"/>
+      <node id="9"  address="0x9" permission="rw"/>
+      <node id="A"  address="0xA" permission="rw"/>
+      <node id="B"  address="0xB" permission="rw"/>
+      <node id="C"  address="0xC" permission="rw"/>
+      <node id="D"  address="0xD" permission="rw"/>
+      <node id="E"  address="0xE" permission="rw"/>
+      <node id="F"  address="0xF" permission="rw"/>
+    </node>
+    <node id="S8" address ="0x70">
+      <node id="0"  address="0x0" permission="rw"/>
+      <node id="1"  address="0x1" permission="rw"/>
+      <node id="2"  address="0x2" permission="rw"/>
+      <node id="3"  address="0x3" permission="rw"/>
+      <node id="4"  address="0x4" permission="rw"/>
+      <node id="5"  address="0x5" permission="rw"/>
+      <node id="6"  address="0x6" permission="rw"/>
+      <node id="7"  address="0x7" permission="rw"/>
+      <node id="8"  address="0x8" permission="rw"/>
+      <node id="9"  address="0x9" permission="rw"/>
+      <node id="A"  address="0xA" permission="rw"/>
+      <node id="B"  address="0xB" permission="rw"/>
+      <node id="C"  address="0xC" permission="rw"/>
+      <node id="D"  address="0xD" permission="rw"/>
+      <node id="E"  address="0xE" permission="rw"/>
+      <node id="F"  address="0xF" permission="rw"/>
+    </node>
   </node>
   <node id="XVC1" address="0x06000000">
     <node id="LENGTH"  address="0x0" permission="rw" description="Length of shift operation in bits"/>
@@ -220,23 +364,42 @@ inside Debug Bridge IP"/>
       <node id="HOUR" mask="0xFF0000"/>
     </node>
   </node>
-    <node id="MONITOR" address="0x0A000000">
-      <node id="TEMP"         address="0x80" permission="ro" mask="0x3FF"/>
-      <node id="TEMP_HUMAN"   address="0x80" permission="ro" mask="0x3F0" parameters="Format=d"/>
-      <node id="VCCINT"       address="0x81" permission="ro" mask="0x3FF"/>
-      <node id="VCCAUX"       address="0x82" permission="ro" mask="0x3FF"/>
-      <node id="VCCBRAM"      address="0x86" permission="ro" mask="0x3FF"/>
-      <node id="ZYNQ_VCCINT"  address="0x8D" permission="ro" mask="0x3FF"/>
-      <node id="ZYNQ_VCCAUX"  address="0x8E" permission="ro" mask="0x3FF"/>
-      <node id="ZYNQ_VCCCORE" address="0x8F" permission="ro" mask="0x3FF"/>
-      <node id="TEMP_MAX"    address="0xA0" permission="ro" mask="0x3FF"/>
-      <node id="VCCINT_MAX"  address="0xA1" permission="ro" mask="0x3FF"/>
-      <node id="VCCAUX_MAX"  address="0xA2" permission="ro" mask="0x3FF"/>
-      <node id="VCCBRAM_MAX" address="0xA3" permission="ro" mask="0x3FF"/>
-      <node id="TEMP_MIN"    address="0xA4" permission="ro" mask="0x3FF"/>
-      <node id="VCCINT_MIN"  address="0xA5" permission="ro" mask="0x3FF"/>
-      <node id="VCCAUX_MIN"  address="0xA6" permission="ro" mask="0x3FF"/>
-      <node id="VCCBRAM_MIN" address="0xA7" permission="ro" mask="0x3FF"/>
+  <node id="MONITOR" address="0x0A000000">
+    <node id="TEMP"         address="0x80" permission="ro" mask="0x3FF"/>
+    <node id="TEMP_HUMAN"   address="0x80" permission="ro" mask="0x3F0" parameters="Format=d"/>
+    <node id="VCCINT"       address="0x81" permission="ro" mask="0x3FF"/>
+    <node id="VCCAUX"       address="0x82" permission="ro" mask="0x3FF"/>
+    <node id="VCCBRAM"      address="0x86" permission="ro" mask="0x3FF"/>
+    <node id="ZYNQ_VCCINT"  address="0x8D" permission="ro" mask="0x3FF"/>
+    <node id="ZYNQ_VCCAUX"  address="0x8E" permission="ro" mask="0x3FF"/>
+    <node id="ZYNQ_VCCCORE" address="0x8F" permission="ro" mask="0x3FF"/>
+    <node id="TEMP_MAX"    address="0xA0" permission="ro" mask="0x3FF"/>
+    <node id="VCCINT_MAX"  address="0xA1" permission="ro" mask="0x3FF"/>
+    <node id="VCCAUX_MAX"  address="0xA2" permission="ro" mask="0x3FF"/>
+    <node id="VCCBRAM_MAX" address="0xA3" permission="ro" mask="0x3FF"/>
+    <node id="TEMP_MIN"    address="0xA4" permission="ro" mask="0x3FF"/>
+    <node id="VCCINT_MIN"  address="0xA5" permission="ro" mask="0x3FF"/>
+    <node id="VCCAUX_MIN"  address="0xA6" permission="ro" mask="0x3FF"/>
+    <node id="VCCBRAM_MIN" address="0xA7" permission="ro" mask="0x3FF"/>
   </node>
+  <node id="CM_K_INFO" address="0x0B000000">
+    <node id="GIT_VALID" address="0x0" permission="ro" mask="0x2"/>
+    <node id="GIT_HASH_1" address="0x1" permission="ro" mask="0xFFFFFFFF"/>
+    <node id="GIT_HASH_2" address="0x2" permission="ro" mask="0xFFFFFFFF"/>
+    <node id="GIT_HASH_3" address="0x3" permission="ro" mask="0xFFFFFFFF"/>
+    <node id="GIT_HASH_4" address="0x4" permission="ro" mask="0xFFFFFFFF"/>
+    <node id="GIT_HASH_5" address="0x5" permission="ro" mask="0xFFFFFFFF"/>
+    <node id="BUILD_DATE" address="0x10">
+      <node id="YEAR" mask="0xFFFF0000"/>
+      <node id="MONTH" mask="0xFF00"/>
+      <node id="DAY" mask="0xFF"/>
+    </node>
+    <node id="BUILD_TIME" address="0x11">
+      <node id="SEC" mask="0xFF"/>
+      <node id="MIN" mask="0xFF00"/>
+      <node id="HOUR" mask="0xFF0000"/>
+    </node>
+  </node>
+
 
 </node>
