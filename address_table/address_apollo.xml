@@ -25,40 +25,53 @@
     <node id="REG3"  address="0x00000006" permission="rw"/>
     <node id="REG4"  address="0x00000007" permission="rw"/>
   </node>
-  <node id="CM" address="0x03000000">
-    <node id="CM1">
-      <node id="ENABLE" address="0x00" mask="0x1" permission="rw" description="Tell CM to power-up"/>
-      <node id="PWR_GOOD" address="0x00" mask="0x40" permission="r" description="CM power is good"/>
-      <node id="OVERRIDE_PWR_GOOD" address="0x00" mask="0x4" permission="rw" description="Ignore power good from CM"/>
-      <node id="IOS_ENABLED" address="0x00" mask="0x10" permission="r" description="IOs to CM are enabled"/>
-      <node id="UART">
-	<node id="WR_DATA" address="0x10" mask="0xFF" permission="rw" description="UART char to write (send on write)"/>
-	<node id="WR_FIFO_HALF_FULL" address="0x10" mask="0x2000" permission="r" description="Send FIFO half full"/>
-	<node id="WR_FIFO_HALF_FULL" address="0x10" mask="0x4000" permission="r" description="Send FIFO half full"/>
-	<node id="RD_DATA" address="0x11" mask="0xFF" permission="r" description="UART received char"/>
-	<node id="RD_ACK" address="0x11" mask="0x100" permission="w" description="Read ack (updates RD_DATA)"/>
-	<node id="RD_VALID" address="0x11" mask="0x100" permission="w" description="Read data valid"/>
-	<node id="RD_FIFO_HALF_FULL" address="0x11" mask="0x2000" permission="r" description="Read FIFO half full"/>
-	<node id="RD_FIFO_HALF_FULL" address="0x11" mask="0x4000" permission="r" description="Read FIFO half full"/>
-      </node>      
-    </node>
-    <node id="CM2">
-      <node id="ENABLE" address="0x00" mask="0x2" permission="rw" description="Tell CM to power-up"/>
-      <node id="PWR_GOOD" address="0x00" mask="0x80" permission="r" description="CM power is good"/>
-      <node id="OVERRIDE_PWR_GOOD" address="0x00" mask="0x8" permission="rw" description="Ignore power good from CM"/>
-      <node id="IOS_ENABLED" address="0x00" mask="0x20" permission="r" description="IOs to CM are enabled"/>
-      <node id="UART">
-	<node id="WR_DATA" address="0x20" mask="0xFF" permission="rw" description="UART char to write (send on write)"/>
-	<node id="WR_FIFO_HALF_FULL" address="0x20" mask="0x2000" permission="r" description="Send FIFO half full"/>
-	<node id="WR_FIFO_HALF_FULL" address="0x20" mask="0x4000" permission="r" description="Send FIFO half full"/>
-	<node id="RD_DATA" address="0x21" mask="0xFF" permission="r" description="UART received char"/>
-	<node id="RD_ACK" address="0x21" mask="0x100" permission="w" description="Read ack (updates RD_DATA)"/>
-	<node id="RD_VALID" address="0x21" mask="0x100" permission="w" description="Read data valid"/>
-	<node id="RD_FIFO_HALF_FULL" address="0x21" mask="0x2000" permission="r" description="Read FIFO half full"/>
-	<node id="RD_FIFO_HALF_FULL" address="0x21" mask="0x4000" permission="r" description="Read FIFO half full"/>
-      </node>      
-    </node>
-  </node>
+
+ <node id="CM" address="0x03000000">                                                                               
+    <node id="CM1">                                                                                                     
+      <node id="CTRL" address="0x00">                                                                               
+        <node id="ENABLE_UC" mask="0x1" permission="rw" description="Tell CM uC to power-up"/>                      
+        <node id="ENABLE_PWR" mask="0x2" permission="rw" description="Tell CM uC to power-up the rest of the CM"/>  
+        <node id="OVERRIDE_PWR_GOOD" mask="0x4" permission="rw" description="Ignore power good from CM"/>               
+        <node id="PWR_GOOD" mask="0x8" permission="r" description="CM power is good"/>                              
+        <node id="STATE" mask="0xF0" permission="r" description="CM power up state"/>                                   
+        <node id="UC_ENABLED" mask="0x100" permission="r" description="uC is enabled"/>                             
+        <node id="PWR_ENABLED" mask="0x200" permission="r" description="power is enabled"/>                         
+        <node id="IOS_ENABLED" mask="0x400" permission="r" description="IOs to CM are enabled"/>       
+      </node>                                                                                                           
+      <node id="UART">                                                                                              
+        <node id="WR_DATA" address="0x10" mask="0xFF" permission="rw" description="UART char to write (send on write)"/>
+        <node id="WR_FIFO_HALF_FULL" address="0x10" mask="0x2000" permission="r" description="Send FIFO half full"/>
+        <node id="WR_FIFO_HALF_FULL" address="0x10" mask="0x4000" permission="r" description="Send FIFO half full"/>
+        <node id="RD_DATA" address="0x11" mask="0xFF" permission="r" description="UART received char"/>
+        <node id="RD_ACK" address="0x11" mask="0x100" permission="w" description="Read ack (updates RD_DATA)"/>         
+        <node id="RD_VALID" address="0x11" mask="0x100" permission="w" description="Read data valid"/>              
+        <node id="RD_FIFO_HALF_FULL" address="0x11" mask="0x2000" permission="r" description="Read FIFO half full"/>     
+        <node id="RD_FIFO_HALF_FULL" address="0x11" mask="0x4000" permission="r" description="Read FIFO half full"/>     
+      </node>                                                                                                  
+    </node>                                                                                                       
+    <node id="CM2">                                                                                                     
+      <node id="CTRL" address="0x01">                                                                               
+        <node id="ENABLE_UC" mask="0x1" permission="rw" description="Tell CM uC to power-up"/>                      
+        <node id="ENABLE_PWR" mask="0x2" permission="rw" description="Tell CM uC to power-up the rest of the CM"/>       
+        <node id="OVERRIDE_PWR_GOOD" mask="0x4" permission="rw" description="Ignore power good from CM"/>      
+        <node id="PWR_GOOD" mask="0x8" permission="r" description="CM power is good"/>                
+        <node id="STATE" mask="0xF0" permission="r" description="CM power up state"/>                                   
+        <node id="UC_ENABLED" mask="0x100" permission="r" description="uC is enabled"/>                             
+        <node id="PWR_ENABLED" mask="0x200" permission="r" description="power is enabled"/>                             
+        <node id="IOS_ENABLED" mask="0x400" permission="r" description="IOs to CM are enabled"/>                            
+      </node>                                                                                                               
+      <node id="UART">                                                                                              
+        <node id="WR_DATA" address="0x20" mask="0xFF" permission="rw" description="UART char to write (send on write)"/>
+        <node id="WR_FIFO_HALF_FULL" address="0x20" mask="0x2000" permission="r" description="Send FIFO half full"/>
+        <node id="WR_FIFO_HALF_FULL" address="0x20" mask="0x4000" permission="r" description="Send FIFO half full"/>
+        <node id="RD_DATA" address="0x21" mask="0xFF" permission="r" description="UART received char"/>                  
+        <node id="RD_ACK" address="0x21" mask="0x100" permission="w" description="Read ack (updates RD_DATA)"/>             
+        <node id="RD_VALID" address="0x21" mask="0x100" permission="w" description="Read data valid"/>              
+        <node id="RD_FIFO_HALF_FULL" address="0x21" mask="0x2000" permission="r" description="Read FIFO half full"/>
+        <node id="RD_FIFO_HALF_FULL" address="0x21" mask="0x4000" permission="r" description="Read FIFO half full"/>
+      </node>                                                                                                   
+    </node>                                                                                                              
+  </node>                                            
   <node id="SERV" address="0x04000000">
     <node id="SI5344"  address="0x00" permission="r">
       <node id="OE" address="0x0" permission="rw" mask="0x1" description="Enable Si5344 outputs"/>
