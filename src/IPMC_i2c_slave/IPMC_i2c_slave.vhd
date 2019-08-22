@@ -40,7 +40,8 @@ architecture behavioral of IPMC_i2c_slave is
   
   --------------------------------------
   -- register map size
-  constant REG32_COUNT : integer := 8;  
+  constant REG32_COUNT : integer := 16;  
+  constant SLAVE_COUNT : integer := 8;
   
   --------------------------------------
   -- AXI bridge signals
@@ -56,7 +57,6 @@ architecture behavioral of IPMC_i2c_slave is
   
   --------------------------------------
   -- I2c Slave signals
-  constant SLAVE_COUNT : integer := 4;
   signal master_i2c_data : slv_8_t;
   signal master_i2c_dv : std_logic;
   signal slave_i2c_data : slv_8_t;

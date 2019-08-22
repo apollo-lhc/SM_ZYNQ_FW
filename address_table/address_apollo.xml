@@ -29,14 +29,14 @@
  <node id="CM" address="0x03000000">                                                                               
     <node id="CM1">                                                                                                     
       <node id="CTRL" address="0x00">                                                                               
-        <node id="ENABLE_UC" mask="0x1" permission="rw" description="Tell CM uC to power-up"/>                      
-        <node id="ENABLE_PWR" mask="0x2" permission="rw" description="Tell CM uC to power-up the rest of the CM"/>  
-        <node id="OVERRIDE_PWR_GOOD" mask="0x4" permission="rw" description="Ignore power good from CM"/>               
-        <node id="PWR_GOOD" mask="0x8" permission="r" description="CM power is good"/>                              
-        <node id="STATE" mask="0xF0" permission="r" description="CM power up state"/>                                   
-        <node id="UC_ENABLED" mask="0x100" permission="r" description="uC is enabled"/>                             
-        <node id="PWR_ENABLED" mask="0x200" permission="r" description="power is enabled"/>                         
-        <node id="IOS_ENABLED" mask="0x400" permission="r" description="IOs to CM are enabled"/>       
+        <node id="ENABLE_UC" mask="0x1" permission="rw" description="Tell CM uC to power-up" parameters="Table=CM;Column=UC;Row=CM1_REQ;Status=2"/>                      
+        <node id="ENABLE_PWR" mask="0x2" permission="rw" description="Tell CM uC to power-up the rest of the CM" parameters="Table=CM;Column=PWR;Row=CM1_REQ;Status=2"/>  
+        <node id="OVERRIDE_PWR_GOOD" mask="0x4" permission="rw" description="Ignore power good from CM" parameters="Table=CM;Column=_4;Row=CM1_REQ;Status=2"/>               
+        <node id="PWR_GOOD" mask="0x8" permission="r" description="CM power is good" parameters="Table=CM;Column=_4;Row=_2;Status=2"/>
+-	<node id="STATE" mask="0xF0" permission="r" description="CM power up state"  parameters="Table=CM;Column=_4;Row=_2;Status=2"/> 
+        <node id="UC_ENABLED" mask="0x100" permission="r" description="uC is enabled" parameters="Table=CM;Column=UC;Row=_2;Status=2"/>                             
+        <node id="PWR_ENABLED" mask="0x200" permission="r" description="power is enabled" parameters="Table=CM;Column=PWR;Row=_2;Status=2"/>                         
+        <node id="IOS_ENABLED" mask="0x400" permission="r" description="IOs to CM are enabled" parameters="Table=CM;Column=_4;Row=_2;Status=2"/>       
       </node>                                                                                                           
       <node id="UART">                                                                                              
         <node id="WR_DATA" address="0x10" mask="0xFF" permission="rw" description="UART char to write (send on write)"/>
@@ -74,23 +74,23 @@
   </node>                                            
   <node id="SERV" address="0x04000000">
     <node id="SI5344"  address="0x00" permission="r">
-      <node id="OE" address="0x0" permission="rw" mask="0x1" description="Enable Si5344 outputs"/>
-      <node id="EN" address="0x0" permission="rw" mask="0x2" description="Power on Si5344"/>
+      <node id="OE" address="0x0" permission="rw" mask="0x1" description="Enable Si5344 outputs" parameters="Table=CLOCKING;Column=_3;Row=_2;Status=2"/>
+      <node id="EN" address="0x0" permission="rw" mask="0x2" description="Power on Si5344" parameters="Table=CLOCKING;Column=_3;Row=_2;Status=2"/>
       <node id="SOMETHING" address="0x0" permission="rw" mask="0x4"/>
       <node id="INT" address="0x0" permission="r" mask="0x10" description="Si5344 i2c interrupt"/>
-      <node id="LOL" address="0x0" permission="r" mask="0x20" description="Si5344 Loss of lock"/>
-      <node id="LOS" address="0x0" permission="r" mask="0x40" description="Si5344 Loss of signal"/>
+      <node id="LOL" address="0x0" permission="r" mask="0x20" description="Si5344 Loss of lock" parameters="Table=CLOCKING;Column=_3;Row=_2;Status=2"/>
+      <node id="LOS" address="0x0" permission="r" mask="0x40" description="Si5344 Loss of signal" parameters="Table=CLOCKING;Column=_3;Row=_2;Status=2"/>
     </node>
     <node id="TCDS" address="0x04" permission="r">
       <node id="TTC_SOURCE" address="0x0" permission="rw" mask="0x1" description="TTC source select (0:TCDS,1:TTC_FAKE"/>
     </node>
     <node id="CLOCKING" address="0x05" permission="r">
-      <node id="LHC_LOS_BP" permission="r" mask="0x1" description="Backplane LHC clk LOS"/>
-      <node id="LHC_LOS_OSC" permission="r" mask="0x2" description="Local Si LHC clk LOS"/>
-      <node id="SEL" permission="rw" mask="0x10" description="LHC clk source select" />
-      <node id="HQ_LOS_BP" permission="r" mask="0x100" description="Backplane HQ clk LOS"/>
-      <node id="HQ_LOS_OSC" permission="r" mask="0x200" description="Local Si HQ clk LOS"/>
-      <node id="SEL" permission="rw" mask="0x1000" description="HQ clk source select" />
+      <node id="LHC_LOS_BP" permission="r" mask="0x1" description="Backplane LHC clk LOS" parameters="Table=CLOCKING;Column=LOS;Row=LHC_BP;Status=2" />
+      <node id="LHC_LOS_OSC" permission="r" mask="0x2" description="Local Si LHC clk LOS" parameters="Table=CLOCKING;Column=LOS;Row=LHC_OSC;Status=2"/>
+      <node id="SEL" permission="rw" mask="0x10" description="LHC clk source select"      parameters="Table=CLOCKING;Column=SOURCE;Row=LHC;Status=2" />
+      <node id="HQ_LOS_BP" permission="r" mask="0x100" description="Backplane HQ clk LOS" parameters="Table=CLOCKING;Column=LOS;Row=HQ_BP;Status=2" />
+      <node id="HQ_LOS_OSC" permission="r" mask="0x200" description="Local Si HQ clk LOS" parameters="Table=CLOCKING;Column=LOS;Row=HQ_OSC;Status=2"/>
+      <node id="SEL" permission="rw" mask="0x1000" description="HQ clk source select"     parameters="Table=CLOCKING;Column=SOURCE;Row=HQ;Status=2" />
     </node>
     <node id="SWITCH">
       <node id="STATUS" address="0x08" mask="0xFFFF0000" permission="r" description="Ethernet switch LEDs"/>
@@ -110,8 +110,8 @@
       <node id="PMA_RESET" mask="0x2" permission="r" description="SGMII pma reset"/>
       <node id="MMCM_RESET" mask="0x4" permission="r" description="SGMII mmcm reset"/>
       <node id="RESET_DONE" mask="0x8" permission="r" description="SGMII reset sequence done"/>
-      <node id="CPLL_LOCK"  mask="0x10" permission="r" description="SGMII GT CPLL locked"/>
-      <node id="MMCM_LOCK"  mask="0x20" permission="r" description="SGMII MMCM locked"/>
+      <node id="CPLL_LOCK"  mask="0x10" permission="r" description="SGMII GT CPLL locked" parameters="Table=CLOCKING;Column=GT_LOCK;Row=SGMII;Status=2"/>
+      <node id="MMCM_LOCK"  mask="0x20" permission="r" description="SGMII MMCM locked"  parameters="Table=CLOCKING;Column=MMCM_LOCK;Row=SGMII;Status=2"/>
       <node id="SV_LINK_STATUS" mask="0x10000" permission="r" description="This signal indicates the status of the link. When High, the link is valid:
 									synchronization of the link has been obtained and Auto-Negotiation (if present and enabled)
 									has successfully completed and the reset sequence of the transceiver (if present) has
@@ -347,13 +347,13 @@ inside Debug Bridge IP"/>
     <node id="VCCBRAM_MIN" address="0x127" permission="ro" mask="0x3FF"/>
   </node>
   <node id="SM_INFO" address="0x09000000">
-    <node id="GIT_VALID" address="0x0" permission="ro" mask="0x2"/>
-    <node id="GIT_HASH_1" address="0x1" permission="ro" mask="0xFFFFFFFF"/>
-    <node id="GIT_HASH_2" address="0x2" permission="ro" mask="0xFFFFFFFF"/>
-    <node id="GIT_HASH_3" address="0x3" permission="ro" mask="0xFFFFFFFF"/>
-    <node id="GIT_HASH_4" address="0x4" permission="ro" mask="0xFFFFFFFF"/>
-    <node id="GIT_HASH_5" address="0x5" permission="ro" mask="0xFFFFFFFF"/>
-    <node id="BUILD_DATE" address="0x10">
+    <node id="GIT_VALID" address="0x0" permission="ro" mask="0x2" parameters="Table=HW_INFO;Column=Zynq;Row=_2;Status=3"/>
+    <node id="GIT_HASH_1" address="0x1" permission="ro" mask="0xFFFFFFFF" parameters="Table=HW_INFO;Column=Zynq;Row=_2;Status=3"/>
+    <node id="GIT_HASH_2" address="0x2" permission="ro" mask="0xFFFFFFFF" parameters="Table=HW_INFO;Column=Zynq;Row=_2;Status=3"/>
+    <node id="GIT_HASH_3" address="0x3" permission="ro" mask="0xFFFFFFFF" parameters="Table=HW_INFO;Column=Zynq;Row=_2;Status=3"/>
+    <node id="GIT_HASH_4" address="0x4" permission="ro" mask="0xFFFFFFFF" parameters="Table=HW_INFO;Column=Zynq;Row=_2;Status=3"/>
+    <node id="GIT_HASH_5" address="0x5" permission="ro" mask="0xFFFFFFFF" parameters="Table=HW_INFO;Column=Zynq;Row=_2;Status=3"/>
+    <node id="BUILD_DATE" address="0x10" parameters="Table=HW_INFO;Column=Zynq;Row=_2;Status=2">
       <node id="YEAR" mask="0xFFFF0000"/>
       <node id="MONTH" mask="0xFF00"/>
       <node id="DAY" mask="0xFF"/>
@@ -366,7 +366,7 @@ inside Debug Bridge IP"/>
   </node>
   <node id="MONITOR" address="0x0A000000">
     <node id="TEMP"         address="0x80" permission="ro" mask="0x3FF"/>
-    <node id="TEMP_HUMAN"   address="0x80" permission="ro" mask="0x3F0" parameters="Format=d"/>
+    <node id="TEMP_HUMAN"   address="0x80" permission="ro" mask="0x3F0" parameters="Table=SM_STATUS;Row=Zynq;Column=Temp;Format=u;Status=1"/>
     <node id="VCCINT"       address="0x81" permission="ro" mask="0x3FF"/>
     <node id="VCCAUX"       address="0x82" permission="ro" mask="0x3FF"/>
     <node id="VCCBRAM"      address="0x86" permission="ro" mask="0x3FF"/>
@@ -374,10 +374,12 @@ inside Debug Bridge IP"/>
     <node id="ZYNQ_VCCAUX"  address="0x8E" permission="ro" mask="0x3FF"/>
     <node id="ZYNQ_VCCCORE" address="0x8F" permission="ro" mask="0x3FF"/>
     <node id="TEMP_MAX"    address="0xA0" permission="ro" mask="0x3FF"/>
+    <node id="TEMP_MAX_HUMAN"    address="0xA0" permission="ro" mask="0x3F0" parameters="Table=SM_STATUS;Row=Zynq;Column=Temp_Max;Format=u;Status=1"/>
     <node id="VCCINT_MAX"  address="0xA1" permission="ro" mask="0x3FF"/>
     <node id="VCCAUX_MAX"  address="0xA2" permission="ro" mask="0x3FF"/>
     <node id="VCCBRAM_MAX" address="0xA3" permission="ro" mask="0x3FF"/>
     <node id="TEMP_MIN"    address="0xA4" permission="ro" mask="0x3FF"/>
+    <node id="TEMP_MIN_HUMAN"    address="0xA4" permission="ro" mask="0x3F0" parameters="Table=SM_STATUS;Row=Zynq;Column=Temp_Min;Format=u;Status=1"/>
     <node id="VCCINT_MIN"  address="0xA5" permission="ro" mask="0x3FF"/>
     <node id="VCCAUX_MIN"  address="0xA6" permission="ro" mask="0x3FF"/>
     <node id="VCCBRAM_MIN" address="0xA7" permission="ro" mask="0x3FF"/>
