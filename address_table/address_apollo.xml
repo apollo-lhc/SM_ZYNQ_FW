@@ -47,7 +47,22 @@
         <node id="RD_VALID" address="0x11" mask="0x100" permission="w" description="Read data valid"/>              
         <node id="RD_FIFO_HALF_FULL" address="0x11" mask="0x2000" permission="r" description="Read FIFO half full"/>     
         <node id="RD_FIFO_HALF_FULL" address="0x11" mask="0x4000" permission="r" description="Read FIFO half full"/>     
-      </node>                                                                                                  
+      </node>
+      <node id="C2C" address="0x12">
+	<node id="CONFIG_ERROR" mask="0x1" permission="r" description="C2C config error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>
+	<node id="LINK_ERROR" mask="0x2" permission="r" description="C2C link error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>
+	<node id="LINK_GOOD" mask="0x4" permission="r" description="C2C link FSM in SYNC"  parameters="Table=C2C;Column=_4;Row=_2;Status=1"/>
+	<node id="MB_ERROR" mask="0x8" permission="r" description="C2C multi-bit error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>
+	<node id="DO_CC" mask="0x10" permission="r" description="Aurora do CC"  parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>
+	<node id="INITIALIZE" mask="0x20" permission="rw" description="C2C initialize"  parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>
+	<node id="PHY_RESET" mask="0x100" permission="r" description="Aurora phy in reset"  parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>
+	<node id="PHY_GT_PLL_LOCK" mask="0x200" permission="r" description="Aurora phy GT PLL locked"  parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>
+	<node id="PHY_MMCM_LOL" mask="0x400" permission="r" description="Aurora phy mmcm LOL"  parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>
+	<node id="PHY_LANE_UP" mask="0x3000" permission="r" description="Aurora phy lanes up"  parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>		
+	<node id="PHY_HARD_ERR" mask="0x10000" permission="r" description="Aurora phy hard error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>
+	<node id="PHY_HARD_ERR" mask="0x20000" permission="r" description="Aurora phy soft error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>	
+      </node>
+      
     </node>                                                                                                       
     <node id="CM2">                                                                                                     
       <node id="CTRL" address="0x01">                                                                               
