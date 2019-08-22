@@ -328,10 +328,10 @@ begin  -- architecture behavioral
           when x"12" =>
             reg_data(18)(5)  <= localWrData(5);
           when x"20" =>
-            reg_data(16)(7 downto 0) <= localWrData(7 downto 0);
-            uart_wr_en(0) <= '1';
+            reg_data(32)(7 downto 0) <= localWrData(7 downto 0);
+            uart_wr_en(1) <= '1';
           when x"21" =>
-            uart_rd_en(0) <= '1';
+            uart_rd_en(1) <= '1';
           when x"22" =>
             reg_data(34)(5)  <= localWrData(5);
           when others => null;

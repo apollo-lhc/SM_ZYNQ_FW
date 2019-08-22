@@ -41,12 +41,11 @@
       <node id="UART">                                                                                              
         <node id="WR_DATA" address="0x10" mask="0xFF" permission="rw" description="UART char to write (send on write)"/>
         <node id="WR_FIFO_HALF_FULL" address="0x10" mask="0x2000" permission="r" description="Send FIFO half full"/>
-        <node id="WR_FIFO_HALF_FULL" address="0x10" mask="0x4000" permission="r" description="Send FIFO half full"/>
+        <node id="WR_FIFO_FULL" address="0x10" mask="0x4000" permission="r" description="Send FIFO full"/>
         <node id="RD_DATA" address="0x11" mask="0xFF" permission="r" description="UART received char"/>
-        <node id="RD_ACK" address="0x11" mask="0x100" permission="w" description="Read ack (updates RD_DATA)"/>         
-        <node id="RD_VALID" address="0x11" mask="0x100" permission="w" description="Read data valid"/>              
+        <node id="RD_VALID" address="0x11" mask="0x1000" permission="rw" description="Read data valid (wr for ack)"/>              
         <node id="RD_FIFO_HALF_FULL" address="0x11" mask="0x2000" permission="r" description="Read FIFO half full"/>     
-        <node id="RD_FIFO_HALF_FULL" address="0x11" mask="0x4000" permission="r" description="Read FIFO half full"/>     
+        <node id="RD_FIFO_FULL" address="0x11" mask="0x4000" permission="r" description="Read FIFO full"/>     
       </node>
       <node id="C2C" address="0x12">
 	<node id="CONFIG_ERROR" mask="0x1" permission="r" description="C2C config error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>
@@ -78,12 +77,11 @@
       <node id="UART">                                                                                              
         <node id="WR_DATA" address="0x20" mask="0xFF" permission="rw" description="UART char to write (send on write)"/>
         <node id="WR_FIFO_HALF_FULL" address="0x20" mask="0x2000" permission="r" description="Send FIFO half full"/>
-        <node id="WR_FIFO_HALF_FULL" address="0x20" mask="0x4000" permission="r" description="Send FIFO half full"/>
-        <node id="RD_DATA" address="0x21" mask="0xFF" permission="r" description="UART received char"/>                  
-        <node id="RD_ACK" address="0x21" mask="0x100" permission="w" description="Read ack (updates RD_DATA)"/>             
-        <node id="RD_VALID" address="0x21" mask="0x100" permission="w" description="Read data valid"/>              
+        <node id="WR_FIFO_FULL" address="0x20" mask="0x4000" permission="r" description="Send FIFO full"/>
+        <node id="RD_DATA" address="0x21" mask="0xFF" permission="r" description="UART received char"/>
+	<node id="RD_VALID" address="0x21" mask="0x1000" permission="rw" description="Read data valid (wr for ack)"/>              
         <node id="RD_FIFO_HALF_FULL" address="0x21" mask="0x2000" permission="r" description="Read FIFO half full"/>
-        <node id="RD_FIFO_HALF_FULL" address="0x21" mask="0x4000" permission="r" description="Read FIFO half full"/>
+        <node id="RD_FIFO_FULL" address="0x21" mask="0x4000" permission="r" description="Read FIFO full"/>
       </node>                                                                                                   
     </node>                                                                                                              
   </node>                                            
