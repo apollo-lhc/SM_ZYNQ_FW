@@ -59,8 +59,11 @@ proc AXI_IP_LOCAL_XVC {device_name} {
     #Create a xilinx axi debug bridge
     create_bd_cell -type ip -vlnv xilinx.com:ip:debug_bridge:3.0 $device_name
     #configure the debug bridge to be 
-    set_property CONFIG.C_DEBUG_MODE  {2}   [get_bd_cells $device_name]
+    set_property CONFIG.C_DEBUG_MODE {2}     [get_bd_cells $device_name]
+    set_property CONFIG.C_BSCAN_MUX {2}      [get_bd_cells $device_name]
+    set_property CONFIG.C_XVC_HW_ID {0x0001} [get_bd_cells $device_name]
 
+    
     #test
     set_property CONFIG.C_NUM_BS_MASTER {1} [get_bd_cells $device_name]
 

@@ -6,13 +6,13 @@ use work.types.all;
 package SGMII_MONITOR is
 
   type SGMII_MONITOR_t is record
-    reset_done  : std_logic;
-    cpll_lock   : std_logic;
-    mmcm_reset  : std_logic;
-    pma_reset   : std_logic;
-    mmcm_locked : std_logic;
+    reset_done    : std_logic;
+    cpll_lock     : std_logic;
+    mmcm_reset    : std_logic;
+    pma_reset     : std_logic;
+    mmcm_locked   : std_logic;
     status_vector : slv_16_t;
-    reset       : std_logic;
+    reset         : std_logic;
   end record SGMII_MONITOR_t;
 
   type SGMII_CONTROL_t is record

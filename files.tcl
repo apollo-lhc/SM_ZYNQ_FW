@@ -30,6 +30,7 @@ set vhdl_files "\
      src/front_panel/LED_Encoder.vhd \
      src/front_panel/SR_Out.vhd \
      src/SM_info/SM_info.vhd \
+     src/misc/pass_time_domain.vhd \
      "
 
 set xdc_files src/top.xdc

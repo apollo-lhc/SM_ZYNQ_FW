@@ -297,6 +297,7 @@ architecture structure of top is
 
   --Monitoring
   signal SGMII_MON : SGMII_MONITOR_t;
+  signal SGMII_MON_CDC : SGMII_MONITOR_t;
   signal SGMII_CTRL : SGMII_CONTROL_t;
 
   signal onbloard_clk_n : std_logic;
@@ -343,6 +344,7 @@ architecture structure of top is
   signal CM1_UART_Tx_internal : std_logic;
   signal CM2_UART_Tx_internal : std_logic;
   signal CM1_C2C_Mon : C2C_Monitor_t;
+  signal CM1_C2C_Mon_C2C : C2C_Monitor_t;
   signal CM2_C2C_Mon : C2C_Monitor_t := (axi_c2c_config_error_out    => '0',
                                          axi_c2c_link_error_out      => '0',
                                          axi_c2c_link_status_out     => '0',
@@ -549,6 +551,30 @@ begin  -- architecture structure
      rxuserclk2                 => clk_rxuser2_SGMII
   );
 
+
+  pass_std_logic_vector_1: entity work.pass_std_logic_vector
+    generic map (
+      DATA_WIDTH => 22)
+    port map (
+      clk_in   => clk_user2_SGMII,--clk_SGMII_tx,
+      clk_out  => axi_clk,
+      reset    => '0',
+      pass_in(0)  => SGMII_MON.reset_done,   
+      pass_in(1)  => SGMII_MON.cpll_lock,    
+      pass_in(2)  => SGMII_MON.mmcm_reset,   
+      pass_in(3)  => SGMII_MON.pma_reset,    
+      pass_in(4)  => SGMII_MON.mmcm_locked,  
+      pass_in(20 downto 5)  => SGMII_MON.status_vector,
+      pass_in(21)  => SGMII_MON.reset,              
+      pass_out(0)   => SGMII_MON_CDC.reset_done,   
+      pass_out(1)  => SGMII_MON_CDC.cpll_lock,    
+      pass_out(2)  => SGMII_MON_CDC.mmcm_reset,   
+      pass_out(3)  => SGMII_MON_CDC.pma_reset,    
+      pass_out(4)  => SGMII_MON_CDC.mmcm_locked,  
+      pass_out(20 downto 5)  => SGMII_MON_CDC.status_vector,
+      pass_out(21)  => SGMII_MON_CDC.reset              
+);
+  
   SGMII_MON.reset <= SGMII_CTRL.reset;
   SGMII_MON.pma_reset <= reset_pma_SGMII;
   core_resets_i : entity work.SGMII_INTF_resets
@@ -706,7 +732,7 @@ begin  -- architecture structure
       readMISO        => AXI_BUS_RMISO(0),
       writeMOSI       => AXI_BUS_WMOSI(0),
       writeMISO       => AXI_BUS_WMISO(0),
-      SGMII_MON       => SGMII_MON,
+      SGMII_MON       => SGMII_MON_CDC,
       SGMII_CTRL      => SGMII_CTRL,
       SI_INT          => SI_INT,
       SI_LOL          => SI_LOL,
@@ -813,11 +839,12 @@ begin  -- architecture structure
     end if;
   end process HB_counter_proc;
 
+  
   FP_regs(0)(7 downto 0)    <= std_logic_vector(HB_counter(29 downto 22));
   FP_regs(1)(0) <= locked_SGMII_MMCM;
   FP_regs(1)(1) <= reset_pma_SGMII;
-  FP_regs(1)(2) <= SGMII_MON.reset_done;
-  FP_regs(1)(3) <= SGMII_MON.cpll_lock ;
+  FP_regs(1)(2) <= SGMII_MON_CDC.reset_done;
+  FP_regs(1)(3) <= SGMII_MON_CDC.cpll_lock ;
 
   FP_regs(2)(0) <= CM1_C2C_Mon.axi_c2c_config_error_out   ;
   FP_regs(2)(1) <= CM1_C2C_Mon.axi_c2c_link_error_out     ;
