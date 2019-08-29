@@ -33,7 +33,7 @@
         <node id="ENABLE_PWR" mask="0x2" permission="rw" description="Tell CM uC to power-up the rest of the CM" parameters="Table=CM;Column=PWR;Row=CM1_REQ;Status=2"/>  
         <node id="OVERRIDE_PWR_GOOD" mask="0x4" permission="rw" description="Ignore power good from CM" parameters="Table=CM;Column=_4;Row=CM1_REQ;Status=2"/>               
         <node id="PWR_GOOD" mask="0x8" permission="r" description="CM power is good" parameters="Table=CM;Column=_4;Row=_2;Status=2"/>
--	<node id="STATE" mask="0xF0" permission="r" description="CM power up state"  parameters="Table=CM;Column=_4;Row=_2;Status=2"/> 
+	<node id="STATE" mask="0xF0" permission="r" description="CM power up state"  parameters="Table=CM;Column=_4;Row=_2;Status=2"/> 
         <node id="UC_ENABLED" mask="0x100" permission="r" description="uC is enabled" parameters="Table=CM;Column=UC;Row=_2;Status=2"/>                             
         <node id="PWR_ENABLED" mask="0x200" permission="r" description="power is enabled" parameters="Table=CM;Column=PWR;Row=_2;Status=2"/>                         
         <node id="IOS_ENABLED" mask="0x400" permission="r" description="IOs to CM are enabled" parameters="Table=CM;Column=_4;Row=_2;Status=2"/>       
@@ -377,24 +377,26 @@ inside Debug Bridge IP"/>
     </node>
   </node>
   <node id="MONITOR" address="0x0A000000">
-    <node id="TEMP"         address="0x80" permission="ro" mask="0x3FF"/>
-    <node id="TEMP_HUMAN"   address="0x80" permission="ro" mask="0x3F0" parameters="Table=SM_STATUS;Row=Zynq;Column=Temp;Format=u;Status=1"/>
-    <node id="VCCINT"       address="0x81" permission="ro" mask="0x3FF"/>
-    <node id="VCCAUX"       address="0x82" permission="ro" mask="0x3FF"/>
-    <node id="VCCBRAM"      address="0x86" permission="ro" mask="0x3FF"/>
-    <node id="ZYNQ_VCCINT"  address="0x8D" permission="ro" mask="0x3FF"/>
-    <node id="ZYNQ_VCCAUX"  address="0x8E" permission="ro" mask="0x3FF"/>
-    <node id="ZYNQ_VCCCORE" address="0x8F" permission="ro" mask="0x3FF"/>
-    <node id="TEMP_MAX"    address="0xA0" permission="ro" mask="0x3FF"/>
-    <node id="TEMP_MAX_HUMAN"    address="0xA0" permission="ro" mask="0x3F0" parameters="Table=SM_STATUS;Row=Zynq;Column=Temp_Max;Format=u;Status=1"/>
-    <node id="VCCINT_MAX"  address="0xA1" permission="ro" mask="0x3FF"/>
-    <node id="VCCAUX_MAX"  address="0xA2" permission="ro" mask="0x3FF"/>
-    <node id="VCCBRAM_MAX" address="0xA3" permission="ro" mask="0x3FF"/>
-    <node id="TEMP_MIN"    address="0xA4" permission="ro" mask="0x3FF"/>
-    <node id="TEMP_MIN_HUMAN"    address="0xA4" permission="ro" mask="0x3F0" parameters="Table=SM_STATUS;Row=Zynq;Column=Temp_Min;Format=u;Status=1"/>
-    <node id="VCCINT_MIN"  address="0xA5" permission="ro" mask="0x3FF"/>
-    <node id="VCCAUX_MIN"  address="0xA6" permission="ro" mask="0x3FF"/>
-    <node id="VCCBRAM_MIN" address="0xA7" permission="ro" mask="0x3FF"/>
+    <node id="RESET_REG"         address="0x00" permission="wo" description="Only write 0xA to this"/>
+    <node id="HARD_RESET_REG"    address="0x04" permission="wo" description="bit 1"/>
+    <node id="TEMP"         address="0x80" permission="ro" mask="0xFFC0"/>
+    <node id="TEMP_HUMAN"   address="0x80" permission="ro" mask="0xFC00" parameters="Table=SM_STATUS;Row=Zynq;Column=Temp;Format=u;Status=1"/>
+    <node id="VCCINT"       address="0x81" permission="ro" mask="0xFFC0"/>
+    <node id="VCCAUX"       address="0x82" permission="ro" mask="0xFFC0"/>
+    <node id="VCCBRAM"      address="0x86" permission="ro" mask="0xFFC0"/>
+    <node id="ZYNQ_VCCINT"  address="0x8D" permission="ro" mask="0xFFC0"/>
+    <node id="ZYNQ_VCCAUX"  address="0x8E" permission="ro" mask="0xFFC0"/>
+    <node id="ZYNQ_VCCCORE" address="0x8F" permission="ro" mask="0xFFC0"/>
+    <node id="TEMP_MAX"    address="0xA0" permission="ro" mask="0xFFC0"/>
+    <node id="TEMP_MAX_HUMAN"    address="0xA0" permission="ro" mask="0xFC00" parameters="Table=SM_STATUS;Row=Zynq;Column=Temp_Max;Format=u;Status=1"/>
+    <node id="VCCINT_MAX"  address="0xA1" permission="ro" mask="0xFFC0"/>
+    <node id="VCCAUX_MAX"  address="0xA2" permission="ro" mask="0xFFC0"/>
+    <node id="VCCBRAM_MAX" address="0xA3" permission="ro" mask="0xFFC0"/>
+    <node id="TEMP_MIN"    address="0xA4" permission="ro" mask="0xFFC0"/>
+    <node id="TEMP_MIN_HUMAN"    address="0xA4" permission="ro" mask="0xFC00" parameters="Table=SM_STATUS;Row=Zynq;Column=Temp_Min;Format=u;Status=1"/>
+    <node id="VCCINT_MIN"  address="0xA5" permission="ro" mask="0xFFC0"/>
+    <node id="VCCAUX_MIN"  address="0xA6" permission="ro" mask="0xFFC0"/>
+    <node id="VCCBRAM_MIN" address="0xA7" permission="ro" mask="0xFFC0"/>
   </node>
   <node id="CM_K_INFO" address="0x0B000000">
     <node id="GIT_VALID" address="0x0" permission="ro" mask="0x2"/>
