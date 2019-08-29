@@ -110,12 +110,11 @@
       <node id="UART">
 	<node id="WR_DATA" address="0x0A" mask="0xFF" permission="rw" description="ESM UART char to write (send on write)"/>
 	<node id="WR_FIFO_HALF_FULL" address="0x0A" mask="0x2000" permission="r" description="Send FIFO half full"/>
-	<node id="WR_FIFO_HALF_FULL" address="0x0A" mask="0x4000" permission="r" description="Send FIFO half full"/>
+	<node id="WR_FIFO_FULL" address="0x0A" mask="0x4000" permission="r" description="Send FIFO half full"/>
 	<node id="RD_DATA" address="0x0B" mask="0xFF" permission="r" description="ESM UART received char"/>
-	<node id="RD_ACK" address="0x0B" mask="0x100" permission="rw" description="Read ack (updates RD_DATA)"/>
-	<node id="RD_VALID" address="0x0B" mask="0x1000" permission="r" description="Read data valid"/>
+	<node id="RD_VALID" address="0x0B" mask="0x1000" permission="rw" description="Read data valid (write acks current data)"/>
 	<node id="RD_FIFO_HALF_FULL" address="0x0B" mask="0x2000" permission="r" description="Read FIFO half full"/>
-	<node id="RD_FIFO_HALF_FULL" address="0x0B" mask="0x4000" permission="r" description="Read FIFO half full"/>
+	<node id="RD_FIFO_FULL" address="0x0B" mask="0x4000" permission="r" description="Read FIFO half full"/>
       </node>
     </node>
     <node id="SGMII" address="0x0C" permission="r">

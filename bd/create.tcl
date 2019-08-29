@@ -38,6 +38,8 @@ CONFIGURE_AXI_SLAVES
 #========================================
 validate_bd_design
 
+write_bd_layout -force -format pdf -orientation portrait ../doc/zynq_bd.pdf
+
 make_wrapper -files [get_files zynq_bd.bd] -top -import -force
 save_bd_design
 

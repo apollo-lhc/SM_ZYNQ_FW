@@ -251,7 +251,7 @@ begin  -- architecture behavioral
             reg_data(10)( 7 downto  0) <= localWrData( 7 downto  0);
             uart_wr_en                 <= '1';
           when x"B" =>
-            uart_rd_en                 <= localWrData(8);
+            uart_rd_en                 <= localWrData(12);
           when x"C" =>
             reg_data(12)( 0) <= localWrData( 0);
 
