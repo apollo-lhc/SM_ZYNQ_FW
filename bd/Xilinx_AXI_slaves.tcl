@@ -128,7 +128,7 @@ proc C2C_AURORA {device_name INIT_CLK} {
     global AXI_SLAVE_RSTN
 
     set C2C ${device_name}
-    set C2C_PHY ${C2C}_phy    
+    set C2C_PHY ${C2C}_PHY    
     #create chip-2-chip aurora     
     startgroup 
     create_bd_cell -type ip -vlnv xilinx.com:ip:aurora_64b66b:11.2 ${C2C_PHY}        
@@ -142,14 +142,25 @@ proc C2C_AURORA {device_name INIT_CLK} {
     set_property CONFIG.SupportLevel         {1}          [get_bd_cells ${C2C_PHY}]  
     set_property CONFIG.SINGLEEND_INITCLK    {true}       [get_bd_cells ${C2C_PHY}]  
     set_property CONFIG.C_USE_CHIPSCOPE      {true}       [get_bd_cells ${C2C_PHY}]
-#    set_property CONFIG.drp_mode             {AXI4_LITE}  [get_bd_cells ${C2C_PHY}]
+    set_property CONFIG.drp_mode             {AXI4_LITE}  [get_bd_cells ${C2C_PHY}]
     set_property CONFIG.TransceiverControl   {false}      [get_bd_cells ${C2C_PHY}]  
-
+    set_property CONFIG.TransceiverControl   {true}       [get_bd_cells ${C2C_PHY}]
+   
     
     set_property -dict [list CONFIG.C_GT_CLOCK_1 {GTXQ3} CONFIG.C_GT_LOC_9 {X} CONFIG.C_GT_LOC_15 {1}]          [get_bd_cells ${C2C_PHY}]
 
     
+    #connect to interconnect
+    [AXI_DEV_CONNECT ${C2C_PHY} $AXI_BUS_M(${C2C_PHY}) $AXI_BUS_CLK(${C2C_PHY}) $AXI_BUS_RST(${C2C_PHY})]
+    connect_bd_net  [get_bd_pins ${INIT_CLK}] [get_bd_pins $AXI_BUS_CLK(${C2C_PHY})]
+    set C2C_ARST C2C_PHY_AXI_LITE_RESET_INVERTER
+    create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.0 ${C2C_ARST}
+    set_property -dict [list CONFIG.C_SIZE {1} CONFIG.C_OPERATION {not} CONFIG.LOGO_FILE {data/sym_notgate.png}] [get_bd_cells ${C2C_ARST}]
+    connect_bd_net  [get_bd_pins ${C2C}/aurora_reset_pb] [get_bd_pins ${C2C_ARST}/Op1]
+    connect_bd_net  [get_bd_pins ${C2C_ARST}/Res]        [get_bd_pins $AXI_BUS_RST(${C2C_PHY})]
 
+
+    
     #expose the Aurora core signals to top   
     make_bd_intf_pins_external  -name ${C2C_PHY}_refclk         [get_bd_intf_pins ${C2C_PHY}/GT_DIFF_REFCLK1]    
     make_bd_intf_pins_external  -name ${C2C_PHY}_Rx             [get_bd_intf_pins ${C2C_PHY}/GT_SERIAL_RX]       
@@ -162,6 +173,7 @@ proc C2C_AURORA {device_name INIT_CLK} {
     make_bd_pins_external       -name ${C2C_PHY}_mmcm_not_locked_out  [get_bd_pins ${C2C_PHY}/mmcm_not_locked_out]       
     make_bd_pins_external       -name ${C2C_PHY}_link_reset_out [get_bd_pins ${C2C_PHY}/link_reset_out]
     make_bd_pins_external       -name ${C2C_PHY}_gt_refclk1_out [get_bd_pins ${C2C_PHY}/gt_refclk1_out]
+    make_bd_intf_pins_external  -name ${C2C_PHY}_DEBUG          [get_bd_intf_pins C2C1_PHY/TRANSCEIVER_DEBUG0]
 
     
     

@@ -300,6 +300,7 @@ architecture structure of top is
   signal SGMII_MON_CDC : SGMII_MONITOR_t;
   signal SGMII_CTRL : SGMII_CONTROL_t;
 
+  
   signal onbloard_clk_n : std_logic;
   signal onbloard_clk_p : std_logic;
   signal clk_200Mhz : std_logic;
@@ -355,7 +356,16 @@ architecture structure of top is
                                          phy_lane_up                 => (others => '0'),
                                          phy_link_reset_out          => '0',
                                          phy_mmcm_not_locked_out     => '0',
-                                         phy_soft_err                => '0');
+                                         phy_soft_err                => '0',
+                                         cplllock                    => '0',
+                                         dmonitorout                 => "00000000",
+                                         eyescandataerror            => '0',
+                                         rxbufstatus                 => "000",
+                                         rxmonitorout                => "0000000",
+                                         rxprbserr                   => '0',
+                                         rxresetdone                 => '0',
+                                         txbufstatus                 => "00",
+                                         txresetdone                 => '0');
   signal CM_enable_IOs   : std_logic_vector(1 downto 0);
   signal CM1_C2C_Ctrl : C2C_Control_t;
   signal CM2_C2C_Ctrl : C2C_Control_t;
@@ -529,7 +539,42 @@ begin  -- architecture structure
       C2C1_phy_link_reset_out           => CM1_C2C_Mon.phy_link_reset_out          ,
       C2C1_phy_gt_refclk1_out           => C2C1_phy_gt_refclk1_out          ,
       C2C1_phy_mmcm_not_locked_out      => CM1_C2C_Mon.phy_mmcm_not_locked_out     ,
-      C2C1_phy_soft_err                 => CM1_C2C_Mon.phy_soft_err                
+      C2C1_phy_soft_err                 => CM1_C2C_Mon.phy_soft_err                ,
+      C2C1_PHY_DEBUG_cplllock         => CM1_C2C_Mon.cplllock,
+      C2C1_PHY_DEBUG_dmonitorout      => CM1_C2C_Mon.dmonitorout,
+      C2C1_PHY_DEBUG_eyescandataerror => CM1_C2C_Mon.eyescandataerror,
+      C2C1_PHY_DEBUG_eyescanreset     => CM1_C2C_Ctrl.eyescanreset,
+      C2C1_PHY_DEBUG_eyescantrigger   => CM1_C2C_Ctrl.eyescantrigger,
+      C2C1_PHY_DEBUG_rxbufreset       => CM1_C2C_Ctrl.rxbufreset,
+      C2C1_PHY_DEBUG_rxbufstatus      => CM1_C2C_Mon.rxbufstatus,
+      C2C1_PHY_DEBUG_rxcdrhold        => CM1_C2C_Ctrl.rxcdrhold,
+      C2C1_PHY_DEBUG_rxdfeagchold     => CM1_C2C_Ctrl.rxdfeagchold,
+      C2C1_PHY_DEBUG_rxdfeagcovrden   => CM1_C2C_Ctrl.rxdfeagcovrden,
+      C2C1_PHY_DEBUG_rxdfelfhold      => CM1_C2C_Ctrl.rxdfelfhold,
+      C2C1_PHY_DEBUG_rxdfelpmreset    => CM1_C2C_Ctrl.rxdfelpmreset,
+      C2C1_PHY_DEBUG_rxlpmen          => CM1_C2C_Ctrl.rxlpmen,
+      C2C1_PHY_DEBUG_rxlpmhfovrden    => CM1_C2C_Ctrl.rxlpmhfovrden,
+      C2C1_PHY_DEBUG_rxlpmlfklovrden  => CM1_C2C_Ctrl.rxlpmlfklovrden,
+      C2C1_PHY_DEBUG_rxmonitorout     => CM1_C2C_Mon.rxmonitorout,
+      C2C1_PHY_DEBUG_rxmonitorsel     => CM1_C2C_Ctrl.rxmonitorsel,
+      C2C1_PHY_DEBUG_rxpcsreset       => CM1_C2C_Ctrl.rxpcsreset,    
+      C2C1_PHY_DEBUG_rxpmareset       => CM1_C2C_Ctrl.rxpmareset,    
+      C2C1_PHY_DEBUG_rxprbscntreset   => CM1_C2C_Ctrl.rxprbscntreset,
+      C2C1_PHY_DEBUG_rxprbserr        => CM1_C2C_Mon.rxprbserr,
+      C2C1_PHY_DEBUG_rxprbssel        => CM1_C2C_Ctrl.rxprbssel,
+      C2C1_PHY_DEBUG_rxresetdone      => CM1_C2C_Mon.rxresetdone,
+      C2C1_PHY_DEBUG_txbufstatus      => CM1_C2C_Mon.txbufstatus,
+      C2C1_PHY_DEBUG_txdiffctrl       => CM1_C2C_Ctrl.txdiffctrl,      
+      C2C1_PHY_DEBUG_txinhibit        => CM1_C2C_Ctrl.txinhibit,       
+      C2C1_PHY_DEBUG_txmaincursor     => CM1_C2C_Ctrl.txmaincursor,    
+      C2C1_PHY_DEBUG_txpcsreset       => CM1_C2C_Ctrl.txpcsreset,      
+      C2C1_PHY_DEBUG_txpmareset       => CM1_C2C_Ctrl.txpmareset,      
+      C2C1_PHY_DEBUG_txpolarity       => CM1_C2C_Ctrl.txpolarity,      
+      C2C1_PHY_DEBUG_txpostcursor     => CM1_C2C_Ctrl.txpostcursor,    
+      C2C1_PHY_DEBUG_txprbsforceerr   => CM1_C2C_Ctrl.txprbsforceerr,  
+      C2C1_PHY_DEBUG_txprbssel        => CM1_C2C_Ctrl.txprbssel,       
+      C2C1_PHY_DEBUG_txprecursor      => CM1_C2C_Ctrl.txprecursor,     
+      C2C1_PHY_DEBUG_txresetdone      => CM1_C2C_Mon.txresetdone
       );
 
 
@@ -755,7 +800,8 @@ begin  -- architecture structure
       ESM_LED_CLK     => ESM_LED_CLK,
       ESM_LED_SDA     => ESM_LED_SDA,
       ESM_UART_Tx     => ESM_UART_Tx,
-      ESM_UART_Rx     => ESM_UART_Rx);
+      ESM_UART_Rx     => ESM_UART_Rx
+      );
 
   SM_info_1: entity work.SM_info
     port map (
