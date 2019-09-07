@@ -120,7 +120,7 @@ proc AXI_IP_UART {device_name baud_rate} {
     puts "Added Xilinx UART AXI Slave: $device_name"
 }
 
-proc C2C_AURORA {device_name INIT_CLK} {
+proc C2C_AURORA {device_name INIT_CLK SE_GTREFCLK GTREFCLK_name} {
     global AXI_BUS_M
     global AXI_BUS_RST
     global AXI_BUS_CLK
@@ -143,21 +143,31 @@ proc C2C_AURORA {device_name INIT_CLK} {
     set_property CONFIG.SINGLEEND_INITCLK    {true}       [get_bd_cells ${C2C_PHY}]  
     set_property CONFIG.C_USE_CHIPSCOPE      {true}       [get_bd_cells ${C2C_PHY}]
     set_property CONFIG.drp_mode             {AXI4_LITE}  [get_bd_cells ${C2C_PHY}]
-    set_property CONFIG.TransceiverControl   {false}      [get_bd_cells ${C2C_PHY}]  
+#    set_property CONFIG.TransceiverControl   {false}      [get_bd_cells ${C2C_PHY}]  
     set_property CONFIG.TransceiverControl   {true}       [get_bd_cells ${C2C_PHY}]
-   
+
+    if {${SE_GTREFCLK} == 1} {
+	set_property CONFIG.SINGLEEND_GTREFCLK   {true}      [get_bd_cells ${C2C_PHY}]
+	connect_bd_net  [get_bd_pins ${C2C_PHY}/refclk1_in]  [get_bd_pins ${GTREFCLK_name}]
+    } else {
+	set_property CONFIG.SINGLEEND_GTREFCLK   {false}      [get_bd_cells ${C2C_PHY}]
+	make_bd_pins_external       -name ${GTREFCLK_name} [get_bd_pins ${C2C_PHY}/gt_refclk1_out]
+    }
     
-    set_property -dict [list CONFIG.C_GT_CLOCK_1 {GTXQ3} CONFIG.C_GT_LOC_9 {X} CONFIG.C_GT_LOC_15 {1}]          [get_bd_cells ${C2C_PHY}]
+#    set_property -dict [list CONFIG.C_GT_CLOCK_1 {GTXQ3} CONFIG.C_GT_LOC_9 {X} CONFIG.C_GT_LOC_15 {1}]          [get_bd_cells ${C2C_PHY}]
 
     
     #connect to interconnect
     [AXI_DEV_CONNECT ${C2C_PHY} $AXI_BUS_M(${C2C_PHY}) $AXI_BUS_CLK(${C2C_PHY}) $AXI_BUS_RST(${C2C_PHY})]
     connect_bd_net  [get_bd_pins ${INIT_CLK}] [get_bd_pins $AXI_BUS_CLK(${C2C_PHY})]
-    set C2C_ARST C2C_PHY_AXI_LITE_RESET_INVERTER
+    set C2C_ARST ${C2C_PHY}_AXI_LITE_RESET_INVERTER
     create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.0 ${C2C_ARST}
     set_property -dict [list CONFIG.C_SIZE {1} CONFIG.C_OPERATION {not} CONFIG.LOGO_FILE {data/sym_notgate.png}] [get_bd_cells ${C2C_ARST}]
     connect_bd_net  [get_bd_pins ${C2C}/aurora_reset_pb] [get_bd_pins ${C2C_ARST}/Op1]
     connect_bd_net  [get_bd_pins ${C2C_ARST}/Res]        [get_bd_pins $AXI_BUS_RST(${C2C_PHY})]
+    #build the DTSI chunk for this device to be a UIO
+    [AXI_DEV_UIO_DTSI_POST_CHUNK ${C2C_PHY}]
+    puts "Added Xilinx C2C AURORA AXI Slave: ${C2C_PHY}"
 
 
     
@@ -172,8 +182,7 @@ proc C2C_AURORA {device_name INIT_CLK} {
     make_bd_pins_external       -name ${C2C_PHY}_lane_up        [get_bd_pins ${C2C_PHY}/lane_up]
     make_bd_pins_external       -name ${C2C_PHY}_mmcm_not_locked_out  [get_bd_pins ${C2C_PHY}/mmcm_not_locked_out]       
     make_bd_pins_external       -name ${C2C_PHY}_link_reset_out [get_bd_pins ${C2C_PHY}/link_reset_out]
-    make_bd_pins_external       -name ${C2C_PHY}_gt_refclk1_out [get_bd_pins ${C2C_PHY}/gt_refclk1_out]
-    make_bd_intf_pins_external  -name ${C2C_PHY}_DEBUG          [get_bd_intf_pins C2C1_PHY/TRANSCEIVER_DEBUG0]
+    make_bd_intf_pins_external  -name ${C2C_PHY}_DEBUG          [get_bd_intf_pins ${C2C_PHY}/TRANSCEIVER_DEBUG0]
 
     
     
@@ -196,7 +205,21 @@ proc C2C_AURORA {device_name INIT_CLK} {
     endgroup      
 }
 
-proc AXI_C2C_MASTER {device_name} {
+proc AXI_C2C_MASTER {device_name SE_GTREFCLK GTREFCLK_name} {
+#changes for devices using shared logic
+###startgroup
+###set_property -dict [list CONFIG.SINGLEEND_INITCLK {false} CONFIG.SINGLEEND_GTREFCLK {false} CONFIG.SupportLevel {0}] [get_bd_cells C2C2_PHY]
+###WARNING: [BD 41-1684] Pin /C2C2_PHY/mmcm_not_locked_out is now disabled. All connections to this pin have been removed. 
+###WARNING: [BD 41-1684] Pin /C2C2_PHY/user_clk_out is now disabled. All connections to this pin have been removed. 
+###delete_bd_objs [get_bd_nets C2C2_PHY_user_clk_out]
+###endgroup
+###connect_bd_net [get_bd_pins C2C2_PHY/user_clk] [get_bd_pins C2C1_PHY/user_clk_out]
+###connect_bd_net [get_bd_pins C2C2_PHY/sync_clk] [get_bd_pins C2C1_PHY/sync_clk_out]
+###connect_bd_net [get_bd_pins C2C2_PHY/gt_qpllclk_quad3_in] [get_bd_pins C2C1_PHY/gt_qpllclk_quad3_out]
+###connect_bd_net [get_bd_pins C2C2_PHY/gt_qpllrefclk_quad3_in] [get_bd_pins C2C1_PHY/gt_rxusrclk_out]
+###
+
+
     global AXI_BUS_M
     global AXI_BUS_RST
     global AXI_BUS_CLK
@@ -213,15 +236,48 @@ proc AXI_C2C_MASTER {device_name} {
     set_property CONFIG.C_EN_AXI_LINK_HNDLR {false} [get_bd_cells $device_name]
     set_property CONFIG.C_INCLUDE_AXILITE   {1}     [get_bd_cells $device_name]
 
+
+    #create AXI firewall IPs to handle a bad C2C link
+    set AXI_FW ${device_name}_AXI_FW
+    set AXILITE_FW ${device_name}_AXILITE_FW
+    create_bd_cell -type ip -vlnv xilinx.com:ip:axi_firewall:1.0 ${AXI_FW}
+    #    [AXI_DEV_CONNECT ${AXI_FW} $AXI_BUS_M(${AXI_FW}) $AXI_BUS_CLK(${AXI_FW}) $AXI_BUS_RST(${AXI_FW})]
+    connect_bd_intf_net [get_bd_intf_pins ${AXI_FW}/S_AXI_CTL] -boundary_type upper [get_bd_intf_pins $AXI_BUS_M(${AXI_FW})]
+    [AXI_DEV_UIO_DTSI_POST_CHUNK ${AXI_FW}]
+    create_bd_cell -type ip -vlnv xilinx.com:ip:axi_firewall:1.0 ${AXILITE_FW}
+    #    [AXI_DEV_CONNECT ${AXILITE_FW} $AXI_BUS_M(${AXILITE_FW}) $AXI_BUS_CLK(${AXILITE_FW}) $AXI_BUS_RST(${AXILITE_FW})]
+    connect_bd_intf_net [get_bd_intf_pins ${AXILITE_FW}/S_AXI_CTL] -boundary_type upper [get_bd_intf_pins $AXI_BUS_M(${AXILITE_FW})]
+    [AXI_DEV_UIO_DTSI_POST_CHUNK ${AXILITE_FW}]
+
+    
     #axi interface
-    [AXI_DEV_CONNECT ${device_name} $AXI_BUS_M(${device_name}) $AXI_BUS_CLK(${device_name}) $AXI_BUS_RST(${device_name})]
-    connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins $AXI_BUS_CLK($device_name)]
-    connect_bd_net [get_bd_pins $AXI_SLAVE_RSTN] [get_bd_pins $AXI_BUS_RST($device_name)]
+    #connect C2C to firewall
+    [AXI_DEV_CONNECT ${device_name} ${AXI_FW}/M_AXI $AXI_BUS_CLK(${AXI_FW}) $AXI_BUS_RST(${AXI_FW})]
+    #connect firewall to interconnect
+    [AXI_DEV_CONNECT ${AXI_FW} $AXI_BUS_M(${device_name}) $AXI_BUS_CLK(${device_name}) $AXI_BUS_RST(${device_name})]
+    connect_bd_net -quiet [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins ${AXI_FW}/aclk]
+    connect_bd_net -quiet [get_bd_pins $AXI_SLAVE_RSTN] [get_bd_pins ${AXI_FW}/aresetn]
+    connect_bd_net -quiet [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins $AXI_BUS_CLK(${AXI_FW})]
+    connect_bd_net -quiet [get_bd_pins $AXI_SLAVE_RSTN] [get_bd_pins $AXI_BUS_RST(${AXI_FW})]
+    connect_bd_net -quiet [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins $AXI_BUS_CLK(${device_name})]
+    connect_bd_net -quiet [get_bd_pins $AXI_SLAVE_RSTN] [get_bd_pins $AXI_BUS_RST(${device_name})]
 
+    
     #axi lite interface
-    [AXI_LITE_DEV_CONNECT ${device_name} $AXI_BUS_M(${device_name}_LITE) $AXI_BUS_CLK(${device_name}_LITE) $AXI_BUS_RST(${device_name}_LITE)]
-    connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins $AXI_BUS_CLK(${device_name}_LITE)]
+    #connect C2C to firewall
+    [AXI_LITE_DEV_CONNECT ${device_name} ${AXILITE_FW}/M_AXI $AXI_BUS_CLK(${AXILITE_FW}) $AXI_BUS_RST(${AXILITE_FW})]
+    #connect firewall to interconnect
+    [AXI_DEV_CONNECT ${AXILITE_FW} $AXI_BUS_M(${device_name}_LITE) $AXI_BUS_CLK(${device_name}_LITE) $AXI_BUS_RST(${device_name}_LITE)]
+    connect_bd_net -quiet [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins ${AXILITE_FW}/aclk]
+    connect_bd_net -quiet [get_bd_pins $AXI_SLAVE_RSTN] [get_bd_pins ${AXILITE_FW}/aresetn]
+    connect_bd_net -quiet [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins $AXI_BUS_CLK(${AXILITE_FW})]
+    connect_bd_net -quiet [get_bd_pins $AXI_SLAVE_RSTN] [get_bd_pins $AXI_BUS_RST(${AXILITE_FW})]
+    connect_bd_net -quiet [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins $AXI_BUS_CLK(${device_name}_LITE)]
+    connect_bd_net -quiet [get_bd_pins $AXI_SLAVE_RSTN] [get_bd_pins $AXI_BUS_RST(${device_name}_LITE)]
 
+
+
+    
     make_bd_pins_external       -name ${device_name}_aurora_pma_init_in [get_bd_pins ${device_name}/aurora_pma_init_in]
     #expose debugging signals
     make_bd_pins_external       -name ${device_name}_aurora_do_cc [get_bd_pins ${device_name}/aurora_do_cc]
@@ -231,7 +287,7 @@ proc AXI_C2C_MASTER {device_name} {
     make_bd_pins_external       -name ${device_name}_axi_c2c_link_error_out      [get_bd_pins ${device_name}/axi_c2c_link_error_out     ]
     
 
-    [C2C_AURORA ${device_name} init_clk]
+    [C2C_AURORA ${device_name} init_clk ${SE_GTREFCLK} ${GTREFCLK_name}]
     
     assign_bd_address [get_bd_addr_segs {$device_name/S_AXI/Mem }]
     puts "Added C2C master: $device_name"

@@ -16,12 +16,17 @@ proc clear_global {variable} {
 [clear_global AXI_ADDR]
 [clear_global AXI_ADDR_RANGE]
 [clear_global AXI_INTERCONNECT_NAME]
+[clear_global AXI_BUS_FREQ]
+[clear_global AXI_DTSI_CALLS]
+
 
 array set AXI_BUS_M {}
 array set AXI_BUS_CLK {}
 array set AXI_BUS_RST {}
 array set AXI_ADDR {}
 array set AXI_ADDR_RANGE {}
+#special value added during build process to propery set addresses in the DTSI files
+array set AXI_DTSI_CALLS {}
 
 proc SET_AXI_INTERCONNECT_NAME {name} {
     global AXI_INTERCONNECT_NAME
