@@ -3,7 +3,7 @@ set bd_path bd/
 set bd_name zynq_bd
 
 set bd_files "\
-    bd/create.tcl \
+    src/ZynqPS/create.tcl \
     "
 
 set vhdl_files "\

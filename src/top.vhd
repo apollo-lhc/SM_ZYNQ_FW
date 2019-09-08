@@ -369,7 +369,7 @@ architecture structure of top is
   signal CM_enable_IOs   : std_logic_vector(1 downto 0);
   signal CM1_C2C_Ctrl : C2C_Control_t;
   signal CM2_C2C_Ctrl : C2C_Control_t;
-  signal C2C_phy_gt_refclk1_out : std_logic;
+  signal C2C1_phy_gt_refclk1_out : std_logic;
 
 
   constant FP_REG_COUNT : integer := 4;
@@ -538,7 +538,7 @@ begin  -- architecture structure
       C2C1_phy_hard_err                 => CM1_C2C_Mon.phy_hard_err                ,
       C2C1_phy_lane_up                  => CM1_C2C_Mon.phy_lane_up                 ,
       C2C1_phy_link_reset_out           => CM1_C2C_Mon.phy_link_reset_out          ,
---      C2C1_phy_gt_refclk1_out           => C2C1_phy_gt_refclk1_out          ,
+      C2C1_phy_gt_refclk1_out           => C2C1_phy_gt_refclk1_out          ,
       C2C1_phy_mmcm_not_locked_out      => CM1_C2C_Mon.phy_mmcm_not_locked_out     ,
       C2C1_phy_soft_err                 => CM1_C2C_Mon.phy_soft_err                ,
       C2C1_PHY_DEBUG_cplllock         => CM1_C2C_Mon.cplllock,
@@ -575,7 +575,7 @@ begin  -- architecture structure
       C2C1_PHY_DEBUG_txprbsforceerr   => CM1_C2C_Ctrl.txprbsforceerr,  
       C2C1_PHY_DEBUG_txprbssel        => CM1_C2C_Ctrl.txprbssel,       
       C2C1_PHY_DEBUG_txprecursor      => CM1_C2C_Ctrl.txprecursor,     
-      C2C1_PHY_DEBUG_txresetdone      => CM1_C2C_Mon.txresetdone,
+      C2C1_PHY_DEBUG_txresetdone      => CM1_C2C_Mon.txresetdone
 --      C2C2_phy_Rx_rxn =>  AXI_C2C_Rx_N(1 to 1),
 --      C2C2_phy_Rx_rxp =>  AXI_C2C_Rx_P(1 to 1),
 --      C2C2_phy_Tx_txn =>  AXI_C2C_Tx_N(1 to 1),
@@ -631,7 +631,7 @@ begin  -- architecture structure
 --      C2C2_PHY_DEBUG_txprbssel        => CM2_C2C_Ctrl.txprbssel,       
 --      C2C2_PHY_DEBUG_txprecursor      => CM2_C2C_Ctrl.txprecursor,     
 --      C2C2_PHY_DEBUG_txresetdone      => CM2_C2C_Mon.txresetdone,
-      C2C_gtrefclk           => C2C_phy_gt_refclk1_out
+--      C2C_gtrefclk           => C2C_phy_gt_refclk1_out
 
       );
 

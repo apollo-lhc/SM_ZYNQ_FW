@@ -39,7 +39,7 @@ connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins processing_system7_0/M
 #MIO configuration
 ###############################
 #All MIO configurations are in build_CPU_MIO.tcl
-source ../bd/build_CPU_MIO.tcl						            
+source ../src/ZynqPS/build_CPU_MIO.tcl						            
 #automatically create FIXED_IO and DDR interfaces.
 apply_bd_automation -rule xilinx.com:bd_rule:processing_system7 -config {make_external "FIXED_IO, DDR" Master "Disable" Slave "Disable" }  [get_bd_cells processing_system7_0]
 
