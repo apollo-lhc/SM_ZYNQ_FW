@@ -1,5 +1,6 @@
 #create a block design called "zynq_bd"
-create_bd_design -dir ../bd "zynq_bd"
+create_bd_design -dir ./ "zynq_bd"
+
 
 #helpers for building AXI things
 source ../bd/axi_helpers.tcl
