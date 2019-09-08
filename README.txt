@@ -20,12 +20,12 @@ To Build zynq fsbl+kernel+fs
 Organization:
   Build scripts are in ./scripts and are called by the Makefile
   
-  Zynq block diagram generation tcl scripts are in ./bd/
+  Zynq block diagram generation tcl scripts are in ./src/ZynqOS
     create.tcl is automatically called by build scripts.
+  This relies on the tcl scripts in the submodule in bd.
 
   HDL & constraint files are in ./src with top.vhd as the top module.
 
   OS:
     ./os/hw contains device-tree elements and the xilinx hwdef files needed to build the PS system
     ./os/zynq_os_mods contains recipes for mods/patches for/of the petalinux system.
-    ./os/software contains some useful software to cross compile for the PS.
