@@ -43,7 +43,7 @@ BOOTSCRIPT=$(YOCTO_MOD_BASE)/recipes-apps/bootscript/files/bootscript/bootscript
 STARTUP-SCRIPT=$(YOCTO_MOD_BASE)/recipes-apps/startupscript/files/startupscript/startupscript
 
 #.PHONY: $(CONFIG_BOOTLOADER) list  clean $(BUILD_ROOTFS)
-.PHONY: list  clean $(BUILD_ROOTFS)
+.PHONY: list  clean $(BUILD_ROOTFS) REBUILD_BOOTBIN
 
 all: $(BOOT_FILES)
 
@@ -189,6 +189,12 @@ $(BOOT_FILES): $(PACKAGE_LINUX_IMAGE)
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
 	source $(VIVADO_PETALINUX) && \
 	petalinux-package --boot --format BIN --fsbl images/linux/zynq_fsbl.elf --fpga ../../bit/top.bit  --uboot --force $(OUTPUT_MARKUP)
+
+REBUILD_BOOTBIN: 
+	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
+	source $(VIVADO_PETALINUX) && \
+	petalinux-package --boot --format BIN --fsbl images/linux/zynq_fsbl.elf --fpga ../../bit/top.bit  --uboot --force $(OUTPUT_MARKUP)
+
 
 #REBUILD_FSBL:
 #	rm -rf $(ZYNQ_OS_PROJECT_PATH)/components/plnx_workspace/fsbl
