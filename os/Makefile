@@ -41,6 +41,8 @@ DROPBEAR=$(YOCTO_MOD_BASE)/recipes-core/dropbear/dropbear_%.bbappend
 USERS=$(YOCTO_MOD_BASE)/recipes-core/images/petalinux-user-image.bbappend
 BOOTSCRIPT=$(YOCTO_MOD_BASE)/recipes-apps/bootscript/files/bootscript/bootscript
 STARTUP-SCRIPT=$(YOCTO_MOD_BASE)/recipes-apps/startupscript/files/startupscript/startupscript
+UIO-UDEV=$(YOCTO_MOD_BASE)/recipes-apps/startupscript/files/uio/uio.rules.bb
+
 
 #.PHONY: $(CONFIG_BOOTLOADER) list  clean $(BUILD_ROOTFS)
 .PHONY: list  clean $(BUILD_ROOTFS) REBUILD_BOOTBIN
@@ -127,10 +129,11 @@ $(DROPBEAR):
 #	#Modify dropbear so that it uses a symbolic link for the hostkey that is saved on the sdcard and mounted at /fw
 	@mkdir -p $(YOCTO_MOD_BASE)/recipes-core/dropbear
 	@cp ./zynq_os_mods/dropbear/dropbear_%.bbappend	         $(YOCTO_MOD_BASE)/recipes-core/dropbear
-$(USERS):
+$(USERS): ./zynq_os_mods/users/users.dat
 #	#Update users
 	@echo "Updating users"
 	@mkdir -p $(YOCTO_MOD_BASE)/recipes-core/images
+	@cd ./zynq_os_mods/users/; ./setup_users
 	@cp ./zynq_os_mods/users/petalinux-user-image.bbappend	 $(YOCTO_MOD_BASE)/recipes-core/images/
 
 $(BOOTSCRIPT):
@@ -147,10 +150,16 @@ $(STARTUP-SCRIPT):
 	@cp ./zynq_os_mods/startup-script/startup-script.bb              $(YOCTO_MOD_BASE)/recipes-apps/startup-script/startup-script.bb
 	@cp ./zynq_os_mods/startup-script/startup-script                 $(YOCTO_MOD_BASE)/recipes-apps/startup-script/files/startup-script
 
+$(UIO-UDEV):
+	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
+	source $(VIVADO_PETALINUX) && \
+	petalinux-create -t apps --template install --name uio.rules --enable
+	@cp ./zynq_os_mods/uio/uio.rules.bb              $(YOCTO_MOD_BASE)/recipes-apps/uio.rules/uio.rules.bb
+	@cp ./zynq_os_mods/uio/uio.rules                 $(YOCTO_MOD_BASE)/recipes-apps/uio.rules/files/uio.rules
+
 $(FSBL):
 #	#Modify the FSBL to poll for SI chip config
 	@echo "Modify FSBL"
-#	@mkdir -p $(YOCTO_MOD_BASE)/recipes-bsp/fsbl
 	@mkdir -p $(FSBL_BASE)
 	@cp -r $(FSBL_MOD)/* $(FSBL_BASE)
 
@@ -166,6 +175,7 @@ $(BUILD_ROOTFS): $(ZYNQ_OS_PROJECT) $(USER_MOD_ROOTFS)
 	make $(USERS)
 	make $(BOOTSCRIPT)
 	make $(STARTUP-SCRIPT)
+	make $(UIO-UDEV)
 
 #$(BUILD_UBOOT): $(ZYNQ_OS_PROJECT)
 #	@echo "Building u-boot"
@@ -210,3 +220,4 @@ REBUILD_BOOTBIN:
 clean:
 	@rm -rf zynq_os
 	@rm -f  make_log.txt
+	@rm -f ./zynq_os_mods/users/petalinux-user-image.bbappend
