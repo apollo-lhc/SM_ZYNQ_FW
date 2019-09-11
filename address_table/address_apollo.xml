@@ -386,21 +386,21 @@ inside Debug Bridge IP"/>
   </node>
   <node id="SI" address="0x08000000">
   </node>
-  <node id="KINTEX_SYS_MGMT" address="0x08000000">
-    <node id="TEMP"        address="0x100" permission="ro" mask="0xFF30"/>
+  <node id="KINTEX_SYS_MGMT" address="0x09000000">
+    <node id="TEMP"        address="0x100" permission="ro" mask="0xFF30" parameters="Table=STATUS;Row=Kintex;Column=Temp;Format=u;Status=1"/>
     <node id="VCCINT"      address="0x101" permission="ro" mask="0xFF30"/>
     <node id="VCCAUX"      address="0x102" permission="ro" mask="0xFF30"/>
     <node id="VCCBRAM"     address="0x107" permission="ro" mask="0xFF30"/>
-    <node id="TEMP_MAX"    address="0x120" permission="ro" mask="0xFF30"/>
+    <node id="TEMP_MAX"    address="0x120" permission="ro" mask="0xFF30" parameters="Table=STATUS;Row=Kintex;Column=Temp_Max;Format=u;Status=1"/>
     <node id="VCCINT_MAX"  address="0x121" permission="ro" mask="0xFF30"/>
     <node id="VCCAUX_MAX"  address="0x122" permission="ro" mask="0xFF30"/>
     <node id="VCCBRAM_MAX" address="0x123" permission="ro" mask="0xFF30"/>
-    <node id="TEMP_MIN"    address="0x124" permission="ro" mask="0xFF30"/>
+    <node id="TEMP_MIN"    address="0x124" permission="ro" mask="0xFF30" parameters="Table=STATUS;Row=Kintex;Column=Temp_Max;Format=u;Status=1"/>
     <node id="VCCINT_MIN"  address="0x125" permission="ro" mask="0xFF30"/>
     <node id="VCCAUX_MIN"  address="0x126" permission="ro" mask="0xFF30"/>
     <node id="VCCBRAM_MIN" address="0x127" permission="ro" mask="0xFF30"/>
   </node>
-  <node id="SM_INFO" address="0x09000000">
+  <node id="SM_INFO" address="0x0A000000">
     <node id="GIT_VALID"  address="0x0" permission="ro" mask="0x2"        parameters="Table=HW_INFO;Column=SM_Zynq;Row=_2;Status=3"/>
     <node id="GIT_HASH_1" address="0x1" permission="ro" mask="0xFFFFFFFF" parameters="Table=HW_INFO;Column=SM_Zynq;Row=_2;Status=3"/>
     <node id="GIT_HASH_2" address="0x2" permission="ro" mask="0xFFFFFFFF" parameters="Table=HW_INFO;Column=SM_Zynq;Row=_2;Status=3"/>
@@ -418,11 +418,11 @@ inside Debug Bridge IP"/>
       <node id="HOUR" mask="0xFF0000"/>
     </node>
   </node>
-  <node id="MONITOR" address="0x0A000000">
+  <node id="MONITOR" address="0x0B000000">
     <node id="RESET_REG"         address="0x00" permission="wo" description="Only write 0xA to this"/>
     <node id="HARD_RESET_REG"    address="0x04" permission="wo" description="bit 1"/>
     <node id="TEMP"         address="0x80" permission="ro" mask="0xFFF0"/>
-    <node id="TEMP_HUMAN"   address="0x80" permission="ro" mask="0xFC00" parameters="Table=SM_STATUS;Row=Zynq;Column=Temp;Format=u;Status=1"/>
+    <node id="TEMP_HUMAN"   address="0x80" permission="ro" mask="0xFC00" parameters="Table=STATUS;Row=Zynq;Column=Temp;Format=u;Status=1"/>
     <node id="VCCINT"       address="0x81" permission="ro" mask="0xFFF0"/>
     <node id="VCCAUX"       address="0x82" permission="ro" mask="0xFFF0"/>
     <node id="VCCBRAM"      address="0x86" permission="ro" mask="0xFFF0"/>
@@ -430,17 +430,17 @@ inside Debug Bridge IP"/>
     <node id="ZYNQ_VCCAUX"  address="0x8E" permission="ro" mask="0xFFF0"/>
     <node id="ZYNQ_VCCCORE" address="0x8F" permission="ro" mask="0xFFF0"/>
     <node id="TEMP_MAX"    address="0xA0" permission="ro" mask="0xFFC0"/>
-    <node id="TEMP_MAX_HUMAN"    address="0xA0" permission="ro" mask="0xFC00" parameters="Table=SM_STATUS;Row=Zynq;Column=Temp_Max;Format=u;Status=1"/>
+    <node id="TEMP_MAX_HUMAN"    address="0xA0" permission="ro" mask="0xFC00" parameters="Table=STATUS;Row=Zynq;Column=Temp_Max;Format=u;Status=1"/>
     <node id="VCCINT_MAX"  address="0xA1" permission="ro" mask="0xFFF0"/>
     <node id="VCCAUX_MAX"  address="0xA2" permission="ro" mask="0xFFF0"/>
     <node id="VCCBRAM_MAX" address="0xA3" permission="ro" mask="0xFFF0"/>
     <node id="TEMP_MIN"    address="0xA4" permission="ro" mask="0xFFF0"/>
-    <node id="TEMP_MIN_HUMAN"    address="0xA4" permission="ro" mask="0xFC00" parameters="Table=SM_STATUS;Row=Zynq;Column=Temp_Min;Format=u;Status=1"/>
+    <node id="TEMP_MIN_HUMAN"    address="0xA4" permission="ro" mask="0xFC00" parameters="Table=STATUS;Row=Zynq;Column=Temp_Min;Format=u;Status=1"/>
     <node id="VCCINT_MIN"  address="0xA5" permission="ro" mask="0xFFF0"/>
     <node id="VCCAUX_MIN"  address="0xA6" permission="ro" mask="0xFFF0"/>
     <node id="VCCBRAM_MIN" address="0xA7" permission="ro" mask="0xFFF0"/>
   </node>
-  <node id="CM_K_INFO" address="0x0B000000">
+  <node id="CM_K_INFO" address="0x0C000000">
     <node id="GIT_VALID"  address="0x0" permission="ro" mask="0x2"        parameters="Table=HW_INFO;Column=CM_Kintex;Row=_2;Status=3"/>
     <node id="GIT_HASH_1" address="0x1" permission="ro" mask="0xFFFFFFFF" parameters="Table=HW_INFO;Column=CM_Kintex;Row=_2;Status=3"/>
     <node id="GIT_HASH_2" address="0x2" permission="ro" mask="0xFFFFFFFF" parameters="Table=HW_INFO;Column=CM_Kintex;Row=_2;Status=3"/>
@@ -458,7 +458,7 @@ inside Debug Bridge IP"/>
       <node id="HOUR" mask="0xFF0000"/>
     </node>
   </node>
-  <node id="C2C1_AXI_FW" address="0x0C000000">    
+  <node id="C2C1_AXI_FW" address="0x0D000000">    
     <node id="STATUS" address="0x0" parameters="Table=C2C;Column=AXI_FW_Error;Row=CM1;Status=1;Show=nz">
       <node id="ERRS_BRESP" mask="0x00100000" permission="ro"/>
       <node id="RECS_WRITE_TO_BVALID_MAX_WAIT" mask="0x00080000" permission="ro"/>
@@ -473,7 +473,7 @@ inside Debug Bridge IP"/>
     </node>
     <node id="UNBLOCK" address="0x2"  mask="0x00000001" permission="wo"/>
   </node>
-  <node id="C2C1_AXILITE_FW" address="0x0D000000">    
+  <node id="C2C1_AXILITE_FW" address="0x0E000000">    
     <node id="STATUS" address="0x0"  parameters="Table=C2C;Column=AXI_Lite_FW_Error;Row=CM1;Status=1;Show=nz">
       <node id="ERRS_BRESP" mask="0x00100000" permission="ro"/>
       <node id="RECS_WRITE_TO_BVALID_MAX_WAIT" mask="0x00080000" permission="ro"/>
