@@ -4132,8 +4132,9 @@ CONFIG_tcpdump=y
 #
 CONFIG_bootscript=y
 # CONFIG_gpio-demo is not set
-# CONFIG_peekpoke is not set
+CONFIG_peekpoke=y
 CONFIG_startup-script=y
+CONFIG_uio.rules=y
 
 #
 # user packages 

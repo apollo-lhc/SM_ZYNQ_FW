@@ -1,26 +1,55 @@
-#!/bin/bash
+#!/usr/bin/env python
+
+import sys
+
+outfileName = "petalinux-user-image.bbappend"
+inFileName = "users.dat"
+
+#Open the file
+file = open(inFileName, "r")
+
+#Read all file lines
+inputLines = file.readlines()
+length = len(inputLines)
+
+#Close the file
+file.close()
+
+#manipulate inputLines
+user_lines = []
+for line in inputLines:
+    #clean up line endings
+    line = line.rstrip("\n")
+    line = line.rstrip("\r")
+    line = line.rstrip(" ")
+
+    #check that we have to entries (username and password)
+    if len(line.split()) != 2:
+        sys.exit("Invalid line in input file");
+    
+    #get values
+    username = line.split()[0]
+    password = line.split()[1]
 
 
-outfile="petalinux-user-image.bbappend"
+    if username == "root":
+        user_lines.append("usermod -P " + password + " " + username + " ; \\\n")
+    else:                                           
+        user_lines.append("useradd -P " + password + " " + username + " ; \\\n")
 
-echo "# petalinux-user-image.bbappend content" > $outfile
-echo "inherit extrausers"                      >> $outfile
-echo "EXTRA_USERS_PARAMS = \"\\"               >> $outfile
+#Create new file for new structure
+outFile = open(outfileName, "w")
 
+#file header
+outFile.write("# petalinux-user-image.bbapend content\n")
+outFile.write("inherit extrausers\n")
+outFile.write("EXTRA_USERS_PARAMS = \"\\\n")
 
-#####################################
-#update root user password
-#####################################
-#pwhash=$(openssl passwd -1)
-pwhash=root
-echo "usermod -P "$pwhash" root; \\"           >> $outfile
+#write data in new format
+outFile.writelines(user_lines)
 
+#trailer
+outFile.write("\"\n")
 
-
-#####################################
-#create apollo account
-#####################################
-pwhash=apollo
-echo "useradd -P "$pwhash" apollo; \\"         >> $outfile
-
-echo "\""                                      >> $outfile
+#close new file
+outFile.close
