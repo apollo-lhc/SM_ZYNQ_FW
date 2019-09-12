@@ -48,18 +48,18 @@
         <node id="RD_FIFO_FULL" address="0x11" mask="0x4000" permission="r" description="Read FIFO full"/>     
       </node>
       <node id="C2C" address="0x12">
-	<node id="CONFIG_ERROR" mask="0x1" permission="r" description="C2C config error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>
-	<node id="LINK_ERROR" mask="0x2" permission="r" description="C2C link error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>
+	<node id="CONFIG_ERROR" mask="0x1" permission="r" description="C2C config error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
+	<node id="LINK_ERROR" mask="0x2" permission="r" description="C2C link error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
 	<node id="LINK_GOOD" mask="0x4" permission="r" description="C2C link FSM in SYNC"  parameters="Table=C2C;Column=_4;Row=_2;Status=1"/>
-	<node id="MB_ERROR" mask="0x8" permission="r" description="C2C multi-bit error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>
-	<node id="DO_CC" mask="0x10" permission="r" description="Aurora do CC"  parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>
+	<node id="MB_ERROR" mask="0x8" permission="r" description="C2C multi-bit error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
+	<node id="DO_CC" mask="0x10" permission="r" description="Aurora do CC"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=z"/>
 	<node id="INITIALIZE" mask="0x20" permission="rw" description="C2C initialize"  parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>
 	<node id="PHY_RESET" mask="0x100" permission="r" description="Aurora phy in reset"  parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>
 	<node id="PHY_GT_PLL_LOCK" mask="0x200" permission="r" description="Aurora phy GT PLL locked"  parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>
-	<node id="PHY_MMCM_LOL" mask="0x400" permission="r" description="Aurora phy mmcm LOL"  parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>
-	<node id="PHY_LANE_UP" mask="0x3000" permission="r" description="Aurora phy lanes up"  parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>		
-	<node id="PHY_HARD_ERR" mask="0x10000" permission="r" description="Aurora phy hard error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>
-	<node id="PHY_HARD_ERR" mask="0x20000" permission="r" description="Aurora phy soft error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>
+	<node id="PHY_MMCM_LOL" mask="0x400" permission="r" description="Aurora phy mmcm LOL"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
+	<node id="PHY_LANE_UP" mask="0x3000" permission="r" description="Aurora phy lanes up"  parameters="Table=C2C;Column=_4;Row=_2;Status=1"/>		
+	<node id="PHY_HARD_ERR" mask="0x10000" permission="r" description="Aurora phy hard error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
+	<node id="PHY_HARD_ERR" mask="0x20000" permission="r" description="Aurora phy soft error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
 	<node id="CPLL_LOCK" mask="0x100000" permission="r" description="DEBUG cplllock" />
 	<node id="EYESCAN_DATA_ERROR" mask="0x200000" permission="r" description="DEBUG eyescan data error" />
 	<node id="EYESCAN_RESET" mask="0x400000" permission="rw" description="DEBUG eyescan reset" />
@@ -133,18 +133,18 @@
       <node id="EN" address="0x0" permission="rw" mask="0x2" description="Power on Si5344" parameters="Table=CLOCKING;Column=_3;Row=_2;Status=2"/>
       <node id="SOMETHING" address="0x0" permission="rw" mask="0x4"/>
       <node id="INT" address="0x0" permission="r" mask="0x10" description="Si5344 i2c interrupt"/>
-      <node id="LOL" address="0x0" permission="r" mask="0x20" description="Si5344 Loss of lock" parameters="Table=CLOCKING;Column=_3;Row=_2;Status=2"/>
-      <node id="LOS" address="0x0" permission="r" mask="0x40" description="Si5344 Loss of signal" parameters="Table=CLOCKING;Column=_3;Row=_2;Status=2"/>
+      <node id="LOL" address="0x0" permission="r" mask="0x20" description="Si5344 Loss of lock" parameters="Table=CLOCKING;Column=_3;Row=_2;Status=2;Show=nz"/>
+      <node id="LOS" address="0x0" permission="r" mask="0x40" description="Si5344 Loss of signal" parameters="Table=CLOCKING;Column=_3;Row=_2;Status=2;Show=nz"/>
     </node>
     <node id="TCDS" address="0x04" permission="r">
       <node id="TTC_SOURCE" address="0x0" permission="rw" mask="0x1" description="TTC source select (0:TCDS,1:TTC_FAKE"/>
     </node>
     <node id="CLOCKING" address="0x05" permission="r">
-      <node id="LHC_LOS_BP" permission="r" mask="0x1" description="Backplane LHC clk LOS" parameters="Table=CLOCKING;Column=LOS;Row=LHC_BP;Status=2" />
-      <node id="LHC_LOS_OSC" permission="r" mask="0x2" description="Local Si LHC clk LOS" parameters="Table=CLOCKING;Column=LOS;Row=LHC_OSC;Status=2"/>
+      <node id="LHC_LOS_BP" permission="r" mask="0x1" description="Backplane LHC clk LOS" parameters="Table=CLOCKING;Column=LOS;Row=LHC_BP;Status=2;Show=nz" />
+      <node id="LHC_LOS_OSC" permission="r" mask="0x2" description="Local Si LHC clk LOS" parameters="Table=CLOCKING;Column=LOS;Row=LHC_OSC;Status=2;Show=nz"/>
       <node id="SEL" permission="rw" mask="0x10" description="LHC clk source select"      parameters="Table=CLOCKING;Column=SOURCE;Row=LHC;Status=2" />
-      <node id="HQ_LOS_BP" permission="r" mask="0x100" description="Backplane HQ clk LOS" parameters="Table=CLOCKING;Column=LOS;Row=HQ_BP;Status=2" />
-      <node id="HQ_LOS_OSC" permission="r" mask="0x200" description="Local Si HQ clk LOS" parameters="Table=CLOCKING;Column=LOS;Row=HQ_OSC;Status=2"/>
+      <node id="HQ_LOS_BP" permission="r" mask="0x100" description="Backplane HQ clk LOS" parameters="Table=CLOCKING;Column=LOS;Row=HQ_BP;Status=2;Show=nz" />
+      <node id="HQ_LOS_OSC" permission="r" mask="0x200" description="Local Si HQ clk LOS" parameters="Table=CLOCKING;Column=LOS;Row=HQ_OSC;Status=2;Show=nz"/>
       <node id="SEL" permission="rw" mask="0x1000" description="HQ clk source select"     parameters="Table=CLOCKING;Column=SOURCE;Row=HQ;Status=2" />
     </node>
     <node id="SWITCH">
@@ -231,7 +231,9 @@
       <node id="F"  address="0xF" permission="rw"/>
     </node>
     <node id="S2" address ="0x10">
-      <node id="0"  address="0x0" permission="rw"/>
+      <node id="0"  address="0x0" permission="rw">
+	<node id="TEMP" mask="0xFF" permission="r" parameters="Table=STATUS;Row=CM_MCU;Column=TEMP;Format=u;Status=1"/>
+      </node>
       <node id="1"  address="0x1" permission="rw"/>
       <node id="2"  address="0x2" permission="rw"/>
       <node id="3"  address="0x3" permission="rw"/>
@@ -249,7 +251,9 @@
       <node id="F"  address="0xF" permission="rw"/>
     </node>
     <node id="S3" address ="0x20">
-      <node id="0"  address="0x0" permission="rw"/>
+      <node id="0"  address="0x0" permission="rw">
+	<node id="TEMP" mask="0xFF" permission="r" parameters="Table=STATUS;Row=CM_FF;Column=TEMP;Format=u;Status=1"/>
+      </node>
       <node id="1"  address="0x1" permission="rw"/>
       <node id="2"  address="0x2" permission="rw"/>
       <node id="3"  address="0x3" permission="rw"/>
@@ -267,7 +271,9 @@
       <node id="F"  address="0xF" permission="rw"/>
     </node>
     <node id="S4" address ="0x30">
-      <node id="0"  address="0x0" permission="rw"/>
+      <node id="0"  address="0x0" permission="rw">
+	<node id="TEMP" mask="0xFF" permission="r" parameters="Table=STATUS;Row=CM_FPGA;Column=TEMP;Format=u;Status=1"/>
+      </node>      
       <node id="1"  address="0x1" permission="rw"/>
       <node id="2"  address="0x2" permission="rw"/>
       <node id="3"  address="0x3" permission="rw"/>
@@ -285,7 +291,9 @@
       <node id="F"  address="0xF" permission="rw"/>
     </node>
     <node id="S5" address ="0x40">
-      <node id="0"  address="0x0" permission="rw"/>
+      <node id="0"  address="0x0" permission="rw">
+	<node id="TEMP" mask="0xFF" permission="r" parameters="Table=STATUS;Row=CM_REG;Column=TEMP;Format=u;Status=1"/>
+      </node>      
       <node id="1"  address="0x1" permission="rw"/>
       <node id="2"  address="0x2" permission="rw"/>
       <node id="3"  address="0x3" permission="rw"/>
@@ -387,15 +395,15 @@ inside Debug Bridge IP"/>
   <node id="SI" address="0x08000000">
   </node>
   <node id="KINTEX_SYS_MGMT" address="0x09000000">
-    <node id="TEMP"        address="0x100" permission="ro" mask="0xFF30" parameters="Table=STATUS;Row=Kintex;Column=Temp;Format=u;Status=1"/>
+    <node id="TEMP"        address="0x100" permission="ro" mask="0xFF30" parameters="Table=STATUS;Row=Kintex;Column=TEMP;Format=u;Status=1"/>
     <node id="VCCINT"      address="0x101" permission="ro" mask="0xFF30"/>
     <node id="VCCAUX"      address="0x102" permission="ro" mask="0xFF30"/>
     <node id="VCCBRAM"     address="0x107" permission="ro" mask="0xFF30"/>
-    <node id="TEMP_MAX"    address="0x120" permission="ro" mask="0xFF30" parameters="Table=STATUS;Row=Kintex;Column=Temp_Max;Format=u;Status=1"/>
+    <node id="TEMP_MAX"    address="0x120" permission="ro" mask="0xFF30" parameters="Table=STATUS;Row=Kintex;Column=TEMP_Max;Format=u;Status=1"/>
     <node id="VCCINT_MAX"  address="0x121" permission="ro" mask="0xFF30"/>
     <node id="VCCAUX_MAX"  address="0x122" permission="ro" mask="0xFF30"/>
     <node id="VCCBRAM_MAX" address="0x123" permission="ro" mask="0xFF30"/>
-    <node id="TEMP_MIN"    address="0x124" permission="ro" mask="0xFF30" parameters="Table=STATUS;Row=Kintex;Column=Temp_Max;Format=u;Status=1"/>
+    <node id="TEMP_MIN"    address="0x124" permission="ro" mask="0xFF30" parameters="Table=STATUS;Row=Kintex;Column=TEMP_Max;Format=u;Status=1"/>
     <node id="VCCINT_MIN"  address="0x125" permission="ro" mask="0xFF30"/>
     <node id="VCCAUX_MIN"  address="0x126" permission="ro" mask="0xFF30"/>
     <node id="VCCBRAM_MIN" address="0x127" permission="ro" mask="0xFF30"/>
@@ -422,7 +430,7 @@ inside Debug Bridge IP"/>
     <node id="RESET_REG"         address="0x00" permission="wo" description="Only write 0xA to this"/>
     <node id="HARD_RESET_REG"    address="0x04" permission="wo" description="bit 1"/>
     <node id="TEMP"         address="0x80" permission="ro" mask="0xFFF0"/>
-    <node id="TEMP_HUMAN"   address="0x80" permission="ro" mask="0xFC00" parameters="Table=STATUS;Row=Zynq;Column=Temp;Format=u;Status=1"/>
+    <node id="TEMP_HUMAN"   address="0x80" permission="ro" mask="0xFC00" parameters="Table=STATUS;Row=Zynq;Column=TEMP;Format=u;Status=1"/>
     <node id="VCCINT"       address="0x81" permission="ro" mask="0xFFF0"/>
     <node id="VCCAUX"       address="0x82" permission="ro" mask="0xFFF0"/>
     <node id="VCCBRAM"      address="0x86" permission="ro" mask="0xFFF0"/>
@@ -430,12 +438,12 @@ inside Debug Bridge IP"/>
     <node id="ZYNQ_VCCAUX"  address="0x8E" permission="ro" mask="0xFFF0"/>
     <node id="ZYNQ_VCCCORE" address="0x8F" permission="ro" mask="0xFFF0"/>
     <node id="TEMP_MAX"    address="0xA0" permission="ro" mask="0xFFC0"/>
-    <node id="TEMP_MAX_HUMAN"    address="0xA0" permission="ro" mask="0xFC00" parameters="Table=STATUS;Row=Zynq;Column=Temp_Max;Format=u;Status=1"/>
+    <node id="TEMP_MAX_HUMAN"    address="0xA0" permission="ro" mask="0xFC00" parameters="Table=STATUS;Row=Zynq;Column=TEMP_Max;Format=u;Status=1"/>
     <node id="VCCINT_MAX"  address="0xA1" permission="ro" mask="0xFFF0"/>
     <node id="VCCAUX_MAX"  address="0xA2" permission="ro" mask="0xFFF0"/>
     <node id="VCCBRAM_MAX" address="0xA3" permission="ro" mask="0xFFF0"/>
     <node id="TEMP_MIN"    address="0xA4" permission="ro" mask="0xFFF0"/>
-    <node id="TEMP_MIN_HUMAN"    address="0xA4" permission="ro" mask="0xFC00" parameters="Table=STATUS;Row=Zynq;Column=Temp_Min;Format=u;Status=1"/>
+    <node id="TEMP_MIN_HUMAN"    address="0xA4" permission="ro" mask="0xFC00" parameters="Table=STATUS;Row=Zynq;Column=TEMP_Min;Format=u;Status=1"/>
     <node id="VCCINT_MIN"  address="0xA5" permission="ro" mask="0xFFF0"/>
     <node id="VCCAUX_MIN"  address="0xA6" permission="ro" mask="0xFFF0"/>
     <node id="VCCBRAM_MIN" address="0xA7" permission="ro" mask="0xFFF0"/>
