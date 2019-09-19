@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <node id="TOP">
-  <node id="MYREG0" address="0x01000000">
+  <node id="MYKREG0" address="0x01000000">
     <node id="CONST_1"  address="0x00000000" permission="rw"/>
     <node id="ADDRESS"  address="0x00000001" permission="rw"/>
     <node id="CONST_2"  address="0x00000002" permission="rw"/>
@@ -15,7 +15,7 @@
     <node id="REG_2"  address="0x00000006" permission="rw"/>
     <node id="REG_3"  address="0x00000007" permission="rw"/>
   </node>
-  <node id="MYREG1" address="0x02000000">
+  <node id="MYKREG1" address="0x02000000">
     <node id="CONST_1"  address="0x00000000" permission="rw"/>
     <node id="ADDRESS"  address="0x00000001" permission="rw"/>
     <node id="CONST_2"  address="0x00000002" permission="rw"/>
@@ -124,7 +124,63 @@
 	<node id="RD_VALID" address="0x21" mask="0x1000" permission="rw" description="Read data valid (wr for ack)"/>              
         <node id="RD_FIFO_HALF_FULL" address="0x21" mask="0x2000" permission="r" description="Read FIFO half full"/>
         <node id="RD_FIFO_FULL" address="0x21" mask="0x4000" permission="r" description="Read FIFO full"/>
-      </node>                                                                                                   
+      </node>
+      <node id="C2C" address="0x22">
+	<node id="CONFIG_ERROR" mask="0x1" permission="r" description="C2C config error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
+	<node id="LINK_ERROR" mask="0x2" permission="r" description="C2C link error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
+	<node id="LINK_GOOD" mask="0x4" permission="r" description="C2C link FSM in SYNC"  parameters="Table=C2C;Column=_4;Row=_2;Status=1"/>
+	<node id="MB_ERROR" mask="0x8" permission="r" description="C2C multi-bit error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
+	<node id="DO_CC" mask="0x10" permission="r" description="Aurora do CC"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=z"/>
+	<node id="INITIALIZE" mask="0x20" permission="rw" description="C2C initialize"  parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>
+	<node id="PHY_RESET" mask="0x100" permission="r" description="Aurora phy in reset"  parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>
+	<node id="PHY_GT_PLL_LOCK" mask="0x200" permission="r" description="Aurora phy GT PLL locked"  parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>
+	<node id="PHY_MMCM_LOL" mask="0x400" permission="r" description="Aurora phy mmcm LOL"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
+	<node id="PHY_LANE_UP" mask="0x3000" permission="r" description="Aurora phy lanes up"  parameters="Table=C2C;Column=_4;Row=_2;Status=1"/>		
+	<node id="PHY_HARD_ERR" mask="0x10000" permission="r" description="Aurora phy hard error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
+	<node id="PHY_HARD_ERR" mask="0x20000" permission="r" description="Aurora phy soft error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
+	<node id="CPLL_LOCK" mask="0x100000" permission="r" description="DEBUG cplllock" />
+	<node id="EYESCAN_DATA_ERROR" mask="0x200000" permission="r" description="DEBUG eyescan data error" />
+	<node id="EYESCAN_RESET" mask="0x400000" permission="rw" description="DEBUG eyescan reset" />
+	<node id="EYESCAN_TRIGGER" mask="0x800000" permission="rw" description="DEBUG eyescan trigger" />
+	<node id="DMONITOR" mask="0xFF000000" permission="r" description="DEBUG d monitor" />	
+
+	<node id="RX" address="0x1">
+	  <node id="BUF_STATUS" mask="0x00000007" permission="r" description="DEBUG rx buf status" />
+	  <node id="MONITOR" mask="0x000003F8" permission="r" description="DEBUG rx status" />
+	  <node id="PRBS_ERR" mask="0x00000400" permission="r" description="DEBUG rx PRBS error" />
+	  <node id="RESET_DONE" mask="0x00000800" permission="r" description="DEBUG rx reset done" />
+	  <node id="BUF_RESET" mask="0x00001000" permission="rw" description="DEBUG rx buf reset" />
+	  <node id="CDR_HOLD" mask="0x00002000" permission="rw" description="DEBUG rx CDR hold" />
+	  <node id="DFE_AGC_HOLD" mask="0x00004000" permission="rw" description="DEBUG rx DFE AGC HOLD" />
+	  <node id="DFE_AGC_OVERRIDE" mask="0x00008000" permission="rw" description="DEBUG rx DFE AGC OVERRIDE" />
+	  <node id="DFE_LF_HOLD" mask="0x00010000" permission="rw" description="DEBUG rx DFE LF HOLD" />
+	  <node id="DFE_LPM_RESET" mask="0x00020000" permission="rw" description="DEBUG rx DFE LPM RESET" />
+	  <node id="LPM_EN" mask="0x00040000" permission="rw" description="DEBUG rx LPM ENABLE" />
+	  <node id="LPM_HF_OVERRIDE" mask="0x00080000" permission="rw" description="DEBUG rx LPM HF OVERRIDE enable" />
+	  <node id="LPM_LFKL_OVERRIDE" mask="0x00100000" permission="rw" description="DEBUG rx LPM LFKL override" />
+	  <node id="MON_SEL" mask="0x00600000" permission="rw" description="DEBUG rx monitor select" />
+	  <node id="PCS_RESET" mask="0x00800000" permission="rw" description="DEBUG rx pcs reset" />
+	  <node id="PMA_RESET" mask="0x01000000" permission="rw" description="DEBUG rx pma reset" />
+	  <node id="PRBS_CNT_RST" mask="0x02000000" permission="rw" description="DEBUG rx PRBS counter reset" />
+	  <node id="PRBS_SEL" mask="0x1C000000" permission="rw" description="DEBUG rx PRBS select" />	  
+	</node>
+	<node id="TX" address="0x2">
+	  <node id="BUF_STATUS" mask="0x00000003" permission="r" description="DEBUG tx buf status" />
+	  <node id="RESET_DONE" mask="0x00000004" permission="r" description="DEBUG tx reset done" />
+	  <node id="DIFF_CTRL" mask="0x00000071" permission="rw" description="DEBUG tx diff control" />
+	  <node id="INHIBIT" mask="0x00000080" permission="rw" description="DEBUG tx inhibit" />
+	  <node id="MAIN_CURSOR" mask="0x00007F00" permission="rw" description="DEBUG tx main cursor" />
+	  <node id="PCS_RESET" mask="0x00008000" permission="rw" description="DEBUG tx pcs reset" />
+	  <node id="PMA_RESET" mask="0x00010000" permission="rw" description="DEBUG tx pma reset" />
+	  <node id="POLARITY" mask="0x00020000" permission="rw" description="DEBUG tx polarity" />
+	  <node id="POST_CURSOR" mask="0x007C0000" permission="rw" description="DEBUG post cursor" />
+	  <node id="PRBS_FORCE_ERR" mask="0x00800000" permission="rw" description="DEBUG force PRBS error" />
+	  <node id="PRBS_SEL" mask="0x07000000" permission="rw" description="DEBUG PRBS select" />
+	  <node id="PRE_CURSOR" mask="0xF8000000" permission="rw" description="DEBUG pre cursor" />
+	</node>
+
+      </node>
+
     </node>                                                                                                              
   </node>                                            
   <node id="SERV" address="0x04000000">
@@ -455,12 +511,12 @@ inside Debug Bridge IP"/>
     <node id="GIT_HASH_3" address="0x3" permission="ro" mask="0xFFFFFFFF" parameters="Table=HW_INFO;Column=CM_Kintex;Row=_2;Status=3"/>
     <node id="GIT_HASH_4" address="0x4" permission="ro" mask="0xFFFFFFFF" parameters="Table=HW_INFO;Column=CM_Kintex;Row=_2;Status=3"/>
     <node id="GIT_HASH_5" address="0x5" permission="ro" mask="0xFFFFFFFF" parameters="Table=HW_INFO;Column=CM_Kintex;Row=_2;Status=3"/>
-    <node id="BUILD_DATE" address="0x10"  parameters="Table=HW_INFO;Column=CM_Kintex;Row=_2;Status=2">
+    <node id="BUILD_DATE" address="0x10"  parameters="Table=FIRMWARE;Column=CM_Kintex;Row=_2;Status=1">
       <node id="YEAR" mask="0xFFFF0000"/>
       <node id="MONTH" mask="0xFF00"/>
       <node id="DAY" mask="0xFF"/>
     </node>
-    <node id="BUILD_TIME" address="0x11">
+    <node id="BUILD_TIME" address="0x11"  parameters="Table=FIRMWARE;Column=CM_Kintex;Row=_2;Status=1">
       <node id="SEC" mask="0xFF"/>
       <node id="MIN" mask="0xFF00"/>
       <node id="HOUR" mask="0xFF0000"/>
@@ -468,31 +524,118 @@ inside Debug Bridge IP"/>
   </node>
   <node id="C2C1_AXI_FW" address="0x0D000000">    
     <node id="STATUS" address="0x0">
-      <node id="ERRS_BRESP" mask="0x00100000" permission="ro" parameters="Table=C2C;Column=AXI_BRESP_ERR;Row=CM1;Status=1;Show=nz" description="error"/>
-      <node id="RECS_WRITE_TO_BVALID_MAX_WAIT" mask="0x00080000" permission="ro" parameters="Table=C2C;Column=AXI_BVALID_TIMEOUT;Row=CM1;Status=1;Show=nz" description="error"/>
-      <node id="RECS_WREADY_MAX_WAIT" mask="0x00040000" permission="ro" parameters="Table=C2C;Column=AXI_WD_READY_TIMEOUT;Row=CM1;Status=1;Show=nz" description="error"/>
-      <node id="RECS_AWREADY_MAX_WAIT" mask="0x00020000" permission="ro" parameters="Table=C2C;Column=AXI_WA_READY_TIMEOUT;Row=CM1;Status=1;Show=nz" description="error"/>
-      <node id="WRITE_RESPONSE_BUSY" mask="0x00010000" permission="ro" description="error. Indicates whether there are outstanding write transactions that still need to be completed on the SI; deasserts as soon as outstanding writes decrement to zero. (Not masked while writes are in normal operating mode.)"  parameters="Table=C2C;Column=AXI_OUTSTANDING_WRITES;Row=CM1;Status=1;Show=nz"/>
-      <node id="ERRS_RID" mask="0x00000010" permission="ro" parameters="Table=C2C;Column=AXI_BAD_RID;Row=CM1;Status=1;Show=nz" description="error"/>
-      <node id="ERRS_RDATA_NUM ro" mask="0x00000008" permission="ro" parameters="Table=C2C;Column=AXI_RLEN_MISMATCH;Row=CM1;Status=1;Show=nz" description="error"/>
-      <node id="RECS_CONTINUOUS_RTRANSFERS_MAX_WAIT" mask="0x00000004" permission="ro" parameters="Table=C2C;Column=AXI_RVALID_TIMEOUT;Row=CM1;Status=1;Show=nz" description="error"/>
-      <node id="RECS_ARREADY_MAX_WAIT" mask="0x00000002" permission="ro" parameters="Table=C2C;Column=AXI_AR_READY_TIMEOUT;Row=CM1;Status=1;Show=nz" description="error"/>
-      <node id="READ_RESPONSE_BUSY" mask="0x00000001" permission="ro" description="error. Indicates whether there are outstanding read transactions that still need to be completed on the SI; deasserts as soon as outstanding reads decrements to zero. (Not masked while reads are in normal operating mode.)" parameters="Table=C2C;Column=AXI_OUTSTANDING_WRITES;Row=CM1;Status=1;Show=nz"/>
+      <node id="ERRS_BRESP" mask="0x00100000" permission="ro" parameters="Table=C2C;Column=AXI_BRESP_ERR;Row=CM1_K;Status=1;Show=nz" description="error"/>
+      <node id="RECS_WRITE_TO_BVALID_MAX_WAIT" mask="0x00080000" permission="ro" parameters="Table=C2C;Column=AXI_BVALID_TIMEOUT;Row=CM1_K;Status=1;Show=nz" description="error"/>
+      <node id="RECS_WREADY_MAX_WAIT" mask="0x00040000" permission="ro" parameters="Table=C2C;Column=AXI_WD_READY_TIMEOUT;Row=CM1_K;Status=1;Show=nz" description="error"/>
+      <node id="RECS_AWREADY_MAX_WAIT" mask="0x00020000" permission="ro" parameters="Table=C2C;Column=AXI_WA_READY_TIMEOUT;Row=CM1_K;Status=1;Show=nz" description="error"/>
+      <node id="WRITE_RESPONSE_BUSY" mask="0x00010000" permission="ro" description="error. Indicates whether there are outstanding write transactions that still need to be completed on the SI; deasserts as soon as outstanding writes decrement to zero. (Not masked while writes are in normal operating mode.)"  parameters="Table=C2C;Column=AXI_OUTSTANDING_WRITES;Row=CM1_K;Status=1;Show=nz"/>
+      <node id="ERRS_RID" mask="0x00000010" permission="ro" parameters="Table=C2C;Column=AXI_BAD_RID;Row=CM1_K;Status=1;Show=nz" description="error"/>
+      <node id="ERRS_RDATA_NUM ro" mask="0x00000008" permission="ro" parameters="Table=C2C;Column=AXI_RLEN_MISMATCH;Row=CM1_K;Status=1;Show=nz" description="error"/>
+      <node id="RECS_CONTINUOUS_RTRANSFERS_MAX_WAIT" mask="0x00000004" permission="ro" parameters="Table=C2C;Column=AXI_RVALID_TIMEOUT;Row=CM1_K;Status=1;Show=nz" description="error"/>
+      <node id="RECS_ARREADY_MAX_WAIT" mask="0x00000002" permission="ro" parameters="Table=C2C;Column=AXI_AR_READY_TIMEOUT;Row=CM1_K;Status=1;Show=nz" description="error"/>
+      <node id="READ_RESPONSE_BUSY" mask="0x00000001" permission="ro" description="error. Indicates whether there are outstanding read transactions that still need to be completed on the SI; deasserts as soon as outstanding reads decrements to zero. (Not masked while reads are in normal operating mode.)" parameters="Table=C2C;Column=AXI_OUTSTANDING_WRITES;Row=CM1_K;Status=1;Show=nz"/>
     </node>
     <node id="UNBLOCK" address="0x2"  mask="0x00000001" permission="wo"/>
   </node>
   <node id="C2C1_AXILITE_FW" address="0x0E000000">    
     <node id="STATUS" address="0x0">
-      <node id="ERRS_BRESP" mask="0x00100000" permission="ro" parameters="Table=C2C;Column=AXILITE_BRESP_ERR;Row=CM1;Status=1;Show=nz" description="error"/>
-      <node id="RECS_WRITE_TO_BVALID_MAX_WAIT" mask="0x00080000" permission="ro" parameters="Table=C2C;Column=AXILITE_BVALID_TIMEOUT;Row=CM1;Status=1;Show=nz" description="error"/>
-      <node id="RECS_WREADY_MAX_WAIT" mask="0x00040000" permission="ro" parameters="Table=C2C;Column=AXILITE_WD_READY_TIMEOUT;Row=CM1;Status=1;Show=nz" description="error"/>
-      <node id="RECS_AWREADY_MAX_WAIT" mask="0x00020000" permission="ro" parameters="Table=C2C;Column=AXILITE_WA_READY_TIMEOUT;Row=CM1;Status=1;Show=nz" description="error"/>
-      <node id="WRITE_RESPONSE_BUSY" mask="0x00010000" permission="ro" description="error. Indicates whether there are outstanding write transactions that still need to be completed on the SI; deasserts as soon as outstanding writes decrement to zero. (Not masked while writes are in normal operating mode.)"  parameters="Table=C2C;Column=AXILITE_OUTSTANDING_WRITES;Row=CM1;Status=1;Show=nz"/>
-      <node id="ERRS_RID" mask="0x00000010" permission="ro" parameters="Table=C2C;Column=AXILITE_BAD_RID;Row=CM1;Status=1;Show=nz" description="error"/>
-      <node id="ERRS_RDATA_NUM ro" mask="0x00000008" permission="ro" parameters="Table=C2C;Column=AXILITE_RLEN_MISMATCH;Row=CM1;Status=1;Show=nz" description="error"/>
-      <node id="RECS_CONTINUOUS_RTRANSFERS_MAX_WAIT" mask="0x00000004" permission="ro" parameters="Table=C2C;Column=AXILITE_RVALID_TIMEOUT;Row=CM1;Status=1;Show=nz" description="error"/>
-      <node id="RECS_ARREADY_MAX_WAIT" mask="0x00000002" permission="ro" parameters="Table=C2C;Column=AXILITE_AR_READY_TIMEOUT;Row=CM1;Status=1;Show=nz" description="error"/>
-      <node id="READ_RESPONSE_BUSY" mask="0x00000001" permission="ro" description="error. Indicates whether there are outstanding read transactions that still need to be completed on the SI; deasserts as soon as outstanding reads decrements to zero. (Not masked while reads are in normal operating mode.)" parameters="Table=C2C;Column=AXILITE_OUTSTANDING_WRITES;Row=CM1;Status=1;Show=nz"/>
+      <node id="ERRS_BRESP" mask="0x00100000" permission="ro" parameters="Table=C2C;Column=AXILITE_BRESP_ERR;Row=CM1_K;Status=1;Show=nz" description="error"/>
+      <node id="RECS_WRITE_TO_BVALID_MAX_WAIT" mask="0x00080000" permission="ro" parameters="Table=C2C;Column=AXILITE_BVALID_TIMEOUT;Row=CM1_K;Status=1;Show=nz" description="error"/>
+      <node id="RECS_WREADY_MAX_WAIT" mask="0x00040000" permission="ro" parameters="Table=C2C;Column=AXILITE_WD_READY_TIMEOUT;Row=CM1_K;Status=1;Show=nz" description="error"/>
+      <node id="RECS_AWREADY_MAX_WAIT" mask="0x00020000" permission="ro" parameters="Table=C2C;Column=AXILITE_WA_READY_TIMEOUT;Row=CM1_K;Status=1;Show=nz" description="error"/>
+      <node id="WRITE_RESPONSE_BUSY" mask="0x00010000" permission="ro" description="error. Indicates whether there are outstanding write transactions that still need to be completed on the SI; deasserts as soon as outstanding writes decrement to zero. (Not masked while writes are in normal operating mode.)"  parameters="Table=C2C;Column=AXILITE_OUTSTANDING_WRITES;Row=CM1_K;Status=1;Show=nz"/>
+      <node id="ERRS_RID" mask="0x00000010" permission="ro" parameters="Table=C2C;Column=AXILITE_BAD_RID;Row=CM1_K;Status=1;Show=nz" description="error"/>
+      <node id="ERRS_RDATA_NUM ro" mask="0x00000008" permission="ro" parameters="Table=C2C;Column=AXILITE_RLEN_MISMATCH;Row=CM1_K;Status=1;Show=nz" description="error"/>
+      <node id="RECS_CONTINUOUS_RTRANSFERS_MAX_WAIT" mask="0x00000004" permission="ro" parameters="Table=C2C;Column=AXILITE_RVALID_TIMEOUT;Row=CM1_K;Status=1;Show=nz" description="error"/>
+      <node id="RECS_ARREADY_MAX_WAIT" mask="0x00000002" permission="ro" parameters="Table=C2C;Column=AXILITE_AR_READY_TIMEOUT;Row=CM1_K;Status=1;Show=nz" description="error"/>
+      <node id="READ_RESPONSE_BUSY" mask="0x00000001" permission="ro" description="error. Indicates whether there are outstanding read transactions that still need to be completed on the SI; deasserts as soon as outstanding reads decrements to zero. (Not masked while reads are in normal operating mode.)" parameters="Table=C2C;Column=AXILITE_OUTSTANDING_WRITES;Row=CM1_K;Status=1;Show=nz"/>
+    </node>
+    <node id="UNBLOCK" address="0x2" mask="0x00000001" permission="wo"/>
+  </node>
+
+  <node id="MYVREG0" address="0x0F000000">
+    <node id="CONST_1"  address="0x00000000" permission="rw"/>
+    <node id="ADDRESS"  address="0x00000001" permission="rw"/>
+    <node id="CONST_2"  address="0x00000002" permission="rw"/>
+    <node id="CONST_3"  address="0x00000003" permission="rw"/>
+    <node id="RGB"  address="0x00000004">
+      <node id="R" mask="0xFF" permission="rw"/>
+      <node id="G" mask="0xFF00" permission="rw"/>
+      <node id="B" mask="0xFF0000" permission="rw"/>
+    </node>
+    <node id="REG_1"  address="0x00000005" permission="rw"/>
+    <node id="REG_2"  address="0x00000006" permission="rw"/>
+    <node id="REG_3"  address="0x00000007" permission="rw"/>
+  </node>
+  <node id="MYVREG1" address="0x10000000">
+    <node id="CONST_1"  address="0x00000000" permission="rw"/>
+    <node id="ADDRESS"  address="0x00000001" permission="rw"/>
+    <node id="CONST_2"  address="0x00000002" permission="rw"/>
+    <node id="CONST_3"  address="0x00000003" permission="rw"/>
+    <node id="REG1"  address="0x00000004" permission="rw"/>
+    <node id="REG2"  address="0x00000005" permission="rw"/>
+    <node id="REG3"  address="0x00000006" permission="rw"/>
+    <node id="REG4"  address="0x00000007" permission="rw"/>
+  </node>
+  <node id="VIRTEX_SYS_MGMT" address="0x11000000">
+    <node id="TEMP"        address="0x100" permission="ro" mask="0xFF30" parameters="Table=STATUS;Row=Virtex_x100;Column=TEMP;Format=u;Status=1"/>
+    <node id="VCCINT"      address="0x101" permission="ro" mask="0xFF30"/>
+    <node id="VCCAUX"      address="0x102" permission="ro" mask="0xFF30"/>
+    <node id="VCCBRAM"     address="0x107" permission="ro" mask="0xFF30"/>
+    <node id="TEMP_MAX"    address="0x120" permission="ro" mask="0xFF30" parameters="Table=STATUS;Row=Virtex_x100;Column=TEMP_Max;Format=u;Status=1"/>
+    <node id="VCCINT_MAX"  address="0x121" permission="ro" mask="0xFF30"/>
+    <node id="VCCAUX_MAX"  address="0x122" permission="ro" mask="0xFF30"/>
+    <node id="VCCBRAM_MAX" address="0x123" permission="ro" mask="0xFF30"/>
+    <node id="TEMP_MIN"    address="0x124" permission="ro" mask="0xFF30" parameters="Table=STATUS;Row=Virtex_x100;Column=TEMP_Min;Format=u;Status=1"/>
+    <node id="VCCINT_MIN"  address="0x125" permission="ro" mask="0xFF30"/>
+    <node id="VCCAUX_MIN"  address="0x126" permission="ro" mask="0xFF30"/>
+    <node id="VCCBRAM_MIN" address="0x127" permission="ro" mask="0xFF30"/>
+  </node>
+  <node id="CM_V_INFO" address="0x12000000">
+    <node id="GIT_VALID"  address="0x0" permission="ro" mask="0x2"        parameters="Table=HW_INFO;Column=CM_Virtex;Row=_2;Status=3"/>
+    <node id="GIT_HASH_1" address="0x1" permission="ro" mask="0xFFFFFFFF" parameters="Table=HW_INFO;Column=CM_Virtex;Row=_2;Status=3"/>
+    <node id="GIT_HASH_2" address="0x2" permission="ro" mask="0xFFFFFFFF" parameters="Table=HW_INFO;Column=CM_Virtex;Row=_2;Status=3"/>
+    <node id="GIT_HASH_3" address="0x3" permission="ro" mask="0xFFFFFFFF" parameters="Table=HW_INFO;Column=CM_Virtex;Row=_2;Status=3"/>
+    <node id="GIT_HASH_4" address="0x4" permission="ro" mask="0xFFFFFFFF" parameters="Table=HW_INFO;Column=CM_Virtex;Row=_2;Status=3"/>
+    <node id="GIT_HASH_5" address="0x5" permission="ro" mask="0xFFFFFFFF" parameters="Table=HW_INFO;Column=CM_Virtex;Row=_2;Status=3"/>
+    <node id="BUILD_DATE" address="0x10"  parameters="Table=FIRMWARE;Column=CM_Virtex;Row=_2;Status=1">
+      <node id="YEAR" mask="0xFFFF0000"/>
+      <node id="MONTH" mask="0xFF00"/>
+      <node id="DAY" mask="0xFF"/>
+    </node>
+    <node id="BUILD_TIME" address="0x11" parameters="Table=FIRMWARE;Column=CM_Virtex;Row=_2;Status=1">
+      <node id="SEC" mask="0xFF"/>
+      <node id="MIN" mask="0xFF00"/>
+      <node id="HOUR" mask="0xFF0000"/>
+    </node>
+  </node>
+  <node id="C2C2_AXI_FW" address="0x13000000">    
+    <node id="STATUS" address="0x0">
+      <node id="ERRS_BRESP" mask="0x00100000" permission="ro" parameters="Table=C2C;Column=AXI_BRESP_ERR;Row=CM1_V;Status=1;Show=nz" description="error"/>
+      <node id="RECS_WRITE_TO_BVALID_MAX_WAIT" mask="0x00080000" permission="ro" parameters="Table=C2C;Column=AXI_BVALID_TIMEOUT;Row=CM1_V;Status=1;Show=nz" description="error"/>
+      <node id="RECS_WREADY_MAX_WAIT" mask="0x00040000" permission="ro" parameters="Table=C2C;Column=AXI_WD_READY_TIMEOUT;Row=CM1_V;Status=1;Show=nz" description="error"/>
+      <node id="RECS_AWREADY_MAX_WAIT" mask="0x00020000" permission="ro" parameters="Table=C2C;Column=AXI_WA_READY_TIMEOUT;Row=CM1_V;Status=1;Show=nz" description="error"/>
+      <node id="WRITE_RESPONSE_BUSY" mask="0x00010000" permission="ro" description="error. Indicates whether there are outstanding write transactions that still need to be completed on the SI; deasserts as soon as outstanding writes decrement to zero. (Not masked while writes are in normal operating mode.)"  parameters="Table=C2C;Column=AXI_OUTSTANDING_WRITES;Row=CM1_V;Status=1;Show=nz"/>
+      <node id="ERRS_RID" mask="0x00000010" permission="ro" parameters="Table=C2C;Column=AXI_BAD_RID;Row=CM1_V;Status=1;Show=nz" description="error"/>
+      <node id="ERRS_RDATA_NUM ro" mask="0x00000008" permission="ro" parameters="Table=C2C;Column=AXI_RLEN_MISMATCH;Row=CM1_V;Status=1;Show=nz" description="error"/>
+      <node id="RECS_CONTINUOUS_RTRANSFERS_MAX_WAIT" mask="0x00000004" permission="ro" parameters="Table=C2C;Column=AXI_RVALID_TIMEOUT;Row=CM1_V;Status=1;Show=nz" description="error"/>
+      <node id="RECS_ARREADY_MAX_WAIT" mask="0x00000002" permission="ro" parameters="Table=C2C;Column=AXI_AR_READY_TIMEOUT;Row=CM1_V;Status=1;Show=nz" description="error"/>
+      <node id="READ_RESPONSE_BUSY" mask="0x00000001" permission="ro" description="error. Indicates whether there are outstanding read transactions that still need to be completed on the SI; deasserts as soon as outstanding reads decrements to zero. (Not masked while reads are in normal operating mode.)" parameters="Table=C2C;Column=AXI_OUTSTANDING_WRITES;Row=CM1_V;Status=1;Show=nz"/>
+    </node>
+    <node id="UNBLOCK" address="0x2"  mask="0x00000001" permission="wo"/>
+  </node>
+  <node id="C2C2_AXILITE_FW" address="0x14000000">    
+    <node id="STATUS" address="0x0">
+      <node id="ERRS_BRESP" mask="0x00100000" permission="ro" parameters="Table=C2C;Column=AXILITE_BRESP_ERR;Row=CM1_V;Status=1;Show=nz" description="error"/>
+      <node id="RECS_WRITE_TO_BVALID_MAX_WAIT" mask="0x00080000" permission="ro" parameters="Table=C2C;Column=AXILITE_BVALID_TIMEOUT;Row=CM1_V;Status=1;Show=nz" description="error"/>
+      <node id="RECS_WREADY_MAX_WAIT" mask="0x00040000" permission="ro" parameters="Table=C2C;Column=AXILITE_WD_READY_TIMEOUT;Row=CM1_V;Status=1;Show=nz" description="error"/>
+      <node id="RECS_AWREADY_MAX_WAIT" mask="0x00020000" permission="ro" parameters="Table=C2C;Column=AXILITE_WA_READY_TIMEOUT;Row=CM1_V;Status=1;Show=nz" description="error"/>
+      <node id="WRITE_RESPONSE_BUSY" mask="0x00010000" permission="ro" description="error. Indicates whether there are outstanding write transactions that still need to be completed on the SI; deasserts as soon as outstanding writes decrement to zero. (Not masked while writes are in normal operating mode.)"  parameters="Table=C2C;Column=AXILITE_OUTSTANDING_WRITES;Row=CM1_V;Status=1;Show=nz"/>
+      <node id="ERRS_RID" mask="0x00000010" permission="ro" parameters="Table=C2C;Column=AXILITE_BAD_RID;Row=CM1_V;Status=1;Show=nz" description="error"/>
+      <node id="ERRS_RDATA_NUM ro" mask="0x00000008" permission="ro" parameters="Table=C2C;Column=AXILITE_RLEN_MISMATCH;Row=CM1_V;Status=1;Show=nz" description="error"/>
+      <node id="RECS_CONTINUOUS_RTRANSFERS_MAX_WAIT" mask="0x00000004" permission="ro" parameters="Table=C2C;Column=AXILITE_RVALID_TIMEOUT;Row=CM1_V;Status=1;Show=nz" description="error"/>
+      <node id="RECS_ARREADY_MAX_WAIT" mask="0x00000002" permission="ro" parameters="Table=C2C;Column=AXILITE_AR_READY_TIMEOUT;Row=CM1_V;Status=1;Show=nz" description="error"/>
+      <node id="READ_RESPONSE_BUSY" mask="0x00000001" permission="ro" description="error. Indicates whether there are outstanding read transactions that still need to be completed on the SI; deasserts as soon as outstanding reads decrements to zero. (Not masked while reads are in normal operating mode.)" parameters="Table=C2C;Column=AXILITE_OUTSTANDING_WRITES;Row=CM1_V;Status=1;Show=nz"/>
     </node>
     <node id="UNBLOCK" address="0x2" mask="0x00000001" permission="wo"/>
   </node>
