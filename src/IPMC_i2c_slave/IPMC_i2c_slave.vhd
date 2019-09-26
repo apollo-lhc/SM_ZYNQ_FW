@@ -1,6 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use ieee.std_logic_misc.all;
 
 use work.AXIRegPkg.all;
 
@@ -60,12 +61,21 @@ architecture behavioral of IPMC_i2c_slave is
   signal master_i2c_data : slv_8_t;
   signal master_i2c_dv : std_logic;
   signal slave_i2c_data : slv_8_t;
+  signal slave_i2c_data_filtered : slv_8_t;
   signal i2c_address : std_logic_vector(log2(4*REG32_COUNT*SLAVE_COUNT)-1 downto 0);
   signal reset : std_logic;
   signal SDA_en : std_logic;
 
   signal clk_b : std_logic;  
-  
+  signal enB : std_logic;
+ 
+  ---------------------------------------
+  -- heart-beat
+  signal last_localAddress : slv_32_t;
+  signal heart_beat : std_logic;
+  signal PS_is_shutdown : std_logic;
+  constant I2C_SHUTDOWN_REG : std_logic_vector(log2(4*REG32_COUNT*SLAVE_COUNT)-1 downto 0) := (others => '0');-- reg 0
+  constant I2C_SHUTDOWN_BIT : integer := 5;
   
   
 begin  -- architecture behavioral
@@ -87,9 +97,18 @@ begin  -- architecture behavioral
       address          => "1100000",
       data_out         => master_i2c_data,
       data_out_dv      => master_i2c_dv,
-      data_in          => slave_i2c_data,
+      data_in          => slave_i2c_data_filtered,
       register_address => i2c_address);
-     
+
+  --Filter shutdown reg/bit to allow a PS heartbeat
+  i2c_shutdown_filter: process (slave_i2c_data,PS_is_shutdown,i2c_address) is
+  begin  -- process i2c_shutdown_filter
+    slave_i2c_data_filtered <= slave_i2c_data;
+    if (PS_is_shutdown = '1' and i2c_address = I2C_SHUTDOWN_REG) then
+      slave_i2c_data_filtered(I2C_SHUTDOWN_BIT) <= '1';
+    end if;
+  end process i2c_shutdown_filter;
+  
   AXIRegBridge : entity work.axiLiteReg
     port map (
       clk_axi     => clk_axi,
@@ -114,6 +133,7 @@ begin  -- architecture behavioral
   end process AXIRegProc;
 
   clk_b <= not clk_axi;
+  enB <= not or_reduce(localAddress(15 downto log2(REG32_COUNT*SLAVE_COUNT)));
   asym_ram_tdp_1: entity work.asym_ram_tdp
     generic map (
       WIDTHB     => 32,
@@ -136,8 +156,34 @@ begin  -- architecture behavioral
       doB   => localRdData,
       doA   => slave_i2c_data);
 
-  
+  --a heartbeat is any read or write to an address out of the range of the i2c
+  --registers
+  hb_proc: process (clk_axi) is
+  begin  -- process hb_proc
+    if clk_axi'event and clk_axi = '1' then  -- rising clock edge 
+      heart_beat <= '0';
+      last_localAddress <= localAddress;
+      if (localAddress(13 downto 0) /= "10"&x"001" and
+          last_localAddress(13 downto 0) = "10"&x"001") then
+        heart_beat <= '1';
+      end if;
+    end if;
+  end process hb_proc;
 
+  counter_1: entity work.counter
+    generic map (
+      roll_over   => '0',
+      end_value   => x"1DCD6500",
+      start_value => x"00000000",
+      DATA_WIDTH  => 32)
+    port map (
+      clk         => clk_axi,
+      reset_async => '0',
+      reset_sync  => heart_beat,
+      enable      => '1',
+      event       => '1',
+      count       => open,
+      at_max      => PS_is_shutdown);
   
 
   
