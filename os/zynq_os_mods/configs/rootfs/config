@@ -4131,6 +4131,8 @@ CONFIG_tcpdump=y
 # apps 
 #
 CONFIG_bootscript=y
+CONFIG_smboot=y
+CONFIG_heartbeat=y
 # CONFIG_gpio-demo is not set
 CONFIG_peekpoke=y
 CONFIG_startup-script=y

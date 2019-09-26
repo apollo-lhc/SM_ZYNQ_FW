@@ -17,9 +17,7 @@ BOOT_FILES=$(ZYNQ_OS_PROJECT)/images/linux/BOOT.BIN
 
 #CONFIG_BOOTLOADER=CONFIG_BOOTLOADER
 CONFIG_ROOTFS=CONFIG_ROOTFS
-#BUILD_BOOTLOADER=$(ZYNQ_OS_PROJECT_PATH)/images/linux/zynq_fsbl.elf
 DEVICE_TREE_USER=$(ZYNQ_OS_PROJECT_PATH)/project-spec/meta-user/recipes-bsp/device-tree/files/system-user.dtsi
-#BUILD_KERNEL=$(ZYNQ_OS_PROJECT_PATH)/images/linux/vmlinux
 
 FSBL_BASE=$(YOCTO_MOD_BASE)/recipes-bsp/fsbl/
 FSBL=$(FSBL_BASE)/fsbl_%.bbappend
@@ -27,11 +25,9 @@ FSBL_MOD=$(ZYNQ_OS_PROJECT_PATH)_mods/fsbl
 
 USER_MOD_ROOTFS=$(ZYNQ_OS_PROJECT_PATH)_mods/configs/rootfs/config
 BUILD_ROOTFS=$(ZYNQ_OS_PROJECT_PATH)/project-spec/configs/rootfs_config
-#/build/linux/rootfs/targetroot
 UPDATE_ROOTFS=UPDATE_ROOTFS
 
 YOCTO_MOD_BASE=$(ZYNQ_OS_PROJECT_PATH)/project-spec/meta-user/
-#BUILD_UBOOT=$(ZYNQ_OS_PROJECT_PATH)/images/linux/u-boot.bin
 PACKAGE_LINUX_IMAGE=$(ZYNQ_OS_PROJECT_PATH)/images/linux/image.elf
 
 KERNEL_USER_MODS_BASE=$(YOCTO_MOD_BASE)/recipes-kernel
@@ -40,11 +36,12 @@ FSTAB=$(YOCTO_MOD_BASE)/recipes-core/base-files/base-files_%.bbappend
 DROPBEAR=$(YOCTO_MOD_BASE)/recipes-core/dropbear/dropbear_%.bbappend
 USERS=$(YOCTO_MOD_BASE)/recipes-core/images/petalinux-user-image.bbappend
 BOOTSCRIPT=$(YOCTO_MOD_BASE)/recipes-apps/bootscript/files/bootscript/bootscript
+SMBOOTSCRIPT=$(YOCTO_MOD_BASE)/recipes-apps/smboot/files/smboot/smboot
+HEARTBEATSCRIPT=$(YOCTO_MOD_BASE)/recipes-apps/heartbeat/files/heartbeat/heartbeat
 STARTUP-SCRIPT=$(YOCTO_MOD_BASE)/recipes-apps/startupscript/files/startupscript/startupscript
 UIO-UDEV=$(YOCTO_MOD_BASE)/recipes-apps/startupscript/files/uio/uio.rules.bb
 
 
-#.PHONY: $(CONFIG_BOOTLOADER) list  clean $(BUILD_ROOTFS)
 .PHONY: list  clean $(BUILD_ROOTFS) REBUILD_BOOTBIN
 
 all: $(BOOT_FILES)
@@ -59,9 +56,9 @@ list:
 
 
 RECONFIG_ZYNQ : $(HDF_FILE)
-	@echo "Creating fresh OS project"
-	@rm -rf $(ZYNQ_OS_PROJECT_PATH)	
-	source $(VIVADO_PETALINUX) && \
+#	@echo "Creating fresh OS project"
+#	@rm -rf $(ZYNQ_OS_PROJECT_PATH)	
+#	source $(VIVADO_PETALINUX) && \
 	petalinux-create --type project --name $(ZYNQ_OS) --template zynq --force
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
 	source $(VIVADO_PETALINUX) && \
@@ -80,11 +77,6 @@ $(ZYNQ_OS_PROJECT) : $(HDF_FILE)
 	DTSI_PATH=./hw $(ZYNQ_OS)_mods/device-tree/build_user_dtsi.sh > $(DEVICE_TREE_USER)
 	make $(KERNEL_USER_MODS_BASE)
 	make $(FSBL)
-#	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
-#	source $(VIVADO_PETALINUX) && \
-#	petalinux-build -c bootloader $(OUTPUT_MARKUP)
-
-#	cp $(ZYNQ_OS_PROJECT_PATH)_mods/device-tree/system-user.dtsi $(ZYNQ_OS_PROJECT_PATH)/project-spec/meta-user/recipes-bsp/device-tree/files/system-user.dtsi
 
 
 
@@ -143,6 +135,20 @@ $(BOOTSCRIPT):
 	@cp ./zynq_os_mods/bootscript/bootscript.bb              $(YOCTO_MOD_BASE)/recipes-apps/bootscript/bootscript.bb
 	@cp ./zynq_os_mods/bootscript/bootscript                 $(YOCTO_MOD_BASE)/recipes-apps/bootscript/files/bootscript
 
+$(SMBOOTSCRIPT):
+	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
+	source $(VIVADO_PETALINUX) && \
+	petalinux-create -t apps --template install --name smboot --enable
+	@cp ./zynq_os_mods/smboot/smboot.bb              $(YOCTO_MOD_BASE)/recipes-apps/smboot/smboot.bb
+	@cp ./zynq_os_mods/smboot/smboot                 $(YOCTO_MOD_BASE)/recipes-apps/smboot/files/smboot
+
+$(HEARTBEATSCRIPT):
+	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
+	source $(VIVADO_PETALINUX) && \
+	petalinux-create -t apps --template install --name heartbeat --enable
+	@cp ./zynq_os_mods/heartbeat/heartbeat.bb              $(YOCTO_MOD_BASE)/recipes-apps/heartbeat/heartbeat.bb
+	@cp ./zynq_os_mods/heartbeat/heartbeat                 $(YOCTO_MOD_BASE)/recipes-apps/heartbeat/files/heartbeat
+
 $(STARTUP-SCRIPT):
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
 	source $(VIVADO_PETALINUX) && \
@@ -174,6 +180,8 @@ $(BUILD_ROOTFS): $(ZYNQ_OS_PROJECT) $(USER_MOD_ROOTFS)
 	make $(DROPBEAR)
 	make $(USERS)
 	make $(BOOTSCRIPT)
+	make $(SMBOOTSCRIPT)
+	make $(HEARTBEATSCRIPT)
 	make $(STARTUP-SCRIPT)
 	make $(UIO-UDEV)
 
