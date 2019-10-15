@@ -93,7 +93,7 @@ begin  -- architecture behavioral
   CM1_UART_BUF : OBUFT
     port map (
       T => CM1_disable,
-      I => uart_tx(0),
+      I => to_CM1_in.UART_Tx,--uart_tx(0),
       O => to_CM1_out.UART_Tx);
   CM1_TMS_BUF : OBUFT
     port map (

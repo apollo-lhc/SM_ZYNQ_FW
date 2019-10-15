@@ -617,10 +617,9 @@ begin  -- architecture structure
       C2C2_PHY_DEBUG_txprbsforceerr   => CM2_C2C_Ctrl.txprbsforceerr,  
       C2C2_PHY_DEBUG_txprbssel        => CM2_C2C_Ctrl.txprbssel,       
       C2C2_PHY_DEBUG_txprecursor      => CM2_C2C_Ctrl.txprecursor,     
-      C2C2_PHY_DEBUG_txresetdone      => CM2_C2C_Mon.txresetdone
-
-
-
+      C2C2_PHY_DEBUG_txresetdone      => CM2_C2C_Mon.txresetdone,
+      CM_UART_rxd => CM1_UART_rx,
+      CM_UART_txd => CM1_UART_Tx_internal
       );
 
 
@@ -897,12 +896,12 @@ begin  -- architecture structure
       from_CM1.PWR_good    => CM1_PWR_good,
       from_CM1.TDO         => '0',
       from_CM1.GPIO        => CM1_GPIO,
-      from_CM1.UART_Rx     => CM1_UART_rx,     
+      from_CM1.UART_Rx     => '0',--CM1_UART_rx,     
       from_CM2.PWR_good    => CM2_PWR_good,
       from_CM2.TDO         => '0',
       from_CM2.GPIO        => CM2_GPIO,
       from_CM2.UART_Rx     => CM2_UART_rx,
-      to_CM1_in.UART_Tx    => '0',--CM1_UART_Tx_internal,
+      to_CM1_in.UART_Tx    => CM1_UART_Tx_internal,
       to_CM1_in.TMS        => XVC0_TMS,
       to_CM1_in.TDI        => XVC0_TDI,
       to_CM1_in.TCK        => XVC0_TCK,

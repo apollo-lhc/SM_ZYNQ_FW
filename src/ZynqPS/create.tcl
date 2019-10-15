@@ -53,6 +53,9 @@ set_property CONFIG.FREQ_HZ 50000000 [get_bd_ports ${INIT_CLK}]
 #XADC monitor
 [AXI_IP_XADC MONITOR          ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} 50000000]
 
+#CM UART
+[AXI_IP_UART 115200 CM_UART   ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} 50000000]
+
 #========================================
 #  Finish up
 #========================================
