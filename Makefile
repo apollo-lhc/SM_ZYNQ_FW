@@ -1,6 +1,7 @@
 #################################################################################
 # make stuff
 #################################################################################
+SHELL = /bin/bash -o pipefail
 OUTPUT_MARKUP= 2>&1 | tee ../make_log.txt | ccze -A
 
 #################################################################################
@@ -35,7 +36,7 @@ BIT=./bit/top.bit
 
 .SECONDARY:
 
-.PHONY: clean list bit
+.PHONY: clean list bit NOTIFY_DAN_BAD NOTIFY_DAN_GOOD
 
 all: bit 
 
@@ -89,7 +90,8 @@ open_hw :
 #################################################################################
 # FPGA building
 #################################################################################
-bit	: $(BIT)
+bit	:
+	$(MAKE) $(BIT) || $(MAKE) NOTIFY_DAN_BAD
 
 interactive : 
 	@source $(VIVADO_SHELL) &&\
@@ -102,6 +104,7 @@ $(BIT)	:
 	mkdir -p proj &&\
 	cd proj &&\
 	vivado $(VIVADO_FLAGS) -source ../$(SETUP_BUILD_TCL) $(OUTPUT_MARKUP)
+	$(MAKE) NOTIFY_DAN_GOOD
 
 #################################################################################         
 # Sim     
@@ -150,3 +153,8 @@ tb_IPMC_i2c_slave : $(TB_IPMC_I2C_SLAVE_VDBS)
 list:
 	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | column
 
+
+NOTIFY_DAN_GOOD:
+	curl -X POST -H 'Content-type: application/json' --data '{"text":"FINISHED building FW!"}' https://hooks.slack.com/services/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
+NOTIFY_DAN_BAD:
+	curl -X POST -H 'Content-type: application/json' --data '{"text":"FAILED to build FW!"}' https://hooks.slack.com/services/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
