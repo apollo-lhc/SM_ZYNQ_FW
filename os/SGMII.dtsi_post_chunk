@@ -1,13 +1,9 @@
 &gem1 {
-phy-mode = "gmii";
-local-mac-address = [00 0a 35 00 00 01];
-phy-handle = <&phy9>;
+local-mac-address = [00 50 51 FF 10 06];
+status = "okay";
+is-internal-pcspma;
+phy-mode = "moca";
 
-phy9: phy@9 {
-phy-mode = "sgmii";
-compatible = "Xilinx PCS/PMA PHY";
-device_type = "ethernet-phy";
-xlnx,phy-type = <4>;
-reg = <9>;
-};
+fixed-link = <1 1 1000 1 1>;
+
 };
