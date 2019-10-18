@@ -21,6 +21,8 @@ bd/*/*
 #################################################################################
 bit
 os/hw
+!os/SGMII.dtsi_post_chunk
+os/*
 os/zynq_os
 !os/zynq_os_mods
 
