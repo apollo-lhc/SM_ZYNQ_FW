@@ -59,6 +59,10 @@ set AXI_MASTER_RSTN [get_bd_pins ${SYS_RESETER}/interconnect_aresetn]
 set AXI_SLAVE_RSTN [get_bd_pins ${SYS_RESETER}/peripheral_aresetn]
 make_bd_pins_external -name axi_rst_n [get_bd_pins ${AXI_SLAVE_RSTN}]
 
+#add interrupts from PL to PS
+set_property -dict [list CONFIG.PCW_USE_FABRIC_INTERRUPT {1}] [get_bd_cells processing_system7_0]
+set_property -dict [list CONFIG.PCW_IRQ_F2P_INTR {1}] [get_bd_cells processing_system7_0]
+
 
 #validate the design
 validate_bd_design

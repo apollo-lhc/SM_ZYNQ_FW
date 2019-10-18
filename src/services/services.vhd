@@ -42,10 +42,7 @@ entity services is
     FP_switch       : in  std_logic;
                     
     ESM_LED_CLK     : in  std_logic;
-    ESM_LED_SDA     : in  std_logic;
-    ESM_UART_Tx     : out std_logic;
-    ESM_UART_Rx     : in  std_logic
-
+    ESM_LED_SDA     : in  std_logic
     );
 end entity services;
 
@@ -73,16 +70,6 @@ architecture behavioral of services is
   signal SGMII_MON_buf1 : SGMII_MONITOR_t;
   signal SGMII_MON_buf2 : SGMII_MONITOR_t;
 
-  signal reset             : std_logic;                     
-  signal uart_wr_en        : std_logic;                
-  signal uart_wr_half_full : std_logic;         
-  signal uart_wr_full      : std_logic;              
-  signal uart_rd_data      : std_logic_vector(7 downto 0);
-  signal uart_rd_en        : std_logic;                
-  signal uart_rd_available : std_logic;         
-  signal uart_rd_half_full : std_logic;         
-  signal uart_rd_full      : std_logic;
-
 
   
 begin  -- architecture behavioral
@@ -99,25 +86,6 @@ begin  -- architecture behavioral
       
     end if;
   end process ESM_LED_CAP;
-
-  reset <= not reset_axi_n;
-  uart_1: entity work.uart
-    generic map (
-      BAUD_COUNT => 26)
-    port map (
-      clk             => clk_axi,
-      reset           => reset,
-      tx              => ESM_UART_Tx,
-      rx              => ESM_UART_Rx,
-      write_data      => reg_data(10)(7 downto 0),
-      write_en        => uart_wr_en,
-      write_half_full => uart_wr_half_full,
-      write_full      => uart_wr_full,
-      read_data       => uart_rd_data,
-      read_en         => uart_rd_en,
-      read_available  => uart_rd_available,
-      read_half_full  => uart_rd_half_full,
-      read_full       => uart_rd_full);             
 
   
   AXIRegBridge : entity work.axiLiteReg
@@ -183,15 +151,6 @@ begin  -- architecture behavioral
           localRdData( 2) <= reg_data(8)( 2);   -- FP LED sda
           localRdData( 4) <= FP_switch;        -- FP Switch (should be debounced)
           localRdData(31 downto 16) <= ESM_LEDs; -- decoded ESM LEDs
-        when x"A" =>  
-          localRdData( 7 downto  0) <= reg_data(10)( 7 downto  0);
-          localRdData(13) <= uart_wr_half_full;
-          localRdData(14) <= uart_wr_full;
-        when x"B" =>
-          localRdData( 7 downto  0) <= uart_rd_data;
-          localRdData(12) <= uart_rd_available;
-          localRdData(13) <= uart_rd_half_full;
-          localRdData(14) <= uart_rd_full;
         when x"C" =>
           localRdData( 0) <= reg_data(12)(0);   --overall SGMII reset input
           localRdData( 1) <= SGMII_MON_buf2.pma_reset;   --overall SGMII reset output
@@ -227,10 +186,6 @@ begin  -- architecture behavioral
       reg_data <= default_reg_data;
     elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
 
-      --Pulse resets
-      uart_wr_en            <= '0';  --ESM UART write
-      uart_rd_en            <= '0';  --ESM UART read
-
       
       if localWrEn = '1' then
         case localAddress(3 downto 0) is
@@ -247,11 +202,6 @@ begin  -- architecture behavioral
             reg_data(8)( 0) <= localWrData( 0);   -- FP LED reste
             reg_data(8)( 1) <= localWrData( 1);   -- FP LED clk
             reg_data(8)( 2) <= localWrData( 2);   -- FP LED sda
-          when x"A" =>
-            reg_data(10)( 7 downto  0) <= localWrData( 7 downto  0);
-            uart_wr_en                 <= '1';
-          when x"B" =>
-            uart_rd_en                 <= localWrData(12);
           when x"C" =>
             reg_data(12)( 0) <= localWrData( 0);
 
