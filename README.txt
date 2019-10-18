@@ -1,5 +1,11 @@
 APOLLO Service Module firmware
 
+Github branching policy:
+We are going to try to follow: https://nvie.com/posts/a-successful-git-branching-model/
+The default branch is develop and you should branch off of that.
+
+
+
 To Build FPGA FW:
   >make
   Ouput:
