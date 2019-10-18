@@ -69,16 +69,6 @@ architecture behavioral of CM_interface is
 
 
   signal reset             : std_logic;                     
-  signal uart_tx           : slv_2_t;
-  signal uart_rx           : slv_2_t;
-  signal uart_wr_en        : slv_2_t;                
-  signal uart_wr_half_full : slv_2_t;         
-  signal uart_wr_full      : slv_2_t;              
-  signal uart_rd_data      : slv8_array_t(0 to 1);
-  signal uart_rd_en        : slv_2_t;                
-  signal uart_rd_available : slv_2_t;         
-  signal uart_rd_half_full : slv_2_t;         
-  signal uart_rd_full      : slv_2_t;
 
   
 begin  -- architecture behavioral
@@ -114,7 +104,7 @@ begin  -- architecture behavioral
   CM2_UART_BUF : OBUFT
     port map (
       T => CM2_disable,
-      I => uart_tx(1),
+      I => to_CM2_in.UART_Tx,
       O => to_CM2_out.UART_Tx);
   CM2_TMS_BUF : OBUFT
     port map (
@@ -164,29 +154,6 @@ begin  -- architecture behavioral
         power_good        => PWR_good(iCM));
   end generate CM_PWR_SEQ;
   
-  -------------------------------------------------------------------------------
-  --UARTS
-  -------------------------------------------------------------------------------
-  uart_rx <= from_CM2.UART_Rx & from_CM1.UART_Rx;
-  CM_UARTs: for iCM in 0 to 1 generate  
-    uart_CM: entity work.uart
-      generic map (
-        BAUD_COUNT => 26)
-      port map (
-        clk             => clk_axi,
-        reset           => reset,
-        tx              => uart_tx(iCM),
-        rx              => uart_rx(iCM),
-        write_data      => reg_data(iCM*16 + 16)(7 downto 0),
-        write_en        => uart_wr_en(iCM),
-        write_half_full => uart_wr_half_full(iCM),
-        write_full      => uart_wr_full(iCM),
-        read_data       => uart_rd_data(iCM),
-        read_en         => uart_rd_en(iCM),
-        read_available  => uart_rd_available(iCM),
-        read_half_full  => uart_rd_half_full(iCM),
-        read_full       => uart_rd_full(iCM));             
-  end generate CM_UARTs;
   -------------------------------------------------------------------------------
   -- AXI 
   -------------------------------------------------------------------------------
@@ -251,15 +218,6 @@ begin  -- architecture behavioral
           localRdData( 8)            <= enable_uC(1);
           localRdData( 9)            <= enable_PWR(1);
           localRdData(10)            <= enable_IOs(1);
-        when x"10" =>
-          localRdData( 7 downto  0) <= reg_data(16)( 7 downto  0);
-          localRdData(13) <= uart_wr_half_full(0);
-          localRdData(14) <= uart_wr_full(0);
-        when x"11" =>
-          localRdData( 7 downto  0) <= uart_rd_data(0);
-          localRdData(12) <= uart_rd_available(0);
-          localRdData(13) <= uart_rd_half_full(0);
-          localRdData(14) <= uart_rd_full(0);
         when x"12" =>
           localRdData(0) <= CM1_C2C_Mon.axi_c2c_config_error_out;   
           localRdData(1) <= CM1_C2C_Mon.axi_c2c_link_error_out;     
@@ -313,15 +271,6 @@ begin  -- architecture behavioral
           localRdData(23)           <= reg_data(20)(23)          ;  --txprbsforceerr;
           localRdData(26 downto 24) <= reg_data(20)(26 downto 24);  --txprbssel;     
           localRdData(31 downto 27) <= reg_data(20)(31 downto 27);  --txprecursor;
-        when x"20" =>
-          localRdData( 7 downto  0) <= reg_data(32)( 7 downto  0);
-          localRdData(13) <= uart_wr_half_full(1);
-          localRdData(14) <= uart_wr_full(1);
-        when x"21" =>
-          localRdData( 7 downto  0) <= uart_rd_data(1);
-          localRdData(12) <= uart_rd_available(1);
-          localRdData(13) <= uart_rd_half_full(1);
-          localRdData(14) <= uart_rd_full(1);
         when x"22" =>
           localRdData(0) <= CM2_C2C_Mon.axi_c2c_config_error_out;   
           localRdData(1) <= CM2_C2C_Mon.axi_c2c_link_error_out;     
@@ -378,19 +327,12 @@ begin  -- architecture behavioral
     if reset_axi_n = '0' then                 -- asynchronous reset (active high)
       reg_data <= default_reg_data;
     elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
-      uart_wr_en <= (others => '0');
-      uart_rd_en <= (others => '0');
       if localWrEn = '1' then
         case localAddress(7 downto 0) is
           when x"0" =>
             reg_data(0)( 2 downto  0) <= localWrData(2 downto 0);
           when x"1" =>
             reg_data(1)( 2 downto  0) <= localWrData(2 downto 0);
-          when x"10" =>
-            reg_data(16)(7 downto 0) <= localWrData(7 downto 0);
-            uart_wr_en(0) <= '1';
-          when x"11" =>
-            uart_rd_en(0) <= '1';
           when x"12" =>
             reg_data(18)(5)  <= localWrData(5);
             reg_data(18)(22) <= localWrData(22); --eyescanreset;
@@ -423,11 +365,6 @@ begin  -- architecture behavioral
             reg_data(20)(26 downto 24) <= localWrData(26 downto 24); --txprbssel;     
             reg_data(20)(31 downto 27) <= localWrData(31 downto 27); --txprecursor;
             
-          when x"20" =>
-            reg_data(32)(7 downto 0) <= localWrData(7 downto 0);
-            uart_wr_en(1) <= '1';
-          when x"21" =>
-            uart_rd_en(1) <= '1';
           when x"22" =>
             reg_data(34)(5)  <= localWrData(5);
           when others => null;

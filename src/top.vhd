@@ -618,8 +618,12 @@ begin  -- architecture structure
       C2C2_PHY_DEBUG_txprbssel        => CM2_C2C_Ctrl.txprbssel,       
       C2C2_PHY_DEBUG_txprecursor      => CM2_C2C_Ctrl.txprecursor,     
       C2C2_PHY_DEBUG_txresetdone      => CM2_C2C_Mon.txresetdone,
-      CM_UART_rxd => CM1_UART_rx,
-      CM_UART_txd => CM1_UART_Tx_internal
+      CM1_UART_rxd => CM1_UART_rx,
+      CM1_UART_txd => CM1_UART_Tx_internal,
+      CM2_UART_rxd => CM2_UART_rx,
+      CM2_UART_txd => CM2_UART_Tx_internal,
+      ESM_UART_rxd => ESM_UART_rx,
+      ESM_UART_txd => ESM_UART_tx
       );
 
 
@@ -843,9 +847,7 @@ begin  -- architecture structure
       FP_LED_SDA      => open,--FP_LED_SDA,
       FP_switch       => FP_switch,
       ESM_LED_CLK     => ESM_LED_CLK,
-      ESM_LED_SDA     => ESM_LED_SDA,
-      ESM_UART_Tx     => ESM_UART_Tx,
-      ESM_UART_Rx     => ESM_UART_Rx
+      ESM_LED_SDA     => ESM_LED_SDA
       );
 
   SM_info_1: entity work.SM_info

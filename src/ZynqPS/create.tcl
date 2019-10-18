@@ -53,8 +53,16 @@ set_property CONFIG.FREQ_HZ 50000000 [get_bd_ports ${INIT_CLK}]
 #XADC monitor
 [AXI_IP_XADC MONITOR          ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} 50000000]
 
-#CM UART
-[AXI_IP_UART 115200 CM_UART   ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} 50000000]
+#UARTs
+set IRQ_ORR interrupt_or_reduce
+create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.1 ${IRQ_ORR}
+set_property -dict [list CONFIG.NUM_PORTS {3}] [get_bd_cells ${IRQ_ORR}]
+connect_bd_net [get_bd_pins ${IRQ_ORR}/dout] [get_bd_pins processing_system7_0/IRQ_F2P]
+
+[AXI_IP_UART 115200 ${IRQ_ORR}/in0 CM1_UART   ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} 50000000 ]
+[AXI_IP_UART 115200 ${IRQ_ORR}/in1 CM2_UART   ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} 50000000 ]
+[AXI_IP_UART 115200 ${IRQ_ORR}/in2 ESM_UART   ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} 50000000 ]
+
 
 #========================================
 #  Finish up

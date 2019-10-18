@@ -1,7 +1,9 @@
 #################################################################################
 # make stuff
 #################################################################################
+SHELL=/bin/bash -o pipefail
 OUTPUT_MARKUP= 2>&1 | tee ../make_log.txt | ccze -A
+SLACK_MESG ?= echo
 
 #################################################################################
 # VIVADO stuff
@@ -35,9 +37,10 @@ BIT=./bit/top.bit
 
 .SECONDARY:
 
-.PHONY: clean list bit
+.PHONY: clean list bit REBUILD_BOOTBIN NOTIFY_DAN_GOOD NOTIFY_DAN_BAD
 
-all: bit 
+all:
+	$(MAKE) bit || $(MAKE) NOTIFY_DAN_BAD
 
 
 #################################################################################
@@ -85,6 +88,13 @@ open_hw :
 	cd proj &&\
 	vivado -source ../$(HW_TCL)
 
+#################################################################################
+# Slack notifications
+#################################################################################
+NOTIFY_DAN_GOOD:
+	${SLACK_MESG} "FINISHED building FW!"
+NOTIFY_DAN_BAD:
+	${SLACK_MESG} "FAILED to build FW!"
 
 #################################################################################
 # FPGA building
@@ -102,6 +112,8 @@ $(BIT)	:
 	mkdir -p proj &&\
 	cd proj &&\
 	vivado $(VIVADO_FLAGS) -source ../$(SETUP_BUILD_TCL) $(OUTPUT_MARKUP)
+	$(MAKE) NOTIFY_DAN_GOOD
+
 
 #################################################################################         
 # Sim     
