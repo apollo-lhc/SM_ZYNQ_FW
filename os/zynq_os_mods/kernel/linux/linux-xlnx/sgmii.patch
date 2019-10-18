@@ -1,0 +1,67 @@
+From: name@domain.com (Dan)
+diff --git a/drivers/net/ethernet/cadence/macb.h b/drivers/net/ethernet/cadence/macb.h
+index 70252f2..76d9654 100644
+--- a/drivers/net/ethernet/cadence/macb.h
++++ b/drivers/net/ethernet/cadence/macb.h
+@@ -1084,6 +1084,8 @@ struct macb {
+ 	struct ptp_clock_info ptp_clock_info;
+ 	struct tsu_incr tsu_incr;
+ 	struct hwtstamp_config tstamp_config;
++
++	bool			internal_pcspma;
+ };
+ 
+ #ifdef CONFIG_MACB_USE_HWSTAMP
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 2624fc2..d414a45 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -2219,7 +2219,7 @@ static void macb_init_hw(struct macb *bp)
+ 	macb_set_hwaddr(bp);
+ 
+ 	config = macb_mdc_clk_div(bp);
+-	if (bp->phy_interface == PHY_INTERFACE_MODE_SGMII)
++	if (bp->internal_pcspma)
+ 		config |= GEM_BIT(SGMIIEN) | GEM_BIT(PCSSEL);
+ 	config |= MACB_BF(RBOF, NET_IP_ALIGN);	/* Make eth data aligned */
+ 	config |= MACB_BIT(PAE);		/* PAuse Enable */
+@@ -2289,10 +2289,9 @@ static void macb_init_hw(struct macb *bp)
+ 			     MACB_BIT(HRESP));
+ 	}
+ 
+-	if ((bp->phy_interface == PHY_INTERFACE_MODE_SGMII) &&
++	if ((bp->internal_pcspma) &&
+ 	    (bp->caps & MACB_CAPS_PCS))
+-		gem_writel(bp, PCSCNTRL,
+-			   gem_readl(bp, PCSCNTRL) | GEM_BIT(PCSAUTONEG));
++					   		 gem_writel(bp, PCSCNTRL, gem_readl(bp, PCSCNTRL) & ~GEM_BIT(PCSAUTONEG));
+ 
+ 	/* Enable TX and RX */
+ 	macb_writel(bp, NCR, MACB_BIT(RE) | MACB_BIT(TE) | MACB_BIT(MPE) |
+@@ -3218,14 +3217,13 @@ static int macb_init(struct platform_device *pdev)
+ 	/* Set MII management clock divider */
+ 	val = macb_mdc_clk_div(bp);
+ 	val |= macb_dbw(bp);
+-	if (bp->phy_interface == PHY_INTERFACE_MODE_SGMII)
++	if (bp->internal_pcspma)
+ 		val |= GEM_BIT(SGMIIEN) | GEM_BIT(PCSSEL);
+ 	macb_writel(bp, NCFGR, val);
+ 
+-	if ((bp->phy_interface == PHY_INTERFACE_MODE_SGMII) &&
++	if ((bp->internal_pcspma) &&
+ 	    (bp->caps & MACB_CAPS_PCS))
+-		gem_writel(bp, PCSCNTRL,
+-			   gem_readl(bp, PCSCNTRL) | GEM_BIT(PCSAUTONEG));
++					   		 gem_writel(bp, PCSCNTRL, gem_readl(bp, PCSCNTRL) & ~GEM_BIT(PCSAUTONEG));
+ 
+ 	return 0;
+ }
+@@ -3728,6 +3726,8 @@ static int macb_probe(struct platform_device *pdev)
+ 	if (macb_config)
+ 		bp->jumbo_max_len = macb_config->jumbo_max_len;
+ 
++	bp->internal_pcspma = of_property_read_bool(np, "is-internal-pcspma");
++
+ 	spin_lock_init(&bp->lock);
+ 
+ 	/* setup capabilities */

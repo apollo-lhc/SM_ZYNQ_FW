@@ -970,6 +970,78 @@ CONFIG_strace=y
 #
 # python 
 #
+CONFIG_python=y
+CONFIG_python-dbg=y
+CONFIG_python-mailbox=y
+CONFIG_python-resource=y
+CONFIG_python-compile=y
+CONFIG_python-math=y
+CONFIG_python-difflib=y
+CONFIG_python-gdbm=y
+CONFIG_python-man=y
+CONFIG_python-image=y
+CONFIG_python-fcntl=y
+CONFIG_python-2to3=y
+CONFIG_python-distutils=y
+CONFIG_python-readline=y
+CONFIG_python-terminal=y
+CONFIG_python-profile=y
+CONFIG_python-mmap=y
+CONFIG_python-robotparser=y
+CONFIG_python-threading=y
+CONFIG_python-zlib=y
+CONFIG_python-pickle=y
+CONFIG_python-xml=y
+CONFIG_python-lang=y
+CONFIG_python-email=y
+CONFIG_python-contextlib=y
+CONFIG_python-netclient=y
+CONFIG_python-dev=y
+CONFIG_python-idle=y
+CONFIG_python-modules=y
+CONFIG_python-logging=y
+CONFIG_python-xmlrpc=y
+CONFIG_python-codecs=y
+CONFIG_python-stringold=y
+CONFIG_python-argparse=y
+CONFIG_python-numbers=y
+CONFIG_python-debugger=y
+CONFIG_python-html=y
+CONFIG_python-shell=y
+CONFIG_python-tkinter=y
+CONFIG_python-textutils=y
+CONFIG_python-compression=y
+CONFIG_python-hotshot=y
+CONFIG_python-core=y
+CONFIG_python-importlib=y
+CONFIG_python-json=y
+CONFIG_python-sqlite3=y
+CONFIG_python-plistlib=y
+CONFIG_python-curses=y
+CONFIG_python-misc=y
+CONFIG_python-tests=y
+CONFIG_python-netserver=y
+CONFIG_python-multiprocessing=y
+CONFIG_python-syslog=y
+CONFIG_python-pprint=y
+CONFIG_python-pkgutil=y
+CONFIG_python-mime=y
+CONFIG_libpython2=y
+CONFIG_python-smtpd=y
+CONFIG_python-pydoc=y
+CONFIG_python-bsddb=y
+CONFIG_python-re=y
+CONFIG_python-ctypes=y
+CONFIG_python-sqlite3-tests=y
+CONFIG_python-compiler=y
+CONFIG_python-unittest=y
+CONFIG_python-db=y
+CONFIG_python-io=y
+CONFIG_python-unixadmin=y
+CONFIG_python-datetime=y
+CONFIG_python-subprocess=y
+CONFIG_python-audio=y
+CONFIG_python-crypt=y
 # CONFIG_python is not set
 # CONFIG_python-dbg is not set
 # CONFIG_python-mailbox is not set
@@ -1042,6 +1114,7 @@ CONFIG_strace=y
 # CONFIG_python-subprocess is not set
 # CONFIG_python-audio is not set
 # CONFIG_python-crypt is not set
+
 
 #
 # python-nose 

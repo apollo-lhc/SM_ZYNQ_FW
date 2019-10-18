@@ -2,6 +2,7 @@
 # make stuff
 #################################################################################
 OUTPUT_MARKUP= 2>&1 | tee -a make_log.txt | ccze -A
+SLACK_MESG ?= echo 
 
 #################################################################################
 # VIVADO stuff
@@ -42,9 +43,10 @@ STARTUP-SCRIPT=$(YOCTO_MOD_BASE)/recipes-apps/startupscript/files/startupscript/
 UIO-UDEV=$(YOCTO_MOD_BASE)/recipes-apps/startupscript/files/uio/uio.rules.bb
 
 
-.PHONY: list  clean $(BUILD_ROOTFS) REBUILD_BOOTBIN
+.PHONY: list  clean $(BUILD_ROOTFS) REBUILD_BOOTBIN NOTIFY_DAN_GOOD NOTIFY_DAN_BAD
 
-all: $(BOOT_FILES)
+all: 
+	$(MAKE) $(BOOT_FILES) || $(MAKE) NOTIFIFY_DAN_BAD
 
 #################################################################################
 # Help 
@@ -53,6 +55,14 @@ all: $(BOOT_FILES)
 #list magic: https://stackoverflow.com/questions/4219255/how-do-you-get-the-list-of-targets-in-a-makefile
 list:
 	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | column
+
+
+
+NOTIFY_DAN_GOOD: 
+	${SLACK_MESG} "FINISHED building image!"
+NOTIFY_DAN_BAD:
+	${SLACK_MESG} "FAILED to build image!"
+
 
 
 RECONFIG_ZYNQ : $(HDF_FILE)
@@ -207,6 +217,7 @@ $(BOOT_FILES): $(PACKAGE_LINUX_IMAGE)
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
 	source $(VIVADO_PETALINUX) && \
 	petalinux-package --boot --format BIN --fsbl images/linux/zynq_fsbl.elf --fpga ../../bit/top.bit  --uboot --force $(OUTPUT_MARKUP)
+	$(MAKE) NOTIFY_DAN_GOOD
 
 REBUILD_BOOTBIN: 
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
