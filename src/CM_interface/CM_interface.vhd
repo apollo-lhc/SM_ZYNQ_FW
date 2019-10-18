@@ -67,6 +67,9 @@ architecture behavioral of CM_interface is
   signal CM1_disable      : std_logic;
   signal CM2_disable      : std_logic;
 
+  signal CM1_uCIO_disable      : std_logic;
+  signal CM2_uCIO_disable      : std_logic;
+
 
   signal reset             : std_logic;                     
   signal uart_tx           : slv_2_t;
@@ -92,7 +95,7 @@ begin  -- architecture behavioral
   --CM1
   CM1_UART_BUF : OBUFT
     port map (
-      T => CM1_disable,
+      T => CM1_ucIO_disable,
       I => uart_tx(0),
       O => to_CM1_out.UART_Tx);
   CM1_TMS_BUF : OBUFT
@@ -113,7 +116,7 @@ begin  -- architecture behavioral
   --CM2
   CM2_UART_BUF : OBUFT
     port map (
-      T => CM2_disable,
+      T => CM2_ucIO_disable,
       I => uart_tx(1),
       O => to_CM2_out.UART_Tx);
   CM2_TMS_BUF : OBUFT
@@ -142,25 +145,28 @@ begin  -- architecture behavioral
   enableCM1_PWR <= enable_PWR(0);
   enableCM1_IOs <= enable_IOs(0);
   CM1_disable   <= not enable_IOs(0);
+  CM1_ucIO_disable   <= not enable_uc(0);
 
   PWR_good(1)   <= from_CM2.PWR_good;
   enableCM2     <= enable_uC(1);
   enableCM2_PWR <= enable_PWR(1);
   enableCM2_IOs <= enable_IOs(1);
   CM2_disable   <= not enable_IOs(1);
+  CM2_ucIO_disable   <= not enable_uc(1);
 
+  
+  
   CM_PWR_SEQ: for iCM in 0 to 1 generate
     CM_pwr_1: entity work.CM_pwr
       port map (
         clk               => clk_axi,
         reset             => reset,
-        start_uC          => enableCM(iCM),
+        uc_enabled        => enable_uC(iCM),
         start_PWR         => enableCM_PWR(iCM),
         sequence_override => override_PWRGood(iCM),
         current_state     => CM_seq_state((4*iCM) +3 downto 4*iCM),
-        enable_uC         => enable_uC(iCM),
-        enable_PWR        => enable_PWR(iCM),
-        enable_IOs        => enable_IOs(iCM),
+        enabled_PWR        => enable_PWR(iCM),
+        enabled_IOs        => enable_IOs(iCM),
         power_good        => PWR_good(iCM));
   end generate CM_PWR_SEQ;
   
@@ -215,10 +221,10 @@ begin  -- architecture behavioral
     end if;
   end process latch_reads;
 
-  enableCM        (0) <= reg_data(0)(0); --CM1 enabled
+  enable_uc       (0) <= reg_data(0)(0); --CM1 enabled
   enableCM_PWR    (0) <= reg_data(0)(1); --CM1 power eneable
   override_PWRGood(0) <= reg_data(0)(2); --CM1 override
-  enableCM        (1) <= reg_data(1)(0); --CM2 enabled
+  enable_uc       (1) <= reg_data(1)(0); --CM2 enabled
   enableCM_PWR    (1) <= reg_data(1)(1); --CM2 power eneable
   override_PWRGood(1) <= reg_data(1)(2); --CM2 override
 
@@ -237,7 +243,6 @@ begin  -- architecture behavioral
           --pwr state
           localRdData( 7 downto  4) <= CM_seq_state(3 downto 0);
           --pwr state outputs
-          localRdData( 8)            <= enable_uC(0);
           localRdData( 9)            <= enable_PWR(0);
           localRdData(10)            <= enable_IOs(0);
         when x"1" =>
@@ -248,7 +253,6 @@ begin  -- architecture behavioral
           --pwr state
           localRdData( 7 downto  4) <= CM_seq_state(7 downto 4);
           --pwr state outputs
-          localRdData( 8)            <= enable_uC(1);
           localRdData( 9)            <= enable_PWR(1);
           localRdData(10)            <= enable_IOs(1);
         when x"10" =>
