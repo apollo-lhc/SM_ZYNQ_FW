@@ -24,18 +24,27 @@ for line in inputLines:
     line = line.rstrip(" ")
 
     #check that we have to entries (username and password)
-    if len(line.split()) != 2:
+    if len(line.split()) < 2:
         sys.exit("Invalid line in input file");
-    
-    #get values
-    username = line.split()[0]
-    password = line.split()[1]
 
+    #get values
+    username = line.split()[0]  #first value is username
+    password = line.split()[1]  #second value is password
 
     if username == "root":
         user_lines.append("usermod -P " + password + " " + username + " ; \\\n")
     else:                                           
         user_lines.append("useradd -P " + password + " " + username + " ; \\\n")
+
+    if len(line.split()) > 2:
+        user_lines.append("usermod -a -G ")
+        for group in line.split()[2:]:
+            user_lines.append(group + " ")
+        user_lines.append(username+" ; \\\n");
+
+        
+
+
 
 #Create new file for new structure
 outFile = open(outfileName, "w")
