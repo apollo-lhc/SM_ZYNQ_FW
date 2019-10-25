@@ -172,6 +172,7 @@ $(UIO-UDEV):
 	petalinux-create -t apps --template install --name uio.rules --enable
 	@cp ./zynq_os_mods/uio/uio.rules.bb              $(YOCTO_MOD_BASE)/recipes-apps/uio.rules/uio.rules.bb
 	@cp ./zynq_os_mods/uio/uio.rules                 $(YOCTO_MOD_BASE)/recipes-apps/uio.rules/files/uio.rules
+	@cp ./zynq_os_mods/uio/mount.blacklist           $(YOCTO_MOD_BASE)/recipes-apps/uio.rules/files/mount.blacklist
 
 $(FSBL):
 #	#Modify the FSBL to poll for SI chip config
