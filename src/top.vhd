@@ -623,7 +623,15 @@ begin  -- architecture structure
       CM2_UART_rxd => CM2_UART_rx,
       CM2_UART_txd => CM2_UART_Tx_internal,
       ESM_UART_rxd => ESM_UART_rx,
-      ESM_UART_txd => ESM_UART_tx
+      ESM_UART_txd => ESM_UART_tx,
+      BRAM_PORTB_0_addr => x"00000000",
+      BRAM_PORTB_0_clk  => AXI_clk,
+      BRAM_PORTB_0_din  => x"00000000",
+      BRAM_PORTB_0_dout => open,
+      BRAM_PORTB_0_en   => '0',
+      BRAM_PORTB_0_rst  => '0',
+      BRAM_PORTB_0_we   => x"0"
+
       );
 
 

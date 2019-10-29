@@ -1,0 +1,24 @@
+<node>
+  <node id="0"   address="0x00000000" permission="rw"/>
+  <node id="1"   address="0x00000001" permission="rw"/>
+  <node id="2"   address="0x00000002" permission="rw"/>
+  <node id="3"   address="0x00000003" permission="rw"/>
+  <node id="SCRATCH" address="0x000007F0">
+    <node id="0"   address="0x00000000" permission="rw"/>
+    <node id="1"   address="0x00000001" permission="rw"/>
+    <node id="2"   address="0x00000002" permission="rw"/>
+    <node id="3"   address="0x00000003" permission="rw"/>
+    <node id="4"   address="0x00000004" permission="rw"/>
+    <node id="5"   address="0x00000005" permission="rw"/>
+    <node id="6"   address="0x00000006" permission="rw"/>
+    <node id="7"   address="0x00000007" permission="rw"/>
+    <node id="8"   address="0x00000008" permission="rw"/>
+    <node id="9"   address="0x00000009" permission="rw"/>
+    <node id="A"   address="0x0000000A" permission="rw"/>
+    <node id="B"   address="0x0000000B" permission="rw"/>
+    <node id="C"   address="0x0000000C" permission="rw"/>
+    <node id="D"   address="0x0000000D" permission="rw"/>
+    <node id="E"   address="0x0000000E" permission="rw"/>
+    <node id="F"   address="0x0000000F" permission="rw"/>    
+  </node>
+</node>
