@@ -37,15 +37,6 @@
         <node id="PWR_ENABLED" mask="0x200" permission="r" description="power is enabled" parameters="Table=CM;Column=PWR;Row=_2;Status=2"/>                         
         <node id="IOS_ENABLED" mask="0x400" permission="r" description="IOs to CM are enabled" parameters="Table=CM;Column=_4;Row=_2;Status=1"/>       
       </node>                                                                                                           
-      <node id="UART">                                                                                              
-        <node id="WR_DATA" address="0x10" mask="0xFF" permission="rw" description="UART char to write (send on write)"/>
-        <node id="WR_FIFO_HALF_FULL" address="0x10" mask="0x2000" permission="r" description="Send FIFO half full"/>
-        <node id="WR_FIFO_FULL" address="0x10" mask="0x4000" permission="r" description="Send FIFO full"/>
-        <node id="RD_DATA" address="0x11" mask="0xFF" permission="r" description="UART received char"/>
-        <node id="RD_VALID" address="0x11" mask="0x1000" permission="rw" description="Read data valid (wr for ack)"/>              
-        <node id="RD_FIFO_HALF_FULL" address="0x11" mask="0x2000" permission="r" description="Read FIFO half full"/>     
-        <node id="RD_FIFO_FULL" address="0x11" mask="0x4000" permission="r" description="Read FIFO full"/>     
-      </node>
       <node id="C2C" address="0x12">
 	<node id="CONFIG_ERROR" mask="0x1" permission="r" description="C2C config error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
 	<node id="LINK_ERROR" mask="0x2" permission="r" description="C2C link error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
@@ -115,15 +106,6 @@
         <node id="PWR_ENABLED" mask="0x200" permission="r" description="power is enabled"/>                             
         <node id="IOS_ENABLED" mask="0x400" permission="r" description="IOs to CM are enabled"/>                            
       </node>                                                                                                               
-      <node id="UART">                                                                                              
-        <node id="WR_DATA" address="0x20" mask="0xFF" permission="rw" description="UART char to write (send on write)"/>
-        <node id="WR_FIFO_HALF_FULL" address="0x20" mask="0x2000" permission="r" description="Send FIFO half full"/>
-        <node id="WR_FIFO_FULL" address="0x20" mask="0x4000" permission="r" description="Send FIFO full"/>
-        <node id="RD_DATA" address="0x21" mask="0xFF" permission="r" description="UART received char"/>
-	<node id="RD_VALID" address="0x21" mask="0x1000" permission="rw" description="Read data valid (wr for ack)"/>              
-        <node id="RD_FIFO_HALF_FULL" address="0x21" mask="0x2000" permission="r" description="Read FIFO half full"/>
-        <node id="RD_FIFO_FULL" address="0x21" mask="0x4000" permission="r" description="Read FIFO full"/>
-      </node>
       <node id="C2C" address="0x22">
 	<node id="CONFIG_ERROR" mask="0x1" permission="r" description="C2C config error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
 	<node id="LINK_ERROR" mask="0x2" permission="r" description="C2C link error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
@@ -204,15 +186,6 @@
     </node>
     <node id="SWITCH">
       <node id="STATUS" address="0x08" mask="0xFFFF0000" permission="r" description="Ethernet switch LEDs"/>
-      <node id="UART">
-	<node id="WR_DATA" address="0x0A" mask="0xFF" permission="rw" description="ESM UART char to write (send on write)"/>
-	<node id="WR_FIFO_HALF_FULL" address="0x0A" mask="0x2000" permission="r" description="Send FIFO half full"/>
-	<node id="WR_FIFO_FULL" address="0x0A" mask="0x4000" permission="r" description="Send FIFO half full"/>
-	<node id="RD_DATA" address="0x0B" mask="0xFF" permission="r" description="ESM UART received char"/>
-	<node id="RD_VALID" address="0x0B" mask="0x1000" permission="rw" description="Read data valid (write acks current data)"/>
-	<node id="RD_FIFO_HALF_FULL" address="0x0B" mask="0x2000" permission="r" description="Read FIFO half full"/>
-	<node id="RD_FIFO_FULL" address="0x0B" mask="0x4000" permission="r" description="Read FIFO half full"/>
-      </node>
     </node>
     <node id="SGMII" address="0x0C" permission="r">
       <node id="RESET" mask="0x1" permission="rw" description="Reset SGMII + SGMII clocking"/>
