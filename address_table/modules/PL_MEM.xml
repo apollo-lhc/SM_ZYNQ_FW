@@ -1,8 +1,23 @@
-<node>
+<node>  
   <node id="0"   address="0x00000000" permission="rw"/>
   <node id="1"   address="0x00000001" permission="rw"/>
   <node id="2"   address="0x00000002" permission="rw"/>
   <node id="3"   address="0x00000003" permission="rw"/>
+  <node id="USERS_INFO" address="0x000007E0">
+    <node id="SUPER_USERS" address="0x00000000">
+      <node id="COUNT"    mask="0x000000FF" permission="rw" parameters="Table=ZYNQ_OS;Row=_2;Column=0LOGINS;Format=u;Status=1"/>
+      <node id="MINS"     mask="0x0000FF00" permission="rw" parameters="Table=ZYNQ_OS;Row=_2;Column=1_3;Format=u;Status=1;Show=nz"/>
+      <node id="HOURS"    mask="0x00FF0000" permission="rw" parameters="Table=ZYNQ_OS;Row=_2;Column=2_3;Format=u;Status=1;Show=nz"/>
+      <node id="DAYS"     mask="0xFF000000" permission="rw" parameters="Table=ZYNQ_OS;Row=_2;Column=3_3;Format=u;Status=1;Show=nz"/>
+    </node>
+    <node id="USERS" address="0x00000001">
+      <node id="COUNT"    mask="0x000000FF" permission="rw" parameters="Table=ZYNQ_OS;Row=_2;Column=LOGINS;Format=u;Status=1"/>
+      <node id="MINS"     mask="0x0000FF00" permission="rw" parameters="Table=ZYNQ_OS;Row=_2;Column=1_3;Format=u;Status=1;Show=nz"/>
+      <node id="HOURS"    mask="0x00FF0000" permission="rw" parameters="Table=ZYNQ_OS;Row=_2;Column=2_3;Format=u;Status=1;Show=nz"/>
+      <node id="DAYS"     mask="0xFF000000" permission="rw" parameters="Table=ZYNQ_OS;Row=_2;Column=3_3;Format=u;Status=1;Show=nz"/>
+    </node>
+
+  </node>
   <node id="SCRATCH" address="0x000007F0">
     <node id="0"   address="0x00000000" permission="rw"/>
     <node id="1"   address="0x00000001" permission="rw"/>

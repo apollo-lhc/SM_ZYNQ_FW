@@ -32,7 +32,7 @@ entity LED_Encoder is
              LEDORDER       : int8_array_t(0 to 7));               --how many times do you want it to flash per second
     Port    (clk            : in std_logic;                             --clk
              reset          : in std_logic;                             --reset            
-             addressin      : in unsigned (5 downto 0);                 --input address
+             addressin      : in std_logic_vector (5 downto 0);                 --input address
              force_address  : in std_logic;                             --forces positon to addressin
              data           : in slv8_array_t(0 to (REG_COUNT - 1));    --Data Array
              load           : in std_logic;                             --moves to the next register value
@@ -40,7 +40,7 @@ entity LED_Encoder is
              flash          : in std_logic;                             --blinks the current value
              shutdown       : in std_logic;                             --goes to shutdown state
              dataout        : out std_logic_vector (7 downto 0);        --output data
-             addressout     : out unsigned (5 downto 0);                --the current address
+             addressout     : out std_logic_vector (5 downto 0);                --the current address
              SCK            : out std_logic;                            --serial clk
              SDA            : out std_logic);                           --serial data
 end LED_Encoder;
@@ -88,7 +88,7 @@ end component; --end SR_out
 begin
 
 --continuous outputs
-addressout <= position;
+addressout <= std_logic_vector(position);
 
 
 U1 : SR_Out --using SR_Out
@@ -123,7 +123,7 @@ begin
     
     --forcing address  
     elsif force_address = '1' then
-        position <= addressin;
+        position <= unsigned(addressin);
     
     --normal use    
     elsif state /= BLINK then

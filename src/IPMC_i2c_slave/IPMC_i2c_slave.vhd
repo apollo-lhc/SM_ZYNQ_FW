@@ -17,6 +17,8 @@ entity IPMC_i2c_slave is
     writeMOSI       : in  AXIWriteMOSI;
     writeMISO       : out AXIWriteMISO := DefaultAXIWriteMISO;
 
+    linux_booted    : out std_logic;
+    
     SDA_o           : out std_logic;
     SDA_t           : out std_logic;
     SDA_i           : in  std_logic;
@@ -170,6 +172,8 @@ begin  -- architecture behavioral
     end if;
   end process hb_proc;
 
+  linux_booted <= not PS_is_shutdown;
+  
   counter_1: entity work.counter
     generic map (
       roll_over   => '0',
