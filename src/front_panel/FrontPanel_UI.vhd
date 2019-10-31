@@ -34,10 +34,10 @@ entity FrontPanel_UI is
     Port    (clk            : in std_logic;                             --onboard clk
              reset          : in std_logic;                             --reset system
              buttonin       : in std_logic;                             --button input
-             addressin      : in unsigned (5 downto 0);               --address input
+             addressin      : in std_logic_vector (5 downto 0);               --address input
              force_address  : in std_logic;                           --forces the input address onto the LED_Encoder
              display_regs   : in slv8_array_t(0 to (REG_COUNT - 1));    --Input data
-             addressout     : out unsigned (5 downto 0);             --The address in the display_regs currently being displayed
+             addressout     : out std_logic_vector (5 downto 0);             --The address in the display_regs currently being displayed
              SCK            : out std_logic;                            --serial clk
              SDA            : out std_logic;                            --serial data
              shutdownout    : out std_logic);                           --shutdown signal            
@@ -55,45 +55,10 @@ constant STEPS  : integer := CLKFREQ / 1000000; --this makes SCK run at 1 Mhz, 1
 --kinda a placeholder, may go away
 signal dataout : std_logic_vector (7 downto 0);
 
---Declare TriButton
-component Button_Decoder
-    generic (CLKFREQ        : integer);
-    port    (clk            : in std_logic;
-             reset          : in std_logic;
-             buttonin       : in std_logic;
-             short          : out std_logic;
-             long           : out std_logic;
-             two            : out std_logic;
-             shutdown       : out std_logic);
-end component; --end TriButton
-
---Declare LED_Encoder
-component LED_Encoder
-    generic (CLKFREQ        : integer;
-             STEPS          : integer;
-             REG_COUNT      : integer range 1 to 64;
-             FLASHLENGTH    : integer;
-             FLASHRATE      : integer;
-             SHUTDOWNFLIP   : std_logic;
-             LEDORDER       : int8_array_t(0 to 7));
-    port    (clk            : in std_logic;
-             reset          : in std_logic;
-             addressin      : in unsigned (5 downto 0); 
-             force_address  : in std_logic;
-             data           : in slv8_array_t(0 to (REG_COUNT - 1));
-             load           : in std_logic;
-             prev           : in std_logic;
-             flash          : in std_logic;
-             shutdown       : in std_logic;
-             dataout        : out std_logic_vector (7 downto 0);
-             addressout     : out unsigned (5 downto 0);
-             SCK            : out std_logic;
-             SDA            : out std_logic);
-end component; --end LED_Encoder
 
 begin
 
-TB1 : Button_Decoder --using triButton
+TB1 : entity work.Button_Decoder --using triButton
     generic map (CLKFREQ        => CLKFREQ)
     port map    (clk            => clk,
                  reset          => reset,
@@ -103,7 +68,7 @@ TB1 : Button_Decoder --using triButton
                  two            => two,
                  shutdown       => shutdown);
                                 
-L1 : LED_Encoder --using LED_Encoder
+L1 : entity work.LED_Encoder --using LED_Encoder
     generic map (CLKFREQ        => CLKFREQ,
                  STEPS          => STEPS,
                  REG_COUNT      => REG_COUNT,

@@ -10,9 +10,6 @@ set vhdl_files "\
      src/top.vhd \
      src/misc/types.vhd \
      src/misc/counter.vhd \
-     src/misc/uart.vhd \
-     src/misc/uart_rx6.vhd \
-     src/misc/uart_tx6.vhd \
      src/misc/asym_dualport_ram.vhd \
      src/axiReg/axiRegPkg.vhd \
      src/axiReg/axiReg.vhd \
@@ -30,6 +27,7 @@ set vhdl_files "\
      src/front_panel/FrontPanel_UI.vhd \
      src/front_panel/LED_Encoder.vhd \
      src/front_panel/SR_Out.vhd \
+     src/front_panel/LED_Paterns.vhd \
      src/SM_info/SM_info.vhd \
      src/misc/pass_time_domain.vhd \
      "

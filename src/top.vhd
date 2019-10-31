@@ -350,7 +350,6 @@ architecture structure of top is
   signal CM1_UART_Tx_internal : std_logic;
   signal CM2_UART_Tx_internal : std_logic;
   signal CM1_C2C_Mon : C2C_Monitor_t;
-  signal CM1_C2C_Mon_C2C : C2C_Monitor_t;
   signal CM2_C2C_Mon : C2C_Monitor_t;
   
   signal CM_enable_IOs   : std_logic_vector(1 downto 0);
@@ -358,11 +357,7 @@ architecture structure of top is
   signal CM2_C2C_Ctrl : C2C_Control_t;
   signal C2C1_phy_gt_refclk1_out : std_logic;
 
-
-  constant FP_REG_COUNT : integer := 4;
-  signal FP_regs : slv8_array_t(0 to (FP_REG_COUNT - 1)) := (others => (others => '0'));
-  signal HB_counter : unsigned(31 downto 0);
-  constant FP_LED_ORDER : int8_array_t(0 to 7) := (0,1,2,3,7,6,5,4);
+  signal linux_booted : std_logic;
   
 begin  -- architecture structure
 
@@ -851,11 +846,14 @@ begin  -- architecture structure
       HQ_CLK_OSC_LOS  => HQ_CLK_OSC_LOS,
       HQ_SRC_SEL      => HQ_SRC_SEL,
       FP_LED_RST      => FP_LED_RST,
-      FP_LED_CLK      => open,--FP_LED_CLK,
-      FP_LED_SDA      => open,--FP_LED_SDA,
+      FP_LED_CLK      => FP_LED_CLK,
+      FP_LED_SDA      => FP_LED_SDA,
       FP_switch       => FP_switch,
+      linux_booted    => linux_booted,
       ESM_LED_CLK     => ESM_LED_CLK,
-      ESM_LED_SDA     => ESM_LED_SDA
+      ESM_LED_SDA     => ESM_LED_SDA,
+      CM1_C2C_Mon     => CM1_C2C_Mon,
+      CM2_C2C_Mon     => CM2_C2C_Mon
       );
 
   SM_info_1: entity work.SM_info
@@ -875,6 +873,7 @@ begin  -- architecture structure
       readMISO        => AXI_BUS_RMISO(1),
       writeMOSI       => AXI_BUS_WMOSI(1),
       writeMISO       => AXI_BUS_WMISO(1),
+      linux_booted    => linux_booted,
       SDA_o       => IPMC_SDA_o,
       SDA_t       => IPMC_SDA_t,
       SDA_i       => IPMC_SDA_i,
@@ -933,51 +932,9 @@ begin  -- architecture structure
       CM2_C2C_Ctrl         => CM2_C2C_Ctrl);
 
 
-  HB_counter_proc: process (axi_clk) is
-  begin  -- process HB_counter_proc
-    if axi_clk'event and axi_clk = '1' then  -- rising clock edge
-      HB_counter <= HB_counter+1;
-    end if;
-  end process HB_counter_proc;
 
   
-  FP_regs(0)(7 downto 0)    <= std_logic_vector(HB_counter(29 downto 22));
-  FP_regs(1)(0) <= locked_SGMII_MMCM;
-  FP_regs(1)(1) <= reset_pma_SGMII;
-  FP_regs(1)(2) <= SGMII_MON_CDC.reset_done;
-  FP_regs(1)(3) <= SGMII_MON_CDC.cpll_lock ;
 
-  FP_regs(2)(0) <= CM1_C2C_Mon.axi_c2c_config_error_out   ;
-  FP_regs(2)(1) <= CM1_C2C_Mon.axi_c2c_link_error_out     ;
-  FP_regs(2)(2) <= CM1_C2C_Mon.axi_c2c_link_status_out    ;
-  FP_regs(2)(3) <= CM1_C2C_Mon.axi_c2c_multi_bit_error_out;
-
-  FP_regs(3)(0) <= CM1_C2C_Mon.aurora_do_cc               ;
-  FP_regs(3)(1) <= CM1_C2C_Mon.phy_gt_pll_lock            ;
-  FP_regs(3)(2) <= CM1_C2C_Mon.phy_hard_err               ;
-  FP_regs(3)(3 downto 3) <= CM1_C2C_Mon.phy_lane_up                ;
-  FP_regs(3)(5) <= CM1_C2C_Mon.phy_link_reset_out         ;
-  FP_regs(3)(6) <= CM1_C2C_Mon.phy_mmcm_not_locked_out    ;
-  FP_regs(3)(7) <= CM1_C2C_Mon.phy_soft_err               ;
-
-
-
-  FrontPanel_UI_1: entity work.FrontPanel_UI
-    generic map (
-      CLKFREQ      => 50000000,
-      REG_COUNT    => FP_REG_COUNT,
-      LEDORDER      => FP_LED_ORDER)
-    port map (
-      clk           => axi_clk,
-      reset         => '0',
-      buttonin      => FP_switch,
-      addressin     => "000000",
-      force_address => '0',
-      display_regs  => FP_regs,
-      addressout    => open,
-      SCK           => FP_LED_CLK,
-      SDA           => FP_LED_SDA,
-      shutdownout   => open);
 
   
 

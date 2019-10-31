@@ -18,8 +18,19 @@
     <node id="HQ_LOS_OSC" permission="r" mask="0x200" description="Local Si HQ clk LOS" parameters="Table=CLOCKING;Column=LOS;Row=HQ_OSC;Status=2;Show=nz"/>
     <node id="SEL" permission="rw" mask="0x1000" description="HQ clk source select"     parameters="Table=CLOCKING;Column=SOURCE;Row=HQ;Status=2" />
   </node>
+  <node id="FP_LEDS" address="0x08">
+    <node id="RESET"        mask="0x00000001" permission="rw" description="reset FP LEDs"/>
+    <node id="PAGE0_FORCE"  mask="0x00000002" permission="rw" description="override FP LED page 0"/>
+    <node id="PAGE0_MODE"   mask="0x0000001C" permission="rw" description="override FP LED page 0 pattern"/>
+    <node id="BUTTON"       mask="0x00000020" permission="rw" description="FP button (not debounced)"/>
+    <node id="PAGE0_SPEED"  mask="0x00000F00" permission="rw" description="page 0 speed"/>
+    <node id="FORCED_PAGE"  mask="0x003F0000" permission="rw" description="Page to display"/>
+    <node id="FORCE_PAGE"   mask="0x00400000" permission="rw" description="Force the display of a page (override button UI)"/>
+    <node id="PAGE"         mask="0x3F000000" permission="rw" description="Page to display"/>
+    <node id="FP_SHDWN_REQ" mask="0x80000000" permission="rw" description="FP button shutdown request"/>    
+  </node>
   <node id="SWITCH">
-    <node id="STATUS" address="0x08" mask="0xFFFF0000" permission="r" description="Ethernet switch LEDs"/>
+    <node id="STATUS" address="0x09" mask="0x0000FFFF" permission="r" description="Ethernet switch LEDs"/>
   </node>
   <node id="SGMII" address="0x0C" permission="r">
     <node id="RESET" mask="0x1" permission="rw" description="Reset SGMII + SGMII clocking"/>
