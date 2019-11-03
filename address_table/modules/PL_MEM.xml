@@ -16,7 +16,10 @@
       <node id="HOURS"    mask="0x00FF0000" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=_4;Format=u;Status=1;Show=nz"/>
       <node id="DAYS"     mask="0xFF000000" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=_4;Format=u;Status=1;Show=nz"/>
     </node>
-
+  </node>
+  <node id="ARM" address="0x000007E2">
+    <node id="CPU_LOAD"  mask="0x0000FFFF" permission="rw" parameters="Table=ZYNQ_OS;Row=_2;Column=_3;Format=m_1_1_100_1_0_1;Status=1"/>
+    <node id="MEM_USAGE" mask="0xFFFF0000" permission="rw" parameters="Table=ZYNQ_OS;Row=_2;Column=_3;Format=m_1_1_100_1_0_1;Status=1"/>
   </node>
   <node id="SCRATCH" address="0x000007F0">
     <node id="0"   address="0x00000000" permission="rw"/>
