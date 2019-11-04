@@ -26,6 +26,7 @@ os/*
 !os/*.dtsi_chunk
 os/zynq_os
 !os/zynq_os_mods
+!os/extra_files
 
 #################################################################################
 ## Sim files
