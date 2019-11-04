@@ -38,6 +38,7 @@ DROPBEAR=$(YOCTO_MOD_BASE)/recipes-core/dropbear/dropbear_%.bbappend
 USERS=$(YOCTO_MOD_BASE)/recipes-core/images/petalinux-user-image.bbappend
 BOOTSCRIPT=$(YOCTO_MOD_BASE)/recipes-apps/bootscript/files/bootscript/bootscript
 SMBOOTSCRIPT=$(YOCTO_MOD_BASE)/recipes-apps/smboot/files/smboot/smboot
+ARMMONITORDAEMON=$(YOCTO_MOD_BASE)/recipes-apps/cpu_monitor/files/cpu_monitor/cpu_monitor
 HEARTBEATSCRIPT=$(YOCTO_MOD_BASE)/recipes-apps/heartbeat/files/heartbeat/heartbeat
 STARTUP-SCRIPT=$(YOCTO_MOD_BASE)/recipes-apps/startupscript/files/startupscript/startupscript
 UIO-UDEV=$(YOCTO_MOD_BASE)/recipes-apps/startupscript/files/uio/uio.rules.bb
@@ -152,6 +153,13 @@ $(SMBOOTSCRIPT):
 	@cp ./zynq_os_mods/smboot/smboot.bb              $(YOCTO_MOD_BASE)/recipes-apps/smboot/smboot.bb
 	@cp ./zynq_os_mods/smboot/smboot                 $(YOCTO_MOD_BASE)/recipes-apps/smboot/files/smboot
 
+$(ARMMONITORDAEMON):
+	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
+	source $(VIVADO_PETALINUX) && \
+	petalinux-create -t apps --template install --name arm-monitor --enable
+	@cp ./zynq_os_mods/arm-monitor/arm-monitor.bb              $(YOCTO_MOD_BASE)/recipes-apps/arm-monitor/arm-monitor.bb
+	@cp ./zynq_os_mods/arm-monitor/arm-monitor                 $(YOCTO_MOD_BASE)/recipes-apps/arm-monitor/files/arm-monitor
+
 $(HEARTBEATSCRIPT):
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
 	source $(VIVADO_PETALINUX) && \
@@ -193,6 +201,7 @@ $(BUILD_ROOTFS): $(ZYNQ_OS_PROJECT) $(USER_MOD_ROOTFS)
 	make $(BOOTSCRIPT)
 	make $(SMBOOTSCRIPT)
 	make $(HEARTBEATSCRIPT)
+	make $(ARMMONITORDAEMON)
 	make $(STARTUP-SCRIPT)
 	make $(UIO-UDEV)
 

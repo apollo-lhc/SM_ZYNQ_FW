@@ -1653,9 +1653,9 @@ CONFIG_boost-dev=y
 #
 # libnotify 
 #
-# CONFIG_libnotify is not set
+CONFIG_libnotify is not set
 # CONFIG_libnotify-dbg is not set
-# CONFIG_libnotify-dev is not set
+CONFIG_libnotify-dev is not set
 
 #
 # libnss-mdns 
@@ -4210,6 +4210,7 @@ CONFIG_heartbeat=y
 CONFIG_peekpoke=y
 CONFIG_startup-script=y
 CONFIG_uio.rules=y
+CONFIG_arm-monitor=y
 
 #
 # user packages 
