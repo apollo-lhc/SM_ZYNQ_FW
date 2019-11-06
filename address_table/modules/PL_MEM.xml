@@ -26,6 +26,11 @@
       <node id="DAYS"    address="0x1" mask="0xFFFFFFFF" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=_4;Format=m_1_1_100_1_0_1;Status=1;Show=nz"/>
     </node>
   </node>
+  <node id="XVC_LOCK" address="0x000007E5">
+    <node id="XVC1"  mask="0x00001" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=Locked;Status=1;Show=nz"/>
+    <node id="XVC2"  mask="0x00002" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=Locked;Status=1;Show=nz"/>                       
+    <node id="XVC_LOCAL"  mask="0x00004" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=Locked;Status=1;Show=nz"/>                       
+  </node>
   <node id="SCRATCH" address="0x000007F0">
     <node id="0"   address="0x00000000" permission="rw"/>
     <node id="1"   address="0x00000001" permission="rw"/>
