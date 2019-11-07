@@ -42,7 +42,9 @@
   </node>
   <node id="S2" address ="0x10">
     <node id="0"  address="0x0" permission="rw">
-	<node id="TEMP" mask="0xFF" permission="r" parameters="Table=STATUS;Row=CM_MCU;Column=TEMP;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP"     mask="0x000000FF" permission="r" parameters="Table=STATUS;Row=CM_MCU;Column=_4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP_MAX" mask="0x0000FF00" permission="r" parameters="Table=STATUS;Row=CM_MCU;Column=_4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP_MIN" mask="0x00FF0000" permission="r" parameters="Table=STATUS;Row=CM_MCU;Column=_4;Format=u;Status=1;Show=nz"/>
     </node>
     <node id="1"  address="0x1" permission="rw"/>
     <node id="2"  address="0x2" permission="rw"/>
@@ -62,7 +64,9 @@
   </node>
   <node id="S3" address ="0x20">
     <node id="0"  address="0x0" permission="rw">
-	<node id="TEMP" mask="0xFF" permission="r" parameters="Table=STATUS;Row=CM_FF;Column=TEMP;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP"     mask="0x000000FF" permission="r" parameters="Table=STATUS;Row=CM_FF;Column=_4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP_MAX" mask="0x0000FF00" permission="r" parameters="Table=STATUS;Row=CM_FF;Column=_4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP_MIN" mask="0x00FF0000" permission="r" parameters="Table=STATUS;Row=CM_FF;Column=_4;Format=u;Status=1;Show=nz"/>
     </node>
     <node id="1"  address="0x1" permission="rw"/>
     <node id="2"  address="0x2" permission="rw"/>
@@ -82,7 +86,9 @@
   </node>
   <node id="S4" address ="0x30">
     <node id="0"  address="0x0" permission="rw">
-	<node id="TEMP" mask="0xFF" permission="r" parameters="Table=STATUS;Row=CM_FPGA;Column=TEMP;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP"     mask="0x000000FF" permission="r" parameters="Table=STATUS;Row=CM_FPGA;Column=_4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP_MAX" mask="0x0000FF00" permission="r" parameters="Table=STATUS;Row=CM_FPGA;Column=_4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP_MIN" mask="0x00FF0000" permission="r" parameters="Table=STATUS;Row=CM_FPGA;Column=_4;Format=u;Status=1;Show=nz"/>
     </node>      
     <node id="1"  address="0x1" permission="rw"/>
     <node id="2"  address="0x2" permission="rw"/>
@@ -102,7 +108,9 @@
   </node>
   <node id="S5" address ="0x40">
     <node id="0"  address="0x0" permission="rw">
-	<node id="TEMP" mask="0xFF" permission="r" parameters="Table=STATUS;Row=CM_REG;Column=TEMP;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP"     mask="0x000000FF" permission="r" parameters="Table=STATUS;Row=CM_REG;Column=_4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP_MAX" mask="0x0000FF00" permission="r" parameters="Table=STATUS;Row=CM_REG;Column=_4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP_MIN" mask="0x00FF0000" permission="r" parameters="Table=STATUS;Row=CM_REG;Column=_4;Format=u;Status=1;Show=nz"/>
     </node>      
     <node id="1"  address="0x1" permission="rw"/>
     <node id="2"  address="0x2" permission="rw"/>
