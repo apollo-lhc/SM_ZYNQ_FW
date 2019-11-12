@@ -10,10 +10,12 @@ use UNISIM.vcomponents.all;
 
 
 entity CM_pwr is
-  
+  generic (
+    COUNT_ERROR_WAIT : integer := 50000000);
   port (
     clk               : in  std_logic;
-    reset             : in  std_logic;
+    reset_async       : in  std_logic;
+    reset_sync        : in  std_logic;
     uc_enabled        : in  std_logic;
     start_pwr         : in  std_logic;
     sequence_override : in std_logic;
@@ -26,36 +28,48 @@ end entity CM_pwr;
 
 architecture behavioral of CM_pwr is
 
-  type SM_state_t is (SM_RESET,SM_PWR_WAIT,SM_PWR_DOWN,SM_RUNNING);
+  type SM_state_t is (SM_RESET,SM_PWR_WAIT,SM_PWR_DOWN,SM_RUNNING,SM_ERROR_WAIT,SM_ERROR_PWR_OFF);
   signal state : SM_state_t;
-  
+
+  signal counter_error_wait : unsigned(31 downto 0);
 begin  -- architecture behavioral
 
 -----------------------------------------------------------------------------------------------
---  +----------+                 +----------+                             +----------+
---  |          |                 |          |                             |          |
---  |  RESET   +---------------->+ PWR_WAIT +---------------------------->+ RUNNING  |
---  |          |                 |          |    power_good = 1 or        |          |
---  +----+-----+                 +----+-----+    sequence_override = 1    +-----+----+
---       ^                            |                                         |
---       |                            |                                         |
---       |                            |                                         |
---       |                            | start_PWR = 0                           |
---       |                            |                                         |
---       |                            |                                         |
---       |                       +----v-----+                                   |
---       |        power_good = 0 |          |                                   |
---       +-----------------------+ PWR_DOWN +<----------------------------------+
---                               |          |    start_PWR = 0
---                               +----------+         or
---                                               (power_good or sequence_override) = 0
------------------------------------------------------------------------------------------------
-  pwr_seq_SM: process (clk, reset) is
+--+----------+                 +----------+                             +----------+
+--|          |                 |          |                             |          |
+--|  RESET   +---------------->+ PWR_WAIT +---------------------------->+ RUNNING  |
+--|          |                 |          |    power_good = 1 or        |          |
+--+----+-----+                 +----+-----+    sequence_override = 1    +--+---+---+
+--     ^                            |                                      |   |
+--     |                            |                                      |   |
+--     |                            |                                      |   |power_good = 0
+--     |                            | start_PWR = 0                        |   |
+--     |                            |                                      |   |
+--     |                            |                                      |   |
+--     |                       +----v-----+                                |   |
+--     |        power_good = 0 |          |                                |   |
+--     +-----------------------+ PWR_DOWN +<-------------------------------+   +<------------+
+--     |                       |          |    start_PWR = 0                   |             |
+--     |                       +----------+                            ERR_CNTR=COUNT_WAIT   |
+--     |                                                                       +             |
+--     |                                                                       v             |
+--     |                       +----------+                             +------+---+         |
+--     |    reset = '1'        |  ERROR   |                ERR_CNTR = 0 |  ERROR   |         |
+--     +-----------------------+   PWR    +<----------------------------+          +---------+
+--                             |   OFF    |                             |   WAIT   | sequence_override = 1
+--                             +----------+                             +--+----+--+
+--                                                                         ^    |
+--                                                                         |    |ERR_CNTR--
+--                                                                         +----+
+-------------------------------------------------------------------------------------------------
+  pwr_seq_SM: process (clk, reset_async) is
   begin  -- process pwr_seq_SM
-    if reset = '1' then                 -- asynchronous reset (active high)
+    if reset_async = '1' then                 -- asynchronous reset_async (active high)
       state <= SM_RESET;
     elsif clk'event and clk = '1' then  -- rising clock edge
       if uc_enabled = '0' then
+        state <= SM_RESET;
+      elsif reset_sync = '1' then
         state <= SM_RESET;
       else        
         case state is
@@ -85,9 +99,22 @@ begin  -- architecture behavioral
           --------------------------------
           when SM_RUNNING =>
             --moving down
-            if start_PWR = '0' or
-              (power_good or sequence_override) = '0' then
+            if power_good = '0' then
+              state <= SM_ERROR_WAIT;
+              counter_error_wait <= to_unsigned(COUNT_ERROR_WAIT,counter_error_wait'length);
+            elsif start_PWR = '0' then
               state <= SM_PWR_DOWN;
+            end if;
+          --------------------------------
+          when SM_ERROR_WAIT =>
+            if sequence_override = '1' then
+              --Wait here forever
+              state <= SM_ERROR_WAIT;
+            elsif counter_error_wait = 0 then
+              state <= SM_ERROR_PWR_OFF;
+            else
+              counter_error_wait <= counter_error_wait-1;              
+              state <= SM_ERROR_WAIT;
             end if;
           --------------------------------
           when SM_PWR_DOWN =>
@@ -103,9 +130,9 @@ begin  -- architecture behavioral
   end process pwr_seq_SM;
 
 
-  pwr_seq_proc: process (clk, reset) is
+  pwr_seq_proc: process (clk, reset_async) is
   begin  -- process pwr_seq_proc
-    if reset = '1' then                 -- asynchronous reset (active high)
+    if reset_async = '1' then                 -- asynchronous reset_async (active high)
       enabled_PWR <= '0';
       enabled_IOs <= '0';
       current_state <= x"1";
@@ -127,6 +154,14 @@ begin  -- architecture behavioral
           enabled_PWR <= '0';
           enabled_IOs <= '0';
           current_state <= x"4";
+        when SM_ERROR_WAIT =>
+          enabled_PWR <= '1';
+          enabled_IOs <= '1';
+          current_state <= x"5";          
+        when SM_ERROR_PWR_OFF =>
+          enabled_PWR <= '0';
+          enabled_IOs <= '0';
+          current_state <= x"6";          
         when others =>
           enabled_PWR <= '0';
           enabled_IOs <= '0';

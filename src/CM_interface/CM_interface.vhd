@@ -60,6 +60,7 @@ architecture behavioral of CM_interface is
   signal enableCM         : slv_2_t;
   signal enableCM_PWR     : slv_2_t;
   signal override_PWRGood : slv_2_t;
+  signal reset_error_state : slv_2_t;
   signal enable_uC        : slv_2_t;
   signal enable_PWR       : slv_2_t;
   signal enable_IOs       : slv_2_t;
@@ -148,15 +149,18 @@ begin  -- architecture behavioral
   
   CM_PWR_SEQ: for iCM in 0 to 1 generate
     CM_pwr_1: entity work.CM_pwr
+      generic map (
+        COUNT_ERROR_WAIT => 50000000)
       port map (
         clk               => clk_axi,
-        reset             => reset,
+        reset_async       => reset,
+        reset_sync        => reset_error_state(iCM),
         uc_enabled        => enable_uC(iCM),
         start_PWR         => enableCM_PWR(iCM),
         sequence_override => override_PWRGood(iCM),
         current_state     => CM_seq_state((4*iCM) +3 downto 4*iCM),
-        enabled_PWR        => enable_PWR(iCM),
-        enabled_IOs        => enable_IOs(iCM),
+        enabled_PWR       => enable_PWR(iCM),
+        enabled_IOs       => enable_IOs(iCM),
         power_good        => PWR_good(iCM));
   end generate CM_PWR_SEQ;
   
@@ -191,10 +195,12 @@ begin  -- architecture behavioral
   enable_uc       (0) <= reg_data(0)(0); --CM1 enabled
   enableCM_PWR    (0) <= reg_data(0)(1); --CM1 power eneable
   override_PWRGood(0) <= reg_data(0)(2); --CM1 override
+  reset_error_state(0) <= reg_data(0)(8); --CM1 reset error state
   enable_uc       (1) <= reg_data(1)(0); --CM2 enabled
   enableCM_PWR    (1) <= reg_data(1)(1); --CM2 power eneable
   override_PWRGood(1) <= reg_data(1)(2); --CM2 override
-
+  reset_error_state(1) <= reg_data(1)(8); --CM2 reset error state
+  
   reads: process (localRdReq,localAddress,reg_data) is
   begin  -- process reads
     localRdAck  <= '0';
@@ -209,6 +215,8 @@ begin  -- architecture behavioral
           localRdData( 3)           <= PWR_good(0);
           --pwr state
           localRdData( 7 downto  4) <= CM_seq_state(3 downto 0);
+          --error state reset
+          localRdData(8)            <= reg_data(0)(8);
           --pwr state outputs
           localRdData( 9)            <= enable_PWR(0);
           localRdData(10)            <= enable_IOs(0);
@@ -219,6 +227,8 @@ begin  -- architecture behavioral
           localRdData( 3)           <= PWR_good(1);
           --pwr state
           localRdData( 7 downto  4) <= CM_seq_state(7 downto 4);
+          --error state reset
+          localRdData(8)            <= reg_data(1)(8);
           --pwr state outputs
           localRdData( 9)            <= enable_PWR(1);
           localRdData(10)            <= enable_IOs(1);
@@ -335,8 +345,10 @@ begin  -- architecture behavioral
         case localAddress(7 downto 0) is
           when x"0" =>
             reg_data(0)( 2 downto  0) <= localWrData(2 downto 0);
+            reg_data(0)(8)            <= localWrData(8);
           when x"1" =>
             reg_data(1)( 2 downto  0) <= localWrData(2 downto 0);
+            reg_data(1)(8)            <= localWrData(8);
           when x"12" =>
             reg_data(18)(5)  <= localWrData(5);
             reg_data(18)(22) <= localWrData(22); --eyescanreset;
