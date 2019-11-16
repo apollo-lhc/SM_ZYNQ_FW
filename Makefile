@@ -130,8 +130,11 @@ define TB_RULE =
 	xelab -debug typical $@ -s $@ $(OUTPUT_MARKUP)      
 	source $(VIVADO_SHELL) &&\
 	cd sim &&\
-	xsim $@ -gui -t $@/setup.tcl    
+	xsim $@ -t $@/setup.tcl
+	md5sum -c sim/$@/golden_md5sum.txt
+#	xsim $@ -gui -t $@/setup.tcl    
 endef     
+
 
 #build the vdb file from a vhd file     
 sim/vhdl/%.vdb : src/%.vhd    
@@ -154,6 +157,11 @@ TB_IPMC_I2C_SLAVE_VDBS=$(TB_MISC_VDBS) $(call build_vdb_list, src/misc/I2C_reg_m
 tb_IPMC_i2c_slave : $(TB_IPMC_I2C_SLAVE_VDBS)  
 	$(TB_RULE)     
 
+TB_AXI_HELPERS_VDBS=$(TB_MISC_VDBS) $(call build_vdb_list, src/axiReg/axiRegPkg.vhd src/axiReg/axiRegMaster.vhd src/axiReg/axiReg.vhd)    
+tb_axi_helpers : $(TB_AXI_HELPERS_VDBS)  
+	$(TB_RULE)     
+
+
 #################################################################################
 # Help 
 #################################################################################
@@ -161,4 +169,3 @@ tb_IPMC_i2c_slave : $(TB_IPMC_I2C_SLAVE_VDBS)
 #list magic: https://stackoverflow.com/questions/4219255/how-do-you-get-the-list-of-targets-in-a-makefile
 list:
 	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | column
-
