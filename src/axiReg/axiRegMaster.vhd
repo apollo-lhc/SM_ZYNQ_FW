@@ -13,6 +13,7 @@ entity axiLiteMaster is
     readMISO     : in  AXIreadMISO;
     writeMOSI    : out AXIwriteMOSI;
     writeMISO    : in  AXIwriteMISO;
+    busy         : out std_logic;
     address      : in  slv_32_t;
     rd_en        : in  std_logic;
     rd_data      : out slv_32_t;
@@ -50,7 +51,7 @@ architecture behavioral of axiLiteMaster is
   
 begin  -- architecture behaioral
 
-
+  busy <= '0' when state = SM_IDLE else '1';
   state_machine_ctrl: process (clk_axi, reset_axi_n) is
   begin  -- process read_state_machine_ctrl
     if reset_axi_n = '0' then           -- asynchronous reset (active low)
@@ -117,6 +118,7 @@ begin  -- architecture behaioral
             local_readMOSI_address_valid <= '0';
           end if;
           if readMISO.data_valid = '1' then
+            rd_data_valid <= '1';
             rd_data <= readMISO.data;
             local_readMOSI_address_valid <= '0';
           end if;

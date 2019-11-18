@@ -7,6 +7,9 @@ use work.AXIRegPkg.all;
 
 use work.types.all;
 
+Library UNISIM;
+use UNISIM.vcomponents.all;
+
 entity IPMC_i2c_slave is
   
   port (

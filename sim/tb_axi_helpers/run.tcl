@@ -4,4 +4,4 @@ add_force {/tb_axi_helpers/reset} -radix hex {1 0ns}
 run 10ns
 add_force {/tb_axi_helpers/reset} -radix hex {0 0ns}
 run 30us
-quit
+#quit

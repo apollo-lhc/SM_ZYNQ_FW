@@ -17,6 +17,7 @@ package types is
   subtype slv_8_t is std_logic_vector(7 downto 0);
   subtype slv_12_t is std_logic_vector(11 downto 0);
   subtype slv_16_t is std_logic_vector(15 downto 0);
+  subtype slv_24_t is std_logic_vector(23 downto 0);
   subtype slv_26_t is std_logic_vector(25 downto 0);
   subtype slv_32_t is std_logic_vector(31 downto 0);
   
