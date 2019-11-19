@@ -1,0 +1,7 @@
+The sensor structures for the PL UART monitoring stream is as follows:
+The CM uC will send four bytes via UART at 115200(or other).
+Each byte will consist of two bits of byte type (MSbs) and six bits of data (LSBs).
+The two bit sequence of 0b10 indicates a start of frame byte and a 0b00 indicates a data byte.
+This leaves each transaction with 24 bits of data which will have 8 bits of sensor ID and 16 bits of data.
+Ex:
+Sensor ID 
