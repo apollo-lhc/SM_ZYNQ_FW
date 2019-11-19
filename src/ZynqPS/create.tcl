@@ -34,6 +34,10 @@ set PL_M_FREQ 50000000
 #  Configure and add AXI slaves
 #================================================================================
 
+#PL_MEM scratchpad
+[AXI_IP_BRAM PL_MEM ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} 50000000 0x40000000 8K]
+
+
 #SI chip i2c core (addr fixed for FSBL)
 [AXI_IP_I2C SI                ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} 50000000 0x41600000]
 
@@ -72,8 +76,6 @@ connect_bd_net [get_bd_pins ${IRQ_ORR}/dout] [get_bd_pins processing_system7_0/I
 [AXI_IP_UART 115200 ${IRQ_ORR}/in1 CM2_UART   ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} 50000000 ]
 [AXI_IP_UART 115200 ${IRQ_ORR}/in2 ESM_UART   ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} 50000000 ]
 
-#PL_MEM scratchpad
-[AXI_IP_BRAM PL_MEM ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} 50000000]
 
 
 #========================================

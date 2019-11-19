@@ -12,7 +12,8 @@ use UNISIM.vcomponents.all;
 entity CM_Monitoring is
   generic (
     BAUD_COUNT_BITS : integer := 8;
-    INACTIVE_COUNT  : slv_32_t := x"03FFFFFF");
+    INACTIVE_COUNT  : slv_32_t := x"03FFFFFF";
+    BASE_ADDRESS    : unsigned(31 downto 0) := x"00000000");
   port (
     clk             : in  std_logic;
     reset           : in  std_logic;
@@ -58,7 +59,6 @@ architecture behavioral of CM_Monitoring is
   constant BS_SOF  : slv_2_t := "10";
   constant BS_DATA : slv_2_t := "00";
   signal sensor_number : slv_8_t;
-  signal base_address : unsigned(31 downto 0) := x"00000000";
   signal sensor_value : slv_16_t;
 
   signal sensor_address_offset : slv_32_t;
@@ -211,7 +211,7 @@ begin  -- architecture behavioral
         when SM_WAIT_FOR_BYTE2 =>
           if uart_data_present = '1' then            
             --construct the AXI address we will use for transactions
-            axi_address <= slv_32_t(base_address + unsigned(sensor_address_offset));
+            axi_address <= slv_32_t(BASE_ADDRESS + unsigned(sensor_address_offset));
             axi_rd_en <= '1';
 
             --finish sensor_number, start on sensor_value
