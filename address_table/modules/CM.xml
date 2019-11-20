@@ -6,7 +6,6 @@
       <node id="OVERRIDE_PWR_GOOD" mask="0x4" permission="rw" description="Ignore power good from CM" parameters="Table=CM;Column=_4;Row=CM1_REQ;Status=2"/>               
       <node id="PWR_GOOD" mask="0x8" permission="r" description="CM power is good" parameters="Table=CM;Column=_4;Row=_2;Status=1"/>
 	<node id="STATE" mask="0xF0" permission="r" description="CM power up state"  parameters="Table=CM;Column=_4;Row=_2;Status=2;Format=t_0_Unknown_1_Reset_2_PowerUpWait_3_Running_4_PowerDown"/> 
-      <!--<node id="UC_ENABLED" mask="0x100" permission="r" description="uC is enabled" parameters="Table=CM;Column=UC;Row=_2;Status=2"/>                             -->
       <node id="PWR_ENABLED" mask="0x200" permission="r" description="power is enabled" parameters="Table=CM;Column=PWR;Row=_2;Status=2"/>                         
       <node id="IOS_ENABLED" mask="0x400" permission="r" description="IOs to CM are enabled" parameters="Table=CM;Column=_4;Row=_2;Status=1"/>       
     </node>                                                                                                           
@@ -66,8 +65,8 @@
       </node>
       <node id="MONITOR" address="0x15">
 	<node id="COUNT_16X_BAUD" mask="0x000000FF" permission="rw" description="Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27" />
-	<node id="ACTIVE" mask="0x00000100" permission="r" description="Monitoring active. Is zero when no update in the last second." parameters="Table=C2C;Column=MON_STATE;Row=_2;Status=1;Show=z;Format=t_0_INACTIVE_1_ACTIVE" />
-	<node id="ERRORS" mask="0xFFFF0000" permission="r" description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=C2C;Column=MON_ERRORS;Row=_2;Status=1;Show=nz;Format=u"/>
+	<node id="ACTIVE" mask="0x00000100" permission="r" description="Monitoring active. Is zero when no update in the last second." parameters="Table=CM;Column=MON_STATE;Row=_2;Status=1;Show=z;Format=t_0_INACTIVE_1_ACTIVE" description="error"/>
+	<node id="ERRORS" mask="0xFFFF0000" permission="r" description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=CM;Column=MON_ERRORS;Row=_2;Status=1;Show=nz;Format=u"/>
       </node>
 
     
