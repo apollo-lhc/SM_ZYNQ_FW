@@ -299,6 +299,11 @@ architecture structure of top is
   signal AXI_BUS_WMOSI : AXIWriteMOSI_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIWriteMOSI);
   signal AXI_BUS_WMISO : AXIWriteMISO_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIWriteMISO);
 
+  signal AXI_MSTR_RMOSI : AXIReadMOSI;
+  signal AXI_MSTR_RMISO : AXIReadMISO;
+  signal AXI_MSTR_WMOSI : AXIWriteMOSI;
+  signal AXI_MSTR_WMISO : AXIWriteMISO;
+  
 
   --Monitoring
   signal SGMII_MON : SGMII_MONITOR_t;
@@ -412,6 +417,27 @@ begin  -- architecture structure
       SI_sda_i                  => SDA_i_phy,--SDA_i_normal,
       SI_sda_o                  => SDA_o_phy,--SDA_o_normal,
       SI_sda_t                  => SDA_t_phy,--SDA_t_normal,
+      AXI_CLK_PL                => pl_clk,
+      AXI_RSTN_PL               => pl_reset_n,
+      AXIM_PL_awaddr            => AXI_MSTR_WMOSI.address,
+      AXIM_PL_awprot            => AXI_MSTR_WMOSI.protection_type,
+      AXIM_PL_awvalid           => AXI_MSTR_WMOSI.address_valid,
+      AXIM_PL_awready           => AXI_MSTR_WMISO.ready_for_address,
+      AXIM_PL_wdata             => AXI_MSTR_WMOSI.data,
+      AXIM_PL_wstrb             => AXI_MSTR_WMOSI.data_write_strobe,
+      AXIM_PL_wvalid            => AXI_MSTR_WMOSI.data_valid,
+      AXIM_PL_wready            => AXI_MSTR_WMISO.ready_for_data,
+      AXIM_PL_bresp             => AXI_MSTR_WMISO.response,
+      AXIM_PL_bvalid            => AXI_MSTR_WMISO.response_valid,
+      AXIM_PL_bready            => AXI_MSTR_WMOSI.ready_for_response,
+      AXIM_PL_araddr            => AXI_MSTR_RMOSI.address,
+      AXIM_PL_arprot            => AXI_MSTR_RMOSI.protection_type,
+      AXIM_PL_arvalid           => AXI_MSTR_RMOSI.address_valid,
+      AXIM_PL_arready           => AXI_MSTR_RMISO.ready_for_address,
+      AXIM_PL_rdata             => AXI_MSTR_RMISO.data,
+      AXIM_PL_rresp             => AXI_MSTR_RMISO.response,
+      AXIM_PL_rvalid            => AXI_MSTR_RMISO.data_valid,
+      AXIM_PL_rready            => AXI_MSTR_RMOSI.ready_for_data,
       PL_CLK                    => pl_clk,
       PL_RESET_N                => pl_reset_n,
       SERV_araddr               => AXI_BUS_RMOSI(0).address,
@@ -626,7 +652,7 @@ begin  -- architecture structure
       BRAM_PORTB_0_en   => '0',
       BRAM_PORTB_0_rst  => '0',
       BRAM_PORTB_0_we   => x"0"
-
+      
       );
 
 
@@ -892,10 +918,15 @@ begin  -- architecture structure
     port map (
       clk_axi              => axi_clk,
       reset_axi_n          => pl_reset_n,
-      readMOSI             => AXI_BUS_RMOSI(2),
-      readMISO             => AXI_BUS_RMISO(2),
-      writeMOSI            => AXI_BUS_WMOSI(2),
-      writeMISO            => AXI_BUS_WMISO(2),
+      slave_readMOSI       => AXI_BUS_RMOSI(2),
+      slave_readMISO       => AXI_BUS_RMISO(2),
+      slave_writeMOSI      => AXI_BUS_WMOSI(2),
+      slave_writeMISO      => AXI_BUS_WMISO(2),
+      master_readMOSI      => AXI_MSTR_RMOSI,
+      master_readMISO      => AXI_MSTR_RMISO,
+      master_writeMOSI     => AXI_MSTR_WMOSI,
+      master_writeMISO     => AXI_MSTR_WMISO,
+      CM_mon_uart          => CM1_GPIO(0),
       enableCM1            => CM1_enable,
       enableCM2            => CM2_enable,
       enableCM1_PWR        => CM1_PWR_enable,

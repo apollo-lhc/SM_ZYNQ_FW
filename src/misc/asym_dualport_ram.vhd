@@ -7,6 +7,9 @@ use ieee.std_logic_unsigned.all;
 use ieee.std_logic_arith.all;
 
 --use work.types.all;
+Library UNISIM;
+use UNISIM.vcomponents.all;
+
 
 entity asym_ram_tdp is
   generic (
