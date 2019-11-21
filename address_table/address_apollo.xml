@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <node id="TOP">
-  <node id="MYKREG0"         module="file://modules/MYREG0.xml"           address="0x01000000"/>
-  <node id="MYKREG1"         module="file://modules/MYREG1.xml"           address="0x02000000"/> 
+  <node id="K_IO"            module="file://modules/K_IO.xml"             address="0x01000000"/>
   <node id="CM"              module="file://modules/CM.xml"               address="0x03000000"/>
   <node id="SERV"            module="file://modules/SERV.xml"             address="0x04000000"/>
   <node id="SLAVE_I2C"       module="file://modules/SLAVE_I2C.xml"        address="0x05000000"/>
