@@ -193,6 +193,6 @@
     <node id="E"  address="0xE" permission="rw"/>
     <node id="F"  address="0xF" permission="rw"/>
   </node>
-  <node id="HB_SET1" address="0x2000" permission="r" mask="0x1"/>
-  <node id="HB_SET2" address="0x2001" permission="r" mask="0x2"/>
+  <node id="HB_SET1" address="0x07FF" permission="r" mask="0x1"/>
+  <node id="HB_SET2" address="0x07FE" permission="r" mask="0x2"/>
 </node>

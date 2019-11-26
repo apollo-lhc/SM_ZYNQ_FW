@@ -111,6 +111,7 @@ $(BIT)	:
 	source $(VIVADO_SHELL) &&\
 	mkdir -p os/hw &&\
 	mkdir -p proj &&\
+	mkdir -p bit &&\
 	cd proj &&\
 	vivado $(VIVADO_FLAGS) -source ../$(SETUP_BUILD_TCL) $(OUTPUT_MARKUP)
 	$(MAKE) NOTIFY_DAN_GOOD

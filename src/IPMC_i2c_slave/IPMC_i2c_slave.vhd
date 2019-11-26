@@ -168,8 +168,8 @@ begin  -- architecture behavioral
     if clk_axi'event and clk_axi = '1' then  -- rising clock edge 
       heart_beat <= '0';
       last_localAddress <= localAddress;
-      if (localAddress(13 downto 0) /= "10"&x"001" and
-          last_localAddress(13 downto 0) = "10"&x"001") then
+      if (localAddress(11 downto 0) /= x"7FF" and
+          last_localAddress(11 downto 0) = x"7FF") then
         heart_beat <= '1';
       end if;
     end if;
