@@ -24,9 +24,13 @@ FSBL_BASE=$(YOCTO_MOD_BASE)/recipes-bsp/fsbl/
 FSBL=$(FSBL_BASE)/fsbl_%.bbappend
 FSBL_MOD=$(ZYNQ_OS_PROJECT_PATH)_mods/fsbl
 
-USER_MOD_ROOTFS=$(ZYNQ_OS_PROJECT_PATH)_mods/configs/rootfs/config
+USER_MOD_ROOTFS=$(ZYNQ_OS_PROJECT_PATH)_mods/configs/rootfs/rootfs_config
 BUILD_ROOTFS=$(ZYNQ_OS_PROJECT_PATH)/project-spec/configs/rootfs_config
 UPDATE_ROOTFS=UPDATE_ROOTFS
+
+USER_MOD_BOOT=$(ZYNQ_OS_PROJECT_PATH)_mods/configs/boot/config
+BUILD_BOOT=$(ZYNQ_OS_PROJECT_PATH)/project-spec/configs/config
+UPDATE_BOOT=UPDATE_BOOT
 
 YOCTO_MOD_BASE=$(ZYNQ_OS_PROJECT_PATH)/project-spec/meta-user/
 PACKAGE_LINUX_IMAGE=$(ZYNQ_OS_PROJECT_PATH)/images/linux/image.elf
@@ -44,7 +48,7 @@ STARTUP-SCRIPT=$(YOCTO_MOD_BASE)/recipes-apps/startupscript/files/startupscript/
 UIO-UDEV=$(YOCTO_MOD_BASE)/recipes-apps/startupscript/files/uio/uio.rules.bb
 
 
-.PHONY: list  clean $(BUILD_ROOTFS) REBUILD_BOOTBIN NOTIFY_DAN_GOOD NOTIFY_DAN_BAD
+.PHONY: list  clean $(BUILD_ROOTFS) $(BUILD_BOOT) REBUILD_BOOTBIN NOTIFY_DAN_GOOD NOTIFY_DAN_BAD
 
 all: 
 	$(MAKE) $(BOOT_FILES) || $(MAKE) NOTIFIFY_DAN_BAD
@@ -105,6 +109,15 @@ $(CONFIG_ROOTFS): $(ZYNQ_OS_PROJECT)
 	source $(VIVADO_PETALINUX) && \
 	petalinux-config -c rootfs
 	@cp $(BUILD_ROOTFS) $(USER_MOD_ROOTFS) 
+
+#$(CONFIG_BOOT): $(ZYNQ_OS_PROJECT) 
+##	copy an existing mod to start from
+#	@cp $(USER_MOD_BOOT)  $(BUILD_BOOT) 2>/dev/null || :
+##	run the menuconfig 
+#	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
+#	source $(VIVADO_PETALINUX) && \
+#	petalinux-config -c rootfs
+#	@cp $(BUILD_BOOT) $(USER_MOD_BOOT) 
 
 
 
@@ -189,10 +202,11 @@ $(FSBL):
 	@cp -r $(FSBL_MOD)/* $(FSBL_BASE)
 
 
-$(BUILD_ROOTFS): $(ZYNQ_OS_PROJECT) $(USER_MOD_ROOTFS)
+$(BUILD_ROOTFS): $(ZYNQ_OS_PROJECT) $(USER_MOD_ROOTFS) $(USER_MOD_BOOT)
 	@echo "Copy user root fs config to build root fs config"
 	@cp $(USER_MOD_ROOTFS)  $(BUILD_ROOTFS) 
-	@cp $(USER_MOD_ROOTFS)  $(BUILD_ROOTFS).test
+	@cp $(USER_MOD_BOOT)    $(BUILD_BOOT) 
+
 #	@chmod a-w $(BUILD_ROOTFS)
 	@echo "Copy user mods to mounting"
 	make $(FSTAB)
