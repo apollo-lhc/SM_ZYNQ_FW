@@ -131,25 +131,25 @@ entity top is
 --    -------------------------------------------------------------------------------------------
     refclk_125Mhz_P   : in    std_logic; 
     refclk_125Mhz_N   : in    std_logic; 
---    refclk_TCDS_P     : in    std_logic; 
---    refclk_TCDS_N     : in    std_logic; 
+    refclk_TCDS_P     : in    std_logic; 
+    refclk_TCDS_N     : in    std_logic; 
 --                              
     sgmii_tx_P        : out   std_logic; 
     sgmii_tx_N        : out   std_logic; 
     sgmii_rx_P        : in    std_logic; 
     sgmii_rx_N        : in    std_logic;
 --                              
---    tts_P             : out   std_logic; 
---    tts_N             : out   std_logic; 
---    ttc_P             : in    std_logic; 
---    ttc_N             : in    std_logic; 
+    tts_P             : out   std_logic; 
+    tts_N             : out   std_logic; 
+    ttc_P             : in    std_logic; 
+    ttc_N             : in    std_logic; 
 --                              
---    fake_ttc_P        : out   std_logic; 
---    fake_ttc_N        : out   std_logic; 
---    m1_tts_P          : in    std_logic; 
---    m1_tts_N          : in    std_logic;                       
---    m2_tts_P          : in    std_logic; 
---    m2_tts_N          : in    std_logic;
+    fake_ttc_P        : out   std_logic; 
+    fake_ttc_N        : out   std_logic; 
+    m1_tts_P          : in    std_logic; 
+    m1_tts_N          : in    std_logic;                       
+    m2_tts_P          : in    std_logic; 
+    m2_tts_N          : in    std_logic;
     IPMC_SDA : inout STD_LOGIC;
     IPMC_SCL : in    STD_LOGIC;
     SI_scl : inout STD_LOGIC;
@@ -757,65 +757,65 @@ begin  -- architecture structure
  
 
 
--- TCDS_1: entity work.TCDS   
---   port map ( 
---     sysclk => pl_clk,  
---     GT0_QPLLOUTCLK_IN    => clk_gt_qpllout,
---     GT0_QPLLOUTREFCLK_IN => refclk_gt_qpllout,
-----     refclk => refclk_TCDS,
---     refclk => refclk_125Mhz_IBUFG, 
---     reset  => reset_MGBT2, 
---     tx_P(0)=> tts_P,
---     tx_P(1)=> fake_ttc_P,  
---     tx_P(2)=> open, 
---     tx_N(0)=> tts_N,
---     tx_N(1)=> fake_ttc_N,  
---     tx_N(2)=> open, 
---     rx_P(0)=> ttc_P,
---     rx_P(1)=> m1_tts_P,    
---     rx_P(2)=> m2_tts_P,    
---     rx_N(0)=> ttc_N,
---     rx_N(1)=> m1_tts_N,    
---     rx_N(2)=> m2_tts_N,    
---     clk_txusr     => open,--clk_txusr,   
---     clk_rxusr     => open,--clk_rxusr,   
---     ttc_data      => ttc_data,    
---     ttc_dv => ttc_dv,      
---     tts_data      => tts_data,    
---     tts_dv => tts_dv,      
---     fake_ttc_data => fake_ttc_data,      
---     fake_ttc_dv   => fake_ttc_dv, 
---     m1_tts_data   => m1_tts_data, 
---     m1_tts_dv     => m1_tts_dv,   
---     m2_tts_data   => m2_tts_data, 
---     m2_tts_dv     => m2_tts_dv);
---
--- tts_data <= m1_tts_data or m2_tts_data;
--- tts_dv <= m1_tts_dv and m2_tts_dv; 
--- 
--- fake_ttc_data <= ttc_data; 
--- fake_ttc_dv <= ttc_dv; 
+ TCDS_1: entity work.TCDS   
+   port map ( 
+     sysclk => pl_clk,  
+     GT0_QPLLOUTCLK_IN    => clk_gt_qpllout,
+     GT0_QPLLOUTREFCLK_IN => refclk_gt_qpllout,
+--     refclk => refclk_TCDS,
+     refclk => refclk_125Mhz_IBUFG, 
+     reset  => reset_MGBT2, 
+     tx_P(0)=> tts_P,
+     tx_P(1)=> fake_ttc_P,  
+     tx_P(2)=> open, 
+     tx_N(0)=> tts_N,
+     tx_N(1)=> fake_ttc_N,  
+     tx_N(2)=> open, 
+     rx_P(0)=> ttc_P,
+     rx_P(1)=> m1_tts_P,    
+     rx_P(2)=> m2_tts_P,    
+     rx_N(0)=> ttc_N,
+     rx_N(1)=> m1_tts_N,    
+     rx_N(2)=> m2_tts_N,    
+     clk_txusr     => open,--clk_txusr,   
+     clk_rxusr     => open,--clk_rxusr,   
+     ttc_data      => ttc_data,    
+     ttc_dv => ttc_dv,      
+     tts_data      => tts_data,    
+     tts_dv => tts_dv,      
+     fake_ttc_data => fake_ttc_data,      
+     fake_ttc_dv   => fake_ttc_dv, 
+     m1_tts_data   => m1_tts_data, 
+     m1_tts_dv     => m1_tts_dv,   
+     m2_tts_data   => m2_tts_data, 
+     m2_tts_dv     => m2_tts_dv);
 
-
+ tts_data <= m1_tts_data or m2_tts_data;
+ tts_dv <= m1_tts_dv and m2_tts_dv; 
  
--- MGBT2_common_reset_1: entity work.MGBT2_common_reset 
---   generic map (
---     STABLE_CLOCK_PERIOD => 16) 
---   port map ( 
---     STABLE_CLOCK => pl_clk, 
---     SOFT_RESET => '0', 
---     COMMON_RESET => reset_MGBT2);
--- MGBT2_common_1: entity work.MGBT2_common 
---   port map ( 
---     QPLLREFCLKSEL_IN => "001",
---     GTREFCLK1_IN => '0', 
---     GTREFCLK0_IN => refclk_125Mhz_IBUFG, 
---     QPLLLOCK_OUT => open,
---     QPLLLOCKDETCLK_IN=> pl_clk, 
---     QPLLOUTCLK_OUT   => clk_gt_qpllout, 
---     QPLLOUTREFCLK_OUT=> refclk_gt_qpllout, 
---     QPLLREFCLKLOST_OUT => open,
---     QPLLRESET_IN => reset_MGBT2);
+ fake_ttc_data <= ttc_data; 
+ fake_ttc_dv <= ttc_dv; 
+
+
+
+ MGBT2_common_reset_1: entity work.MGBT2_common_reset 
+   generic map (
+     STABLE_CLOCK_PERIOD => 16) 
+   port map ( 
+     STABLE_CLOCK => pl_clk, 
+     SOFT_RESET => '0', 
+     COMMON_RESET => reset_MGBT2);
+ MGBT2_common_1: entity work.MGBT2_common 
+   port map ( 
+     QPLLREFCLKSEL_IN => "001",
+     GTREFCLK1_IN => '0', 
+     GTREFCLK0_IN => refclk_125Mhz_IBUFG, 
+     QPLLLOCK_OUT => open,
+     QPLLLOCKDETCLK_IN=> pl_clk, 
+     QPLLOUTCLK_OUT   => clk_gt_qpllout, 
+     QPLLOUTREFCLK_OUT=> refclk_gt_qpllout, 
+     QPLLREFCLKLOST_OUT => open,
+     QPLLRESET_IN => reset_MGBT2);
 
 
 
