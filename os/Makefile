@@ -28,7 +28,7 @@ USER_MOD_ROOTFS=$(ZYNQ_OS_PROJECT_PATH)_mods/configs/rootfs/rootfs_config
 BUILD_ROOTFS=$(ZYNQ_OS_PROJECT_PATH)/project-spec/configs/rootfs_config
 UPDATE_ROOTFS=UPDATE_ROOTFS
 
-USER_MOD_BOOT=$(ZYNQ_OS_PROJECT_PATH)_mods/configs/boot/config
+USER_MOD_BOOT=$(ZYNQ_OS_PROJECT_PATH)_mods/configs/boot_config/config
 BUILD_BOOT=$(ZYNQ_OS_PROJECT_PATH)/project-spec/configs/config
 UPDATE_BOOT=UPDATE_BOOT
 
