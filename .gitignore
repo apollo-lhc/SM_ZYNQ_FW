@@ -1,0 +1,8 @@
+build
+centos_root.tar.gz
+image/
+mods/group
+mods/gshadow
+mods/passwd
+mods/shadow
+qemu-arm-static
