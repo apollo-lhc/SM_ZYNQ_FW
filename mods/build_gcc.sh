@@ -135,9 +135,9 @@ mkdir build && cd build
     LD=arm-linux-gnueabihf-ld \
     NM=arm-linux-gnueabihf-gcc-nm \
     CFLAGS="-I. -I./Include -IInclude -I${INSTALL_PATH}/include -I${SYSROOT}/usr/include" \
-    LDFLAGS="--sysroot=${SYSROOT} -L${PWD}/image/lib -L${INSTALL_PATH}/lib -L${SYSROOT}/usr/lib -L${SYSROOT}/lib" \
+    LDFLAGS="--sysroot=${SYSROOT} -L${PWD}/image/lib -L${INSTALL_PATH}/lib -L${SYSROOT}/usr/lib -L${SYSROOT}/lib -L/opt/Xilinx/petalinux/2018.2/tools/linux-i386/gcc-arm-linux-gnueabi/arm-linux-gnueabihf/libc/lib/" \
     --with-sysroot=${SYSROOT} \
-    --with-lib-path=${INSTALL_PATH}/lib:${INSTALL_PATH}/usr/lib:${SYSROOT}/lib:${SYSROOT}/usr/lib \
+    --with-lib-path=${INSTALL_PATH}/lib:${INSTALL_PATH}/usr/lib:${SYSROOT}/lib:${SYSROOT}/usr/lib:/opt/Xilinx/petalinux/2018.2/tools/linux-i386/gcc-arm-linux-gnueabi/arm-linux-gnueabihf/libc/lib/ \
     --host=arm-linux-gnueabihf \
     --build=x86_64-linux-gnu \
     --prefix=${INSTALL_PATH} \
