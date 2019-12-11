@@ -166,18 +166,18 @@
   <!-- </node> -->
   <node id="S8" address ="0x70">
     <node id="IPMC_MAC" address="0x0">
-	<node id="0"      address="0x0"        permission="r" mask="0x000000FF" description="IPMC mac adder byte 1"/>
-	<node id="1"      address="0x0"        permission="r" mask="0x0000FF00" description="IPMC mac adder byte 2"/>
-	<node id="2"      address="0x0"        permission="r" mask="0x00FF0000" description="IPMC mac adder byte 3"/>
-	<node id="3"      address="0x0"        permission="r" mask="0xFF000000" description="IPMC mac adder byte 4"/>
-	<node id="4"      address="0x1"        permission="r" mask="0x000000FF" description="IPMC mac adder byte 5"/>
-	<node id="5"      address="0x1"        permission="r" mask="0x0000FF00" description="IPMC mac adder byte 6"/>
+	<node id="BYTE_0"      address="0x0"        permission="r" mask="0x000000FF" description="IPMC mac adder byte 1"/>
+	<node id="BYTE_1"      address="0x0"        permission="r" mask="0x0000FF00" description="IPMC mac adder byte 2"/>
+	<node id="BYTE_2"      address="0x0"        permission="r" mask="0x00FF0000" description="IPMC mac adder byte 3"/>
+	<node id="BYTE_3"      address="0x0"        permission="r" mask="0xFF000000" description="IPMC mac adder byte 4"/>
+	<node id="BYTE_4"      address="0x1"        permission="r" mask="0x000000FF" description="IPMC mac adder byte 5"/>
+	<node id="BYTE_5"      address="0x1"        permission="r" mask="0x0000FF00" description="IPMC mac adder byte 6"/>
     </node>
     <node id="IPMC_IP" address="0x2">
-	<node id="0"      address="0x0"        permission="r" mask="0x000000FF" description="IPMC IP adder byte 1"/>
-	<node id="1"      address="0x0"        permission="r" mask="0x0000FF00" description="IPMC IP adder byte 2"/>
-	<node id="2"      address="0x0"        permission="r" mask="0x00FF0000" description="IPMC IP adder byte 3"/>
-	<node id="3"      address="0x0"        permission="r" mask="0xFF000000" description="IPMC IP adder byte 4"/>
+	<node id="BYTE_0"      address="0x0"        permission="r" mask="0x000000FF" description="IPMC IP adder byte 1"/>
+	<node id="BYTE_1"      address="0x0"        permission="r" mask="0x0000FF00" description="IPMC IP adder byte 2"/>
+	<node id="BYTE_2"      address="0x0"        permission="r" mask="0x00FF0000" description="IPMC IP adder byte 3"/>
+	<node id="BYTE_3"      address="0x0"        permission="r" mask="0xFF000000" description="IPMC IP adder byte 4"/>
     </node>      
     <!-- <node id="3"  address="0x3" permission="rw"/> -->
     <!-- <node id="4"  address="0x4" permission="rw"/> -->

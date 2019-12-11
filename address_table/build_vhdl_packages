@@ -186,16 +186,32 @@ def padHex(n):
 def generateRecord(name,members):
     #Generate and print a VHDL record
     print("type " + name + " is record")
-    maxNameLength = 0
+    maxNameLength = 25
     for member in members:
-        if maxNameLength < len(member):
-            maxNameLengh = len(member)
-    for member in members:
-        print("  "+member+(" "*maxNameLength)+": "+members[member]+";")
+        if len(member) > maxNameLength:
+            maxNameLength = len(member)
+
+    for member in members:        
+        print("  " + member + "".ljust(maxNameLength-len(member),' ') + "  : " + members[member]+";")
     print("end record "+name)
 
-    
+
+def getBitRange(mask):
+    bits = bin(mask)[2:].zfill(32)
+    start = -1
+    end = -1    
+    for i in range(len(bits)-1,0,-1):
+        if end == -1:
+            if bits[i] == '1':
+                   end = i
+        elif start == -1:
+            if bits[i] == '0':
+                start = i+1
+                break
+    return str(end)+" downto "+str(start)
+
 def traverseTree(Node,padding,baseAddress,baseName):
+    global action_ops
     baseName=Node.getPath()
     package_entries = dict()
     for childName in Node.getNodes():
@@ -203,37 +219,53 @@ def traverseTree(Node,padding,baseAddress,baseName):
         childNode = Node.getNode(childName)
         if childName.count('.') == 0:            
             if len(childNode.getNodes()) != 0 :
-                #print(padding,name)                
-                package_entries[name] = (childNode.getPath()[len(baseName)+1:]).replace('.','_')+"_t"
+                package_entries[name] = (childNode.getPath()[4:]).replace('.','_')+"_t"
                 traverseTree(childNode,padding+"\t",baseAddress,baseName)
             else:                
-                #print(padding,name)
                 bitCount = bin(childNode.getMask())[2:].count('1')
                 if bitCount == 1:
                     package_entries[name] = "std_logic"
                 else:
                     package_entries[name] = "std_logic_vector(" + str(bitCount-1) + " downto 0)"
-#    print(padding,package_entries)
-    generateRecord(name,package_entries)
-                    
-            
-def processAXISlave(slave):
-    print(padHex(slave.getAddress()),slave.getPath())
-    record = list()
-    for childName in slave.getNodes():
-        childNode = slave.getNode(childName)    
-        if childName.count('.') == 0:
-            if len(childNode.getNodes()) != 0:            
-                print("\t",childName)
-                traverseTree(childNode,"\t\t",slave.getAddress())
-                
-            else:
-                print("\t",childName)
-                #print("\t",childNode.getPath()[len(slave.getPath())+1:],padHex(childNode.getAddress() - slave.getAddress()),padHex(childNode.getMask()),childNode.getPermission())
 
+                if childNode.getPermission() == uhal.NodePermission.READ:
+                    if read_ops.has_key(childNode.getAddress()-baseAddress):
+                        read_ops[childNode.getAddress()-baseAddress] = read_ops[childNode.getAddress()-baseAddress] + "outdata("+getBitRange(childNode.getMask())+") <= "+childNode.getPath()+";\n"
+                    else:
+                        read_ops[childNode.getAddress()-baseAddress] =                                                "outdata("+getBitRange(childNode.getMask())+") <= "+childNode.getPath()+";\n"
+                elif childNode.getPermission() == uhal.NodePermission.READWRITE:
+                    if read_ops.has_key(childNode.getAddress()-baseAddress):
+                        read_ops[childNode.getAddress()-baseAddress] = read_ops[childNode.getAddress()-baseAddress] + "outdata("+getBitRange(childNode.getMask())+") <= "+childNode.getPath()+";\n"
+                    else:
+                        read_ops[childNode.getAddress()-baseAddress] =                                                "outdata("+getBitRange(childNode.getMask())+") <= "+childNode.getPath()+";\n"
+                    if write_ops.has_key(childNode.getAddress()-baseAddress):
+                        write_ops[childNode.getAddress()-baseAddress] = write_ops[childNode.getAddress()-baseAddress] + "outdata("+getBitRange(childNode.getMask())+") <= "+childNode.getPath()+";\n"
+                    else:
+                        write_ops[childNode.getAddress()-baseAddress] =                                                "outdata("+getBitRange(childNode.getMask())+") <= "+childNode.getPath()+";\n"
+                elif childNode.getPermission() == uhal.NodePermission.WRITE:
+                    if write_ops.has_key(childNode.getAddress()-baseAddress):
+                        write_ops[childNode.getAddress()-baseAddress] = write_ops[childNode.getAddress()-baseAddress] + "outdata("+getBitRange(childNode.getMask())+") <= "+childNode.getPath()+";\n"
+                    else:
+                        write_ops[childNode.getAddress()-baseAddress] =                                                "outdata("+getBitRange(childNode.getMask())+") <= "+childNode.getPath()+";\n"
+                    
+                    action_ops+=childNode.getPath()+" <= (others => '0')\n "
+
+                    
+    generateRecord((baseName[4:]).replace('.','_')+"_t",package_entries)
+                        
 
 def main():    
 
+    global read_ops
+    global write_ops
+    global action_ops
+
+    read_ops = dict(list())
+    write_ops = dict(list())
+    action_ops = str()
+
+
+    
     # configure logger
     global log
     log = logging.getLogger("main")
@@ -281,10 +313,18 @@ def main():
     for i in device.getNodes():
         d = device.getNode(i)
         if d.getPath().count('.') == 1:
+            print("\n\n\n\n")
             print(d.getPath())
+            print("\n")
+            action_ops=""
+            read_ops.clear()
+            write_ops.clear()
             traverseTree(d,"\t",d.getAddress(),d.getPath())
-            #processAXISlave(d)
-    
+            print(read_ops,'\n')
+            print(write_ops,'\n')            
+            print(action_ops,'\n')
+            
+                   
 if __name__ == '__main__':
     main()
   
