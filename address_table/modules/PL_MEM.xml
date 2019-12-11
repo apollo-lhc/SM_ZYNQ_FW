@@ -1,8 +1,8 @@
 <node>  
-  <node id="0"   address="0x00000000" permission="rw"/>
-  <node id="1"   address="0x00000001" permission="rw"/>
-  <node id="2"   address="0x00000002" permission="rw"/>
-  <node id="3"   address="0x00000003" permission="rw"/>
+  <!-- <node id="0"   address="0x00000000" permission="rw"/> -->
+  <!-- <node id="1"   address="0x00000001" permission="rw"/> -->
+  <!-- <node id="2"   address="0x00000002" permission="rw"/> -->
+  <!-- <node id="3"   address="0x00000003" permission="rw"/> -->
   <node id="CM" address="0x00000080">
     <node id="SENSOR_0" address="0x00" mask="0x0000FFFF" permission="rw" parameters="Table=CM_MON;Row=_3;Column=_;Format=m_1_1_100_1_0_1;Status=2"/>
     <node id="SENSOR_1" address="0x00" mask="0xFFFF0000" permission="rw" parameters="Table=CM_MON;Row=_3;Column=_;Format=m_1_1_100_1_0_1;Status=2"/>
@@ -36,21 +36,21 @@
     <node id="XVC_LOCAL"  address="0x2" mask="0x1" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=Locked;Status=1;Show=nz" description="warning"/>                       
   </node>
   <node id="SCRATCH" address="0x000007F0">
-    <node id="0"   address="0x00000000" permission="rw"/>
-    <node id="1"   address="0x00000001" permission="rw"/>
-    <node id="2"   address="0x00000002" permission="rw"/>
-    <node id="3"   address="0x00000003" permission="rw"/>
-    <node id="4"   address="0x00000004" permission="rw"/>
-    <node id="5"   address="0x00000005" permission="rw"/>
-    <node id="6"   address="0x00000006" permission="rw"/>
-    <node id="7"   address="0x00000007" permission="rw"/>
-    <node id="8"   address="0x00000008" permission="rw"/>
-    <node id="9"   address="0x00000009" permission="rw"/>
-    <node id="A"   address="0x0000000A" permission="rw"/>
-    <node id="B"   address="0x0000000B" permission="rw"/>
-    <node id="C"   address="0x0000000C" permission="rw"/>
-    <node id="D"   address="0x0000000D" permission="rw"/>
-    <node id="E"   address="0x0000000E" permission="rw"/>
-    <node id="F"   address="0x0000000F" permission="rw"/>    
+    <node id="WORD_00"   address="0x00000000" permission="rw"/>
+    <node id="WORD_01"   address="0x00000001" permission="rw"/>
+    <node id="WORD_02"   address="0x00000002" permission="rw"/>
+    <node id="WORD_03"   address="0x00000003" permission="rw"/>
+    <node id="WORD_04"   address="0x00000004" permission="rw"/>
+    <node id="WORD_05"   address="0x00000005" permission="rw"/>
+    <node id="WORD_06"   address="0x00000006" permission="rw"/>
+    <node id="WORD_07"   address="0x00000007" permission="rw"/>
+    <node id="WORD_08"   address="0x00000008" permission="rw"/>
+    <node id="WORD_09"   address="0x00000009" permission="rw"/>
+    <node id="WORD_10"   address="0x0000000A" permission="rw"/>
+    <node id="WORD_11"   address="0x0000000B" permission="rw"/>
+    <node id="WORD_12"   address="0x0000000C" permission="rw"/>
+    <node id="WORD_13"   address="0x0000000D" permission="rw"/>
+    <node id="WORD_14"   address="0x0000000E" permission="rw"/>
+    <node id="WORD_15"   address="0x0000000F" permission="rw"/>    
   </node>
 </node>

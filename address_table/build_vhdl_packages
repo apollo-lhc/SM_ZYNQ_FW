@@ -183,22 +183,39 @@ EXIT_CODE_NODE_ADDRESS_ERRORS = 3
 def padHex(n):
     return "0x" + hex(n)[2:].zfill(8)
 
-def traverseTree(Node,padding,baseAddress):
-    baseName=Node.getPath();    
+def generateRecord(name,members):
+    #Generate and print a VHDL record
+    print("type " + name + " is record")
+    maxNameLength = 0
+    for member in members:
+        if maxNameLength < len(member):
+            maxNameLengh = len(member)
+    for member in members:
+        print("  "+member+(" "*maxNameLength)+": "+members[member]+";")
+    print("end record "+name)
+
+    
+def traverseTree(Node,padding,baseAddress,baseName):
+    baseName=Node.getPath()
+    package_entries = dict()
     for childName in Node.getNodes():
-#        name = childName.getPath()-baseName
         name = childName
         childNode = Node.getNode(childName)
         if childName.count('.') == 0:            
             if len(childNode.getNodes()) != 0 :
-                print(padding,name)
-                traverseTree(childNode,padding+"\t",baseAddress)
-            else:
-                print(padding,name)
-                #            print(padding,name)
- #           print(padding,name,padHex(childNode.getAddress() - baseAddress),padHex(childNode.getMask()),childNode.getPermission())
-            #            if len(childNode.getNodes()) == 0:
-            
+                #print(padding,name)                
+                package_entries[name] = (childNode.getPath()[len(baseName)+1:]).replace('.','_')+"_t"
+                traverseTree(childNode,padding+"\t",baseAddress,baseName)
+            else:                
+                #print(padding,name)
+                bitCount = bin(childNode.getMask())[2:].count('1')
+                if bitCount == 1:
+                    package_entries[name] = "std_logic"
+                else:
+                    package_entries[name] = "std_logic_vector(" + str(bitCount-1) + " downto 0)"
+#    print(padding,package_entries)
+    generateRecord(name,package_entries)
+                    
             
 def processAXISlave(slave):
     print(padHex(slave.getAddress()),slave.getPath())
@@ -264,7 +281,9 @@ def main():
     for i in device.getNodes():
         d = device.getNode(i)
         if d.getPath().count('.') == 1:
-            processAXISlave(d)
+            print(d.getPath())
+            traverseTree(d,"\t",d.getAddress(),d.getPath())
+            #processAXISlave(d)
     
 if __name__ == '__main__':
     main()
