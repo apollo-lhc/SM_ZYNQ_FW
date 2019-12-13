@@ -102,7 +102,7 @@ if args['extra'] is not None:
 	print("Installing user defined packages...")
 	run_dnf(rootdir,"install",lines)
 print ("Running dnf: remove")
-run_dnf(rootdir,"remove",["NetworkManager","firewalld","iptables","--setopt=tsflags=noscripts"])
+run_dnf(rootdir,"remove",["NetworkManager","firewalld","iptables","--setopt=tsflags=noscripts","--enable centos-sclo-rh-testing"])
 			    
 rootpwd=crypt.crypt("centos", crypt.mksalt(crypt.METHOD_SHA512))
 aug=augeas.Augeas(root=rootdir)

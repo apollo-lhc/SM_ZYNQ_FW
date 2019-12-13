@@ -118,7 +118,7 @@ source /opt/Xilinx/petalinux/2018.2/settings.sh
 #####    --with-mode=thumb
 #####make -j8 all 
 #####make install
-
+#####
 
 
 cd ${BUILD_PATH}
@@ -128,16 +128,10 @@ wget ftp://ftp.gnu.org/gnu/gcc/gcc-4.7.1/gcc-4.7.1.tar.bz2
 tar xf gcc-4.7.1.tar.bz2
 mkdir build && cd build
 ../gcc-4.7.1/configure \
-    CC=arm-linux-gnueabihf-gcc \
-    CXX=arm-linux-gnueabihf-g++ \
-    AR=arm-linux-gnueabihf-ar \
-    RANLIB=arm-linux-gnueabihf-ranlib \
-    LD=arm-linux-gnueabihf-ld \
-    NM=arm-linux-gnueabihf-gcc-nm \
     CFLAGS="-I. -I./Include -IInclude -I${INSTALL_PATH}/include -I${SYSROOT}/usr/include" \
-    LDFLAGS="--sysroot=${SYSROOT} -L${PWD}/image/lib -L${INSTALL_PATH}/lib -L${SYSROOT}/usr/lib -L${SYSROOT}/lib -L/opt/Xilinx/petalinux/2018.2/tools/linux-i386/gcc-arm-linux-gnueabi/arm-linux-gnueabihf/libc/lib/" \
-    --with-sysroot=${SYSROOT} \
-    --with-lib-path=${INSTALL_PATH}/lib:${INSTALL_PATH}/usr/lib:${SYSROOT}/lib:${SYSROOT}/usr/lib:/opt/Xilinx/petalinux/2018.2/tools/linux-i386/gcc-arm-linux-gnueabi/arm-linux-gnueabihf/libc/lib/ \
+    LDFLAGS="--sysroot=${SYSROOT} -L${PWD}/image/lib -L${INSTALL_PATH}/lib -L${SYSROOT}/usr/lib -L${SYSROOT}/lib" \
+    --with-build-sysroot=${SYSROOT} \
+    --with-lib-path=${INSTALL_PATH}/lib:${INSTALL_PATH}/usr/lib:${SYSROOT}/lib:${SYSROOT}/usr/lib \
     --host=arm-linux-gnueabihf \
     --build=x86_64-linux-gnu \
     --prefix=${INSTALL_PATH} \
@@ -150,7 +144,13 @@ mkdir build && cd build
     --with-mode=thumb 
 make all-gcc 
 make install-gcc
-
+#    CC=arm-linux-gnueabihf-gcc \
+#    CXX=arm-linux-gnueabihf-g++ \
+#    AR=arm-linux-gnueabihf-ar \
+#    RANLIB=arm-linux-gnueabihf-ranlib \
+#    NM=arm-linux-gnueabihf-gcc-nm \
+#
+#    LD=arm-linux-gnueabihf-ld \
 #    --with-sysroot=${PWD}/build/install \
 #    CFLAGS="-I. -I./Include -IInclude -I${PWD}/image/usr/include" \
 #    LDFLAGS="--sysroot=${PWD}/image -L${PWD}/image/lib -L${PWD}/image/usr/lib" \

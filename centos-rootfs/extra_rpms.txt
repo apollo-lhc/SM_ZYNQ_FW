@@ -24,3 +24,5 @@ boost-python
 boost-program-options
 readline-static
 readline-devel
+centos-release-scl-rh
+devtoolset-7
