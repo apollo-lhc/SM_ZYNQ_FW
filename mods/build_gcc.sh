@@ -4,7 +4,8 @@ PWD=$(pwd)
 
 export BUILD_PATH=${PWD}/build
 export SYSROOT=${PWD}/image
-export INSTALL_PATH=${BUILD_PATH}/install
+#export INSTALL_PATH=${BUILD_PATH}/install
+INSTALL_PATH=${SYSROOT}/usr/local/
 
 mkdir -p ${BUILD_PATH}
 mkdir -p ${INSTALL_PATH}
@@ -28,9 +29,9 @@ mkdir build && cd build
     --with-float=hard \
     --disable-ultilib \
     --with-no-thumb-interwork \
-    --with-mode=thumb
-make -j8 all 
-make install
+    --with-mode=thumb  
+make -j32 all   
+make install   
 export PATH="$PATH:$INSTALL_PATH/arm-none-eabi/bin"
 
 cd ${BUILD_PATH}
@@ -49,9 +50,9 @@ mkdir build && cd build
     --with-float=hard \
     --disable-ultilib \
     --with-no-thumb-interwork \
-    --with-mode=thumb
-make -j8 all 
-make install
+    --with-mode=thumb  
+make -j32 all   
+make install  
 
 
 cd ${BUILD_PATH}
@@ -71,9 +72,9 @@ mkdir build && cd build
     --with-float=hard \
     --disable-ultilib \
     --with-no-thumb-interwork \
-    --with-mode=thumb
-make -j8 all 
-make install
+    --with-mode=thumb  
+make -j32 all   
+make install  
 
 cd ${BUILD_PATH}
 mkdir mpc
@@ -93,21 +94,49 @@ mkdir build && cd build
     --with-float=hard \
     --disable-ultilib \
     --with-no-thumb-interwork \
-    --with-mode=thumb
-make -j8 all 
-make install
+    --with-mode=thumb  
+make -j32 all   
+make install  
 
 
 
+GCC_VERSION=8.3.0
 cd ${BUILD_PATH}
 mkdir gcc
 cd gcc
-cp ../../mods/patch-gcc_cp_cfns.h ./
-wget ftp://ftp.gnu.org/gnu/gcc/gcc-4.7.1/gcc-4.7.1.tar.bz2
-tar xf gcc-4.7.1.tar.bz2
+#cp ../../mods/patch-gcc_cp_cfns.h ./
+wget ftp://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.gz
+tar xf gcc-${GCC_VERSION}.tar.gz
 mkdir build && cd build
-patch -u -b ../gcc-4.7.1/gcc/cp/cfns.h -i ../patch-gcc_cp_cfns.h
-../gcc-4.7.1/configure \
+#patch -u -b ../gcc-${GCC_VERSION}/gcc/cp/cfns.h -i ../patch-gcc_cp_cfns.h
+../gcc-${GCC_VERSION}/configure \
+    --with-lib-path=${INSTALL_PATH}/lib:${INSTALL_PATH}/usr/lib:${SYSROOT}/lib:${SYSROOT}/usr/lib \
+    --with-gmp=${INSTALL_PATH} \
+    --with-mpfr=${INSTALL_PATH} \
+    --with-mpc=${INSTALL_PATH} \
+    --host=arm-linux-gnueabihf \
+    --build=x86_64-linux-gnu \
+    --prefix=${INSTALL_PATH} \
+    --with-arch=armv7 \
+    --with-fpu=vfp \
+    --with-float=hard \
+    --enable-languages="c,c++" \
+    --with-no-thumb-interwork \
+    --disable-multilib \
+    --with-mode=thumb   
+make all-gcc   
+make install-gcc  
+
+
+GLIBC_VERSION=2.26
+cd ${BUILD_PATH}
+mkdir glibc
+cd glibc
+wget ftp://ftp.gnu.org/gnu/glibc/glibc-${GLIBC_VERSION}.tar.gz
+tar xf glibc-${GLIBC_VERSION}.tar.gz
+mkdir build && cd build
+#patch -u -b ../gcc-${GCC_VERSION}/gcc/cp/cfns.h -i ../patch-gcc_cp_cfns.h
+../glibc-${GLIBC_VERSION}/configure \
     --with-lib-path=${INSTALL_PATH}/lib:${INSTALL_PATH}/usr/lib:${SYSROOT}/lib:${SYSROOT}/usr/lib \
     --with-gmp=${INSTALL_PATH} \
     --with-mpfr=${INSTALL_PATH} \
@@ -122,6 +151,5 @@ patch -u -b ../gcc-4.7.1/gcc/cp/cfns.h -i ../patch-gcc_cp_cfns.h
     --with-no-thumb-interwork \
     --disable-multilib \
     --with-mode=thumb 
-make all-gcc 
-make install-gcc
-
+make -j32 all  
+make install  
