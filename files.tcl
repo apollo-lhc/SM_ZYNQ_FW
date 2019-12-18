@@ -15,6 +15,7 @@ set vhdl_files "\
      src/axiReg/axiRegPkg.vhd \
      src/axiReg/axiReg.vhd \
      src/axiReg/axiRegMaster.vhd \
+     src/SGMII/SGMII.vhd \
      src/SGMII/SGMII_INTF_clocking.vhd \
      src/SGMII/SGMII_INTF_resets.vhd \
      src/services/services.vhd \
