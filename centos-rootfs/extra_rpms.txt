@@ -1,4 +1,7 @@
 gcc
+gcc-c++
+libcxx
+make
 dhclient
 python-devel
 python2-click.noarch
@@ -10,6 +13,7 @@ libuuid
 libuuid-devel
 pam-devel
 openldap-devel 
+pugixml-devel
 which
 gdb
 expect
@@ -24,5 +28,5 @@ boost-python
 boost-program-options
 readline-static
 readline-devel
-centos-release-scl-rh
-devtoolset-7
+emacs
+lighttpd
