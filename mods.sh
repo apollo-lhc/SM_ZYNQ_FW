@@ -35,4 +35,4 @@ cd ../../../
 cp mods/build_BUTool.sh ./image/tmp/ApolloTool
 sudo chroot ./image/ /usr/local/bin/qemu-arm-static /bin/bash /tmp/ApolloTool/build_BUTool.sh
 
-sudo rm -rf ./image/tmp
+sudo rm -rf ./image/tmp/*
