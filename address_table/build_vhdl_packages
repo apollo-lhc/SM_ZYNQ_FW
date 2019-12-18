@@ -199,18 +199,23 @@ def generateRecord(name,members,outFileName):
     outfile.close()
 
 def getBitRange(mask):
-    bits = bin(mask)[2:].zfill(32)
+    bits = bin(mask)[2:].zfill(32)[::-1]
     start = -1
     end = -1    
-    for i in range(len(bits)-1,0,-1):
-        if end == -1:
+    for i in range(len(bits)-1,-1,-1):
+        if start == -1:
             if bits[i] == '1':
-                   end = i
-        elif start == -1:
-            if bits[i] == '0':
-                start = i+1
+                start = i
+        elif end == -1:
+            if bits[i] == '0' :
+                end = i+1
                 break
-    return str(end)+" downto "+str(start)
+    if end == -1:
+        end = 0
+    if start == end:
+        return str(start)
+    else:
+        return str(start).rjust(2,' ') +" downto "+str(end).rjust(2,' ')
 
 def traverseTree(Node,padding,baseAddress,baseName,outFileName):
     global action_ops
@@ -232,29 +237,142 @@ def traverseTree(Node,padding,baseAddress,baseName,outFileName):
 
                 if childNode.getPermission() == uhal.NodePermission.READ:
                     if read_ops.has_key(childNode.getAddress()-baseAddress):
-                        read_ops[childNode.getAddress()-baseAddress] = read_ops[childNode.getAddress()-baseAddress] + "outdata("+getBitRange(childNode.getMask())+") <= "+childNode.getPath()+";\n"
+                        read_ops[childNode.getAddress()-baseAddress] = read_ops[childNode.getAddress()-baseAddress] + "localRdData("+getBitRange(childNode.getMask())+")".ljust(11)+" <= "+childNode.getPath()+";\n"
                     else:
-                        read_ops[childNode.getAddress()-baseAddress] =                                                "outdata("+getBitRange(childNode.getMask())+") <= "+childNode.getPath()+";\n"
+                        read_ops[childNode.getAddress()-baseAddress] =                                                "localRdData("+getBitRange(childNode.getMask())+")".ljust(11)+" <= "+childNode.getPath()+";\n"
                 elif childNode.getPermission() == uhal.NodePermission.READWRITE:
                     if read_ops.has_key(childNode.getAddress()-baseAddress):
-                        read_ops[childNode.getAddress()-baseAddress] = read_ops[childNode.getAddress()-baseAddress] + "outdata("+getBitRange(childNode.getMask())+") <= "+childNode.getPath()+";\n"
+                        read_ops[childNode.getAddress()-baseAddress] = read_ops[childNode.getAddress()-baseAddress] + "localRdData("+getBitRange(childNode.getMask())+")".ljust(11)+" <= "+childNode.getPath()+";\n"
                     else:
-                        read_ops[childNode.getAddress()-baseAddress] =                                                "outdata("+getBitRange(childNode.getMask())+") <= "+childNode.getPath()+";\n"
+                        read_ops[childNode.getAddress()-baseAddress] =                                                "localRdData("+getBitRange(childNode.getMask())+")".ljust(11)+" <= "+childNode.getPath()+";\n"
                     if write_ops.has_key(childNode.getAddress()-baseAddress):
-                        write_ops[childNode.getAddress()-baseAddress] = write_ops[childNode.getAddress()-baseAddress] + "outdata("+getBitRange(childNode.getMask())+") <= "+childNode.getPath()+";\n"
+                        write_ops[childNode.getAddress()-baseAddress] = write_ops[childNode.getAddress()-baseAddress] + childNode.getPath().ljust(50) + " <= localWrData("+getBitRange(childNode.getMask())+");\n"
                     else:
-                        write_ops[childNode.getAddress()-baseAddress] =                                                "outdata("+getBitRange(childNode.getMask())+") <= "+childNode.getPath()+";\n"
+                        write_ops[childNode.getAddress()-baseAddress] =                                                 childNode.getPath().ljust(50) + " <= localWrData("+getBitRange(childNode.getMask())+");\n"
                 elif childNode.getPermission() == uhal.NodePermission.WRITE:
                     if write_ops.has_key(childNode.getAddress()-baseAddress):
-                        write_ops[childNode.getAddress()-baseAddress] = write_ops[childNode.getAddress()-baseAddress] + "outdata("+getBitRange(childNode.getMask())+") <= "+childNode.getPath()+";\n"
+                        write_ops[childNode.getAddress()-baseAddress] = write_ops[childNode.getAddress()-baseAddress] + childNode.getPath().ljust(50) + " <= localWrData("+getBitRange(childNode.getMask())+");\n"
                     else:
-                        write_ops[childNode.getAddress()-baseAddress] =                                                "outdata("+getBitRange(childNode.getMask())+") <= "+childNode.getPath()+";\n"
+                        write_ops[childNode.getAddress()-baseAddress] =                                                 childNode.getPath().ljust(50) + " <= localWrData("+getBitRange(childNode.getMask())+");\n"
                     
-                    action_ops+=childNode.getPath()+" <= (others => '0')\n "
+                    action_ops+=childNode.getPath().ljust(50) + " <= (others => '0')\n "
 
                     
     generateRecord((baseName[4:]).replace('.','_')+"_t",package_entries,outFileName)
-                        
+
+
+def generateRegMap(baseName,r_ops,w_ops,a_ops):
+            
+    outFile=open(baseName+"_map.vhd",'w')
+    outFile.write("library ieee;\n")
+    outFile.write("use ieee.std_logic_1164.all;\n")
+    outFile.write("use ieee.numeric_std.all;\n")
+    outFile.write("use work.AXIRegPkg.all;\n")
+    outFile.write("entity "+baseName+"_interface is\n")
+    outFile.write("  port (\n")
+    outFile.write("    clk_axi          : in  std_logic;\n")
+    outFile.write("    reset_axi_n      : in  std_logic;\n")
+    outFile.write("    slave_readMOSI   : in  AXIReadMOSI;\n")
+    outFile.write("    slave_readMISO   : out AXIReadMISO  := DefaultAXIReadMISO;\n")
+    outFile.write("    slave_writeMOSI  : in  AXIWriteMOSI;\n")
+    outFile.write("    slave_writeMISO  : out AXIWriteMISO := DefaultAXIWriteMISO;\n")
+    outFile.write("    master_readMOSI  : out AXIReadMOSI  := DefaultAXIReadMOSI;\n")
+    outFile.write("    master_readMISO  : in  AXIReadMISO;\n")
+    outFile.write("    master_writeMOSI : out AXIWriteMOSI := DefaultAXIWriteMOSI;\n")
+    outFile.write("    master_writeMISO : in  AXIWriteMISO;\n")
+    outFile.write("    );\n")
+    outFile.write("end entity CM_interface;\n")
+    outFile.write("architecture behavioral of CM_interface is\n")
+    outFile.write("  signal localAddress       : slv_32_t;\n")
+    outFile.write("  signal localRdData        : slv_32_t;\n")
+    outFile.write("  signal localRdData_latch  : slv_32_t;\n")
+    outFile.write("  signal localWrData        : slv_32_t;\n")
+    outFile.write("  signal localWrEn          : std_logic;\n")
+    outFile.write("  signal localRdReq         : std_logic;\n")
+    outFile.write("  signal localRdAck         : std_logic;\n")
+    outFile.write("\n")  
+    outFile.write("\n")
+    outFile.write("  signal reg_data :  slv32_array_t(integer range 0 to 64);\n")
+    outFile.write("  constant Default_reg_data : slv32_array_t(integer range 0 to 64) := (others => x\"00000000\");\n")
+    outFile.write("begin  -- architecture behavioral\n")
+    outFile.write("\n");
+    outFile.write("  -------------------------------------------------------------------------------\n")
+    outFile.write("  -- AXI \n")
+    outFile.write("  -------------------------------------------------------------------------------\n")
+    outFile.write("  -------------------------------------------------------------------------------\n")
+    outFile.write("  AXIRegBridge : entity work.axiLiteReg\n")
+    outFile.write("    port map (\n")
+    outFile.write("      clk_axi     => clk_axi,\n")
+    outFile.write("      reset_axi_n => reset_axi_n,\n")
+    outFile.write("      readMOSI    => slave_readMOSI,\n")
+    outFile.write("      readMISO    => slave_readMISO,\n")
+    outFile.write("      writeMOSI   => slave_writeMOSI,\n")
+    outFile.write("      writeMISO   => slave_writeMISO,\n")
+    outFile.write("      address     => localAddress,\n")
+    outFile.write("      rd_data     => localRdData_latch,\n")
+    outFile.write("      wr_data     => localWrData,\n")
+    outFile.write("      write_en    => localWrEn,\n")
+    outFile.write("      read_req    => localRdReq,\n")
+    outFile.write("      read_ack    => localRdAck);\n")
+    outFile.write("\n")
+    outFile.write("  latch_reads: process (clk_axi) is\n")
+    outFile.write("  begin  -- process latch_reads\n")
+    outFile.write("    if clk_axi'event and clk_axi = '1' then  -- rising clock edge\n")
+    outFile.write("      if localRdReq = '1' then\n")
+    outFile.write("        localRdData_latch <= localRdData;        \n")
+    outFile.write("      end if;\n")
+    outFile.write("    end if;\n")
+    outFile.write("  end process latch_reads;\n")
+    outFile.write("  reads: process (localRdReq,localAddress,reg_data) is\n")
+    outFile.write("  begin  -- process reads\n")
+    outFile.write("    localRdAck  <= '0';\n")
+    outFile.write("    localRdData <= x\"00000000\";\n")
+    outFile.write("    if localRdReq = '1' then\n")
+    outFile.write("      localRdAck  <= '1';\n")
+    outFile.write("      case localAddress(7 downto 0) is\n")
+
+    if len(read_ops) != 0:
+        for addr in read_ops:
+            outFile.write("        when x\""+hex(addr)[2:]+"\" =>\n");
+            for line in read_ops[addr].split('\n'):
+                outFile.write("          "+line+"\n")
+
+                
+    outFile.write("        when others =>\n")
+    outFile.write("          localRdData <= x\"00000000\";\n")
+    outFile.write("      end case;\n")
+    outFile.write("    end if;\n")
+    outFile.write("  end process reads;\n")
+
+    outFile.write("  reg_writes: process (clk_axi, reset_axi_n) is\n")
+    outFile.write("  begin  -- process reg_writes\n")
+    outFile.write("    if reset_axi_n = '0' then                 -- asynchronous reset (active high)\n")
+    outFile.write("      reg_data <= default_reg_data;\n")
+    outFile.write("    elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge\n")
+
+    for line in action_ops.split("\n"):
+        outFile.write("      "+line+"\n")
+    
+    outFile.write("      if localWrEn = '1' then\n")
+    outFile.write("        case localAddress(7 downto 0) is\n")
+ 
+    
+    if len(write_ops) != 0:
+        for addr in write_ops:
+            outFile.write("          when x\""+hex(addr)[2:]+"\" =>\n");
+            for line in write_ops[addr].split('\n'):
+                outFile.write("            "+line+"\n")            
+
+    outFile.write("          when others => null;\n")
+    outFile.write("        end case;\n")
+    outFile.write("      end if;\n")
+    outFile.write("    end if;\n")
+    outFile.write("  end process reg_writes;\n")
+    outFile.write("\n")
+    outFile.write("end architecture behavioral;\n")
+
+                
+    outFile.close()
 
 def main():    
 
@@ -313,9 +431,6 @@ def main():
     for i in device.getNodes():
         d = device.getNode(i)
         if d.getPath().count('.') == 1:
-            print("\n\n\n\n")
-            print(d.getPath())
-            print("\n")
             action_ops=""
             read_ops.clear()
             write_ops.clear()
@@ -330,11 +445,8 @@ def main():
             traverseTree(d,"\t",d.getAddress(),d.getPath(),outFileName)
             outFile=open(outFileName,'a')
             outFile.write("\n\nend package "+outFileBase+"_CTRL;")
-            
-            print(read_ops,'\n')
-            print(write_ops,'\n')            
-            print(action_ops,'\n')
-            
+
+            generateRegMap(outFileBase,read_ops,write_ops,action_ops)
                    
 if __name__ == '__main__':
     main()
