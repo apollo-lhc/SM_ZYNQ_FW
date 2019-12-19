@@ -219,6 +219,7 @@ def getBitRange(mask):
 
 def traverseTree(Node,padding,baseAddress,baseName,outFileName):
     global action_ops
+    global readwrite_ops
     baseName=Node.getPath()
     package_entries = dict()
     for childName in Node.getNodes():
@@ -235,33 +236,38 @@ def traverseTree(Node,padding,baseAddress,baseName,outFileName):
                 else:
                     package_entries[name] = "std_logic_vector(" + str(bitCount-1).rjust(2,' ') + " downto  0)"
 
+                local_address=childNode.getAddress()-baseAddress
+                local_name=childNode.getPath()[len("TOP."):]
                 if childNode.getPermission() == uhal.NodePermission.READ:
-                    if read_ops.has_key(childNode.getAddress()-baseAddress):
-                        read_ops[childNode.getAddress()-baseAddress] = read_ops[childNode.getAddress()-baseAddress] + "localRdData("+getBitRange(childNode.getMask())+")".ljust(11)+" <= "+childNode.getPath()+";\n"
+                    if read_ops.has_key(local_address):
+                        read_ops[local_address] = read_ops[local_address] + str("localRdData("+getBitRange(childNode.getMask())+")").ljust(11)+" <= "+local_name+";\n"
                     else:
-                        read_ops[childNode.getAddress()-baseAddress] =                                                "localRdData("+getBitRange(childNode.getMask())+")".ljust(11)+" <= "+childNode.getPath()+";\n"
+                        read_ops[local_address] =                           str("localRdData("+getBitRange(childNode.getMask())+")").ljust(11)+" <= "+local_name+";\n"
                 elif childNode.getPermission() == uhal.NodePermission.READWRITE:
-                    if read_ops.has_key(childNode.getAddress()-baseAddress):
-                        read_ops[childNode.getAddress()-baseAddress] = read_ops[childNode.getAddress()-baseAddress] + "localRdData("+getBitRange(childNode.getMask())+")".ljust(11)+" <= "+childNode.getPath()+";\n"
+                    if read_ops.has_key(local_address):
+                        read_ops[local_address] = read_ops[local_address] + str("localRdData("+getBitRange(childNode.getMask())+")").ljust(11)+" <= "+"reg_data("+str(local_address)+")("+getBitRange(childNode.getMask())+")".ljust(11)+";\n"
                     else:
-                        read_ops[childNode.getAddress()-baseAddress] =                                                "localRdData("+getBitRange(childNode.getMask())+")".ljust(11)+" <= "+childNode.getPath()+";\n"
-                    if write_ops.has_key(childNode.getAddress()-baseAddress):
-                        write_ops[childNode.getAddress()-baseAddress] = write_ops[childNode.getAddress()-baseAddress] + childNode.getPath().ljust(50) + " <= localWrData("+getBitRange(childNode.getMask())+");\n"
+                        read_ops[local_address] =                           str("localRdData("+getBitRange(childNode.getMask())+")").ljust(11)+" <= "+"reg_data("+str(local_address)+")("+getBitRange(childNode.getMask())+")".ljust(11)+";\n"
+                    if write_ops.has_key(local_address):
+                        write_ops[local_address] = write_ops[local_address] + str("reg_data("+str(local_address)+")("+getBitRange(childNode.getMask())+")").ljust(50) + " <= localWrData("+getBitRange(childNode.getMask())+");\n"
                     else:
-                        write_ops[childNode.getAddress()-baseAddress] =                                                 childNode.getPath().ljust(50) + " <= localWrData("+getBitRange(childNode.getMask())+");\n"
+                        write_ops[local_address] =                            str("reg_data("+str(local_address)+")("+getBitRange(childNode.getMask())+")").ljust(50) + " <= localWrData("+getBitRange(childNode.getMask())+");\n"
+
+                    readwrite_ops+=local_name.ljust(50) + " <= reg_data("+str(local_address)+")("+getBitRange(childNode.getMask())+");\n"
+
                 elif childNode.getPermission() == uhal.NodePermission.WRITE:
-                    if write_ops.has_key(childNode.getAddress()-baseAddress):
-                        write_ops[childNode.getAddress()-baseAddress] = write_ops[childNode.getAddress()-baseAddress] + childNode.getPath().ljust(50) + " <= localWrData("+getBitRange(childNode.getMask())+");\n"
+                    if write_ops.has_key(local_address):
+                        write_ops[local_address] = write_ops[local_address] + local_name.ljust(50) + " <= localWrData("+getBitRange(childNode.getMask())+");\n"
                     else:
-                        write_ops[childNode.getAddress()-baseAddress] =                                                 childNode.getPath().ljust(50) + " <= localWrData("+getBitRange(childNode.getMask())+");\n"
+                        write_ops[local_address] =                            local_name.ljust(50) + " <= localWrData("+getBitRange(childNode.getMask())+");\n"
                     
-                    action_ops+=childNode.getPath().ljust(50) + " <= (others => '0')\n "
+                    action_ops+=local_name.ljust(50) + " <= (others => '0')\n"
 
                     
     generateRecord((baseName[4:]).replace('.','_')+"_t",package_entries,outFileName)
 
 
-def generateRegMap(baseName,r_ops,w_ops,a_ops):
+def generateRegMap(baseName,r_ops,rw_ops,w_ops,a_ops):
             
     outFile=open(baseName+"_map.vhd",'w')
     outFile.write("library ieee;\n")
@@ -275,11 +281,7 @@ def generateRegMap(baseName,r_ops,w_ops,a_ops):
     outFile.write("    slave_readMOSI   : in  AXIReadMOSI;\n")
     outFile.write("    slave_readMISO   : out AXIReadMISO  := DefaultAXIReadMISO;\n")
     outFile.write("    slave_writeMOSI  : in  AXIWriteMOSI;\n")
-    outFile.write("    slave_writeMISO  : out AXIWriteMISO := DefaultAXIWriteMISO;\n")
-    outFile.write("    master_readMOSI  : out AXIReadMOSI  := DefaultAXIReadMOSI;\n")
-    outFile.write("    master_readMISO  : in  AXIReadMISO;\n")
-    outFile.write("    master_writeMOSI : out AXIWriteMOSI := DefaultAXIWriteMOSI;\n")
-    outFile.write("    master_writeMISO : in  AXIWriteMISO;\n")
+    outFile.write("    slave_writeMISO  : out AXIWriteMISO := DefaultAXIWriteMISO\n")
     outFile.write("    );\n")
     outFile.write("end entity CM_interface;\n")
     outFile.write("architecture behavioral of CM_interface is\n")
@@ -331,10 +333,10 @@ def generateRegMap(baseName,r_ops,w_ops,a_ops):
     outFile.write("      localRdAck  <= '1';\n")
     outFile.write("      case localAddress(7 downto 0) is\n")
 
-    if len(read_ops) != 0:
-        for addr in read_ops:
+    if len(r_ops) != 0:
+        for addr in r_ops:
             outFile.write("        when x\""+hex(addr)[2:]+"\" =>\n");
-            for line in read_ops[addr].split('\n'):
+            for line in r_ops[addr].split('\n'):
                 outFile.write("          "+line+"\n")
 
                 
@@ -344,23 +346,29 @@ def generateRegMap(baseName,r_ops,w_ops,a_ops):
     outFile.write("    end if;\n")
     outFile.write("  end process reads;\n")
 
+
+    for line in rw_ops.split("\n"):
+        outFile.write("  "+line+"\n")
+
+
+    
     outFile.write("  reg_writes: process (clk_axi, reset_axi_n) is\n")
     outFile.write("  begin  -- process reg_writes\n")
     outFile.write("    if reset_axi_n = '0' then                 -- asynchronous reset (active high)\n")
     outFile.write("      reg_data <= default_reg_data;\n")
     outFile.write("    elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge\n")
 
-    for line in action_ops.split("\n"):
+    for line in a_ops.split("\n"):
         outFile.write("      "+line+"\n")
     
     outFile.write("      if localWrEn = '1' then\n")
     outFile.write("        case localAddress(7 downto 0) is\n")
  
     
-    if len(write_ops) != 0:
-        for addr in write_ops:
+    if len(w_ops) != 0:
+        for addr in w_ops:
             outFile.write("          when x\""+hex(addr)[2:]+"\" =>\n");
-            for line in write_ops[addr].split('\n'):
+            for line in w_ops[addr].split('\n'):
                 outFile.write("            "+line+"\n")            
 
     outFile.write("          when others => null;\n")
@@ -379,8 +387,10 @@ def main():
     global read_ops
     global write_ops
     global action_ops
-
+    global readwrite_ops
+    
     read_ops = dict(list())
+    readwrite_ops = str()
     write_ops = dict(list())
     action_ops = str()
     
@@ -434,6 +444,7 @@ def main():
             action_ops=""
             read_ops.clear()
             write_ops.clear()
+            readwrite_ops=""
             outFileName=d.getPath()
             outFileBase=outFileName[outFileName.find('.')+1:]
             outFileName=outFileBase+"_PKG.vhd"
@@ -446,7 +457,7 @@ def main():
             outFile=open(outFileName,'a')
             outFile.write("\n\nend package "+outFileBase+"_CTRL;")
 
-            generateRegMap(outFileBase,read_ops,write_ops,action_ops)
+            generateRegMap(outFileBase,read_ops,readwrite_ops,write_ops,action_ops)
                    
 if __name__ == '__main__':
     main()
