@@ -60,14 +60,21 @@ ${OPT_PATH}/BUTool: ${OPT_PATH} ${TMP_PATH} ${OPT_PATH}/cactus
 	make init
 	cp ${MODS_PATH}/build_BUTool.sh ${TMP_PATH}/ApolloTool/
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/ApolloTool/build_BUTool.sh
-	sudo install -d -m 777 ${MODS_PATH}/address_tables ${OPT_PATH}
-	sudo install -d -m 666 ${MODS_PATH}/systemd ${OPT_PATH}/BUTool/
-	sudo ln -s /opt/BUTool/systemd/smboot.service      ./image/etc/systemd/system/smboot.service
-	sudo ln -s /opt/BUTool/systemd/heartbeat.service   ./image/etc/systemd/system/heartbeat.service
-	sudo ln -s /opt/BUTool/systemd/arm_monitor.service ./image/etc/systemd/system/arm_monitor.service
-	sudo cp  ${MODS_PATH}/rc.d/rc.local ${ETC_PATH}
+	sudo install -d -m 755 ${OPT_PATH}/address_tables
+	(cd mods && find address_tables/ -type f -exec sudo install -Dm 666 "{}" "${OPT_PATH}/{}" \;)
+	sudo install -d -m 755 ${OPT_PATH}/BUTool/systemd
+	sudo install -m 666 ${MODS_PATH}/systemd/* ${OPT_PATH}/BUTool/systemd/
+	sudo ln -s /opt/BUTool/systemd/smboot.service      ${ETC_PATH}/systemd/system/smboot.service
+	sudo ln -s /opt/BUTool/systemd/heartbeat.service   ${ETC_PATH}/systemd/system/heartbeat.service
+	sudo ln -s /opt/BUTool/systemd/arm_monitor.service ${ETC_PATH}/systemd/system/arm_monitor.service
+	sudo ln -s /opt/BUTool/systemd/multi-user.target.wants/smboot.service      /opt/BUTool/systemd/smboot.service
+	sudo ln -s /opt/BUTool/systemd/multi-user.target.wants/heartbeat.service   /opt/BUTool/systemd/heartbeat.service
+	sudo ln -s /opt/BUTool/systemd/multi-user.target.wants/arm_monitor.service /opt/BUTool/systemd/arm_monitor.service
+	sudo install -m 777 ${MODS_PATH}/rc.local ${ETC_PATH}/rc.d/rc.local
 
 finalize_image: ${HOME_PATH}/cms ${HOME_PATH}/atlas ${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_PATH}/passwd ${ETC_PATH}/shadow ${OPT_PATH}/BUTool
 	sudo rm -rf ${TMP_PATH}/*
+	sudo ln -s /opt/BUTool/systemd/multi-user.target.wants/lighttpd.service /usr/lib/systemd/system/lighttpd.service
+	sudo install -m 755 ${MODS_PATH}/uio.rules ${ETC_PATH}/udev/rules.d/
 clean:
 	sudo rm -rf ${INSTALL_PATH}
