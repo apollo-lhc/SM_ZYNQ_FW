@@ -76,5 +76,11 @@ finalize_image: ${HOME_PATH}/cms ${HOME_PATH}/atlas ${ETC_PATH}/group ${ETC_PATH
 	sudo rm -rf ${TMP_PATH}/*
 	sudo ln -s /opt/BUTool/systemd/multi-user.target.wants/lighttpd.service /usr/lib/systemd/system/lighttpd.service
 	sudo install -m 755 ${MODS_PATH}/uio.rules ${ETC_PATH}/udev/rules.d/
+	sudo install                   -m 777 ${MODS_PATH}/.bashrc       ${INSTALL_PATH}/root
+	sudo install                   -m 777 ${MODS_PATH}/.bash_profile ${INSTALL_PATH}/root
+	sudo install -g cms   -o cms   -m 777 ${MODS_PATH}/.bashrc       ${HOME_PATH}/cms
+	sudo install -g cms   -o cms   -m 777 ${MODS_PATH}/.bash_profile ${HOME_PATH}/cms
+	sudo install -g atlas -o atlas -m 777 ${MODS_PATH}/.bashrc       ${HOME_PATH}/atlas
+	sudo install -g atlas -o atlas -m 777 ${MODS_PATH}/.bash_profile ${HOME_PATH}/atlas
 clean:
 	sudo rm -rf ${INSTALL_PATH}
