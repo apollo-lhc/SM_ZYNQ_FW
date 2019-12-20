@@ -32,17 +32,18 @@ ${ETC_PATH} ${TMP_PATH}: ${QEMU_PATH}/${QEMU} ${INSTALL_PATH}/${QEMU_PATH}/${QEM
 	cd centos-rootfs && \
 	sudo python mkrootfs.py --root=${INSTALL_PATH} --arch=armv7hl --extra=extra_rpms.txt
 
+${OPT_PATH}: ${TMP_PATH}
+	sudo mkdir -p ${OPT_PATH}
+
 ${HOME_PATH}/cms ${HOME_PATH}/atlas ${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_PATH}/passwd ${ETC_PATH}/shadow: ${ETC_PATH} ${MODS_PATH}/group ${MODS_PATH}/gshadow ${MODS_PATH}/passwd ${MODS_PATH}/shadow
-	sudo cp ${MODS_PATH}/group   ${ETC_PATH}/
-	sudo chmod 644 ${ETC_PATH}//group
-	sudo cp ${MODS_PATH}/gshadow	${ETC_PATH}/
-	sudo chmod 004 ${ETC_PATH}//gshadow
-	sudo cp ${MODS_PATH}/passwd	${ETC_PATH}/
-	sudo chmod 644 ${ETC_PATH}//passwd
-	sudo cp ${MODS_PATH}/shadow  ${ETC_PATH}/
-	sudo chmod 000 ${ETC_PATH}//passwd
+	sudo install -m 644 ${MODS_PATH}/group   ${ETC_PATH}/
+	sudo install -m 644 ${MODS_PATH}/passwd  ${ETC_PATH}/
+	sudo install -m 000 ${MODS_PATH}/gshadow ${ETC_PATH}/
+	sudo install -m 000 ${MODS_PATH}/shadow  ${ETC_PATH}/
 	sudo mkdir -p ${HOME_PATH}/cms
 	sudo mkdir -p ${HOME_PATH}/atlas
+	sudo cp ${MODS_PATH}/set_permissions.sh ${TMP_PATH}
+	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/set_permissions.sh
 
 ${OPT_PATH}/cactus: ${OPT_PATH} ${TMP_PATH}
 	cd ${TMP_PATH} && \
@@ -59,9 +60,14 @@ ${OPT_PATH}/BUTool: ${OPT_PATH} ${TMP_PATH} ${OPT_PATH}/cactus
 	make init
 	cp ${MODS_PATH}/build_BUTool.sh ${TMP_PATH}/ApolloTool/
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/ApolloTool/build_BUTool.sh
+	sudo install -d -m 777 ${MODS_PATH}/address_tables ${OPT_PATH}
+	sudo install -d -m 666 ${MODS_PATH}/systemd ${OPT_PATH}/BUTool/
+	sudo ln -s /opt/BUTool/systemd/smboot.service      ./image/etc/systemd/system/smboot.service
+	sudo ln -s /opt/BUTool/systemd/heartbeat.service   ./image/etc/systemd/system/heartbeat.service
+	sudo ln -s /opt/BUTool/systemd/arm_monitor.service ./image/etc/systemd/system/arm_monitor.service
+	sudo cp  ${MODS_PATH}/rc.d/rc.local ${ETC_PATH}
 
 finalize_image: ${HOME_PATH}/cms ${HOME_PATH}/atlas ${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_PATH}/passwd ${ETC_PATH}/shadow ${OPT_PATH}/BUTool
 	sudo rm -rf ${TMP_PATH}/*
-
 clean:
 	sudo rm -rf ${INSTALL_PATH}

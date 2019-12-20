@@ -1,0 +1,14 @@
+[Unit]
+Description=Service to monitor the PS for SC
+StartLimitIntervalSec=0
+
+[Service]
+Type=forking
+PIDFile=/var/run/ARMMonitor.pid
+Restart=always
+RestartSec=1
+User=root
+ExecStart=/opt/BUTool/bin/arm-monitor
+
+[Install]
+WantedBy=multi-user.target

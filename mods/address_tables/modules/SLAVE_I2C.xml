@@ -1,0 +1,198 @@
+<node>
+  <node id="S1" address ="0x00">
+    <node id="SM" address="0x0">
+	<node id="STATUS" address="0x0">
+	  <node id="DONE"          permission="rw" mask="0x00000001"/>
+	  <node id="ERROR"         permission="rw" mask="0x00000002"/>
+	  <node id="ZYNQ_DONE"     permission="rw" mask="0x00000004"/>
+	  <node id="SHUTDOWN_REQ"  permission="rw" mask="0x00000010" description="If 1, petalinux will shut down"/>
+	  <node id="SHUTDOWN"      permission="rw" mask="0x00000020" description="1 when petalinux shuts down"/>
+	</node>
+	<node id="INFO" address="0x1">
+	  <node id="SN"            permission="r"  mask="0x00000FFF" description="Service module serial number"/>
+	  <node id="SLOT"          permission="r"  mask="0x0000F000" description="Shelf physical slot number"/>
+	  <node id="SHELF"         permission="r"  mask="0x00FF0000" description="Shelf ID"/>
+	</node>	
+	<node id="ETH0_MAC" address="0x5">
+	  <node id="0"      address="0x0"        permission="r" mask="0x000000FF" description="eth0 mac adder byte 1"/>
+	  <node id="1"      address="0x0"        permission="r" mask="0x0000FF00" description="eth0 mac adder byte 2"/>
+	  <node id="2"      address="0x0"        permission="r" mask="0x00FF0000" description="eth0 mac adder byte 3"/>
+	  <node id="3"      address="0x0"        permission="r" mask="0xFF000000" description="eth0 mac adder byte 4"/>
+	  <node id="4"      address="0x1"        permission="r" mask="0x000000FF" description="eth0 mac adder byte 5"/>
+	  <node id="5"      address="0x1"        permission="r" mask="0x0000FF00" description="eth0 mac adder byte 6"/>
+	</node>
+	<node id="ETH1_MAC" address="0x7">
+	  <node id="0"      address="0x0"        permission="r" mask="0x000000FF" description="eth1 mac adder byte 1"/>
+	  <node id="1"      address="0x0"        permission="r" mask="0x0000FF00" description="eth1 mac adder byte 2"/>
+	  <node id="2"      address="0x0"        permission="r" mask="0x00FF0000" description="eth1 mac adder byte 3"/>
+	  <node id="3"      address="0x0"        permission="r" mask="0xFF000000" description="eth1 mac adder byte 4"/>
+	  <node id="4"      address="0x1"        permission="r" mask="0x000000FF" description="eth1 mac adder byte 5"/>
+	  <node id="5"      address="0x1"        permission="r" mask="0x0000FF00" description="eth1 mac adder byte 6"/>
+	</node>
+    </node>      
+    <node id="3"  address="0x3" permission="rw"/>
+    <node id="4"  address="0x4" permission="rw"/>
+    <node id="9"  address="0x9" permission="rw"/>
+    <node id="A"  address="0xA" permission="rw"/>
+    <node id="B"  address="0xB" permission="rw"/>
+    <node id="C"  address="0x5" permission="rw"/>
+    <node id="D"  address="0x6" permission="rw"/>
+    <node id="E"  address="0x7" permission="rw"/>
+    <node id="F"  address="0x8" permission="rw"/>
+  </node>
+  <node id="S2" address ="0x10">
+    <node id="0"  address="0x0" permission="rw">
+      <node id="TEMP"     mask="0x000000FF" permission="r" parameters="Table=STATUS;Row=CM_MCU;Column=_4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP_MAX" mask="0x0000FF00" permission="r" parameters="Table=STATUS;Row=CM_MCU;Column=_4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP_MIN" mask="0x00FF0000" permission="r" parameters="Table=STATUS;Row=CM_MCU;Column=_4;Format=u;Status=1;Show=nz"/>
+    </node>
+    <node id="1"  address="0x1" permission="rw"/>
+    <node id="2"  address="0x2" permission="rw"/>
+    <node id="3"  address="0x3" permission="rw"/>
+    <node id="4"  address="0x4" permission="rw"/>
+    <node id="5"  address="0x5" permission="rw"/>
+    <node id="6"  address="0x6" permission="rw"/>
+    <node id="7"  address="0x7" permission="rw"/>
+    <node id="8"  address="0x8" permission="rw"/>
+    <node id="9"  address="0x9" permission="rw"/>
+    <node id="A"  address="0xA" permission="rw"/>
+    <node id="B"  address="0xB" permission="rw"/>
+    <node id="C"  address="0xC" permission="rw"/>
+    <node id="D"  address="0xD" permission="rw"/>
+    <node id="E"  address="0xE" permission="rw"/>
+    <node id="F"  address="0xF" permission="rw"/>
+  </node>
+  <node id="S3" address ="0x20">
+    <node id="0"  address="0x0" permission="rw">
+      <node id="TEMP"     mask="0x000000FF" permission="r" parameters="Table=STATUS;Row=CM_FF;Column=_4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP_MAX" mask="0x0000FF00" permission="r" parameters="Table=STATUS;Row=CM_FF;Column=_4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP_MIN" mask="0x00FF0000" permission="r" parameters="Table=STATUS;Row=CM_FF;Column=_4;Format=u;Status=1;Show=nz"/>
+    </node>
+    <node id="1"  address="0x1" permission="rw"/>
+    <node id="2"  address="0x2" permission="rw"/>
+    <node id="3"  address="0x3" permission="rw"/>
+    <node id="4"  address="0x4" permission="rw"/>
+    <node id="5"  address="0x5" permission="rw"/>
+    <node id="6"  address="0x6" permission="rw"/>
+    <node id="7"  address="0x7" permission="rw"/>
+    <node id="8"  address="0x8" permission="rw"/>
+    <node id="9"  address="0x9" permission="rw"/>
+    <node id="A"  address="0xA" permission="rw"/>
+    <node id="B"  address="0xB" permission="rw"/>
+    <node id="C"  address="0xC" permission="rw"/>
+    <node id="D"  address="0xD" permission="rw"/>
+    <node id="E"  address="0xE" permission="rw"/>
+    <node id="F"  address="0xF" permission="rw"/>
+  </node>
+  <node id="S4" address ="0x30">
+    <node id="0"  address="0x0" permission="rw">
+      <node id="TEMP"     mask="0x000000FF" permission="r" parameters="Table=STATUS;Row=CM_FPGA;Column=_4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP_MAX" mask="0x0000FF00" permission="r" parameters="Table=STATUS;Row=CM_FPGA;Column=_4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP_MIN" mask="0x00FF0000" permission="r" parameters="Table=STATUS;Row=CM_FPGA;Column=_4;Format=u;Status=1;Show=nz"/>
+    </node>      
+    <node id="1"  address="0x1" permission="rw"/>
+    <node id="2"  address="0x2" permission="rw"/>
+    <node id="3"  address="0x3" permission="rw"/>
+    <node id="4"  address="0x4" permission="rw"/>
+    <node id="5"  address="0x5" permission="rw"/>
+    <node id="6"  address="0x6" permission="rw"/>
+    <node id="7"  address="0x7" permission="rw"/>
+    <node id="8"  address="0x8" permission="rw"/>
+    <node id="9"  address="0x9" permission="rw"/>
+    <node id="A"  address="0xA" permission="rw"/>
+    <node id="B"  address="0xB" permission="rw"/>
+    <node id="C"  address="0xC" permission="rw"/>
+    <node id="D"  address="0xD" permission="rw"/>
+    <node id="E"  address="0xE" permission="rw"/>
+    <node id="F"  address="0xF" permission="rw"/>
+  </node>
+  <node id="S5" address ="0x40">
+    <node id="0"  address="0x0" permission="rw">
+      <node id="TEMP"     mask="0x000000FF" permission="r" parameters="Table=STATUS;Row=CM_REG;Column=_4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP_MAX" mask="0x0000FF00" permission="r" parameters="Table=STATUS;Row=CM_REG;Column=_4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP_MIN" mask="0x00FF0000" permission="r" parameters="Table=STATUS;Row=CM_REG;Column=_4;Format=u;Status=1;Show=nz"/>
+    </node>      
+    <node id="1"  address="0x1" permission="rw"/>
+    <node id="2"  address="0x2" permission="rw"/>
+    <node id="3"  address="0x3" permission="rw"/>
+    <node id="4"  address="0x4" permission="rw"/>
+    <node id="5"  address="0x5" permission="rw"/>
+    <node id="6"  address="0x6" permission="rw"/>
+    <node id="7"  address="0x7" permission="rw"/>
+    <node id="8"  address="0x8" permission="rw"/>
+    <node id="9"  address="0x9" permission="rw"/>
+    <node id="A"  address="0xA" permission="rw"/>
+    <node id="B"  address="0xB" permission="rw"/>
+    <node id="C"  address="0xC" permission="rw"/>
+    <node id="D"  address="0xD" permission="rw"/>
+    <node id="E"  address="0xE" permission="rw"/>
+    <node id="F"  address="0xF" permission="rw"/>
+  </node>
+  <node id="S6" address ="0x50">
+    <node id="0"  address="0x0" permission="rw"/>
+    <node id="1"  address="0x1" permission="rw"/>
+    <node id="2"  address="0x2" permission="rw"/>
+    <node id="3"  address="0x3" permission="rw"/>
+    <node id="4"  address="0x4" permission="rw"/>
+    <node id="5"  address="0x5" permission="rw"/>
+    <node id="6"  address="0x6" permission="rw"/>
+    <node id="7"  address="0x7" permission="rw"/>
+    <node id="8"  address="0x8" permission="rw"/>
+    <node id="9"  address="0x9" permission="rw"/>
+    <node id="A"  address="0xA" permission="rw"/>
+    <node id="B"  address="0xB" permission="rw"/>
+    <node id="C"  address="0xC" permission="rw"/>
+    <node id="D"  address="0xD" permission="rw"/>
+    <node id="E"  address="0xE" permission="rw"/>
+    <node id="F"  address="0xF" permission="rw"/>
+  </node>
+  <node id="S7" address ="0x60">
+    <node id="0"  address="0x0" permission="rw"/>
+    <node id="1"  address="0x1" permission="rw"/>
+    <node id="2"  address="0x2" permission="rw"/>
+    <node id="3"  address="0x3" permission="rw"/>
+    <node id="4"  address="0x4" permission="rw"/>
+    <node id="5"  address="0x5" permission="rw"/>
+    <node id="6"  address="0x6" permission="rw"/>
+    <node id="7"  address="0x7" permission="rw"/>
+    <node id="8"  address="0x8" permission="rw"/>
+    <node id="9"  address="0x9" permission="rw"/>
+    <node id="A"  address="0xA" permission="rw"/>
+    <node id="B"  address="0xB" permission="rw"/>
+    <node id="C"  address="0xC" permission="rw"/>
+    <node id="D"  address="0xD" permission="rw"/>
+    <node id="E"  address="0xE" permission="rw"/>
+    <node id="F"  address="0xF" permission="rw"/>
+  </node>
+  <node id="S8" address ="0x70">
+    <node id="IPMC_MAC" address="0x0">
+	<node id="0"      address="0x0"        permission="r" mask="0x000000FF" description="IPMC mac adder byte 1"/>
+	<node id="1"      address="0x0"        permission="r" mask="0x0000FF00" description="IPMC mac adder byte 2"/>
+	<node id="2"      address="0x0"        permission="r" mask="0x00FF0000" description="IPMC mac adder byte 3"/>
+	<node id="3"      address="0x0"        permission="r" mask="0xFF000000" description="IPMC mac adder byte 4"/>
+	<node id="4"      address="0x1"        permission="r" mask="0x000000FF" description="IPMC mac adder byte 5"/>
+	<node id="5"      address="0x1"        permission="r" mask="0x0000FF00" description="IPMC mac adder byte 6"/>
+    </node>
+    <node id="IPMC_IP" address="0x0">
+	<node id="0"      address="0x0"        permission="r" mask="0x000000FF" description="IPMC IP adder byte 1"/>
+	<node id="1"      address="0x0"        permission="r" mask="0x0000FF00" description="IPMC IP adder byte 2"/>
+	<node id="2"      address="0x0"        permission="r" mask="0x00FF0000" description="IPMC IP adder byte 3"/>
+	<node id="3"      address="0x0"        permission="r" mask="0xFF000000" description="IPMC IP adder byte 4"/>
+    </node>      
+    <node id="3"  address="0x3" permission="rw"/>
+    <node id="4"  address="0x4" permission="rw"/>
+    <node id="5"  address="0x5" permission="rw"/>
+    <node id="6"  address="0x6" permission="rw"/>
+    <node id="7"  address="0x7" permission="rw"/>
+    <node id="8"  address="0x8" permission="rw"/>
+    <node id="9"  address="0x9" permission="rw"/>
+    <node id="A"  address="0xA" permission="rw"/>
+    <node id="B"  address="0xB" permission="rw"/>
+    <node id="C"  address="0xC" permission="rw"/>
+    <node id="D"  address="0xD" permission="rw"/>
+    <node id="E"  address="0xE" permission="rw"/>
+    <node id="F"  address="0xF" permission="rw"/>
+  </node>
+  <node id="HB_SET1" address="0x07FF" permission="r" mask="0x1"/>
+  <node id="HB_SET2" address="0x07FE" permission="r" mask="0x2"/>
+</node>

@@ -29,4 +29,7 @@ boost-program-options
 readline-static
 readline-devel
 emacs
+nano
+rsync
+git
 lighttpd
