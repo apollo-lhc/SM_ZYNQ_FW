@@ -52,8 +52,8 @@ apply_bd_automation -rule xilinx.com:bd_rule:processing_system7 -config {make_ex
 
 
 
-#SDIO clock to 50Mhz
-set_property CONFIG.PCW_SDIO_PERIPHERAL_FREQMHZ {100}         [get_bd_cells processing_system7_0]
+#SDIO clock to 25Mhz
+set_property CONFIG.PCW_SDIO_PERIPHERAL_FREQMHZ {25}         [get_bd_cells processing_system7_0]
 
 set SYS_RESETER sys_reseter
 create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 $SYS_RESETER
