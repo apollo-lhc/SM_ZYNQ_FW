@@ -17,4 +17,8 @@ ifconfig eth0 192.168.30.62 netmask 255.255.0.0
 #/opt/BUTool/bin/heartbeat
 #/opt/BUTool/bin/arm-monitor
 
+/opt/BUTool/bin/findUIO IPBUS_KINTEX | grep "is at" | awk '{print "ln -s "$4" /dev/uio"$1}' | bash
+/opt/BUTool/bin/findUIO IPBUS_VIRTEX | grep "is at" | awk '{print "ln -s "$4" /dev/uio"$1}' | bash
+
+
 touch /var/lock/subsys/local
