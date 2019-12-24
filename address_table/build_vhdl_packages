@@ -195,7 +195,6 @@ def generateRecord(name,members,description,addr_order,outFileName):
             maxNameLength = len(member)
         if len(members[member]) > maxTypeLength:
             maxTypeLength = len(members[member])
-#    for member in members:
     for member in sorted (addr_order):        
         try:
             members[member]
@@ -269,12 +268,13 @@ def traverseTree(Node,padding,baseAddress,baseName,outFileName):
                 
                 local_address=childNode.getAddress()-baseAddress
                 local_name=childNode.getPath()[len("TOP."):]
+                local_name=local_name[local_name.find('.')+1:]
                 if childNode.getPermission() == uhal.NodePermission.READ:
                     package_mon_entries[name] = package_entries
                     if read_ops.has_key(local_address):
-                        read_ops[local_address] = read_ops[local_address] + str("localRdData("+bits+")").ljust(11)+" <= "+local_name+";\n"
+                        read_ops[local_address] = read_ops[local_address] + str("localRdData("+bits+")").ljust(11)+" <= Mon."+local_name+";\n"
                     else:
-                        read_ops[local_address] =                           str("localRdData("+bits+")").ljust(11)+" <= "+local_name+";\n"
+                        read_ops[local_address] =                           str("localRdData("+bits+")").ljust(11)+" <= Mon."+local_name+";\n"
                 elif childNode.getPermission() == uhal.NodePermission.READWRITE:
 #                    package_mon_entries[name]  = package_entries
                     package_ctrl_entries[name] = package_entries
@@ -287,14 +287,14 @@ def traverseTree(Node,padding,baseAddress,baseName,outFileName):
                     else:
                         write_ops[local_address] =                            str("reg_data("+str(local_address)+")("+bits+")").ljust(50) + " <= localWrData("+bits+");\n"
 
-                    readwrite_ops+=local_name.ljust(50) + " <= reg_data("+str(local_address)+")("+bits+");\n"
+                    readwrite_ops+=("Ctrl."+local_name).ljust(50) + " <= reg_data("+str(local_address)+")("+bits+");\n"
 
                 elif childNode.getPermission() == uhal.NodePermission.WRITE:
                     package_ctrl_entries[name] = package_entries
                     if write_ops.has_key(local_address):
-                        write_ops[local_address] = write_ops[local_address] + local_name.ljust(50) + " <= localWrData("+bits+");\n"
-                    else:
-                        write_ops[local_address] =                            local_name.ljust(50) + " <= localWrData("+bits+");\n"
+                        write_ops[local_address] = write_ops[local_address] + ("Ctrl."+local_name).ljust(50) + " <= localWrData("+bits+");\n"
+                    else:                                                     
+                        write_ops[local_address] =                            ("Ctrl."+local_name).ljust(50) + " <= localWrData("+bits+");\n"
                     
                     action_ops+=local_name.ljust(50) + " <= (others => '0')\n"
 
@@ -314,6 +314,7 @@ def generateRegMap(baseName,r_ops,rw_ops,w_ops,a_ops):
     outFile.write("use ieee.std_logic_1164.all;\n")
     outFile.write("use ieee.numeric_std.all;\n")
     outFile.write("use work.AXIRegPkg.all;\n")
+    outFile.write("use work."+baseName+"_Ctrl.all;\n")
     outFile.write("entity "+baseName+"_interface is\n")
     outFile.write("  port (\n")
     outFile.write("    clk_axi          : in  std_logic;\n")
@@ -321,7 +322,9 @@ def generateRegMap(baseName,r_ops,rw_ops,w_ops,a_ops):
     outFile.write("    slave_readMOSI   : in  AXIReadMOSI;\n")
     outFile.write("    slave_readMISO   : out AXIReadMISO  := DefaultAXIReadMISO;\n")
     outFile.write("    slave_writeMOSI  : in  AXIWriteMOSI;\n")
-    outFile.write("    slave_writeMISO  : out AXIWriteMISO := DefaultAXIWriteMISO\n")
+    outFile.write("    slave_writeMISO  : out AXIWriteMISO := DefaultAXIWriteMISO;\n")
+    outFile.write("    Mon              : in  "+baseName+"_Mon_t;\n")
+    outFile.write("    Ctrl             : out "+baseName+"_Ctrl_t\n")
     outFile.write("    );\n")
     outFile.write("end entity CM_interface;\n")
     outFile.write("architecture behavioral of CM_interface is\n")
