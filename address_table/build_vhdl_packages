@@ -183,19 +183,30 @@ EXIT_CODE_NODE_ADDRESS_ERRORS = 3
 def padHex(n):
     return "0x" + hex(n)[2:].zfill(8)
 
-def generateRecord(name,members,outFileName):
+def generateRecord(name,members,description,addr_order,outFileName):
     outfile = open(outFileName,'a')
     
     #Generate and print a VHDL record
-    outfile.write("type " + name + " is record\n")
+    outfile.write("  type " + name + " is record\n")
     maxNameLength = 25
+    maxTypeLength = 12
     for member in members:
         if len(member) > maxNameLength:
             maxNameLength = len(member)
-
-    for member in members:        
-        outfile.write("  " + member + "".ljust(maxNameLength-len(member),' ') + "  : " + members[member]+";\n")
-    outfile.write("end record "+name+"\n\n")
+        if len(members[member]) > maxTypeLength:
+            maxTypeLength = len(members[member])
+#    for member in members:
+    for member in sorted (addr_order):        
+        try:
+            members[member]
+            outfile.write("    " + member + "".ljust(maxNameLength-len(member),' ') + "  : ")
+            outfile.write(str(members[member]+";").ljust(maxTypeLength+1,' '))
+            if len(description[member]) > 0:
+                outfile.write("  -- "+description[member])
+            outfile.write("\n")
+        except KeyError:
+            None
+    outfile.write("  end record "+name+"\n\n")
     outfile.close()
 
 def getBitRange(mask):
@@ -217,55 +228,84 @@ def getBitRange(mask):
     else:
         return str(start).rjust(2,' ') +" downto "+str(end).rjust(2,' ')
 
+
+    
 def traverseTree(Node,padding,baseAddress,baseName,outFileName):
     global action_ops
     global readwrite_ops
     baseName=Node.getPath()
-    package_entries = dict()
+    package_mon_entries = dict()
+    package_ctrl_entries = dict()
+    package_description = dict()
+    package_addr_order = dict()
     for childName in Node.getNodes():
         name = childName
         childNode = Node.getNode(childName)
+        package_addr_order[name] = ((childNode.getAddress()-baseAddress) << 32) + childNode.getMask()
         if childName.count('.') == 0:            
             if len(childNode.getNodes()) != 0 :
-                package_entries[name] = (childNode.getPath()[4:]).replace('.','_')+"_t"
-                traverseTree(childNode,padding+"\t",baseAddress,baseName,outFileName)
+                child_records = traverseTree(childNode,padding+"\t",baseAddress,baseName,outFileName)
+                package_description[name] = ""
+                try:
+                    child_records["mon"]
+                    package_mon_entries[name] = (childNode.getPath()[4:]).replace('.','_')+"_MON_t"
+                except KeyError:
+                    None
+                try:
+                    child_records["ctrl"]
+                    package_ctrl_entries[name] = (childNode.getPath()[4:]).replace('.','_')+"_CTRL_t"
+                except KeyError:
+                    None
             else:                
                 bitCount = bin(childNode.getMask())[2:].count('1')
+                package_entries = ""
                 if bitCount == 1:
-                    package_entries[name] = "std_logic"
+                    package_entries = "std_logic"
                 else:
-                    package_entries[name] = "std_logic_vector(" + str(bitCount-1).rjust(2,' ') + " downto  0)"
+                    package_entries = "std_logic_vector(" + str(bitCount-1).rjust(2,' ') + " downto  0)"
 
+                package_description[name] = childNode.getDescription() 
+                bits = getBitRange(childNode.getMask())
+                
                 local_address=childNode.getAddress()-baseAddress
                 local_name=childNode.getPath()[len("TOP."):]
                 if childNode.getPermission() == uhal.NodePermission.READ:
+                    package_mon_entries[name] = package_entries
                     if read_ops.has_key(local_address):
-                        read_ops[local_address] = read_ops[local_address] + str("localRdData("+getBitRange(childNode.getMask())+")").ljust(11)+" <= "+local_name+";\n"
+                        read_ops[local_address] = read_ops[local_address] + str("localRdData("+bits+")").ljust(11)+" <= "+local_name+";\n"
                     else:
-                        read_ops[local_address] =                           str("localRdData("+getBitRange(childNode.getMask())+")").ljust(11)+" <= "+local_name+";\n"
+                        read_ops[local_address] =                           str("localRdData("+bits+")").ljust(11)+" <= "+local_name+";\n"
                 elif childNode.getPermission() == uhal.NodePermission.READWRITE:
+#                    package_mon_entries[name]  = package_entries
+                    package_ctrl_entries[name] = package_entries
                     if read_ops.has_key(local_address):
-                        read_ops[local_address] = read_ops[local_address] + str("localRdData("+getBitRange(childNode.getMask())+")").ljust(11)+" <= "+"reg_data("+str(local_address)+")("+getBitRange(childNode.getMask())+")".ljust(11)+";\n"
+                        read_ops[local_address] = read_ops[local_address] + str("localRdData("+bits+")").ljust(11)+" <= "+"reg_data("+str(local_address)+")("+bits+")".ljust(11)+";\n"
                     else:
-                        read_ops[local_address] =                           str("localRdData("+getBitRange(childNode.getMask())+")").ljust(11)+" <= "+"reg_data("+str(local_address)+")("+getBitRange(childNode.getMask())+")".ljust(11)+";\n"
+                        read_ops[local_address] =                           str("localRdData("+bits+")").ljust(11)+" <= "+"reg_data("+str(local_address)+")("+bits+")".ljust(11)+";\n"
                     if write_ops.has_key(local_address):
-                        write_ops[local_address] = write_ops[local_address] + str("reg_data("+str(local_address)+")("+getBitRange(childNode.getMask())+")").ljust(50) + " <= localWrData("+getBitRange(childNode.getMask())+");\n"
+                        write_ops[local_address] = write_ops[local_address] + str("reg_data("+str(local_address)+")("+bits+")").ljust(50) + " <= localWrData("+bits+");\n"
                     else:
-                        write_ops[local_address] =                            str("reg_data("+str(local_address)+")("+getBitRange(childNode.getMask())+")").ljust(50) + " <= localWrData("+getBitRange(childNode.getMask())+");\n"
+                        write_ops[local_address] =                            str("reg_data("+str(local_address)+")("+bits+")").ljust(50) + " <= localWrData("+bits+");\n"
 
-                    readwrite_ops+=local_name.ljust(50) + " <= reg_data("+str(local_address)+")("+getBitRange(childNode.getMask())+");\n"
+                    readwrite_ops+=local_name.ljust(50) + " <= reg_data("+str(local_address)+")("+bits+");\n"
 
                 elif childNode.getPermission() == uhal.NodePermission.WRITE:
+                    package_ctrl_entries[name] = package_entries
                     if write_ops.has_key(local_address):
-                        write_ops[local_address] = write_ops[local_address] + local_name.ljust(50) + " <= localWrData("+getBitRange(childNode.getMask())+");\n"
+                        write_ops[local_address] = write_ops[local_address] + local_name.ljust(50) + " <= localWrData("+bits+");\n"
                     else:
-                        write_ops[local_address] =                            local_name.ljust(50) + " <= localWrData("+getBitRange(childNode.getMask())+");\n"
+                        write_ops[local_address] =                            local_name.ljust(50) + " <= localWrData("+bits+");\n"
                     
                     action_ops+=local_name.ljust(50) + " <= (others => '0')\n"
 
                     
-    generateRecord((baseName[4:]).replace('.','_')+"_t",package_entries,outFileName)
+    ret = dict()
+    if bool(package_mon_entries):
+        ret["mon"] = generateRecord((baseName[4:]).replace('.','_')+"_MON_t",package_mon_entries,package_description,package_addr_order,outFileName)
+    if bool(package_ctrl_entries):
+        ret["ctrl"] = generateRecord((baseName[4:]).replace('.','_')+"_CTRL_t",package_ctrl_entries,package_description,package_addr_order,outFileName)
 
+    return ret
 
 def generateRegMap(baseName,r_ops,rw_ops,w_ops,a_ops):
             
