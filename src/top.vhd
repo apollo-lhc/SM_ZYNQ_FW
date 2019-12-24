@@ -166,7 +166,7 @@ architecture structure of top is
   signal pl_reset_n : std_logic;
   
 
-
+------- SGMII
   signal ENET1_EXT_INTIN_0     : STD_LOGIC;
   signal GMII_ETHERNET_col     : STD_LOGIC;
   signal GMII_ETHERNET_crs     : STD_LOGIC;
@@ -181,15 +181,11 @@ architecture structure of top is
   signal MDIO_ETHERNET_mdc     : std_logic;
   signal MDIO_ETHERNET_mdio_i  : std_logic;
   signal MDIO_ETHERNET_mdio_o  : std_logic;
-
-
+  signal QPLL_CLK              : std_logic;
+  signal QPLL_REF_CLK          : std_logic;
 
   
-
-
 ------- TCDS
-
-
   signal refclk_TCDS : std_logic;
   signal ttc_data : std_logic_vector(35 downto 0); 
   signal tts_data : std_logic_vector(35 downto 0); 
@@ -632,6 +628,8 @@ begin  -- architecture structure
       sgmii_tx_N            => sgmii_tx_N,
       sgmii_rx_P            => sgmii_rx_P,
       sgmii_rx_N            => sgmii_rx_N,
+      QPLL_CLK              => QPLL_CLK,              
+      QPLL_REF_CLK          => QPLL_REF_CLK,         
       ENET1_EXT_INTIN_0     => ENET1_EXT_INTIN_0,
       GMII_ETHERNET_col     => GMII_ETHERNET_col,
       GMII_ETHERNET_crs     => GMII_ETHERNET_crs,
@@ -656,31 +654,33 @@ begin  -- architecture structure
       sysclk        => pl_clk,
       refclk_p      => refclk_TCDS_P,
       refclk_n      => refclk_TCDS_N,
+      QPLL_CLK        => QPLL_CLK,    
+      QPLL_REF_CLK    => QPLL_REF_CLK,        
       reset         => axi_reset,
-     tx_P(0)     => tts_P,
-     tx_P(1)     => fake_ttc_P,  
-     tx_P(2)     => open, 
-     tx_N(0)     => tts_N,
-     tx_N(1)     => fake_ttc_N,  
-     tx_N(2)     => open, 
-     rx_P(0)     => ttc_P,
-     rx_P(1)     => m1_tts_P,    
-     rx_P(2)     => m2_tts_P,    
-     rx_N(0)     => ttc_N,
-     rx_N(1)     => m1_tts_N,    
-     rx_N(2)     => m2_tts_N,    
-     clk_txusr     => open,--clk_txusr,   
-     clk_rxusr     => open,--clk_rxusr,   
-     ttc_data      => ttc_data,    
-     ttc_dv => ttc_dv,      
-     tts_data      => tts_data,    
-     tts_dv => tts_dv,      
-     fake_ttc_data => fake_ttc_data,      
-     fake_ttc_dv   => fake_ttc_dv, 
-     m1_tts_data   => m1_tts_data, 
-     m1_tts_dv     => m1_tts_dv,   
-     m2_tts_data   => m2_tts_data, 
-     m2_tts_dv     => m2_tts_dv);
+      tx_P(0)     => tts_P,
+      tx_P(1)     => fake_ttc_P,  
+      tx_P(2)     => open, 
+      tx_N(0)     => tts_N,
+      tx_N(1)     => fake_ttc_N,  
+      tx_N(2)     => open, 
+      rx_P(0)     => ttc_P,
+      rx_P(1)     => m1_tts_P,    
+      rx_P(2)     => m2_tts_P,    
+      rx_N(0)     => ttc_N,
+      rx_N(1)     => m1_tts_N,    
+      rx_N(2)     => m2_tts_N,    
+      clk_txusr     => open,--clk_txusr,   
+      clk_rxusr     => open,--clk_rxusr,   
+      ttc_data      => ttc_data,    
+      ttc_dv => ttc_dv,      
+      tts_data      => tts_data,    
+      tts_dv => tts_dv,      
+      fake_ttc_data => fake_ttc_data,      
+      fake_ttc_dv   => fake_ttc_dv, 
+      m1_tts_data   => m1_tts_data, 
+      m1_tts_dv     => m1_tts_dv,   
+      m2_tts_data   => m2_tts_data, 
+      m2_tts_dv     => m2_tts_dv);
 
 
  tts_data <= m1_tts_data or m2_tts_data;

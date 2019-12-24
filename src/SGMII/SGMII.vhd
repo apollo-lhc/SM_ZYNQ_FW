@@ -16,6 +16,9 @@ entity SGMII is
     sgmii_rx_P        : in    std_logic; 
     sgmii_rx_N        : in    std_logic;
 
+    QPLL_CLK             : out std_logic;
+    QPLL_REF_CLK         : out std_logic;
+
     ENET1_EXT_INTIN_0     : out STD_LOGIC;
     GMII_ETHERNET_col     : out STD_LOGIC;
     GMII_ETHERNET_crs     : out STD_LOGIC;
@@ -124,7 +127,11 @@ begin  -- architecture behavioral
      QPLLREFCLKLOST_OUT => open,
      QPLLRESET_IN => reset_MGBT2);
 
-  
+ QPLL_CLK      <= clk_gt_qpllout;
+ QPLL_REF_CLK  <= refclk_gt_qpllout;
+
+ 
+ 
   SGMII_MON.mmcm_reset <= reset_SGMII_MMCM;
   SGMII_MON.mmcm_locked <= locked_SGMII_MMCM;
   SGMII_INTF_clocking_1 : entity work.SGMII_INTF_clocking
