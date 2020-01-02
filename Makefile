@@ -80,7 +80,7 @@ ${OPT_PATH}/BUTool: | ${OPT_PATH} ${TMP_PATH} ${OPT_PATH}/cactus
 
 finalize_image: ${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_PATH}/passwd ${ETC_PATH}/shadow | ${OPT_PATH}/BUTool ${HOME_PATH}/cms ${HOME_PATH}/atlas
 	sudo rm -rf ${TMP_PATH}/*
-	sudo ln -s /opt/BUTool/systemd/multi-user.target.wants/lighttpd.service ${INSTALL_PATH}/usr/lib/systemd/system/lighttpd.service
+	sudo ln -s /usr/lib/systemd/system/lighttpd.service ${ETC_PATH}/systemd/system/multi-user.target.wants/lighttpd.service
 	sudo install -m 755 ${MODS_PATH}/uio.rules ${ETC_PATH}/udev/rules.d/
 	sudo install                                 -m 774 ${MODS_PATH}/.bashrc       ${INSTALL_PATH}/root
 	sudo install                                 -m 774 ${MODS_PATH}/.bash_profile ${INSTALL_PATH}/root
