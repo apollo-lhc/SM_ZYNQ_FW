@@ -1,6 +1,5 @@
 [Unit]
 Description=Service Module boot up and shutdown daemon
-StartLimitIntervalSec=0
 After=systemd-udevd.service
 
 [Service]

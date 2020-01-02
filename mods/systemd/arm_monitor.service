@@ -1,6 +1,5 @@
 [Unit]
 Description=Service to monitor the PS for SC
-StartLimitIntervalSec=0
 After=systemd-udevd.service
 
 [Service]

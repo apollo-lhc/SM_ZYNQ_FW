@@ -10,8 +10,9 @@
 # Please note that you must run 'chmod +x /etc/rc.d/rc.local' to ensure
 # that this script will be executed during boot.
 
-
+ethtool -s eth0 speed 10 duplex full autoneg off
 ifconfig eth0 192.168.30.62 netmask 255.255.0.0
+
 
 #/opt/BUTool/bin/SM_boot
 #/opt/BUTool/bin/heartbeat
