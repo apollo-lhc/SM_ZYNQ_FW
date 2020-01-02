@@ -6,4 +6,5 @@ mods/group
 mods/gshadow
 mods/passwd
 mods/shadow
+secure
 qemu-arm-static

@@ -1,0 +1,14 @@
+[Unit]
+Description=Status display generator
+After=systemd-udevd.service
+
+[Service]
+Type=forking
+PIDFile=/var/run/htmlStatus.pid
+Restart=always
+RestartSec=1
+User=root
+ExecStart=/opt/BUTool/bin/htmlStatus
+
+[Install]
+WantedBy=basic.target

@@ -3,6 +3,7 @@ PWD=$(shell pwd)
 QEMU=qemu-arm-static
 QEMU_PATH=/usr/local/bin
 MODS_PATH=${PWD}/mods
+SECURE_PATH=${PWD}/secure
 
 INSTALL_PATH=${PWD}/image
 ETC_PATH=${INSTALL_PATH}/etc/
@@ -40,11 +41,17 @@ ${ETC_PATH} ${TMP_PATH}: ${QEMU_PATH}/${QEMU} ${INSTALL_PATH}/${QEMU_PATH}/${QEM
 ${OPT_PATH}: ${TMP_PATH}
 	sudo mkdir -p ${OPT_PATH}
 
-${HOME_PATH}/cms ${HOME_PATH}/atlas ${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_PATH}/passwd ${ETC_PATH}/shadow: ${MODS_PATH}/group ${MODS_PATH}/gshadow ${MODS_PATH}/passwd ${MODS_PATH}/shadow | ${ETC_PATH} 
-	sudo install -m 644 ${MODS_PATH}/group   ${ETC_PATH}/
-	sudo install -m 644 ${MODS_PATH}/passwd  ${ETC_PATH}/
-	sudo install -m 000 ${MODS_PATH}/gshadow ${ETC_PATH}/
-	sudo install -m 000 ${MODS_PATH}/shadow  ${ETC_PATH}/
+${HOME_PATH}/cms ${HOME_PATH}/atlas ${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_PATH}/passwd ${ETC_PATH}/shadow: ${PWD}/secure ${MODS_PATH}/group ${MODS_PATH}/gshadow ${MODS_PATH}/passwd ${MODS_PATH}/shadow | ${ETC_PATH} 
+	sudo install -m 644 ${SECURE_PATH}/group   ${ETC_PATH}/
+	sudo install -m 644 ${SECURE_PATH}/passwd  ${ETC_PATH}/
+	sudo install -m 000 ${SECURE_PATH}/gshadow ${ETC_PATH}/
+	sudo install -m 000 ${SECURE_PATH}/shadow  ${ETC_PATH}/
+	sudo install -m 640 -g 997 -o 0 ${SECURE_PATH}/ssh/ssh_host_ecdsa_key       ${ETC_PATH}/ssh/
+	sudo install -m 644 -g 0   -o 0 ${SECURE_PATH}/ssh/ssh_host_ecdsa_key.pub   ${ETC_PATH}/ssh/
+	sudo install -m 640 -g 997 -o 0 ${SECURE_PATH}/ssh/ssh_host_ed25519_key     ${ETC_PATH}/ssh/
+	sudo install -m 644 -g 0   -o 0 ${SECURE_PATH}/ssh/ssh_host_ed25519_key.pub ${ETC_PATH}/ssh/
+	sudo install -m 640 -g 997 -o 0 ${SECURE_PATH}/ssh/ssh_host_rsa_key         ${ETC_PATH}/ssh/
+	sudo install -m 644 -g 0   -o 0 ${SECURE_PATH}/ssh/ssh_host_rsa_key.pub     ${ETC_PATH}/ssh/
 	sudo mkdir -p ${HOME_PATH}/cms
 	sudo mkdir -p ${HOME_PATH}/atlas
 	sudo cp ${MODS_PATH}/set_permissions.sh ${TMP_PATH}
@@ -63,6 +70,8 @@ ${OPT_PATH}/BUTool: | ${OPT_PATH} ${TMP_PATH} ${OPT_PATH}/cactus
 	git clone https://github.com/apollo-lhc/ApolloTool.git
 	cd ${TMP_PATH}/ApolloTool && \
 	make init
+	cd ${TMP_PATH}/ApolloTool/plugins/ApolloSM_plugin && \
+	git checkout felexchen-feature-SMConfig
 	cp ${MODS_PATH}/build_BUTool.sh ${TMP_PATH}/ApolloTool/
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/ApolloTool/build_BUTool.sh
 	sudo install -d -m 755 ${OPT_PATH}/address_tables
@@ -72,9 +81,11 @@ ${OPT_PATH}/BUTool: | ${OPT_PATH} ${TMP_PATH} ${OPT_PATH}/cactus
 	sudo ln -s /opt/BUTool/systemd/smboot.service      ${ETC_PATH}/systemd/system/smboot.service
 	sudo ln -s /opt/BUTool/systemd/heartbeat.service   ${ETC_PATH}/systemd/system/heartbeat.service
 	sudo ln -s /opt/BUTool/systemd/arm_monitor.service ${ETC_PATH}/systemd/system/arm_monitor.service
+	sudo ln -s /opt/BUTool/systemd/htmlStatus.service  ${ETC_PATH}/systemd/system/htmlStatus.service
 	sudo ln -s /etc/systemd/system/smboot.service      ${ETC_PATH}/systemd/system/basic.target.wants/smboot.service
 	sudo ln -s /etc/systemd/system/heartbeat.service   ${ETC_PATH}/systemd/system/basic.target.wants/heartbeat.service
 	sudo ln -s /etc/systemd/system/arm_monitor.service ${ETC_PATH}/systemd/system/basic.target.wants/arm_monitor.service
+	sudo ln -s /etc/systemd/system/htmlStatus.service  ${ETC_PATH}/systemd/system/basic.target.wants/htmlStatus.service
 	sudo install -m 777 ${MODS_PATH}/rc.local ${ETC_PATH}/rc.d/rc.local
 	sudo rm ${ETC_PATH}/systemd/system/multi-user.target.wants/auditd.service
 
@@ -88,5 +99,7 @@ finalize_image: ${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_PATH}/passwd ${ETC_P
 	sudo install -g ${CMS_UID}   -o ${CMS_GID}   -m 774 ${MODS_PATH}/.bash_profile ${HOME_PATH}/cms
 	sudo install -g ${ATLAS_UID} -o ${ATLAS_GID} -m 774 ${MODS_PATH}/.bashrc       ${HOME_PATH}/atlas
 	sudo install -g ${ATLAS_UID} -o ${ATLAS_GID} -m 774 ${MODS_PATH}/.bash_profile ${HOME_PATH}/atlas
+	sudo sed -i -e "s/server.use-ipv6 = \"enable\"/server.use-ipv6 = \"disable\"/g" ${ETC_PATH}/lighttpd/lighttpd.conf 
+
 clean:
 	sudo rm -rf ${INSTALL_PATH}
