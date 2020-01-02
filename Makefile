@@ -41,7 +41,7 @@ ${ETC_PATH} ${TMP_PATH}: ${QEMU_PATH}/${QEMU} ${INSTALL_PATH}/${QEMU_PATH}/${QEM
 ${OPT_PATH}: ${TMP_PATH}
 	sudo mkdir -p ${OPT_PATH}
 
-${HOME_PATH}/cms ${HOME_PATH}/atlas ${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_PATH}/passwd ${ETC_PATH}/shadow: ${PWD}/secure ${MODS_PATH}/group ${MODS_PATH}/gshadow ${MODS_PATH}/passwd ${MODS_PATH}/shadow | ${ETC_PATH} 
+${HOME_PATH}/cms ${HOME_PATH}/atlas ${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_PATH}/passwd ${ETC_PATH}/shadow: ${PWD}/secure ${SECURE_PATH}/group ${SECURE_PATH}/gshadow ${SECURE_PATH}/passwd ${SECURE_PATH}/shadow | ${ETC_PATH} 
 	sudo install -m 644 ${SECURE_PATH}/group   ${ETC_PATH}/
 	sudo install -m 644 ${SECURE_PATH}/passwd  ${ETC_PATH}/
 	sudo install -m 000 ${SECURE_PATH}/gshadow ${ETC_PATH}/
@@ -65,7 +65,7 @@ ${OPT_PATH}/cactus: | ${OPT_PATH} ${TMP_PATH}
 	cp ${MODS_PATH}/build_ipbus.sh ${TMP_PATH}/ipbus-software/
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/ipbus-software/build_ipbus.sh
 
-${OPT_PATH}/BUTool: | ${OPT_PATH} ${TMP_PATH} ${OPT_PATH}/cactus
+${OPT_PATH}/BUTool: ${OPT_PATH}/cactus | ${OPT_PATH} ${TMP_PATH} 
 	cd ${TMP_PATH} && \
 	git clone https://github.com/apollo-lhc/ApolloTool.git
 	cd ${TMP_PATH}/ApolloTool && \
@@ -89,7 +89,7 @@ ${OPT_PATH}/BUTool: | ${OPT_PATH} ${TMP_PATH} ${OPT_PATH}/cactus
 	sudo install -m 777 ${MODS_PATH}/rc.local ${ETC_PATH}/rc.d/rc.local
 	sudo rm ${ETC_PATH}/systemd/system/multi-user.target.wants/auditd.service
 
-finalize_image: ${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_PATH}/passwd ${ETC_PATH}/shadow | ${OPT_PATH}/BUTool ${HOME_PATH}/cms ${HOME_PATH}/atlas
+finalize_image: ${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_PATH}/passwd ${ETC_PATH}/shadow  ${OPT_PATH}/BUTool ${HOME_PATH}/cms ${HOME_PATH}/atlas
 	sudo rm -rf ${TMP_PATH}/*
 	sudo ln -s /usr/lib/systemd/system/lighttpd.service ${ETC_PATH}/systemd/system/multi-user.target.wants/lighttpd.service
 	sudo install -m 755 ${MODS_PATH}/uio.rules ${ETC_PATH}/udev/rules.d/
@@ -103,3 +103,11 @@ finalize_image: ${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_PATH}/passwd ${ETC_P
 
 clean:
 	sudo rm -rf ${INSTALL_PATH}
+
+
+#################################################################################
+# Help
+#################################################################################
+#list magic: https://stackoverflow.com/questions/4219255/how-do-you-get-the-list-of-targets-in-a-makefile
+list:
+	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]/]' -e '^$@$$' | column

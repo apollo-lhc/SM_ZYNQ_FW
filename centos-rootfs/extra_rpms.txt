@@ -33,3 +33,4 @@ nano
 rsync
 git
 lighttpd
+strace
