@@ -71,7 +71,6 @@ ${OPT_PATH}/BUTool: ${OPT_PATH}/cactus | ${OPT_PATH} ${TMP_PATH}
 	cd ${TMP_PATH}/ApolloTool && \
 	make init
 	cd ${TMP_PATH}/ApolloTool/plugins/ApolloSM_plugin && \
-	git checkout felexchen-feature-SMConfig
 	cp ${MODS_PATH}/build_BUTool.sh ${TMP_PATH}/ApolloTool/
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/ApolloTool/build_BUTool.sh
 	sudo install -d -m 755 ${OPT_PATH}/address_tables
