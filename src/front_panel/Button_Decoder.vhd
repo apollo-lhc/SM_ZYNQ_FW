@@ -65,18 +65,10 @@ type states is (SM_IDLE,       --Waiting for a button press
                 SM_SHUTDOWN);  --used to buffer between button presses
 signal State : states;
 
---Declare Debouncer 
-component Button_Debouncer
-    generic (CLKFREQ    : integer);
-    port    (clk        : in std_logic;
-             reset      : in std_logic;
-             buttonin   : in std_logic;
-             buttonout  : out std_logic);
-end component;
 
 begin
 
-TD1 : Button_Debouncer --using debouncer
+TD1 : entity  work.Button_Debouncer --using debouncer
 generic map (CLKFREQ    => CLKFREQ)
 port map    (clk        => clk,
              reset      => reset,

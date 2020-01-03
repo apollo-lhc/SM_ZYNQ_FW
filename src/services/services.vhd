@@ -6,6 +6,8 @@ use work.AXIRegPkg.all;
 
 use work.types.all;
 use work.SGMII_MONITOR.all;
+use work.CM_package.all;
+
 
 entity services is
   
@@ -40,9 +42,12 @@ entity services is
     FP_LED_CLK      : out std_logic;
     FP_LED_SDA      : out std_logic;
     FP_switch       : in  std_logic;
-                    
+    linux_booted    : in  std_logic;
+    
     ESM_LED_CLK     : in  std_logic;
-    ESM_LED_SDA     : in  std_logic
+    ESM_LED_SDA     : in  std_logic;
+    CM1_C2C_Mon     : in  C2C_Monitor_t;
+    CM2_C2C_Mon     : in  C2C_Monitor_t
     );
 end entity services;
 
@@ -60,7 +65,7 @@ architecture behavioral of services is
   constant Default_reg_data : slv32_array_t(integer range 0 to 15) := (0 => x"00000003",
                                                                        4 => x"00000001",
                                                                        5 => x"00001010",
-                                                                       8 => x"00000000",
+                                                                       8 => x"00000800",
                                                                        others => x"00000000");
 
 
@@ -70,7 +75,13 @@ architecture behavioral of services is
   signal SGMII_MON_buf1 : SGMII_MONITOR_t;
   signal SGMII_MON_buf2 : SGMII_MONITOR_t;
 
-
+  constant FP_REG_COUNT : integer := 4;
+  signal FP_regs : slv8_array_t(0 to (FP_REG_COUNT - 1)) := (others => (others => '0'));
+  signal FP_addr : slv_6_t;
+  
+  signal LED_mode : slv_3_t;
+  signal  FP_shutdown : std_logic;
+  constant FP_LED_ORDER : int8_array_t(0 to 7) := (0,1,2,3,7,6,5,4);
   
 begin  -- architecture behavioral
 
@@ -87,6 +98,63 @@ begin  -- architecture behavioral
     end if;
   end process ESM_LED_CAP;
 
+
+  FP_regs(1)(0) <= SGMII_MON.mmcm_locked;
+  FP_regs(1)(1) <= SGMII_MON.pma_reset;
+  FP_regs(1)(2) <= SGMII_MON.reset_done;
+  FP_regs(1)(3) <= SGMII_MON.cpll_lock ;
+
+  FP_regs(2)(0) <= CM1_C2C_Mon.axi_c2c_config_error_out   ;
+  FP_regs(2)(1) <= CM1_C2C_Mon.axi_c2c_link_error_out     ;
+  FP_regs(2)(2) <= CM1_C2C_Mon.axi_c2c_link_status_out    ;
+  FP_regs(2)(3) <= CM1_C2C_Mon.axi_c2c_multi_bit_error_out;
+
+  FP_regs(3)(0) <= CM1_C2C_Mon.aurora_do_cc               ;
+  FP_regs(3)(1) <= CM1_C2C_Mon.phy_gt_pll_lock            ;
+  FP_regs(3)(2) <= CM1_C2C_Mon.phy_hard_err               ;
+  FP_regs(3)(3 downto 3) <= CM1_C2C_Mon.phy_lane_up                ;
+  FP_regs(3)(5) <= CM1_C2C_Mon.phy_link_reset_out         ;
+  FP_regs(3)(6) <= CM1_C2C_Mon.phy_mmcm_not_locked_out    ;
+  FP_regs(3)(7) <= CM1_C2C_Mon.phy_soft_err               ;
+
+  LED0_Mode_sel: process (linux_booted,reg_data(8)(1) ) is
+  begin  -- process LED0_Mode_sel
+    if(reg_data(8)(1) = '1') then
+      LED_mode <= reg_data(8)(4 downto 2);
+    else
+      if linux_booted = '1' then
+        LED_mode <= "100";
+      else
+        LED_mode <= "010";
+      end if;
+    end if;
+  end process LED0_Mode_sel;
+  LED_Patterns_1: entity work.LED_Patterns
+    generic map (
+      CLKFREQ => 50000000)
+    port map (
+      clk   => clk_axi,
+      reset => '0',
+      mode  => LED_mode,
+      speed => reg_data(8)(11 downto 8),
+      LEDs  => FP_regs(0));  
+  FrontPanel_UI_1: entity work.FrontPanel_UI
+    generic map (
+      CLKFREQ      => 50000000,
+      REG_COUNT    => FP_REG_COUNT,
+      LEDORDER      => FP_LED_ORDER)
+    port map (
+      clk           => clk_axi,
+      reset         => '0',
+      buttonin      => FP_switch,
+      addressin     => reg_data(8)(21 downto 16),
+      force_address => reg_data(8)(22),
+      display_regs  => FP_regs,
+      addressout    => FP_addr,--reg_data(8)(29 downto 24),
+      SCK           => FP_LED_CLK,
+      SDA           => FP_LED_SDA,
+      shutdownout   => FP_shutdown);--reg_data(8)(31);
+  
   
   AXIRegBridge : entity work.axiLiteReg
     port map (
@@ -147,10 +215,18 @@ begin  -- architecture behavioral
           localRdData(12) <= reg_data(5)(12); -- HQ clk select
         when x"8" =>
           localRdData( 0) <= reg_data(8)( 0);   -- FP LED reste
-          localRdData( 1) <= reg_data(8)( 1);   -- FP LED clk
-          localRdData( 2) <= reg_data(8)( 2);   -- FP LED sda
-          localRdData( 4) <= FP_switch;        -- FP Switch (should be debounced)
-          localRdData(31 downto 16) <= ESM_LEDs; -- decoded ESM LEDs
+          localRdData( 1) <= reg_data(8)( 1);   -- FP page 0 override
+          localRdData( 4 downto  2) <= reg_data(8)( 4 downto  2); --FP page 0
+                                                                  --override mode
+          localRdData( 5) <= FP_switch;        -- FP Switch (should be debounced)
+          localRdData(11 downto  8) <= reg_data(8)(11 downto  8);  --FP speed
+          localRdData(21 downto 16) <= reg_data(8)(21 downto 16);  -- force
+                                                                  -- page value
+          localRdData(22) <= reg_data(8)(22);           -- force page
+          localRdData(29 downto 24) <= reg_data(8)(29 downto 24);
+          localRdData(31) <= FP_shutdown;
+        when x"9" =>
+          localRdData(15 downto 0) <= ESM_LEDs; -- decoded ESM LEDs
         when x"C" =>
           localRdData( 0) <= reg_data(12)(0);   --overall SGMII reset input
           localRdData( 1) <= SGMII_MON_buf2.pma_reset;   --overall SGMII reset output
@@ -176,8 +252,6 @@ begin  -- architecture behavioral
   LHC_SRC_SEL <= reg_data(5)( 4);   -- LHC clk select
   HQ_SRC_SEL  <= reg_data(5)(12);   -- HQ clk select
   FP_LED_RST  <= not reg_data(8)( 0);   -- FP LED reste
-  FP_LED_CLK  <= reg_data(8)( 1);   -- FP LED clk
-  FP_LED_SDA  <= reg_data(8)( 2);   -- FP LED sda
 
   SGMII_CTRL.reset <= reg_data(12)(0); --SGMII full reset;
   reg_writes: process (clk_axi, reset_axi_n) is
@@ -199,9 +273,14 @@ begin  -- architecture behavioral
             reg_data(5)( 4) <= localWrData( 4);   -- LHC clk select
             reg_data(5)(12) <= localWrData(12); -- HQ clk select
           when x"8" =>
-            reg_data(8)( 0) <= localWrData( 0);   -- FP LED reste
-            reg_data(8)( 1) <= localWrData( 1);   -- FP LED clk
-            reg_data(8)( 2) <= localWrData( 2);   -- FP LED sda
+            reg_data(8)( 0)           <= localWrData( 0);   -- FP LED reste
+            reg_data(8)( 1)           <= localWrData( 1);   -- FP page 0 override
+            reg_data(8)( 4 downto  2) <= localWrData( 4 downto  2); --FP page 0
+                                                                --override mode
+            reg_data(8)(11 downto  8) <= localWrData(11 downto  8); --FP speed
+            reg_data(8)(21 downto 16) <= localWrData(21 downto 16); -- force
+                                                                    -- page value
+            reg_data(8)(22)           <= localWrData(22);           -- force page
           when x"C" =>
             reg_data(12)( 0) <= localWrData( 0);
 

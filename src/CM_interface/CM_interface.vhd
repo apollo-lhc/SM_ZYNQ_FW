@@ -16,28 +16,33 @@ use UNISIM.vcomponents.all;
 entity CM_interface is
   
   port (
-    clk_axi         : in  std_logic;
-    reset_axi_n     : in  std_logic;
-    readMOSI        : in  AXIReadMOSI;
-    readMISO        : out AXIReadMISO := DefaultAXIReadMISO;
-    writeMOSI       : in  AXIWriteMOSI;
-    writeMISO       : out AXIWriteMISO := DefaultAXIWriteMISO;
-    enableCM1       : out std_logic;
-    enableCM2       : out std_logic;
-    enableCM1_PWR   : out std_logic;
-    enableCM2_PWR   : out std_logic;
-    enableCM1_IOs   : out std_logic;
-    enableCM2_IOs   : out std_logic;
-    from_CM1        :  in from_CM_t;
-    from_CM2        :  in from_CM_t;
-    to_CM1_in       :  in to_CM_t;  --from SM
-    to_CM2_in       :  in to_CM_t;  --from SM
-    to_CM1_out      : out to_CM_t;  --from SM, but tristated
-    to_CM2_out      : out to_CM_t;  --from SM, but tristated
-    CM1_C2C_Mon     :  in C2C_Monitor_t;
-    CM2_C2C_Mon     :  in C2C_Monitor_t;
-    CM1_C2C_Ctrl    : out C2C_Control_t;
-    CM2_C2C_Ctrl    : out C2C_Control_t
+    clk_axi          : in  std_logic;
+    reset_axi_n      : in  std_logic;
+    slave_readMOSI   : in  AXIReadMOSI;
+    slave_readMISO   : out AXIReadMISO  := DefaultAXIReadMISO;
+    slave_writeMOSI  : in  AXIWriteMOSI;
+    slave_writeMISO  : out AXIWriteMISO := DefaultAXIWriteMISO;
+    master_readMOSI  : out AXIReadMOSI  := DefaultAXIReadMOSI;
+    master_readMISO  : in  AXIReadMISO;
+    master_writeMOSI : out AXIWriteMOSI := DefaultAXIWriteMOSI;
+    master_writeMISO : in  AXIWriteMISO;
+    CM_mon_uart      : in  std_logic := '1';
+    enableCM1        : out std_logic;
+    enableCM2        : out std_logic;
+    enableCM1_PWR    : out std_logic;
+    enableCM2_PWR    : out std_logic;
+    enableCM1_IOs    : out std_logic;
+    enableCM2_IOs    : out std_logic;
+    from_CM1         :  in from_CM_t;
+    from_CM2         :  in from_CM_t;
+    to_CM1_in        :  in to_CM_t;  --from SM
+    to_CM2_in        :  in to_CM_t;  --from SM
+    to_CM1_out       : out to_CM_t;  --from SM, but tristated
+    to_CM2_out       : out to_CM_t;  --from SM, but tristated
+    CM1_C2C_Mon      :  in C2C_Monitor_t;
+    CM2_C2C_Mon      :  in C2C_Monitor_t;
+    CM1_C2C_Ctrl     : out C2C_Control_t;
+    CM2_C2C_Ctrl     : out C2C_Control_t
     );
 end entity CM_interface;
 
@@ -60,6 +65,7 @@ architecture behavioral of CM_interface is
   signal enableCM         : slv_2_t;
   signal enableCM_PWR     : slv_2_t;
   signal override_PWRGood : slv_2_t;
+  signal reset_error_state : slv_2_t;
   signal enable_uC        : slv_2_t;
   signal enable_PWR       : slv_2_t;
   signal enable_IOs       : slv_2_t;
@@ -73,6 +79,11 @@ architecture behavioral of CM_interface is
 
   signal reset             : std_logic;                     
 
+  signal mon_active : slv_2_t;
+  signal mon_errors : slv16_array_t(0 to 1);
+
+  constant INACTIVE_COUNT : slv_32_t := x"03FFFFFF";
+  constant PL_MEM_ADDR : unsigned(31 downto 0) := x"40000000";
   
 begin  -- architecture behavioral
 
@@ -148,15 +159,18 @@ begin  -- architecture behavioral
   
   CM_PWR_SEQ: for iCM in 0 to 1 generate
     CM_pwr_1: entity work.CM_pwr
+      generic map (
+        COUNT_ERROR_WAIT => 50000000)
       port map (
         clk               => clk_axi,
-        reset             => reset,
+        reset_async       => reset,
+        reset_sync        => reset_error_state(iCM),
         uc_enabled        => enable_uC(iCM),
         start_PWR         => enableCM_PWR(iCM),
         sequence_override => override_PWRGood(iCM),
         current_state     => CM_seq_state((4*iCM) +3 downto 4*iCM),
-        enabled_PWR        => enable_PWR(iCM),
-        enabled_IOs        => enable_IOs(iCM),
+        enabled_PWR       => enable_PWR(iCM),
+        enabled_IOs       => enable_IOs(iCM),
         power_good        => PWR_good(iCM));
   end generate CM_PWR_SEQ;
   
@@ -168,10 +182,10 @@ begin  -- architecture behavioral
     port map (
       clk_axi     => clk_axi,
       reset_axi_n => reset_axi_n,
-      readMOSI    => readMOSI,
-      readMISO    => readMISO,
-      writeMOSI   => writeMOSI,
-      writeMISO   => writeMISO,
+      readMOSI    => slave_readMOSI,
+      readMISO    => slave_readMISO,
+      writeMOSI   => slave_writeMOSI,
+      writeMISO   => slave_writeMISO,
       address     => localAddress,
       rd_data     => localRdData_latch,
       wr_data     => localWrData,
@@ -191,10 +205,12 @@ begin  -- architecture behavioral
   enable_uc       (0) <= reg_data(0)(0); --CM1 enabled
   enableCM_PWR    (0) <= reg_data(0)(1); --CM1 power eneable
   override_PWRGood(0) <= reg_data(0)(2); --CM1 override
+  reset_error_state(0) <= reg_data(0)(8); --CM1 reset error state
   enable_uc       (1) <= reg_data(1)(0); --CM2 enabled
   enableCM_PWR    (1) <= reg_data(1)(1); --CM2 power eneable
   override_PWRGood(1) <= reg_data(1)(2); --CM2 override
-
+  reset_error_state(1) <= reg_data(1)(8); --CM2 reset error state
+  
   reads: process (localRdReq,localAddress,reg_data) is
   begin  -- process reads
     localRdAck  <= '0';
@@ -202,23 +218,27 @@ begin  -- architecture behavioral
     if localRdReq = '1' then
       localRdAck  <= '1';
       case localAddress(7 downto 0) is
-        when x"0" =>
+        when x"00" =>
           --control
           localRdData( 2 downto  0) <= reg_data(0)( 2 downto  0);
           --pwr good
           localRdData( 3)           <= PWR_good(0);
           --pwr state
           localRdData( 7 downto  4) <= CM_seq_state(3 downto 0);
+          --error state reset
+          localRdData(8)            <= reg_data(0)(8);
           --pwr state outputs
           localRdData( 9)            <= enable_PWR(0);
           localRdData(10)            <= enable_IOs(0);
-        when x"1" =>
+        when x"01" =>
           --control
           localRdData( 2 downto  0) <= reg_data(1)( 2 downto  0);
           --pwr good
           localRdData( 3)           <= PWR_good(1);
           --pwr state
           localRdData( 7 downto  4) <= CM_seq_state(7 downto 4);
+          --error state reset
+          localRdData(8)            <= reg_data(1)(8);
           --pwr state outputs
           localRdData( 9)            <= enable_PWR(1);
           localRdData(10)            <= enable_IOs(1);
@@ -275,6 +295,10 @@ begin  -- architecture behavioral
           localRdData(23)           <= reg_data(20)(23)          ;  --txprbsforceerr;
           localRdData(26 downto 24) <= reg_data(20)(26 downto 24);  --txprbssel;     
           localRdData(31 downto 27) <= reg_data(20)(31 downto 27);  --txprecursor;
+        when x"15" =>
+          localRdData( 7 downto  0) <= reg_data(21)( 7 downto  0); -- baud_16x_count
+          localRdData( 8)           <= mon_active(0);          -- channel_active
+          localRdData(31 downto 16) <= mon_errors(0);          -- error_count
         when x"22" =>
           localRdData(0) <= CM2_C2C_Mon.axi_c2c_config_error_out;   
           localRdData(1) <= CM2_C2C_Mon.axi_c2c_link_error_out;     
@@ -333,10 +357,12 @@ begin  -- architecture behavioral
     elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
       if localWrEn = '1' then
         case localAddress(7 downto 0) is
-          when x"0" =>
+          when x"00" =>
             reg_data(0)( 2 downto  0) <= localWrData(2 downto 0);
-          when x"1" =>
+            reg_data(0)(8)            <= localWrData(8);
+          when x"01" =>
             reg_data(1)( 2 downto  0) <= localWrData(2 downto 0);
+            reg_data(1)(8)            <= localWrData(8);
           when x"12" =>
             reg_data(18)(5)  <= localWrData(5);
             reg_data(18)(22) <= localWrData(22); --eyescanreset;
@@ -368,7 +394,9 @@ begin  -- architecture behavioral
             reg_data(20)(23)           <= localWrData(23);           --txprbsforceerr;
             reg_data(20)(26 downto 24) <= localWrData(26 downto 24); --txprbssel;     
             reg_data(20)(31 downto 27) <= localWrData(31 downto 27); --txprecursor;
-            
+
+          when x"15" =>
+            reg_data(21)( 7 downto  0) <= localWrData( 7 downto  0); -- baud_16x_count
           when x"22" =>
             reg_data(34)(5)  <= localWrData(5);
           when others => null;
@@ -378,7 +406,22 @@ begin  -- architecture behavioral
   end process reg_writes;
   -------------------------------------------------------------------------------
 
-
+  CM_Monitoring_1: entity work.CM_Monitoring
+    generic map (
+      BAUD_COUNT_BITS => 8,
+      INACTIVE_COUNT  => INACTIVE_COUNT,
+      BASE_ADDRESS    => PL_MEM_ADDR)
+    port map (
+      clk            => clk_axi,
+      reset          => reset,
+      uart_rx        => CM_mon_uart,
+      baud_16x_count => reg_data(21)(7 downto 0),
+      readMOSI       => master_readMOSI,
+      readMISO       => master_readMISO,
+      writeMOSI      => master_writeMOSI,
+      writeMISO      => master_writeMISO,
+      error_count    => mon_errors(0),
+      channel_active => mon_active(0));
   
 
   

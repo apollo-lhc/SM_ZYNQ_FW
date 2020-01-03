@@ -1,0 +1,7 @@
+  amba_pl {
+    axiSlaveIPBUS_KINTEX: IPBUS_KINTEX@7aa00000 {
+      compatible = "generic-uio";
+      reg = <0x7aa00000 0x10000>;
+      label = "IPBUS_KINTEX";
+    };
+  };

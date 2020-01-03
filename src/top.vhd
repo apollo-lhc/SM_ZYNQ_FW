@@ -299,6 +299,11 @@ architecture structure of top is
   signal AXI_BUS_WMOSI : AXIWriteMOSI_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIWriteMOSI);
   signal AXI_BUS_WMISO : AXIWriteMISO_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIWriteMISO);
 
+  signal AXI_MSTR_RMOSI : AXIReadMOSI;
+  signal AXI_MSTR_RMISO : AXIReadMISO;
+  signal AXI_MSTR_WMOSI : AXIWriteMOSI;
+  signal AXI_MSTR_WMISO : AXIWriteMISO;
+  
 
   --Monitoring
   signal SGMII_MON : SGMII_MONITOR_t;
@@ -350,7 +355,6 @@ architecture structure of top is
   signal CM1_UART_Tx_internal : std_logic;
   signal CM2_UART_Tx_internal : std_logic;
   signal CM1_C2C_Mon : C2C_Monitor_t;
-  signal CM1_C2C_Mon_C2C : C2C_Monitor_t;
   signal CM2_C2C_Mon : C2C_Monitor_t;
   
   signal CM_enable_IOs   : std_logic_vector(1 downto 0);
@@ -358,11 +362,7 @@ architecture structure of top is
   signal CM2_C2C_Ctrl : C2C_Control_t;
   signal C2C1_phy_gt_refclk1_out : std_logic;
 
-
-  constant FP_REG_COUNT : integer := 4;
-  signal FP_regs : slv8_array_t(0 to (FP_REG_COUNT - 1)) := (others => (others => '0'));
-  signal HB_counter : unsigned(31 downto 0);
-  constant FP_LED_ORDER : int8_array_t(0 to 7) := (0,1,2,3,7,6,5,4);
+  signal linux_booted : std_logic;
   
 begin  -- architecture structure
 
@@ -417,6 +417,27 @@ begin  -- architecture structure
       SI_sda_i                  => SDA_i_phy,--SDA_i_normal,
       SI_sda_o                  => SDA_o_phy,--SDA_o_normal,
       SI_sda_t                  => SDA_t_phy,--SDA_t_normal,
+      AXI_CLK_PL                => pl_clk,
+      AXI_RSTN_PL               => pl_reset_n,
+      AXIM_PL_awaddr            => AXI_MSTR_WMOSI.address,
+      AXIM_PL_awprot            => AXI_MSTR_WMOSI.protection_type,
+      AXIM_PL_awvalid           => AXI_MSTR_WMOSI.address_valid,
+      AXIM_PL_awready           => AXI_MSTR_WMISO.ready_for_address,
+      AXIM_PL_wdata             => AXI_MSTR_WMOSI.data,
+      AXIM_PL_wstrb             => AXI_MSTR_WMOSI.data_write_strobe,
+      AXIM_PL_wvalid            => AXI_MSTR_WMOSI.data_valid,
+      AXIM_PL_wready            => AXI_MSTR_WMISO.ready_for_data,
+      AXIM_PL_bresp             => AXI_MSTR_WMISO.response,
+      AXIM_PL_bvalid            => AXI_MSTR_WMISO.response_valid,
+      AXIM_PL_bready            => AXI_MSTR_WMOSI.ready_for_response,
+      AXIM_PL_araddr            => AXI_MSTR_RMOSI.address,
+      AXIM_PL_arprot            => AXI_MSTR_RMOSI.protection_type,
+      AXIM_PL_arvalid           => AXI_MSTR_RMOSI.address_valid,
+      AXIM_PL_arready           => AXI_MSTR_RMISO.ready_for_address,
+      AXIM_PL_rdata             => AXI_MSTR_RMISO.data,
+      AXIM_PL_rresp             => AXI_MSTR_RMISO.response,
+      AXIM_PL_rvalid            => AXI_MSTR_RMISO.data_valid,
+      AXIM_PL_rready            => AXI_MSTR_RMOSI.ready_for_data,
       PL_CLK                    => pl_clk,
       PL_RESET_N                => pl_reset_n,
       SERV_araddr               => AXI_BUS_RMOSI(0).address,
@@ -623,7 +644,15 @@ begin  -- architecture structure
       CM2_UART_rxd => CM2_UART_rx,
       CM2_UART_txd => CM2_UART_Tx_internal,
       ESM_UART_rxd => ESM_UART_rx,
-      ESM_UART_txd => ESM_UART_tx
+      ESM_UART_txd => ESM_UART_tx,
+      BRAM_PORTB_0_addr => x"00000000",
+      BRAM_PORTB_0_clk  => AXI_clk,
+      BRAM_PORTB_0_din  => x"00000000",
+      BRAM_PORTB_0_dout => open,
+      BRAM_PORTB_0_en   => '0',
+      BRAM_PORTB_0_rst  => '0',
+      BRAM_PORTB_0_we   => x"0"
+      
       );
 
 
@@ -843,11 +872,14 @@ begin  -- architecture structure
       HQ_CLK_OSC_LOS  => HQ_CLK_OSC_LOS,
       HQ_SRC_SEL      => HQ_SRC_SEL,
       FP_LED_RST      => FP_LED_RST,
-      FP_LED_CLK      => open,--FP_LED_CLK,
-      FP_LED_SDA      => open,--FP_LED_SDA,
+      FP_LED_CLK      => FP_LED_CLK,
+      FP_LED_SDA      => FP_LED_SDA,
       FP_switch       => FP_switch,
+      linux_booted    => linux_booted,
       ESM_LED_CLK     => ESM_LED_CLK,
-      ESM_LED_SDA     => ESM_LED_SDA
+      ESM_LED_SDA     => ESM_LED_SDA,
+      CM1_C2C_Mon     => CM1_C2C_Mon,
+      CM2_C2C_Mon     => CM2_C2C_Mon
       );
 
   SM_info_1: entity work.SM_info
@@ -867,6 +899,7 @@ begin  -- architecture structure
       readMISO        => AXI_BUS_RMISO(1),
       writeMOSI       => AXI_BUS_WMOSI(1),
       writeMISO       => AXI_BUS_WMISO(1),
+      linux_booted    => linux_booted,
       SDA_o       => IPMC_SDA_o,
       SDA_t       => IPMC_SDA_t,
       SDA_i       => IPMC_SDA_i,
@@ -885,10 +918,15 @@ begin  -- architecture structure
     port map (
       clk_axi              => axi_clk,
       reset_axi_n          => pl_reset_n,
-      readMOSI             => AXI_BUS_RMOSI(2),
-      readMISO             => AXI_BUS_RMISO(2),
-      writeMOSI            => AXI_BUS_WMOSI(2),
-      writeMISO            => AXI_BUS_WMISO(2),
+      slave_readMOSI       => AXI_BUS_RMOSI(2),
+      slave_readMISO       => AXI_BUS_RMISO(2),
+      slave_writeMOSI      => AXI_BUS_WMOSI(2),
+      slave_writeMISO      => AXI_BUS_WMISO(2),
+      master_readMOSI      => AXI_MSTR_RMOSI,
+      master_readMISO      => AXI_MSTR_RMISO,
+      master_writeMOSI     => AXI_MSTR_WMOSI,
+      master_writeMISO     => AXI_MSTR_WMISO,
+      CM_mon_uart          => CM1_GPIO(0),
       enableCM1            => CM1_enable,
       enableCM2            => CM2_enable,
       enableCM1_PWR        => CM1_PWR_enable,
@@ -925,51 +963,9 @@ begin  -- architecture structure
       CM2_C2C_Ctrl         => CM2_C2C_Ctrl);
 
 
-  HB_counter_proc: process (axi_clk) is
-  begin  -- process HB_counter_proc
-    if axi_clk'event and axi_clk = '1' then  -- rising clock edge
-      HB_counter <= HB_counter+1;
-    end if;
-  end process HB_counter_proc;
 
   
-  FP_regs(0)(7 downto 0)    <= std_logic_vector(HB_counter(29 downto 22));
-  FP_regs(1)(0) <= locked_SGMII_MMCM;
-  FP_regs(1)(1) <= reset_pma_SGMII;
-  FP_regs(1)(2) <= SGMII_MON_CDC.reset_done;
-  FP_regs(1)(3) <= SGMII_MON_CDC.cpll_lock ;
 
-  FP_regs(2)(0) <= CM1_C2C_Mon.axi_c2c_config_error_out   ;
-  FP_regs(2)(1) <= CM1_C2C_Mon.axi_c2c_link_error_out     ;
-  FP_regs(2)(2) <= CM1_C2C_Mon.axi_c2c_link_status_out    ;
-  FP_regs(2)(3) <= CM1_C2C_Mon.axi_c2c_multi_bit_error_out;
-
-  FP_regs(3)(0) <= CM1_C2C_Mon.aurora_do_cc               ;
-  FP_regs(3)(1) <= CM1_C2C_Mon.phy_gt_pll_lock            ;
-  FP_regs(3)(2) <= CM1_C2C_Mon.phy_hard_err               ;
-  FP_regs(3)(3 downto 3) <= CM1_C2C_Mon.phy_lane_up                ;
-  FP_regs(3)(5) <= CM1_C2C_Mon.phy_link_reset_out         ;
-  FP_regs(3)(6) <= CM1_C2C_Mon.phy_mmcm_not_locked_out    ;
-  FP_regs(3)(7) <= CM1_C2C_Mon.phy_soft_err               ;
-
-
-
-  FrontPanel_UI_1: entity work.FrontPanel_UI
-    generic map (
-      CLKFREQ      => 50000000,
-      REG_COUNT    => FP_REG_COUNT,
-      LEDORDER      => FP_LED_ORDER)
-    port map (
-      clk           => axi_clk,
-      reset         => '0',
-      buttonin      => FP_switch,
-      addressin     => "000000",
-      force_address => '0',
-      display_regs  => FP_regs,
-      addressout    => open,
-      SCK           => FP_LED_CLK,
-      SDA           => FP_LED_SDA,
-      shutdownout   => open);
 
   
 
