@@ -79,12 +79,18 @@ ${OPT_PATH}/BUTool: ${OPT_PATH}/cactus | ${OPT_PATH} ${TMP_PATH}
 	sudo install    -m 664 ${MODS_PATH}/systemd/* ${OPT_PATH}/BUTool/systemd/
 	sudo ln -s /opt/BUTool/systemd/smboot.service      ${ETC_PATH}/systemd/system/smboot.service
 	sudo ln -s /opt/BUTool/systemd/heartbeat.service   ${ETC_PATH}/systemd/system/heartbeat.service
-	sudo ln -s /opt/BUTool/systemd/arm_monitor.service ${ETC_PATH}/systemd/system/arm_monitor.service
+	sudo ln -s /opt/BUTool/systemd/ps_monitor.service  ${ETC_PATH}/systemd/system/ps_monitor.service
 	sudo ln -s /opt/BUTool/systemd/htmlStatus.service  ${ETC_PATH}/systemd/system/htmlStatus.service
+	sudo ln -s /opt/BUTool/systemd/xvc_cm1.service     ${ETC_PATH}/systemd/system/xvc_cm1.service
+	sudo ln -s /opt/BUTool/systemd/xvc_cm2.service     ${ETC_PATH}/systemd/system/xvc_cm2.service
+	sudo ln -s /opt/BUTool/systemd/xvc_local.service   ${ETC_PATH}/systemd/system/xvc_local.service
 	sudo ln -s /etc/systemd/system/smboot.service      ${ETC_PATH}/systemd/system/basic.target.wants/smboot.service
 	sudo ln -s /etc/systemd/system/heartbeat.service   ${ETC_PATH}/systemd/system/basic.target.wants/heartbeat.service
-	sudo ln -s /etc/systemd/system/arm_monitor.service ${ETC_PATH}/systemd/system/basic.target.wants/arm_monitor.service
+	sudo ln -s /etc/systemd/system/ps_monitor.service ${ETC_PATH}/systemd/system/basic.target.wants/ps_monitor.service
 	sudo ln -s /etc/systemd/system/htmlStatus.service  ${ETC_PATH}/systemd/system/basic.target.wants/htmlStatus.service
+	sudo ln -s /etc/systemd/system/xvc_cm1.service     ${ETC_PATH}/systemd/system/basic.target.wants/xvc_cm1.service
+	sudo ln -s /etc/systemd/system/xvc_cm2.service     ${ETC_PATH}/systemd/system/basic.target.wants/xvc_cm2.service
+	sudo ln -s /etc/systemd/system/xvc_local.service   ${ETC_PATH}/systemd/system/basic.target.wants/xvc_local.service
 	sudo install -m 777 ${MODS_PATH}/rc.local ${ETC_PATH}/rc.d/rc.local
 	sudo rm ${ETC_PATH}/systemd/system/multi-user.target.wants/auditd.service
 
@@ -99,6 +105,14 @@ finalize_image: ${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_PATH}/passwd ${ETC_P
 	sudo install -g ${ATLAS_UID} -o ${ATLAS_GID} -m 774 ${MODS_PATH}/.bashrc       ${HOME_PATH}/atlas
 	sudo install -g ${ATLAS_UID} -o ${ATLAS_GID} -m 774 ${MODS_PATH}/.bash_profile ${HOME_PATH}/atlas
 	sudo sed -i -e "s/server.use-ipv6 = \"enable\"/server.use-ipv6 = \"disable\"/g" ${ETC_PATH}/lighttpd/lighttpd.conf 
+
+clean_ipbus:
+	sudo rm -rf ${TMP_PATH}/ipbus-software
+	sudo rm -rf ${OPT_PATH}/cactus
+
+clean_BUTool:
+	sudo rm -rf ${TMP_PATH}/ApolloTool
+	sudo rm -rf ${OPT_PATH}/BUTool
 
 clean:
 	sudo rm -rf ${INSTALL_PATH}
