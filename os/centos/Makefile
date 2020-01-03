@@ -95,6 +95,9 @@ ${OPT_PATH}/BUTool: ${OPT_PATH}/cactus | ${OPT_PATH} ${TMP_PATH}
 	sudo rm ${ETC_PATH}/systemd/system/multi-user.target.wants/auditd.service
 
 finalize_image: ${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_PATH}/passwd ${ETC_PATH}/shadow  ${OPT_PATH}/BUTool ${HOME_PATH}/cms ${HOME_PATH}/atlas
+#	sudo rm -rf ${INSTALL_PATH}/usr/share/doc
+	sudo cp ${MODS_PATH}/cleanup_locale.sh ${TMP_PATH}
+	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/cleanup_locale.sh
 	sudo rm -rf ${TMP_PATH}/*
 	sudo ln -s /usr/lib/systemd/system/lighttpd.service ${ETC_PATH}/systemd/system/multi-user.target.wants/lighttpd.service
 	sudo install -m 755 ${MODS_PATH}/uio.rules ${ETC_PATH}/udev/rules.d/

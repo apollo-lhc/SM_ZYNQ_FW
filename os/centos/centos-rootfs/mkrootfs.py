@@ -19,7 +19,7 @@ qemu_bins=dirname
 etc=dirname
 
 def run_dnf(rootfs,inst,what):
-    cmd=[ "dnf", "-y", "--skip-broken" , "-c",dnf_conf, "--releasever=7", "--forcearch="+arch, "--repo=centos-base,centos-updates,centos-extras,"+epel,"--verbose", "--installroot="+rootfs, inst ] + what
+    cmd=[ "dnf", "-y", "--skip-broken" ,"--nodocs", "-c",dnf_conf, "--releasever=7", "--forcearch="+arch, "--repo=centos-base,centos-updates,centos-extras,"+epel,"--verbose", "--installroot="+rootfs, inst ] + what
     print(cmd)
     try:
         process=subprocess.Popen(cmd,stdout=subprocess.PIPE,shell=False)
@@ -102,7 +102,7 @@ if args['extra'] is not None:
 	print("Installing user defined packages...")
 	run_dnf(rootdir,"install",lines)
 print ("Running dnf: remove")
-run_dnf(rootdir,"remove",["NetworkManager","firewalld","iptables","--setopt=tsflags=noscripts","--enable centos-sclo-rh-testing"])
+run_dnf(rootdir,"remove",["NetworkManager","firewalld","iptables","iw*firmware*","alsa*","linux-firmware","--setopt=tsflags=noscripts","--enable centos-sclo-rh-testing"])
 			    
 rootpwd=crypt.crypt("centos", crypt.mksalt(crypt.METHOD_SHA512))
 aug=augeas.Augeas(root=rootdir)
