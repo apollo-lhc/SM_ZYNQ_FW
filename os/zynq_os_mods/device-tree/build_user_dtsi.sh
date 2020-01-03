@@ -18,7 +18,8 @@ echo "/include/ \"system-conf.dtsi\"" > $filename
 echo "/{"                             >> $filename
 echo "  chosen {"                     >> $filename
 #update bootargs to include uio
-echo "        bootargs = \"earlycon uio_pdrv_genirq.of_id=generic-uio\";" >> $filename
+#echo "        bootargs = \"earlycon uio_pdrv_genirq.of_id=generic-uio\";" >> $filename
+echo "        bootargs = \"earlycon uio_pdrv_genirq.of_id=generic-uio  root=/dev/mmcblk0p2 rw rootwait\";" >> $filename
 echo "        };"                     >> $filename
 #add lines for amba_pl in case there are no xilinx IPs to add them
 echo "	amba_pl: amba_pl {"           >> $filename
