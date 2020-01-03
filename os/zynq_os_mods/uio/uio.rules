@@ -1,1 +1,0 @@
-SUBSYSTEM=="uio", MODE="0666"

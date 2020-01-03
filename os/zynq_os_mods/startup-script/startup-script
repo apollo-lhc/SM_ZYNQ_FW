@@ -1,5 +1,0 @@
-#!/bin/sh
-
-if [ -e /fw/startup.sh ]; then
-    sh /fw/startup.sh
-fi
