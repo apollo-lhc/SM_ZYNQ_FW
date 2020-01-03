@@ -1,0 +1,18 @@
+<node>
+  <node id="GIT_VALID"  address="0x0" permission="ro" mask="0x2"        parameters="Table=FIRMWARE;Column=_1;Row=_2;Status=3"/>
+  <node id="GIT_HASH_1" address="0x1" permission="ro" mask="0xFFFFFFFF" parameters="Table=FIRMWARE;Column=_1;Row=_2;Status=3"/>
+  <node id="GIT_HASH_2" address="0x2" permission="ro" mask="0xFFFFFFFF" parameters="Table=FIRMWARE;Column=_1;Row=_2;Status=3"/>
+  <node id="GIT_HASH_3" address="0x3" permission="ro" mask="0xFFFFFFFF" parameters="Table=FIRMWARE;Column=_1;Row=_2;Status=3"/>
+  <node id="GIT_HASH_4" address="0x4" permission="ro" mask="0xFFFFFFFF" parameters="Table=FIRMWARE;Column=_1;Row=_2;Status=3"/>
+  <node id="GIT_HASH_5" address="0x5" permission="ro" mask="0xFFFFFFFF" parameters="Table=FIRMWARE;Column=_1;Row=_2;Status=3"/>
+  <node id="BUILD_DATE" address="0x10" parameters="Table=FIRMWARE;Column=_1;Row=_2;Status=1">
+    <node id="YEAR" mask="0xFFFF0000"/>
+    <node id="MONTH" mask="0xFF00"/>
+    <node id="DAY" mask="0xFF"/>
+  </node>
+  <node id="BUILD_TIME" address="0x11" parameters="Table=FIRMWARE;Column=_1;Row=_2;Status=1">
+    <node id="SEC" mask="0xFF"/>
+    <node id="MIN" mask="0xFF00"/>
+    <node id="HOUR" mask="0xFF0000"/>
+  </node>
+</node>

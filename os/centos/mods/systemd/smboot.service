@@ -1,0 +1,14 @@
+[Unit]
+Description=Service Module boot up and shutdown daemon
+After=systemd-udevd.service
+
+[Service]
+Type=forking
+PIDFile=/var/run/sm_boot.pid
+Restart=always
+RestartSec=1
+User=root
+ExecStart=/opt/BUTool/bin/SM_boot
+
+[Install]
+WantedBy=basic.target
