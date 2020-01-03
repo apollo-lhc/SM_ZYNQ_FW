@@ -51,3 +51,8 @@ os/zynq_os_mods/users/users.dat
 #################################################################################
 doc/*/
 doc/*.pdf
+
+os/centos/centos_root.tar.gz
+os/centos/image/
+os/centos/secure
+os/centos/qemu-arm-static

@@ -1,0 +1,14 @@
+[Unit]
+Description=Service to monitor the PS
+After=systemd-udevd.service
+
+[Service]
+Type=forking
+PIDFile=/var/run/ps_monitor.pid
+Restart=always
+RestartSec=1
+User=root
+ExecStart=/opt/BUTool/bin/ps_monitor
+
+[Install]
+WantedBy=basic.target

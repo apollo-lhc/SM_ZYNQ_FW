@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<node id="TOP">
+  <node id="K_IO"            module="file://modules/K_IO.xml"             address="0x01000000"/>
+  <node id="CM"              module="file://modules/CM.xml"               address="0x03000000"/>
+  <node id="SERV"            module="file://modules/SERV.xml"             address="0x04000000"/>
+  <node id="SLAVE_I2C"       module="file://modules/SLAVE_I2C.xml"        address="0x05000000"/>
+  <node id="XVC1"            module="file://modules/XVC.xml"              address="0x06000000"/>
+  <node id="XVC2"            module="file://modules/XVC.xml"              address="0x07000000"/>
+  <node id="XVC_LOCAL"       module="file://modules/XVC.xml"              address="0x08000000"/>
+  <node id="SI" address="0x08000000">
+  </node>
+  <node id="KINTEX_SYS_MGMT" module="file://modules/KINTEX_SYS_MGMT.xml"  address="0x09000000"/>
+  <node id="SM_INFO"         module="file://modules/FW_INFO.xml"          address="0x0A000000"/>
+  <node id="MONITOR"         module="file://modules/MONITOR.xml"          address="0x0B000000"/>
+  <node id="CM_K_INFO"       module="file://modules/FW_INFO.xml"          address="0x0C000000"/>
+  <node id="C2C1_AXI_FW"     module="file://modules/C2C1_AXI_FW.xml"      address="0x0D000000"/>    
+  <node id="C2C1_AXILITE_FW" module="file://modules/C2C1_AXILITE_FW.xml"  address="0x0E000000"/>    
+  <node id="MYVREG0"         module="file://modules/MYREG0.xml"           address="0x0F000000"/>
+  <node id="MYVREG1"         module="file://modules/MYREG1.xml"           address="0x10000000"/>
+  <node id="VIRTEX_SYS_MGMT" module="file://modules/VIRTEX_SYS_MGMT.xml"  address="0x11000000"/>
+  <node id="CM_V_INFO"       module="file://modules/FW_INFO.xml"          address="0x12000000"/>
+  <node id="C2C2_AXI_FW"     module="file://modules/C2C2_AXI_FW.xml"      address="0x13000000"/>    
+  <node id="C2C2_AXILITE_FW" module="file://modules/C2C2_AXILITE_FW.xml"  address="0x14000000"/>
+  <node id="PL_MEM"          module="file://modules/PL_MEM.xml"           address="0x15000000"/>
+</node>
