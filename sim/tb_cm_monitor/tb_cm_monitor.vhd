@@ -40,7 +40,10 @@ architecture behavioral of tb_cm_monitor is
 
   signal channel_active : std_logic;
   signal error_count : slv_16_t;
-  
+
+  signal debug_history   : slv_32_t;
+  signal debug_valid     : slv_4_t;
+
 begin  -- architecture behavioral
 
   tb: process (clk, reset) is
@@ -224,6 +227,9 @@ begin  -- architecture behavioral
       write(test_result,writeMISO.ready_for_data,right,1);
       write(test_result,writeMISO.response_valid,right,1);
 
+      hwrite(test_result,debug_history,right,1);
+      hwrite(test_result,debug_valid  ,right,1);
+
       writeline(out_file_status,test_result);
     end if;
   end process tb;
@@ -269,6 +275,8 @@ begin  -- architecture behavioral
       readMISO       => readMISO,
       writeMOSI      => writeMOSI,
       writeMISO      => writeMISO,
+      debug_history  => debug_history,
+      debug_valid    => debug_valid,
       error_count    => error_count,
       channel_active => channel_active);
 

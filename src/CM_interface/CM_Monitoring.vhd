@@ -23,6 +23,8 @@ entity CM_Monitoring is
     readMISO        : in  AXIreadMISO;
     writeMOSI       : out AXIwriteMOSI;
     writeMISO       : in  AXIwriteMISO;
+    debug_history   : out slv_32_t;
+    debug_valid     : out slv_4_t;
     error_count     : out slv_16_t;
     channel_active  : out std_logic);
 
@@ -32,6 +34,8 @@ architecture behavioral of CM_Monitoring is
 
   signal channel_inactive : std_logic; 
   signal error_pulse : std_logic;
+  signal uart_history : slv_32_t;
+  signal uart_history_valid : slv_4_t;
   
   signal en_16_x_baud : std_logic;
   signal baud_counter : unsigned(BAUD_COUNT_BITS-1 downto 0);
@@ -313,6 +317,20 @@ begin  -- architecture behavioral
       clk                 => clk);
 
 
+  debug_history <= uart_history;
+  debug_valid   <= uart_history_valid;
+  debugging: process (clk, reset) is
+  begin  -- process debugging
+    if reset = '1' then                 -- asynchronous reset (active high)
+      uart_history <= x"00000000";
+      uart_history_valid <= x"0";
+    elsif clk'event and clk = '1' then  -- rising clock edge
+      if uart_rd_en = '1' then
+        uart_history       <= uart_history      (uart_history'left       - 8 downto 0) & uart_data;
+        uart_history_valid <= uart_history_valid(uart_history_valid'left - 1 downto 0) & '1';
+      end if;
+    end if;
+  end process debugging;
 
   counter_1: entity work.counter
     generic map (

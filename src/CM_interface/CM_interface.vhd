@@ -84,6 +84,10 @@ architecture behavioral of CM_interface is
 
   constant INACTIVE_COUNT : slv_32_t := x"03FFFFFF";
   constant PL_MEM_ADDR : unsigned(31 downto 0) := x"40000000";
+
+  signal debug_history   : slv_32_t;
+  signal debug_valid     : slv_4_t;
+
   
 begin  -- architecture behavioral
 
@@ -298,7 +302,11 @@ begin  -- architecture behavioral
         when x"15" =>
           localRdData( 7 downto  0) <= reg_data(21)( 7 downto  0); -- baud_16x_count
           localRdData( 8)           <= mon_active(0);          -- channel_active
+          localRdData(15 downto 12) <= debug_valid;            -- uart debug
+                                                               -- history valid
           localRdData(31 downto 16) <= mon_errors(0);          -- error_count
+        when x"16" =>
+          localRdData(31 downto  0) <= debug_history;          -- uart debug history
         when x"22" =>
           localRdData(0) <= CM2_C2C_Mon.axi_c2c_config_error_out;   
           localRdData(1) <= CM2_C2C_Mon.axi_c2c_link_error_out;     
@@ -420,6 +428,8 @@ begin  -- architecture behavioral
       readMISO       => master_readMISO,
       writeMOSI      => master_writeMOSI,
       writeMISO      => master_writeMISO,
+      debug_history  => debug_history,
+      debug_valid    => debug_valid,
       error_count    => mon_errors(0),
       channel_active => mon_active(0));
   
