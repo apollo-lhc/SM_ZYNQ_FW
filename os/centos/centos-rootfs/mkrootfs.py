@@ -104,7 +104,7 @@ if args['extra'] is not None:
 print ("Running dnf: remove")
 run_dnf(rootdir,"remove",["NetworkManager","firewalld","iptables","iw*firmware*","alsa*","linux-firmware","--setopt=tsflags=noscripts","--enable centos-sclo-rh-testing"])
 #I guess network manager also removes this? 
-run_dnf(rootdir,"install",["dhclient"])
+run_dnf(rootdir,"install",["dhclient","emacs"])
 			    
 rootpwd=crypt.crypt("centos", crypt.mksalt(crypt.METHOD_SHA512))
 aug=augeas.Augeas(root=rootdir)
@@ -112,8 +112,9 @@ aug.set("/files/etc/shadow/root/password",rootpwd)
 aug.set("/files/etc/sysconfig/selinux/SELINUX","disabled")
 aug.save()
 aug.close()
-os.makedirs(rootdir+"/etc/sysconfig/network-scripts/ifcfg-eth0")
-shutil.copy(etc+"/ifcfg-eth0",rootdir+"/etc/sysconfig/network-scripts/ifcfg-eth0")
+#os.makedirs(rootdir+"/etc/sysconfig/network-scripts/ifcfg-eth0")
+#shutil.copy(etc+"/ifcfg-eth0",rootdir+"/etc/sysconfig/network-scripts/ifcfg-eth0")
+shutil.copy(etc+"/ifcfg-eth0",rootdir+"/etc/sysconfig/network-scripts/")
 if arch=="armv7hl":
     os.remove(rootdir+"/etc/yum.repos.d/CentOS-armhfp-kernel.repo")
 

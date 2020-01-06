@@ -10,13 +10,18 @@
 # Please note that you must run 'chmod +x /etc/rc.d/rc.local' to ensure
 # that this script will be executed during boot.
 
+mkdir -p /fw
+mount /dev/mmcblk0p1 /fw
+
 ethtool -s eth0 speed 10 duplex full autoneg off
-ifconfig eth0 192.168.30.62 netmask 255.255.0.0
 
+if [ -f "/fw/mac.dat" ]; then
+    ifconfig eth0 down
+    cat /fw/mac.dat | xargs ifconfig eth0 hw ether 
+    ifconfig eth0 up
+fi
+dhclient eth0
 
-#/opt/BUTool/bin/SM_boot
-#/opt/BUTool/bin/heartbeat
-#/opt/BUTool/bin/arm-monitor
 
 /opt/BUTool/bin/findUIO IPBUS_KINTEX | grep "is at" | awk '{print "ln -s "$4" /dev/uio"$1}' | bash
 /opt/BUTool/bin/findUIO IPBUS_VIRTEX | grep "is at" | awk '{print "ln -s "$4" /dev/uio"$1}' | bash
