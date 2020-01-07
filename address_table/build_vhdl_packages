@@ -272,20 +272,20 @@ def traverseTree(Node,padding,baseAddress,baseName,outFileName):
                 if childNode.getPermission() == uhal.NodePermission.READ:
                     package_mon_entries[name] = package_entries
                     if read_ops.has_key(local_address):
-                        read_ops[local_address] = read_ops[local_address] + str("localRdData("+bits+")").ljust(11)+" <= Mon."+local_name+";\n"
+                        read_ops[local_address] = read_ops[local_address] + str("localRdData("+bits+")").ljust(11)+" <= Mon."+local_name+"; --"+childNode.getDescription()+"\n"
                     else:
-                        read_ops[local_address] =                           str("localRdData("+bits+")").ljust(11)+" <= Mon."+local_name+";\n"
+                        read_ops[local_address] =                           str("localRdData("+bits+")").ljust(11)+" <= Mon."+local_name+"; --"+childNode.getDescription()+"\n"
                 elif childNode.getPermission() == uhal.NodePermission.READWRITE:
 #                    package_mon_entries[name]  = package_entries
                     package_ctrl_entries[name] = package_entries
                     if read_ops.has_key(local_address):
-                        read_ops[local_address] = read_ops[local_address] + str("localRdData("+bits+")").ljust(11)+" <= "+"reg_data("+str(local_address)+")("+bits+")".ljust(11)+";\n"
+                        read_ops[local_address] = read_ops[local_address] + str("localRdData("+bits+")").ljust(11)+" <= "+"reg_data("+str(local_address)+")("+bits+"); --"+childNode.getDescription()+";\n"
                     else:
-                        read_ops[local_address] =                           str("localRdData("+bits+")").ljust(11)+" <= "+"reg_data("+str(local_address)+")("+bits+")".ljust(11)+";\n"
+                        read_ops[local_address] =                           str("localRdData("+bits+")").ljust(11)+" <= "+"reg_data("+str(local_address)+")("+bits+"); --"+childNode.getDescription()+";\n"
                     if write_ops.has_key(local_address):
-                        write_ops[local_address] = write_ops[local_address] + str("reg_data("+str(local_address)+")("+bits+")").ljust(50) + " <= localWrData("+bits+");\n"
+                        write_ops[local_address] = write_ops[local_address] + str("reg_data("+str(local_address)+")("+bits+")").ljust(30) + " <= localWrData("+bits+"); --"+childNode.getDescription()+"\n"
                     else:
-                        write_ops[local_address] =                            str("reg_data("+str(local_address)+")("+bits+")").ljust(50) + " <= localWrData("+bits+");\n"
+                        write_ops[local_address] =                            str("reg_data("+str(local_address)+")("+bits+")").ljust(30) + " <= localWrData("+bits+"); --"+childNode.getDescription()+"\n"
 
                     readwrite_ops+=("Ctrl."+local_name).ljust(50) + " <= reg_data("+str(local_address)+")("+bits+");\n"
 
@@ -310,6 +310,8 @@ def traverseTree(Node,padding,baseAddress,baseName,outFileName):
 def generateRegMap(baseName,r_ops,rw_ops,w_ops,a_ops):
             
     outFile=open(baseName+"_map.vhd",'w')
+    outFile.write("--This file was auto-generated.\n")
+    outFile.write("--Modifications might be lost.\n")
     outFile.write("library ieee;\n")
     outFile.write("use ieee.std_logic_1164.all;\n")
     outFile.write("use ieee.numeric_std.all;\n")
@@ -379,8 +381,34 @@ def generateRegMap(baseName,r_ops,rw_ops,w_ops,a_ops):
     if len(r_ops) != 0:
         for addr in r_ops:
             outFile.write("        when x\""+hex(addr)[2:]+"\" =>\n");
+            newAssignmentPos = 0;
+            newAssignmentLength = 0;
+            #find the position of the "<=" in each line so we can align them
+            #find the max length of assignment names so we can align to that as well
             for line in r_ops[addr].split('\n'):
-                outFile.write("          "+line+"\n")
+                assignmentPos = line.find("<=")
+                if assignmentPos > newAssignmentPos:
+                    newAssignmentPos = assignmentPos;            
+#                assignmentLength = line[assignmentPos:].find(";") - assignmentPos
+                assignmentLength = line[assignmentPos:].find(";")
+                if assignmentLength > newAssignmentLength:
+                    newAssignmentLength = assignmentLength;            
+            print(newAssignmentPos)
+            print(newAssignmentLength)
+                    
+            for line in r_ops[addr].split('\n'):                
+                if line.find("<=") > 0:
+                    preAssignment = line[0:line.find("<=")-1]
+                    line=line[line.find("<=")+2:]
+                    assignment = line[0:line.find(";")]
+                    line=line[line.find(";")+1:]
+                    outFile.write("          "+
+                                  preAssignment.ljust(newAssignmentPos)+
+                                  " <= "+
+                                  assignment.ljust(newAssignmentLength)+
+                                  ";    "+
+                                  line+
+                                  "\n")
 
                 
     outFile.write("        when others =>\n")
@@ -492,6 +520,8 @@ def main():
             outFileBase=outFileName[outFileName.find('.')+1:]
             outFileName=outFileBase+"_PKG.vhd"
             outFile=open(outFileName,'w')
+            outFile.write("--This file was auto-generated.\n")
+            outFile.write("--Modifications might be lost.\n")
             outFile.write("library IEEE;\n")
             outFile.write("use IEEE.std_logic_1164.all;\n")
             outFile.write("\n\npackage "+outFileBase+"_CTRL is\n")
