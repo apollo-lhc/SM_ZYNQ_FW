@@ -225,7 +225,7 @@ def getBitRange(mask):
     if end == -1:
         end = 0
     if start == end:
-        return str(start)
+        return str(start).rjust(2)
     else:
         return str(start).rjust(2,' ') +" downto "+str(end).rjust(2,' ')
 
@@ -281,15 +281,15 @@ def traverseTree(Node,padding,baseAddress,baseName,outFileName):
 #                    package_mon_entries[name]  = package_entries
                     package_ctrl_entries[name] = package_entries
                     if read_ops.has_key(local_address):
-                        read_ops[local_address] = read_ops[local_address] + str("localRdData("+bits+")")+" <= "+"reg_data("+str(local_address)+")("+bits+"); --"+childNode.getDescription()+";\n"
+                        read_ops[local_address] = read_ops[local_address] + str("localRdData("+bits+")")+" <= "+"reg_data("+str(local_address).rjust(2)+")("+bits+"); --"+childNode.getDescription()+";\n"
                     else:
-                        read_ops[local_address] =                           str("localRdData("+bits+")")+" <= "+"reg_data("+str(local_address)+")("+bits+"); --"+childNode.getDescription()+";\n"
+                        read_ops[local_address] =                           str("localRdData("+bits+")")+" <= "+"reg_data("+str(local_address).rjust(2)+")("+bits+"); --"+childNode.getDescription()+";\n"
                     if write_ops.has_key(local_address):
-                        write_ops[local_address] = write_ops[local_address] + str("reg_data("+str(local_address)+")("+bits+")") + " <= localWrData("+bits+"); --"+childNode.getDescription()+"\n"
+                        write_ops[local_address] = write_ops[local_address] + str("reg_data("+str(local_address).rjust(2)+")("+bits+")") + " <= localWrData("+bits+"); --"+childNode.getDescription()+"\n"
                     else:
-                        write_ops[local_address] =                            str("reg_data("+str(local_address)+")("+bits+")") + " <= localWrData("+bits+"); --"+childNode.getDescription()+"\n"
+                        write_ops[local_address] =                            str("reg_data("+str(local_address).rjust(2)+")("+bits+")") + " <= localWrData("+bits+"); --"+childNode.getDescription()+"\n"
 
-                    readwrite_ops+=("Ctrl."+local_name) + " <= reg_data("+str(local_address)+")("+bits+");\n"
+                    readwrite_ops+=("Ctrl."+local_name) + " <= reg_data("+str(local_address).rjust(2)+")("+bits+");\n"
 
                 elif childNode.getPermission() == uhal.NodePermission.WRITE:
                     package_ctrl_entries[name] = package_entries
@@ -435,12 +435,34 @@ def generateRegMap(baseName,r_ops,rw_ops,w_ops,a_ops):
     outFile.write("    end if;\n")
     outFile.write("  end process reads;\n")
 
+    if len(rw_ops) > 0:
+        outFile.write("\n\n\n");
+        outFile.write("  -- Register mapping to ctrl structures\n");
+        newAssignmentPos = 0;
+        newAssignmentLength = 0;
+        for line in rw_ops.split("\n"):
+            assignmentPos = line.find("<=")
+            if assignmentPos > newAssignmentPos:
+                newAssignmentPos = assignmentPos;            
+            assignmentLength = line[assignmentPos:].find(";")
+            if assignmentLength > newAssignmentLength:
+                newAssignmentLength = assignmentLength;
 
-    for line in rw_ops.split("\n"):
-        outFile.write("  "+line+"\n")
+        for line in rw_ops.split("\n"):
+            if line.find("<=") > 0:
+                preAssignment = line[0:line.find("<=")-1]
+                line=line[line.find("<=")+2:]
+                assignment = line[0:line.find(";")]
+                line=line[line.find(";")+1:]
+                outFile.write("  "+
+                              preAssignment.ljust(newAssignmentPos)+
+                              " <= "+
+                              str(assignment+";").ljust(newAssignmentLength)+
+                              "    "+
+                              line+
+                              "\n")
 
-
-    
+    outFile.write("\n\n\n");
     outFile.write("  reg_writes: process (clk_axi, reset_axi_n) is\n")
     outFile.write("  begin  -- process reg_writes\n")
     outFile.write("    if reset_axi_n = '0' then                 -- asynchronous reset (active low)\n")
