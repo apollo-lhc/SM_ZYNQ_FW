@@ -29,6 +29,8 @@ import logging
 import math
 import uhal
 
+import StringIO
+
 #===========================================================================================
 # In Python 3 "xrange" doesn't exist, since Python 3's "range" is just as efficient as Python 2's "xrange"
 if (sys.version_info[0] > 2):
@@ -272,31 +274,31 @@ def traverseTree(Node,padding,baseAddress,baseName,outFileName):
                 if childNode.getPermission() == uhal.NodePermission.READ:
                     package_mon_entries[name] = package_entries
                     if read_ops.has_key(local_address):
-                        read_ops[local_address] = read_ops[local_address] + str("localRdData("+bits+")").ljust(11)+" <= Mon."+local_name+"; --"+childNode.getDescription()+"\n"
+                        read_ops[local_address] = read_ops[local_address] + str("localRdData("+bits+")")+" <= Mon."+local_name+"; --"+childNode.getDescription()+"\n"
                     else:
-                        read_ops[local_address] =                           str("localRdData("+bits+")").ljust(11)+" <= Mon."+local_name+"; --"+childNode.getDescription()+"\n"
+                        read_ops[local_address] =                           str("localRdData("+bits+")")+" <= Mon."+local_name+"; --"+childNode.getDescription()+"\n"
                 elif childNode.getPermission() == uhal.NodePermission.READWRITE:
 #                    package_mon_entries[name]  = package_entries
                     package_ctrl_entries[name] = package_entries
                     if read_ops.has_key(local_address):
-                        read_ops[local_address] = read_ops[local_address] + str("localRdData("+bits+")").ljust(11)+" <= "+"reg_data("+str(local_address)+")("+bits+"); --"+childNode.getDescription()+";\n"
+                        read_ops[local_address] = read_ops[local_address] + str("localRdData("+bits+")")+" <= "+"reg_data("+str(local_address)+")("+bits+"); --"+childNode.getDescription()+";\n"
                     else:
-                        read_ops[local_address] =                           str("localRdData("+bits+")").ljust(11)+" <= "+"reg_data("+str(local_address)+")("+bits+"); --"+childNode.getDescription()+";\n"
+                        read_ops[local_address] =                           str("localRdData("+bits+")")+" <= "+"reg_data("+str(local_address)+")("+bits+"); --"+childNode.getDescription()+";\n"
                     if write_ops.has_key(local_address):
-                        write_ops[local_address] = write_ops[local_address] + str("reg_data("+str(local_address)+")("+bits+")").ljust(30) + " <= localWrData("+bits+"); --"+childNode.getDescription()+"\n"
+                        write_ops[local_address] = write_ops[local_address] + str("reg_data("+str(local_address)+")("+bits+")") + " <= localWrData("+bits+"); --"+childNode.getDescription()+"\n"
                     else:
-                        write_ops[local_address] =                            str("reg_data("+str(local_address)+")("+bits+")").ljust(30) + " <= localWrData("+bits+"); --"+childNode.getDescription()+"\n"
+                        write_ops[local_address] =                            str("reg_data("+str(local_address)+")("+bits+")") + " <= localWrData("+bits+"); --"+childNode.getDescription()+"\n"
 
-                    readwrite_ops+=("Ctrl."+local_name).ljust(50) + " <= reg_data("+str(local_address)+")("+bits+");\n"
+                    readwrite_ops+=("Ctrl."+local_name) + " <= reg_data("+str(local_address)+")("+bits+");\n"
 
                 elif childNode.getPermission() == uhal.NodePermission.WRITE:
                     package_ctrl_entries[name] = package_entries
                     if write_ops.has_key(local_address):
-                        write_ops[local_address] = write_ops[local_address] + ("Ctrl."+local_name).ljust(50) + " <= localWrData("+bits+");\n"
+                        write_ops[local_address] = write_ops[local_address] + ("Ctrl."+local_name) + " <= localWrData("+bits+");\n"
                     else:                                                     
-                        write_ops[local_address] =                            ("Ctrl."+local_name).ljust(50) + " <= localWrData("+bits+");\n"
+                        write_ops[local_address] =                            ("Ctrl."+local_name) + " <= localWrData("+bits+");\n"
                     
-                    action_ops+=local_name.ljust(50) + " <= (others => '0')\n"
+                    action_ops+=local_name + " <= (others => '0')\n"
 
                     
     ret = dict()
@@ -306,6 +308,40 @@ def traverseTree(Node,padding,baseAddress,baseName,outFileName):
         ret["ctrl"] = generateRecord((baseName[4:]).replace('.','_')+"_CTRL_t",package_ctrl_entries,package_description,package_addr_order,outFileName)
 
     return ret
+
+def generateAlignedCase(operations):
+    output = StringIO.StringIO()
+    newAssignmentPos = 0;
+    newAssignmentLength = 0;
+    for addr in operations:
+        #find the position of the "<=" in each line so we can align them
+        #find the max length of assignment names so we can align to that as well
+        for line in operations[addr].split('\n'):
+            assignmentPos = line.find("<=")
+            if assignmentPos > newAssignmentPos:
+                newAssignmentPos = assignmentPos;            
+            assignmentLength = line[assignmentPos:].find(";")
+            if assignmentLength > newAssignmentLength:
+                newAssignmentLength = assignmentLength;            
+
+    for addr in operations:
+        output.write("        when x\""+hex(addr)[2:]+"\" =>\n");                    
+        for line in operations[addr].split('\n'):                
+            if line.find("<=") > 0:
+                preAssignment = line[0:line.find("<=")-1]
+                line=line[line.find("<=")+2:]
+                assignment = line[0:line.find(";")]
+                line=line[line.find(";")+1:]
+                output.write("          "+
+                             preAssignment.ljust(newAssignmentPos)+
+                             " <= "+
+                             str(assignment+";").ljust(newAssignmentLength)+
+                             "    "+
+                             line+
+                             "\n")
+    return output.getvalue()
+                
+
 
 def generateRegMap(baseName,r_ops,rw_ops,w_ops,a_ops):
             
@@ -379,37 +415,7 @@ def generateRegMap(baseName,r_ops,rw_ops,w_ops,a_ops):
     outFile.write("      case localAddress(7 downto 0) is\n")
 
     if len(r_ops) != 0:
-        for addr in r_ops:
-            outFile.write("        when x\""+hex(addr)[2:]+"\" =>\n");
-            newAssignmentPos = 0;
-            newAssignmentLength = 0;
-            #find the position of the "<=" in each line so we can align them
-            #find the max length of assignment names so we can align to that as well
-            for line in r_ops[addr].split('\n'):
-                assignmentPos = line.find("<=")
-                if assignmentPos > newAssignmentPos:
-                    newAssignmentPos = assignmentPos;            
-#                assignmentLength = line[assignmentPos:].find(";") - assignmentPos
-                assignmentLength = line[assignmentPos:].find(";")
-                if assignmentLength > newAssignmentLength:
-                    newAssignmentLength = assignmentLength;            
-            print(newAssignmentPos)
-            print(newAssignmentLength)
-                    
-            for line in r_ops[addr].split('\n'):                
-                if line.find("<=") > 0:
-                    preAssignment = line[0:line.find("<=")-1]
-                    line=line[line.find("<=")+2:]
-                    assignment = line[0:line.find(";")]
-                    line=line[line.find(";")+1:]
-                    outFile.write("          "+
-                                  preAssignment.ljust(newAssignmentPos)+
-                                  " <= "+
-                                  assignment.ljust(newAssignmentLength)+
-                                  ";    "+
-                                  line+
-                                  "\n")
-
+        outFile.write(generateAlignedCase(r_ops))
                 
     outFile.write("        when others =>\n")
     outFile.write("          localRdData <= x\"00000000\";\n")
