@@ -309,6 +309,18 @@ def traverseTree(Node,padding,baseAddress,baseName,outFileName):
 
     return ret
 
+def sortByBit(line):
+    assignmentPos = line.find("<=")
+    if assignmentPos < 0:
+        return assignmentPos
+
+    numberStart = line[0:assignmentPos].rfind("(")+1
+    numberEnd = line[numberStart:assignmentPos].find("downto");
+    if numberEnd < 0:        
+        numberEnd = line[numberStart:assignmentPos].find(")");
+    numberEnd+=numberStart
+    return int(line[numberStart:numberEnd])
+    
 def generateAlignedCase(operations):
     output = StringIO.StringIO()
     newAssignmentPos = 0;
@@ -326,7 +338,7 @@ def generateAlignedCase(operations):
 
     for addr in operations:
         output.write("        when x\""+hex(addr)[2:]+"\" =>\n");                    
-        for line in operations[addr].split('\n'):                
+        for line in sorted(operations[addr].split('\n'),key = sortByBit):                
             if line.find("<=") > 0:
                 preAssignment = line[0:line.find("<=")-1]
                 line=line[line.find("<=")+2:]
@@ -431,7 +443,7 @@ def generateRegMap(baseName,r_ops,rw_ops,w_ops,a_ops):
     
     outFile.write("  reg_writes: process (clk_axi, reset_axi_n) is\n")
     outFile.write("  begin  -- process reg_writes\n")
-    outFile.write("    if reset_axi_n = '0' then                 -- asynchronous reset (active high)\n")
+    outFile.write("    if reset_axi_n = '0' then                 -- asynchronous reset (active low)\n")
     outFile.write("      reg_data <= default_reg_data;\n")
     outFile.write("    elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge\n")
 
@@ -441,12 +453,8 @@ def generateRegMap(baseName,r_ops,rw_ops,w_ops,a_ops):
     outFile.write("      if localWrEn = '1' then\n")
     outFile.write("        case localAddress(7 downto 0) is\n")
  
-    
     if len(w_ops) != 0:
-        for addr in w_ops:
-            outFile.write("          when x\""+hex(addr)[2:]+"\" =>\n");
-            for line in w_ops[addr].split('\n'):
-                outFile.write("            "+line+"\n")            
+        outFile.write(generateAlignedCase(w_ops))
 
     outFile.write("          when others => null;\n")
     outFile.write("        end case;\n")
