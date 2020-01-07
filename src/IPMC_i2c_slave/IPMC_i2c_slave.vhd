@@ -181,11 +181,12 @@ begin  -- architecture behavioral
     generic map (
       roll_over   => '0',
       end_value   => x"1DCD6500",
-      start_value => x"1DCD6500",
+      start_value => x"00000000",
+      A_RST_CNT   => x"1DCD6500",
       DATA_WIDTH  => 32)
     port map (
       clk         => clk_axi,
-      reset_async => '0',
+      reset_async => reset,
       reset_sync  => heart_beat,
       enable      => '1',
       event       => '1',

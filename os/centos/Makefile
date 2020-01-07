@@ -94,7 +94,14 @@ ${OPT_PATH}/BUTool: ${OPT_PATH}/cactus | ${OPT_PATH} ${TMP_PATH}
 	sudo install -m 777 ${MODS_PATH}/rc.local ${ETC_PATH}/rc.d/rc.local
 	sudo rm ${ETC_PATH}/systemd/system/multi-user.target.wants/auditd.service
 
-finalize_image: ${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_PATH}/passwd ${ETC_PATH}/shadow  ${OPT_PATH}/BUTool ${HOME_PATH}/cms ${HOME_PATH}/atlas
+${OPT_PATH}/mcu_tools: | ${OPT_PATH} ${TEMP_PATH}
+	cd ${OPT_PATH} && \
+	git clone https://github.com/apollo-lhc/mcu_tools.git
+	cp ${MODS_PATH}/build_mcu_tools.sh ${TMP_PATH}/
+	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/build_mcu_tools.sh
+
+
+finalize_image: ${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_PATH}/passwd ${ETC_PATH}/shadow  ${OPT_PATH}/BUTool ${HOME_PATH}/cms ${HOME_PATH}/atlas ${OPT_PATH}/mcu_tools
 #	sudo rm -rf ${INSTALL_PATH}/usr/share/doc
 	sudo cp ${MODS_PATH}/cleanup_locale.sh ${TMP_PATH}
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/cleanup_locale.sh
