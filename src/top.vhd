@@ -229,7 +229,7 @@ architecture structure of top is
   
 -- AXI BUS
   signal AXI_clk : std_logic;
-  constant PL_AXI_SLAVE_COUNT : integer := 4;
+  constant PL_AXI_SLAVE_COUNT : integer := 5;
   signal AXI_BUS_RMOSI :  AXIReadMOSI_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIReadMOSI);
   signal AXI_BUS_RMISO :  AXIReadMISO_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIReadMISO);
   signal AXI_BUS_WMOSI : AXIWriteMOSI_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIWriteMOSI);
@@ -456,6 +456,28 @@ begin  -- architecture structure
       SM_INFO_wstrb           => AXI_BUS_WMOSI(3).data_write_strobe,
       SM_INFO_wvalid          => AXI_BUS_WMOSI(3).data_valid,
 
+      TCDS_DRP_araddr          => AXI_BUS_RMOSI(4).address,
+      TCDS_DRP_arprot          => AXI_BUS_RMOSI(4).protection_type,
+      TCDS_DRP_arready         => AXI_BUS_RMISO(4).ready_for_address,
+      TCDS_DRP_arvalid         => AXI_BUS_RMOSI(4).address_valid,
+      TCDS_DRP_awaddr          => AXI_BUS_WMOSI(4).address,
+      TCDS_DRP_awprot          => AXI_BUS_WMOSI(4).protection_type,
+      TCDS_DRP_awready         => AXI_BUS_WMISO(4).ready_for_address,
+      TCDS_DRP_awvalid         => AXI_BUS_WMOSI(4).address_valid,
+      TCDS_DRP_bready          => AXI_BUS_WMOSI(4).ready_for_response,
+      TCDS_DRP_bresp           => AXI_BUS_WMISO(4).response,
+      TCDS_DRP_bvalid          => AXI_BUS_WMISO(4).response_valid,
+      TCDS_DRP_rdata           => AXI_BUS_RMISO(4).data,
+      TCDS_DRP_rready          => AXI_BUS_RMOSI(4).ready_for_data,
+      TCDS_DRP_rresp           => AXI_BUS_RMISO(4).response,
+      TCDS_DRP_rvalid          => AXI_BUS_RMISO(4).data_valid,
+      TCDS_DRP_wdata           => AXI_BUS_WMOSI(4).data,
+      TCDS_DRP_wready          => AXI_BUS_WMISO(4).ready_for_data,
+      TCDS_DRP_wstrb           => AXI_BUS_WMOSI(4).data_write_strobe,
+      TCDS_DRP_wvalid          => AXI_BUS_WMOSI(4).data_valid,
+
+
+      
 
       tap_tck_0                 => XVC0_tck,
       tap_tdi_0                 => XVC0_tdi,
@@ -651,7 +673,13 @@ begin  -- architecture structure
   axi_reset <= not axi_reset_n;
   TCDS_2: entity work.TCDS
     port map (
-      sysclk        => pl_clk,
+      clk_axi              => axi_clk,
+      reset_axi_n          => pl_reset_n,
+      slave_readMOSI       => AXI_BUS_RMOSI(4),
+      slave_readMISO       => AXI_BUS_RMISO(4),
+      slave_writeMOSI      => AXI_BUS_WMOSI(4),
+      slave_writeMISO      => AXI_BUS_WMISO(4),
+--      sysclk        => pl_clk,
       refclk_p      => refclk_TCDS_P,
       refclk_n      => refclk_TCDS_N,
       QPLL_CLK        => QPLL_CLK,    

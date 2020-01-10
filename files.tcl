@@ -46,6 +46,7 @@ set xci_files "\
     	      cores/SGMII_INTF/SGMII_INTF.xci \
     	      cores/onboard_CLK/onboard_CLK.xci \
               cores/LHC/LHC.xci \
+              cores/TCDS_DRP_BRIDGE/TCDS_DRP_BRIDGE.xci \
     	      "
 #	      cores/ila_i2c_debug/ila_i2c_debug.xci \
 #	      cores/c2c_ibert/c2c_ibert.xci \

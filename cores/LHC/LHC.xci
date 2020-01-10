@@ -124,7 +124,7 @@
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_max_cb_level">7</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_no_rx">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_no_tx">false</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_oob">false</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_oob">true</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_pcs_pcie_en">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_pd_trans_time_from_p2">60</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_pd_trans_time_non_p2">60</spirit:configurableElementValue>
@@ -134,7 +134,7 @@
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_port_comsasdet">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_port_comwakedet">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_port_cpllpd">false</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_port_loopback">false</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_port_loopback">true</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_port_phystatus">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_port_pll0pd">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_port_pll1pd">false</spirit:configurableElementValue>
@@ -193,8 +193,8 @@
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_port_txpmareset">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_port_txpolarity">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_port_txpowerdown">false</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_port_txprbsforceerr">false</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_port_txprbssel">false</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_port_txprbsforceerr">true</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_port_txprbssel">true</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_port_txqpibiasen">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_port_txqpisenn">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_port_txqpisenp">false</spirit:configurableElementValue>
@@ -204,7 +204,7 @@
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_port_txrundisp">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_port_txsysclksel">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_ppm_offset">100</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_prbs_detector">false</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_prbs_detector">true</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_protocol_file">Start_from_scratch</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_qpll_fbdiv">16</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_qpll_refclk_div">1</spirit:configurableElementValue>
@@ -220,7 +220,7 @@
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_rxbuf_en">true</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_rxcomma_deten">true</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_rxoutclk_source">AUTO</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_rxprbs_err_loopback">false</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_rxprbs_err_loopback">true</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_rxslide_mode">OFF</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_rxusrclk">TXOUTCLK</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.gt0_val_sata_e_idle_val">4</spirit:configurableElementValue>
@@ -731,7 +731,7 @@
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_max_cb_level">7</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_no_rx">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_no_tx">false</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_oob">false</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_oob">true</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_pcs_pcie_en">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_pd_trans_time_from_p2">60</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_pd_trans_time_non_p2">60</spirit:configurableElementValue>
@@ -741,7 +741,7 @@
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_port_comsasdet">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_port_comwakedet">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_port_cpllpd">false</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_port_loopback">false</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_port_loopback">true</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_port_phystatus">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_port_pll0pd">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_port_pll1pd">false</spirit:configurableElementValue>
@@ -799,8 +799,8 @@
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_port_txpmareset">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_port_txpolarity">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_port_txpowerdown">false</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_port_txprbsforceerr">false</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_port_txprbssel">false</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_port_txprbsforceerr">true</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_port_txprbssel">true</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_port_txqpibiasen">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_port_txqpisenn">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_port_txqpisenp">false</spirit:configurableElementValue>
@@ -809,7 +809,7 @@
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_port_txrate">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_port_txsysclksel">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_ppm_offset">100</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_prbs_detector">false</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_prbs_detector">true</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_protocol_file">Start_from_scratch</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_qpll_fbdiv">16</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_qpll_refclk_div">1</spirit:configurableElementValue>
@@ -825,7 +825,7 @@
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_rxbuf_en">true</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_rxcomma_deten">true</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_rxoutclk_source">false</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_rxprbs_err_loopback">false</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_rxprbs_err_loopback">true</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_rxslide_mode">OFF</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_rxusrclk">TXOUTCLK</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.gt0_val_sata_e_idle_val">4</spirit:configurableElementValue>
@@ -1210,10 +1210,15 @@
             <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.gt0_val_dfe_mode" xilinx:valueSource="user"/>
             <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.gt0_val_drp_clock" xilinx:valueSource="user"/>
             <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.gt0_val_encoding" xilinx:valueSource="user"/>
+            <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.gt0_val_oob" xilinx:valueSource="user"/>
+            <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.gt0_val_port_loopback" xilinx:valueSource="user"/>
             <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.gt0_val_port_rxchariscomma" xilinx:valueSource="user"/>
             <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.gt0_val_port_rxcharisk" xilinx:valueSource="user"/>
             <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.gt0_val_port_rxslide" xilinx:valueSource="user"/>
             <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.gt0_val_port_txinhibit" xilinx:valueSource="user"/>
+            <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.gt0_val_port_txprbsforceerr" xilinx:valueSource="user"/>
+            <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.gt0_val_port_txprbssel" xilinx:valueSource="user"/>
+            <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.gt0_val_prbs_detector" xilinx:valueSource="user"/>
             <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.gt0_val_rx_buffer_bypass_mode" xilinx:valueSource="user"/>
             <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.gt0_val_rx_cm_trim" xilinx:valueSource="user"/>
             <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.gt0_val_rx_data_width" xilinx:valueSource="user"/>
@@ -1222,6 +1227,7 @@
             <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.gt0_val_rx_reference_clock" xilinx:valueSource="user"/>
             <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.gt0_val_rx_termination_voltage" xilinx:valueSource="user"/>
             <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.gt0_val_rxcomma_deten" xilinx:valueSource="user"/>
+            <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.gt0_val_rxprbs_err_loopback" xilinx:valueSource="user"/>
             <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.gt0_val_rxslide_mode" xilinx:valueSource="user"/>
             <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.gt0_val_tx_buffer_bypass_mode" xilinx:valueSource="user"/>
             <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.gt0_val_tx_data_width" xilinx:valueSource="user"/>

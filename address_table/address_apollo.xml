@@ -7,8 +7,6 @@
   <node id="XVC1"            module="file://modules/XVC.xml"              address="0x06000000"/>
   <node id="XVC2"            module="file://modules/XVC.xml"              address="0x07000000"/>
   <node id="XVC_LOCAL"       module="file://modules/XVC.xml"              address="0x08000000"/>
-  <node id="SI" address="0x08000000">
-  </node>
   <node id="KINTEX_SYS_MGMT" module="file://modules/KINTEX_SYS_MGMT.xml"  address="0x09000000"/>
   <node id="SM_INFO"         module="file://modules/FW_INFO.xml"          address="0x0A000000"/>
   <node id="MONITOR"         module="file://modules/MONITOR.xml"          address="0x0B000000"/>
@@ -22,4 +20,5 @@
   <node id="C2C2_AXI_FW"     module="file://modules/C2C2_AXI_FW.xml"      address="0x13000000"/>    
   <node id="C2C2_AXILITE_FW" module="file://modules/C2C2_AXILITE_FW.xml"  address="0x14000000"/>
   <node id="PL_MEM"          module="file://modules/PL_MEM.xml"           address="0x15000000"/>
+  <node id="TCDS_DRP"        module="file://modules/TCDS_DRP.xml"         address="0x16000000"/>
 </node>
