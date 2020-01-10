@@ -1,0 +1,15 @@
+  &i2c0 {
+    rtc@6f {
+      compatible = "xti,isl12022";
+      reg = < 0x0000006f >;
+    };
+    rtc-eeprom@57 {
+      compatible = "xti,24c01";
+      reg = < 0x00000057 >;
+    };
+
+    secure-eeprom@64 {
+      compatible = "atmel,24c16";
+      reg = < 0x00000064 >;
+    };		     
+  };

@@ -45,6 +45,9 @@ set_property IOSTANDARD LVCMOS33 [get_ports {FIXED_IO_mio[7]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {FIXED_IO_mio[0]}]
 
 
+set_property -dict {IOSTANDARD LVCMOS33 PACKAGE_PIN W13} [get_ports I2C_SCL]
+set_property -dict {IOSTANDARD LVCMOS33 PACKAGE_PIN Y13} [get_ports I2C_SDA]
+
 # -------------------------------------------------------------------------------------------------
 # bank 12 & 13
 # -------------------------------------------------------------------------------------------------

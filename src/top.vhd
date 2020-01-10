@@ -34,6 +34,9 @@ entity top is
     FIXED_IO_ps_porb  : inout STD_LOGIC;
     FIXED_IO_ps_srstb : inout STD_LOGIC;
 
+    I2C_SCL           : inout std_logic;
+    I2C_SDA           : inout std_logic;
+    
     onboard_CLK_P     : in  std_logic;
     onboard_CLK_N     : in  std_logic;
 
@@ -411,6 +414,8 @@ begin  -- architecture structure
       ENET1_MDIO_MDC_0          => MDIO_ETHERNET_mdc     ,
       ENET1_MDIO_I_0            => MDIO_ETHERNET_mdio_i  ,
       ENET1_MDIO_O_0            => MDIO_ETHERNET_mdio_o  ,
+      IIC_0_0_scl_io            => I2C_SCL,
+      IIC_0_0_sda_io            => I2C_SDA,
       SI_scl_i                  => SCL_i_phy,--SCL_i_normal,
       SI_scl_o                  => SCL_o_phy,--SCL_o_normal,
       SI_scl_t                  => SCL_t_phy,--SCL_t_normal,
