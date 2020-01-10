@@ -594,31 +594,31 @@ begin  -- architecture structure
 
 
 
---  pass_std_logic_vector_1: entity work.pass_std_logic_vector
---    generic map (
---      DATA_WIDTH => 22)
---    port map (
---      clk_in   => clk_user2_SGMII,--clk_SGMII_tx,
---      clk_out  => axi_clk,
---      reset    => '0',
---      pass_in(0)  => SGMII_MON.reset_done,   
---      pass_in(1)  => SGMII_MON.cpll_lock,    
---      pass_in(2)  => SGMII_MON.mmcm_reset,   
---      pass_in(3)  => SGMII_MON.pma_reset,    
---      pass_in(4)  => SGMII_MON.mmcm_locked,  
---      pass_in(20 downto 5)  => SGMII_MON.status_vector,
---      pass_in(21)  => SGMII_MON.reset,              
---      pass_out(0)   => SGMII_MON_CDC.reset_done,   
---      pass_out(1)  => SGMII_MON_CDC.cpll_lock,    
---      pass_out(2)  => SGMII_MON_CDC.mmcm_reset,   
---      pass_out(3)  => SGMII_MON_CDC.pma_reset,    
---      pass_out(4)  => SGMII_MON_CDC.mmcm_locked,  
---      pass_out(20 downto 5)  => SGMII_MON_CDC.status_vector,
---      pass_out(21)  => SGMII_MON_CDC.reset              
---);
---
+  pass_std_logic_vector_1: entity work.pass_std_logic_vector
+    generic map (
+      DATA_WIDTH => 22)
+    port map (
+      clk_in   => GMII_ETHERNET_tx_clk,--clk_user2_SGMII,--clk_SGMII_tx,
+      clk_out  => axi_clk,
+      reset    => '0',
+      pass_in(0)  => SGMII_MON.reset_done,   
+      pass_in(1)  => SGMII_MON.cpll_lock,    
+      pass_in(2)  => SGMII_MON.mmcm_reset,   
+      pass_in(3)  => SGMII_MON.pma_reset,    
+      pass_in(4)  => SGMII_MON.mmcm_locked,  
+      pass_in(20 downto 5)  => SGMII_MON.status_vector,
+      pass_in(21)  => SGMII_MON.reset,              
+      pass_out(0)   => SGMII_MON_CDC.reset_done,   
+      pass_out(1)  => SGMII_MON_CDC.cpll_lock,    
+      pass_out(2)  => SGMII_MON_CDC.mmcm_reset,   
+      pass_out(3)  => SGMII_MON_CDC.pma_reset,    
+      pass_out(4)  => SGMII_MON_CDC.mmcm_locked,  
+      pass_out(20 downto 5)  => SGMII_MON_CDC.status_vector,
+      pass_out(21)  => SGMII_MON_CDC.reset              
+);
 
-  SGMII_MON_CDC <= SGMII_MON;
+
+--  SGMII_MON_CDC <= SGMII_MON;
   SGMII_1: entity work.SGMII
     port map (
       sys_clk               => axi_clk,
