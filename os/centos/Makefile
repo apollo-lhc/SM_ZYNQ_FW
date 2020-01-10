@@ -36,7 +36,7 @@ ${QEMU_PATH}/${QEMU} ${INSTALL_PATH}/${QEMU_PATH}/${QEMU}: | ${INSTALL_PATH}
 
 ${ETC_PATH} ${TMP_PATH}: ${QEMU_PATH}/${QEMU} ${INSTALL_PATH}/${QEMU_PATH}/${QEMU} centos-rootfs/extra_rpms.txt
 	cd centos-rootfs && \
-	sudo python mkrootfs.py --root=${INSTALL_PATH} --arch=armv7hl --extra=extra_rpms.txt
+		sudo python mkrootfs.py --root=${INSTALL_PATH} --arch=armv7hl --extra=extra_rpms.txt
 
 ${OPT_PATH}: ${TMP_PATH}
 	sudo mkdir -p ${OPT_PATH}
@@ -59,19 +59,30 @@ ${HOME_PATH}/cms ${HOME_PATH}/atlas ${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_
 
 ${OPT_PATH}/cactus: | ${OPT_PATH} ${TMP_PATH}
 	cd ${TMP_PATH} && \
-	git clone https://github.com/dgastler/ipbus-software.git
+		git clone https://github.com/ipbus/ipbus-software.git
+#	git clone https://github.com/dgastler/ipbus-software.git
 	cd ${TMP_PATH}/ipbus-software && \
-	git checkout feature-UIOuHAL
+		git checkout feature/external-client-registration
+#	git checkout feature-UIOuHAL
 	cp ${MODS_PATH}/build_ipbus.sh ${TMP_PATH}/ipbus-software/
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/ipbus-software/build_ipbus.sh
+	cd ${TMP_PATH} && \
+	git clone /home/dan/work/Apollo/uhal/UIOuHAL/
+	cp ${MODS_PATH}/build_uiouhal.sh ${TMP_PATH}/UIOuHAL
+	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/UIOuHAL/build_uiouhal.sh
+
 
 ${OPT_PATH}/BUTool: ${OPT_PATH}/cactus | ${OPT_PATH} ${TMP_PATH} 
 	cd ${TMP_PATH} && \
-	git clone https://github.com/apollo-lhc/ApolloTool.git
+		git clone https://github.com/apollo-lhc/ApolloTool.git
 	cd ${TMP_PATH}/ApolloTool && \
-	make init
+		make init
+	cd ${TMP_PATH}/ApolloTool/plugins/BUTool-IPBUS-Helpers && \
+		git checkout feature-newUIOuHAL
 	cd ${TMP_PATH}/ApolloTool/plugins/ApolloSM_plugin && \
-	cp ${MODS_PATH}/build_BUTool.sh ${TMP_PATH}/ApolloTool/
+		git checkout feature-newUIOuHAL
+	cd ${TMP_PATH}/ApolloTool/plugins/ApolloSM_plugin && \
+		cp ${MODS_PATH}/build_BUTool.sh ${TMP_PATH}/ApolloTool/
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/ApolloTool/build_BUTool.sh
 	sudo install -d -m 755 ${OPT_PATH}/address_tables
 	(cd mods && find address_tables/ -type f -exec sudo install -Dm 666 "{}" "${OPT_PATH}/{}" \;)
@@ -96,7 +107,7 @@ ${OPT_PATH}/BUTool: ${OPT_PATH}/cactus | ${OPT_PATH} ${TMP_PATH}
 
 ${OPT_PATH}/mcu_tools: | ${OPT_PATH} ${TEMP_PATH}
 	cd ${OPT_PATH} && \
-	git clone https://github.com/apollo-lhc/mcu_tools.git
+		git clone https://github.com/apollo-lhc/mcu_tools.git
 	cp ${MODS_PATH}/build_mcu_tools.sh ${TMP_PATH}/
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/build_mcu_tools.sh
 
