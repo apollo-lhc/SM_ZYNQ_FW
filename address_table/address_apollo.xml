@@ -11,13 +11,13 @@
   <node id="SM_INFO"         module="file://modules/FW_INFO.xml"          address="0x0A000000"/>
   <node id="MONITOR"         module="file://modules/MONITOR.xml"          address="0x0B000000"/>
   <node id="CM_K_INFO"       module="file://modules/FW_INFO.xml"          address="0x0C000000"/>
-  <node id="C2C1_AXI_FW"     module="file://modules/C2C1_AXI_FW.xml"      address="0x0D000000"/>    
-  <node id="C2C1_AXILITE_FW" module="file://modules/C2C1_AXILITE_FW.xml"  address="0x0E000000"/>    
+  <node id="C2C1_AXI_FW"     module="file://modules/C2C1_AXI_FW.xml"      address="0x0D000000"/>
+  <node id="C2C1_AXILITE_FW" module="file://modules/C2C1_AXILITE_FW.xml"  address="0x0E000000"/>
   <node id="MYVREG0"         module="file://modules/MYREG0.xml"           address="0x0F000000"/>
   <node id="MYVREG1"         module="file://modules/MYREG1.xml"           address="0x10000000"/>
   <node id="VIRTEX_SYS_MGMT" module="file://modules/VIRTEX_SYS_MGMT.xml"  address="0x11000000"/>
   <node id="CM_V_INFO"       module="file://modules/FW_INFO.xml"          address="0x12000000"/>
-  <node id="C2C2_AXI_FW"     module="file://modules/C2C2_AXI_FW.xml"      address="0x13000000"/>    
+  <node id="C2C2_AXI_FW"     module="file://modules/C2C2_AXI_FW.xml"      address="0x13000000"/>
   <node id="C2C2_AXILITE_FW" module="file://modules/C2C2_AXILITE_FW.xml"  address="0x14000000"/>
   <node id="PL_MEM"          module="file://modules/PL_MEM.xml"           address="0x15000000"/>
   <node id="TCDS_DRP"        module="file://modules/TCDS_DRP.xml"         address="0x16000000"/>
