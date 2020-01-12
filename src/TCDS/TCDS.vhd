@@ -81,7 +81,7 @@ architecture Behavioral of TCDS is
     txuserrdy         : std_logic;    --rw
     prbsforceerr      : std_logic;    --w
     txinhibit         : std_logic;    --rw
-    txprbssel         : slv_3_t;      -rw
+    txprbssel         : slv_3_t;      --rw
   end record GT_Ctrl_t;  
   constant DEFAULT_GT_Ctrl_t : GT_Ctrl_t := (
                                              cpllreset      => '0',

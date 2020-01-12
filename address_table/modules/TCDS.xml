@@ -1,23 +1,5 @@
 <node>
-  <node id="LINK0" address="0x00000000">
-    <node id="PRBS" address="0x1">
-      <node id="SEL"         address="0x0" mask="0x007" permission="rw" description="000: Standard operation mode. (PRBS check is off)\n 001: PRBS-7\n 010: PRBS-15\n 011: PRBS-23\n 100: PRBS-31\n">
-      <node id="RESET_COUNT" address="0x0" mask="0x010" permission="w" >
-      <node id="ERROR"       address="0x0" mask="0x100" permission="r" >
-    </node>
-  </node>
-  <node id="LINK1" address="0x00000100">
-    <node id="PRBS" address="0x1">
-      <node id="SEL"         address="0x0" mask="0x007" permission="rw" description="000: Standard operation mode. (PRBS check is off)\n 001: PRBS-7\n 010: PRBS-15\n 011: PRBS-23\n 100: PRBS-31\n">
-      <node id="RESET_COUNT" address="0x0" mask="0x010" permission="w" >
-      <node id="ERROR"       address="0x0" mask="0x100" permission="r" >
-    </node>
-  </node>
-  <node id="LINK2" address="0x00000200">
-    <node id="PRBS" address="0x1">
-      <node id="SEL"         address="0x0" mask="0x007" permission="rw" description="000: Standard operation mode. (PRBS check is off)\n 001: PRBS-7\n 010: PRBS-15\n 011: PRBS-23\n 100: PRBS-31\n">
-      <node id="RESET_COUNT" address="0x0" mask="0x010" permission="w" >
-      <node id="ERROR"       address="0x0" mask="0x100" permission="r" >
-    </node>
-  </node>
+  <node id="LINK0" address="0x00000000" module="modules/RXTX.xml"/>
+  <node id="LINK1" address="0x00000100" module="modules/RXTX.xml"/>
+  <node id="LINK2" address="0x00000200" module="modules/RXTX.xml"/>
 </node>
