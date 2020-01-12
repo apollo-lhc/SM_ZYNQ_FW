@@ -48,38 +48,40 @@ architecture Behavioral of TCDS is
   signal rx_dv : std_logic_vector(2 downto 0);
 
   type GT_Mon_t is record
-    cpllfbclklost    : std_logic;
-    cplllock         : std_logic;     
-    dmonitorout      : slv_8_t;
-    eyescandataerror : std_logic;
-    rxprbserr        : STD_LOGIC;
-    rxdisperr        : slv_4_t;
-    rxnotintable     : slv_4_t;
-    rxmonitorout     : slv_7_t;
+    cpllfbclklost    : std_logic; --ro
+    cplllock         : std_logic; --ro
+    dmonitorout      : slv_8_t; --ro
+    eyescandataerror : std_logic; --ro
+    rxprbserr        : STD_LOGIC; --ro
+    rxdisperr        : slv_4_t;  --ro
+    rxnotintable     : slv_4_t; --ro
+    rxmonitor        : slv_7_t; --ro
     rxoutclkfabric   : std_logic;
-    rxresetdone      : std_logic;  
+    rxresetdone      : std_logic; --ro
     txoutclkfabric   : std_logic;
     txoutclkpcs      : std_logic;
-    txresetdone      : std_logic;  
+    txresetdone      : std_logic; --ro  
   end record GT_Mon_t;
   type GT_Mon_array_t is array (integer range <>) of GT_Mon_t;
   signal gt_mon : GT_Mon_array_t(2 downto 0);  
   
   type GT_Ctrl_t is record
-    cpllreset         : std_logic;   
-    eyescanreset      : std_logic;
-    rxuserrdy         : std_logic;   
-    loopback          : slv_3_t;
-    eyescantrigger    : std_logic;
-    rxprbssel         : slv_3_t;
-    rxprbscntreset    : STD_LOGIC;
-    rxdfelpmreset     : std_logic;
-    rxmonitorsel      : slv_2_t;
-    gtrxreset         : std_logic;
-    rxpmareset        : std_logic;
-    gttxreset         : std_logic;   
-    txuserrdy         : std_logic;
-    txinhibit         : std_logic;
+    cpllreset         : std_logic;    --rw
+    eyescanreset      : std_logic;    --rw
+    rxuserrdy         : std_logic;    --rw
+    loopback          : slv_3_t;      --rw
+    eyescantrigger    : std_logic;    --w
+    rxprbssel         : slv_3_t;      --rw
+    rxprbscntreset    : STD_LOGIC;    --w
+    rxdfelpmreset     : std_logic;    --rw
+    rxmonitorsel      : slv_2_t;      --rw
+    gtrxreset         : std_logic;    --rw
+    rxpmareset        : std_logic;    --rw
+    gttxreset         : std_logic;    --rw
+    txuserrdy         : std_logic;    --rw
+    prbsforceerr      : std_logic;    --w
+    txinhibit         : std_logic;    --rw
+    txprbssel         : slv_3_t;      -rw
   end record GT_Ctrl_t;  
   constant DEFAULT_GT_Ctrl_t : GT_Ctrl_t := (
                                              cpllreset      => '0',
@@ -95,7 +97,9 @@ architecture Behavioral of TCDS is
                                              rxpmareset     => '0',
                                              gttxreset      => '0',
                                              txuserrdy      => '1',
-                                             txinhibit      => '0'
+                                             prbsforceerr   => '0',
+                                             txinhibit      => '0',
+                                             txprbssel      => "000"
   );
   type GT_Ctrl_array_t is array (integer range <>) of GT_Ctrl_t;  
   signal gt_ctrl : GT_Ctrl_array_t(2 downto 0) := (others => DEFAULT_GT_Ctrl_t);
@@ -214,7 +218,7 @@ begin  -- architecture Behavioral
         gt0_gtxrxp_in               => rx_P(0),
         gt0_gtxrxn_in               => rx_N(0),
         gt0_rxdfelpmreset_in        => gt_ctrl(0).rxdfelpmreset, 
-        gt0_rxmonitorout_out        => gt_mon(0).rxmonitorout,   
+        gt0_rxmonitorout_out        => gt_mon(0).rxmonitor,   
         gt0_rxmonitorsel_in         => gt_ctrl(0).rxmonitorsel,  
         gt0_rxoutclkfabric_out      => gt_mon(0).rxoutclkfabric, 
         gt0_gtrxreset_in            => gt_ctrl(0).gtrxreset,     
@@ -225,6 +229,7 @@ begin  -- architecture Behavioral
         gt0_txuserrdy_in            => gt_ctrl(0).txuserrdy,  
         gt0_txusrclk_in             => tx_user_clk(0),
         gt0_txusrclk2_in            => tx_user_clk2(0),
+        gt0_txprbsforceerr_in       => gt_ctrl(0).prbsforceerr,
         gt0_txinhibit_in            => gt_ctrl(0).txinhibit,    
         gt0_txdata_in               => tx_data(0),              
         gt0_gtxtxn_out              => tx_n(0),                 
@@ -233,7 +238,8 @@ begin  -- architecture Behavioral
         gt0_txoutclkfabric_out      => gt_mon(0).txoutclkfabric,
         gt0_txoutclkpcs_out         => gt_mon(0).txoutclkpcs,   
         gt0_txcharisk_in            => tx_kdata(0),             
-        gt0_txresetdone_out         => gt_mon(0).txresetdone,                 
+        gt0_txresetdone_out         => gt_mon(0).txresetdone,
+        gt0_txprbssel_in            => gt_ctrl(0).txprbssel,
         gt1_cpllfbclklost_out       => gt_mon(1).cpllfbclklost,         
         gt1_cplllock_out            => gt_mon(1).cplllock,              
         gt1_cplllockdetclk_in       => clk_axi,                                
@@ -264,7 +270,7 @@ begin  -- architecture Behavioral
         gt1_gtxrxp_in               => rx_P(1),                         
         gt1_gtxrxn_in               => rx_N(1),                         
         gt1_rxdfelpmreset_in        => gt_ctrl(1).rxdfelpmreset,        
-        gt1_rxmonitorout_out        => gt_mon(1).rxmonitorout,          
+        gt1_rxmonitorout_out        => gt_mon(1).rxmonitor,          
         gt1_rxmonitorsel_in         => gt_ctrl(1).rxmonitorsel,         
         gt1_rxoutclkfabric_out      => gt_mon(1).rxoutclkfabric,        
         gt1_gtrxreset_in            => gt_ctrl(1).gtrxreset,            
@@ -274,7 +280,8 @@ begin  -- architecture Behavioral
         gt1_gttxreset_in            => gt_ctrl(1).gttxreset,            
         gt1_txuserrdy_in            => gt_ctrl(1).txuserrdy,            
         gt1_txusrclk_in             => tx_user_clk(1),                  
-        gt1_txusrclk2_in            => tx_user_clk2(1),                 
+        gt1_txusrclk2_in            => tx_user_clk2(1),
+        gt1_txprbsforceerr_in       => gt_ctrl(1).prbsforceerr,
         gt1_txinhibit_in            => gt_ctrl(1).txinhibit,            
         gt1_txdata_in               => tx_data(1),                      
         gt1_gtxtxn_out              => tx_n(1),                         
@@ -283,7 +290,8 @@ begin  -- architecture Behavioral
         gt1_txoutclkfabric_out      => gt_mon(1).txoutclkfabric,        
         gt1_txoutclkpcs_out         => gt_mon(1).txoutclkpcs,           
         gt1_txcharisk_in            => tx_kdata(1),                     
-        gt1_txresetdone_out         => gt_mon(1).txresetdone,           
+        gt1_txresetdone_out         => gt_mon(1).txresetdone,
+        gt1_txprbssel_in            => gt_ctrl(1).txprbssel,
         gt2_cpllfbclklost_out       => gt_mon(2).cpllfbclklost,         
         gt2_cplllock_out            => gt_mon(2).cplllock,              
         gt2_cplllockdetclk_in       => clk_axi,                                
@@ -314,7 +322,7 @@ begin  -- architecture Behavioral
         gt2_gtxrxp_in               => rx_P(2),                         
         gt2_gtxrxn_in               => rx_N(2),                         
         gt2_rxdfelpmreset_in        => gt_ctrl(2).rxdfelpmreset,        
-        gt2_rxmonitorout_out        => gt_mon(2).rxmonitorout,          
+        gt2_rxmonitorout_out        => gt_mon(2).rxmonitor,          
         gt2_rxmonitorsel_in         => gt_ctrl(2).rxmonitorsel,         
         gt2_rxoutclkfabric_out      => gt_mon(2).rxoutclkfabric,        
         gt2_gtrxreset_in            => gt_ctrl(2).gtrxreset,            
@@ -324,7 +332,8 @@ begin  -- architecture Behavioral
         gt2_gttxreset_in            => gt_ctrl(2).gttxreset,            
         gt2_txuserrdy_in            => gt_ctrl(2).txuserrdy,            
         gt2_txusrclk_in             => tx_user_clk(2),                  
-        gt2_txusrclk2_in            => tx_user_clk2(2),                 
+        gt2_txusrclk2_in            => tx_user_clk2(2),
+        gt2_txprbsforceerr_in       => gt_ctrl(2).prbsforceerr,
         gt2_txinhibit_in            => gt_ctrl(2).txinhibit,            
         gt2_txdata_in               => tx_data(2),                      
         gt2_gtxtxn_out              => tx_n(2),                         
@@ -334,6 +343,7 @@ begin  -- architecture Behavioral
         gt2_txoutclkpcs_out         => gt_mon(2).txoutclkpcs,           
         gt2_txcharisk_in            => tx_kdata(2),                     
         gt2_txresetdone_out         => gt_mon(2).txresetdone,           
+        gt2_txprbssel_in            => gt_ctrl(2).txprbssel,
         GT0_QPLLOUTCLK_IN           => QPLL_CLK,
         GT0_QPLLOUTREFCLK_IN        => QPLL_REF_CLK);
 
@@ -343,24 +353,24 @@ begin  -- architecture Behavioral
       AXI_aclk      => clk_axi,
       AXI_aresetn   => reset_axi_n,
       S_AXI_araddr  => readMOSI.address,            
-      S_AXI_arready => readMOSI.protection_type,    
-      S_AXI_arvalid => readMISO.ready_for_address,  
-      S_AXI_arprot  => readMOSI.address_valid,      
+      S_AXI_arready => readMISO.ready_for_address,  
+      S_AXI_arvalid => readMOSI.address_valid,      
+      S_AXI_arprot  => readMOSI.protection_type,    
       S_AXI_awaddr  => writeMOSI.address,            
-      S_AXI_awready => writeMOSI.protection_type,    
-      S_AXI_awvalid => writeMISO.ready_for_address,  
-      S_AXI_awprot  => writeMOSI.address_valid,      
-      S_AXI_bresp   => writeMOSI.ready_for_response, 
-      S_AXI_bready  => writeMISO.response,           
+      S_AXI_awready => writeMISO.ready_for_address,  
+      S_AXI_awvalid => writeMOSI.address_valid,      
+      S_AXI_awprot  => writeMOSI.protection_type,    
+      S_AXI_bresp   => writeMISO.response,           
+      S_AXI_bready  => writeMOSI.ready_for_response, 
       S_AXI_bvalid  => writeMISO.response_valid,     
       S_AXI_rdata   => readMISO.data,               
       S_AXI_rready  => readMOSI.ready_for_data,     
-      S_AXI_rvalid  => readMISO.response,           
-      S_AXI_rresp   => readMISO.data_valid,         
+      S_AXI_rvalid  => readMISO.data_valid,         
+      S_AXI_rresp   => readMISO.response,           
       S_AXI_wdata   => writeMOSI.data,               
       S_AXI_wready  => writeMISO.ready_for_data,     
-      S_AXI_wvalid  => writeMOSI.data_write_strobe,  
-      S_AXI_wstrb   => writeMOSI.data_valid,         
+      S_AXI_wvalid  => writeMOSI.data_valid,         
+      S_AXI_wstrb   => writeMOSI.data_write_strobe,  
       drp0_en       => drp_intf(0).en,
       drp0_we       => drp_intf(0).we,
       drp0_addr     => drp_intf(0).addr,

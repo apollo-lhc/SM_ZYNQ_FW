@@ -21,4 +21,5 @@
   <node id="C2C2_AXILITE_FW" module="file://modules/C2C2_AXILITE_FW.xml"  address="0x14000000"/>
   <node id="PL_MEM"          module="file://modules/PL_MEM.xml"           address="0x15000000"/>
   <node id="TCDS_DRP"        module="file://modules/TCDS_DRP.xml"         address="0x16000000"/>
+  <node id="TCDS"            module="file://modules/TCDS.xml"             address="0x17000000"/>
 </node>
