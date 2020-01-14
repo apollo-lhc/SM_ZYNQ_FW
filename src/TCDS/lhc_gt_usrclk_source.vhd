@@ -76,12 +76,23 @@ port
     GT0_TXUSRCLK_OUT             : out std_logic;
     GT0_TXUSRCLK2_OUT            : out std_logic;
     GT0_TXOUTCLK_IN              : in  std_logic;
-    GT0_TXCLK_LOCK_OUT           : out std_logic;
-    GT0_TX_MMCM_RESET_IN         : in std_logic;
     GT0_RXUSRCLK_OUT             : out std_logic;
     GT0_RXUSRCLK2_OUT            : out std_logic;
-    GT0_RXCLK_LOCK_OUT           : out std_logic;
-    GT0_RX_MMCM_RESET_IN         : in std_logic
+ 
+    GT1_TXUSRCLK_OUT             : out std_logic;
+    GT1_TXUSRCLK2_OUT            : out std_logic;
+    GT1_TXOUTCLK_IN              : in  std_logic;
+    GT1_RXUSRCLK_OUT             : out std_logic;
+    GT1_RXUSRCLK2_OUT            : out std_logic;
+ 
+    GT2_TXUSRCLK_OUT             : out std_logic;
+    GT2_TXUSRCLK2_OUT            : out std_logic;
+    GT2_TXOUTCLK_IN              : in  std_logic;
+    GT2_RXUSRCLK_OUT             : out std_logic;
+    GT2_RXUSRCLK2_OUT            : out std_logic;
+    Q2_CLK1_GTREFCLK_PAD_N_IN               : in   std_logic;
+    Q2_CLK1_GTREFCLK_PAD_P_IN               : in   std_logic;
+    Q2_CLK1_GTREFCLK_OUT                    : out  std_logic
 );
 
 
@@ -120,16 +131,16 @@ end component;
     signal   tied_to_vcc_i        :   std_logic;
  
     signal   gt0_txoutclk_i :   std_logic;
+ 
+    signal   gt1_txoutclk_i :   std_logic;
+ 
+    signal   gt2_txoutclk_i :   std_logic;
 
     attribute syn_noclockbuf : boolean;
-    signal   q3_clk1_gtrefclk :   std_logic;
-    attribute syn_noclockbuf of q3_clk1_gtrefclk : signal is true;
+    signal   q2_clk1_gtrefclk :   std_logic;
+    attribute syn_noclockbuf of q2_clk1_gtrefclk : signal is true;
 
     signal  gt0_txusrclk_i                  : std_logic;
-    signal  gt0_txusrclk2_i                 : std_logic;
-    signal  txoutclk_mmcm0_locked_i         : std_logic;
-    signal  txoutclk_mmcm0_reset_i          : std_logic;
-    signal  gt0_txoutclk_to_mmcm_i          : std_logic;
 
 
 begin
@@ -140,42 +151,49 @@ begin
     tied_to_ground_i         <= '0';
     tied_to_vcc_i            <= '1';
     gt0_txoutclk_i                               <= GT0_TXOUTCLK_IN;
+    gt1_txoutclk_i                               <= GT1_TXOUTCLK_IN;
+    gt2_txoutclk_i                               <= GT2_TXOUTCLK_IN;
+
+    Q2_CLK1_GTREFCLK_OUT                         <= q2_clk1_gtrefclk;
+
+    --IBUFDS_GTE2
+    ibufds_instq2_clk1 : IBUFDS_GTE2  
+    port map
+    (
+        O               => 	q2_clk1_gtrefclk,
+        ODIV2           =>    open,
+        CEB             => 	tied_to_ground_i,
+        I               => 	Q2_CLK1_GTREFCLK_PAD_P_IN,
+        IB              => 	Q2_CLK1_GTREFCLK_PAD_N_IN
+    );
 
 
     
     -- Instantiate a MMCM module to divide the reference clock. Uses internal feedback
     -- for improved jitter performance, and to avoid consuming an additional BUFG
-    txoutclk_mmcm0_reset_i                       <= GT0_TX_MMCM_RESET_IN;
-    txoutclk_mmcm0_i : LHC_CLOCK_MODULE
-    generic map
-    (
-        MULT                            =>      2.0,
-        DIVIDE                          =>      1,
-        CLK_PERIOD                      =>      3.118,
-        OUT0_DIVIDE                     =>      4.0,
-        OUT1_DIVIDE                     =>      2,
-        OUT2_DIVIDE                     =>      1,
-        OUT3_DIVIDE                     =>      1
-    )
+    txoutclk_bufg0_i : BUFG
     port map
     (
-        CLK0_OUT                        =>      gt0_txusrclk2_i,
-        CLK1_OUT                        =>      gt0_txusrclk_i,
-        CLK2_OUT                        =>      open,
-        CLK3_OUT                        =>      open,
-        CLK_IN                          =>      gt0_txoutclk_i,
-        MMCM_LOCKED_OUT                 =>      txoutclk_mmcm0_locked_i,
-        MMCM_RESET_IN                   =>      txoutclk_mmcm0_reset_i
+        I                               =>      gt0_txoutclk_i,
+        O                               =>      gt0_txusrclk_i
     );
 
 
 
  
 GT0_TXUSRCLK_OUT                             <= gt0_txusrclk_i;
-GT0_TXUSRCLK2_OUT                            <= gt0_txusrclk2_i;
-GT0_TXCLK_LOCK_OUT                           <= txoutclk_mmcm0_locked_i;
+GT0_TXUSRCLK2_OUT                            <= gt0_txusrclk_i;
 GT0_RXUSRCLK_OUT                             <= gt0_txusrclk_i;
-GT0_RXUSRCLK2_OUT                            <= gt0_txusrclk2_i;
-GT0_RXCLK_LOCK_OUT                           <= txoutclk_mmcm0_locked_i;
+GT0_RXUSRCLK2_OUT                            <= gt0_txusrclk_i;
+ 
+GT1_TXUSRCLK_OUT                             <= gt0_txusrclk_i;
+GT1_TXUSRCLK2_OUT                            <= gt0_txusrclk_i;
+GT1_RXUSRCLK_OUT                             <= gt0_txusrclk_i;
+GT1_RXUSRCLK2_OUT                            <= gt0_txusrclk_i;
+ 
+GT2_TXUSRCLK_OUT                             <= gt0_txusrclk_i;
+GT2_TXUSRCLK2_OUT                            <= gt0_txusrclk_i;
+GT2_RXUSRCLK_OUT                             <= gt0_txusrclk_i;
+GT2_RXUSRCLK2_OUT                            <= gt0_txusrclk_i;
 end RTL;
 

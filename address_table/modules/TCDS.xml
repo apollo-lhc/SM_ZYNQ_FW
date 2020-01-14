@@ -1,0 +1,5 @@
+<node>
+  <node id="LINK0" address="0x00000000" module="modules/RXTX.xml"/>
+  <node id="LINK1" address="0x00000100" module="modules/RXTX.xml"/>
+  <node id="LINK2" address="0x00000200" module="modules/RXTX.xml"/>
+</node>

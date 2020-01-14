@@ -125,26 +125,26 @@ set_property -dict {PACKAGE_PIN C4  IOSTANDARD LVCMOS18} [get_ports {SI_ENABLE }
 # -------------------------------------------------------------------------------------------------
 set_property -dict {PACKAGE_PIN W6 }  [get_ports refclk_125Mhz_P]
 set_property -dict {PACKAGE_PIN W5 }  [get_ports refclk_125Mhz_N]
-#set_property -dict {PACKAGE_PIN AA6}  [get_ports refclk_TCDS_P]
-#set_property -dict {PACKAGE_PIN AA5}  [get_ports refclk_TCDS_N]
+set_property -dict {PACKAGE_PIN AA6}  [get_ports refclk_TCDS_P]
+set_property -dict {PACKAGE_PIN AA5}  [get_ports refclk_TCDS_N]
 #				   
 set_property -dict {PACKAGE_PIN AF8}  [get_ports sgmii_tx_P]
 set_property -dict {PACKAGE_PIN AF7}  [get_ports sgmii_tx_N]
 set_property -dict {PACKAGE_PIN AD8}  [get_ports sgmii_rx_P]
 set_property -dict {PACKAGE_PIN AD7}  [get_ports sgmii_rx_N]
 #				   
-#set_property -dict {PACKAGE_PIN AF4}  [get_ports tts_P]
-#set_property -dict {PACKAGE_PIN AF3}  [get_ports tts_N]
-#set_property -dict {PACKAGE_PIN AE6}  [get_ports ttc_P]
-#set_property -dict {PACKAGE_PIN AE5}  [get_ports ttc_N]
-#				   
-#set_property -dict {PACKAGE_PIN AE2}  [get_ports fake_ttc_P]
-#set_property -dict {PACKAGE_PIN AE1}  [get_ports fake_ttc_N]
-#set_property -dict {PACKAGE_PIN AC6}  [get_ports m1_tts_P]
-#set_property -dict {PACKAGE_PIN AC5}  [get_ports m1_tts_N]
-#				   
-#set_property -dict {PACKAGE_PIN AD4}  [get_ports m2_tts_P]
-#set_property -dict {PACKAGE_PIN AD3}  [get_ports m2_tts_N]
+set_property -dict {PACKAGE_PIN AF4}  [get_ports tts_P]
+set_property -dict {PACKAGE_PIN AF3}  [get_ports tts_N]
+set_property -dict {PACKAGE_PIN AE6}  [get_ports ttc_P]
+set_property -dict {PACKAGE_PIN AE5}  [get_ports ttc_N]
+				   
+set_property -dict {PACKAGE_PIN AE2}  [get_ports fake_ttc_P]
+set_property -dict {PACKAGE_PIN AE1}  [get_ports fake_ttc_N]
+set_property -dict {PACKAGE_PIN AC6}  [get_ports m1_tts_P]
+set_property -dict {PACKAGE_PIN AC5}  [get_ports m1_tts_N]
+				   
+set_property -dict {PACKAGE_PIN AD4}  [get_ports m2_tts_P]
+set_property -dict {PACKAGE_PIN AD3}  [get_ports m2_tts_N]
 
 
 

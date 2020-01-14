@@ -53,7 +53,7 @@
 	<node id="TX" address="0x2">
 	  <node id="BUF_STATUS" mask="0x00000003" permission="r" description="DEBUG tx buf status" />
 	  <node id="RESET_DONE" mask="0x00000004" permission="r" description="DEBUG tx reset done" />
-	  <node id="DIFF_CTRL" mask="0x00000071" permission="rw" description="DEBUG tx diff control" />
+	  <node id="DIFF_CTRL" mask="0x00000070" permission="rw" description="DEBUG tx diff control" />
 	  <node id="INHIBIT" mask="0x00000080" permission="rw" description="DEBUG tx inhibit" />
 	  <node id="MAIN_CURSOR" mask="0x00007F00" permission="rw" description="DEBUG tx main cursor" />
 	  <node id="PCS_RESET" mask="0x00008000" permission="rw" description="DEBUG tx pcs reset" />
@@ -130,7 +130,7 @@
 	<node id="TX" address="0x2">
 	  <node id="BUF_STATUS" mask="0x00000003" permission="r" description="DEBUG tx buf status" />
 	  <node id="RESET_DONE" mask="0x00000004" permission="r" description="DEBUG tx reset done" />
-	  <node id="DIFF_CTRL" mask="0x00000071" permission="rw" description="DEBUG tx diff control" />
+	  <node id="DIFF_CTRL" mask="0x00000070" permission="rw" description="DEBUG tx diff control" />
 	  <node id="INHIBIT" mask="0x00000080" permission="rw" description="DEBUG tx inhibit" />
 	  <node id="MAIN_CURSOR" mask="0x00007F00" permission="rw" description="DEBUG tx main cursor" />
 	  <node id="PCS_RESET" mask="0x00008000" permission="rw" description="DEBUG tx pcs reset" />

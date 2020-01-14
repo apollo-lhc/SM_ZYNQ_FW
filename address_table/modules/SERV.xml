@@ -29,8 +29,8 @@
     <node id="PAGE"         mask="0x3F000000" permission="rw" description="Page to display"/>
     <node id="FP_SHDWN_REQ" mask="0x80000000" permission="rw" description="FP button shutdown request"/>    
   </node>
-  <node id="SWITCH">
-    <node id="STATUS" address="0x09" mask="0x0000FFFF" permission="r" description="Ethernet switch LEDs"/>
+  <node id="SWITCH" address="0x09">
+    <node id="STATUS" address="0x00" mask="0x0000FFFF" permission="r" description="Ethernet switch LEDs"/>
   </node>
   <node id="SGMII" address="0x0C" permission="r">
     <node id="RESET" mask="0x1" permission="rw" description="Reset SGMII + SGMII clocking"/>

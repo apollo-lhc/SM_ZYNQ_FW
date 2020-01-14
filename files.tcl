@@ -15,6 +15,7 @@ set vhdl_files "\
      src/axiReg/axiRegPkg.vhd \
      src/axiReg/axiReg.vhd \
      src/axiReg/axiRegMaster.vhd \
+     src/SGMII/SGMII.vhd \
      src/SGMII/SGMII_INTF_clocking.vhd \
      src/SGMII/SGMII_INTF_resets.vhd \
      src/services/services.vhd \
@@ -33,6 +34,10 @@ set vhdl_files "\
      src/front_panel/LED_Paterns.vhd \
      src/SM_info/SM_info.vhd \
      src/misc/pass_time_domain.vhd \
+     src/TCDS/lhc_gt_usrclk_source.vhd
+     src/TCDS/MGBT2_common_reset.vhd
+     src/TCDS/MGBT2_common.vhd
+     src/TCDS/TCDS.vhd
      "
 
 set xdc_files src/top.xdc
@@ -40,6 +45,8 @@ set xdc_files src/top.xdc
 set xci_files "\
     	      cores/SGMII_INTF/SGMII_INTF.xci \
     	      cores/onboard_CLK/onboard_CLK.xci \
+              cores/LHC/LHC.xci \
+              cores/TCDS_DRP_BRIDGE/TCDS_DRP_BRIDGE.xci \
     	      "
 #	      cores/ila_i2c_debug/ila_i2c_debug.xci \
 #	      cores/c2c_ibert/c2c_ibert.xci \
