@@ -229,7 +229,7 @@ architecture structure of top is
   
 -- AXI BUS
   signal AXI_clk : std_logic;
-  constant PL_AXI_SLAVE_COUNT : integer := 5;
+  constant PL_AXI_SLAVE_COUNT : integer := 6;
   signal AXI_BUS_RMOSI :  AXIReadMOSI_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIReadMOSI);
   signal AXI_BUS_RMISO :  AXIReadMISO_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIReadMISO);
   signal AXI_BUS_WMOSI : AXIWriteMOSI_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIWriteMOSI);
@@ -476,6 +476,26 @@ begin  -- architecture structure
       TCDS_DRP_wstrb           => AXI_BUS_WMOSI(4).data_write_strobe,
       TCDS_DRP_wvalid          => AXI_BUS_WMOSI(4).data_valid,
 
+      TCDS_araddr              => AXI_BUS_RMOSI(5).address,
+      TCDS_arprot              => AXI_BUS_RMOSI(5).protection_type,
+      TCDS_arready             => AXI_BUS_RMISO(5).ready_for_address,
+      TCDS_arvalid             => AXI_BUS_RMOSI(5).address_valid,
+      TCDS_awaddr              => AXI_BUS_WMOSI(5).address,
+      TCDS_awprot              => AXI_BUS_WMOSI(5).protection_type,
+      TCDS_awready             => AXI_BUS_WMISO(5).ready_for_address,
+      TCDS_awvalid             => AXI_BUS_WMOSI(5).address_valid,
+      TCDS_bready              => AXI_BUS_WMOSI(5).ready_for_response,
+      TCDS_bresp               => AXI_BUS_WMISO(5).response,
+      TCDS_bvalid              => AXI_BUS_WMISO(5).response_valid,
+      TCDS_rdata               => AXI_BUS_RMISO(5).data,
+      TCDS_rready              => AXI_BUS_RMOSI(5).ready_for_data,
+      TCDS_rresp               => AXI_BUS_RMISO(5).response,
+      TCDS_rvalid              => AXI_BUS_RMISO(5).data_valid,
+      TCDS_wdata               => AXI_BUS_WMOSI(5).data,
+      TCDS_wready              => AXI_BUS_WMISO(5).ready_for_data,
+      TCDS_wstrb               => AXI_BUS_WMOSI(5).data_write_strobe,
+      TCDS_wvalid              => AXI_BUS_WMOSI(5).data_valid,
+
 
       
 
@@ -675,10 +695,14 @@ begin  -- architecture structure
     port map (
       clk_axi              => axi_clk,
       reset_axi_n          => pl_reset_n,
-      readMOSI       => AXI_BUS_RMOSI(4),
-      readMISO       => AXI_BUS_RMISO(4),
-      writeMOSI      => AXI_BUS_WMOSI(4),
-      writeMISO      => AXI_BUS_WMISO(4),
+      readMOSI       => AXI_BUS_RMOSI(5),
+      readMISO       => AXI_BUS_RMISO(5),
+      writeMOSI      => AXI_BUS_WMOSI(5),
+      writeMISO      => AXI_BUS_WMISO(5),
+      DRP_readMOSI       => AXI_BUS_RMOSI(4),
+      DRP_readMISO       => AXI_BUS_RMISO(4),
+      DRP_writeMOSI      => AXI_BUS_WMOSI(4),
+      DRP_writeMISO      => AXI_BUS_WMISO(4),
 --      sysclk        => pl_clk,
       refclk_p      => refclk_TCDS_P,
       refclk_n      => refclk_TCDS_N,

@@ -207,7 +207,7 @@ def generateRecord(name,members,description,addr_order,outFileName):
             outfile.write("\n")
         except KeyError:
             None
-    outfile.write("  end record "+name+"\n\n")
+    outfile.write("  end record "+name+";\n\n")
     outfile.close()
 
 def getBitRange(mask):
@@ -281,9 +281,9 @@ def traverseTree(Node,padding,baseAddress,baseName,outFileName):
 #                    package_mon_entries[name]  = package_entries
                     package_ctrl_entries[name] = package_entries
                     if read_ops.has_key(local_address):
-                        read_ops[local_address] = read_ops[local_address] + str("localRdData("+bits+")")+" <= "+"reg_data("+str(local_address).rjust(2)+")("+bits+"); --"+childNode.getDescription()+";\n"
+                        read_ops[local_address] = read_ops[local_address] + str("localRdData("+bits+")")+" <= "+"reg_data("+str(local_address).rjust(2)+")("+bits+"); --"+childNode.getDescription()+"\n"
                     else:
-                        read_ops[local_address] =                           str("localRdData("+bits+")")+" <= "+"reg_data("+str(local_address).rjust(2)+")("+bits+"); --"+childNode.getDescription()+";\n"
+                        read_ops[local_address] =                           str("localRdData("+bits+")")+" <= "+"reg_data("+str(local_address).rjust(2)+")("+bits+"); --"+childNode.getDescription()+"\n"
                     if write_ops.has_key(local_address):
                         write_ops[local_address] = write_ops[local_address] + str("reg_data("+str(local_address).rjust(2)+")("+bits+")") + " <= localWrData("+bits+"); --"+childNode.getDescription()+"\n"
                     else:
@@ -298,7 +298,11 @@ def traverseTree(Node,padding,baseAddress,baseName,outFileName):
                     else:                                                     
                         write_ops[local_address] =                            ("Ctrl."+local_name) + " <= localWrData("+bits+");\n"
                     
-                    action_ops+=local_name + " <= (others => '0')\n"
+                    #determin if this is a vector or a single entry
+                    if bits.find(" ") > 0:
+                        action_ops+="Ctrl." + local_name + " <= (others => '0');\n"
+                    else:
+                        action_ops+="Ctrl." + local_name + " <= '0';\n"
 
                     
     ret = dict()
@@ -318,6 +322,8 @@ def sortByBit(line):
     numberEnd = line[numberStart:assignmentPos].find("downto");
     if numberEnd < 0:        
         numberEnd = line[numberStart:assignmentPos].find(")");
+    if numberEnd < 0:
+        return 0
     numberEnd+=numberStart
     return int(line[numberStart:numberEnd])
     
@@ -356,6 +362,15 @@ def generateAlignedCase(operations):
 
 
 def generateRegMap(baseName,r_ops,rw_ops,w_ops,a_ops):
+
+    regMapSize=0
+    if max(r_ops,key=int) > regMapSize:
+        regMapSize = max(r_ops,key=int)
+    if max(w_ops,key=int) > regMapSize:
+        regMapSize = max(w_ops,key=int)
+    
+    
+    regAddrRange=str(int(math.floor(math.log(regMapSize,2))))
             
     outFile=open(baseName+"_map.vhd",'w')
     outFile.write("--This file was auto-generated.\n")
@@ -364,6 +379,7 @@ def generateRegMap(baseName,r_ops,rw_ops,w_ops,a_ops):
     outFile.write("use ieee.std_logic_1164.all;\n")
     outFile.write("use ieee.numeric_std.all;\n")
     outFile.write("use work.AXIRegPkg.all;\n")
+    outFile.write("use work.types.all;\n")
     outFile.write("use work."+baseName+"_Ctrl.all;\n")
     outFile.write("entity "+baseName+"_interface is\n")
     outFile.write("  port (\n")
@@ -376,8 +392,8 @@ def generateRegMap(baseName,r_ops,rw_ops,w_ops,a_ops):
     outFile.write("    Mon              : in  "+baseName+"_Mon_t;\n")
     outFile.write("    Ctrl             : out "+baseName+"_Ctrl_t\n")
     outFile.write("    );\n")
-    outFile.write("end entity CM_interface;\n")
-    outFile.write("architecture behavioral of CM_interface is\n")
+    outFile.write("end entity "+baseName+"_interface;\n")
+    outFile.write("architecture behavioral of "+baseName+"_interface is\n")
     outFile.write("  signal localAddress       : slv_32_t;\n")
     outFile.write("  signal localRdData        : slv_32_t;\n")
     outFile.write("  signal localRdData_latch  : slv_32_t;\n")
@@ -387,8 +403,8 @@ def generateRegMap(baseName,r_ops,rw_ops,w_ops,a_ops):
     outFile.write("  signal localRdAck         : std_logic;\n")
     outFile.write("\n")  
     outFile.write("\n")
-    outFile.write("  signal reg_data :  slv32_array_t(integer range 0 to 64);\n")
-    outFile.write("  constant Default_reg_data : slv32_array_t(integer range 0 to 64) := (others => x\"00000000\");\n")
+    outFile.write("  signal reg_data :  slv32_array_t(integer range 0 to "+str(regMapSize)+");\n")
+    outFile.write("  constant Default_reg_data : slv32_array_t(integer range 0 to "+str(regMapSize)+") := (others => x\"00000000\");\n")
     outFile.write("begin  -- architecture behavioral\n")
     outFile.write("\n");
     outFile.write("  -------------------------------------------------------------------------------\n")
@@ -424,7 +440,7 @@ def generateRegMap(baseName,r_ops,rw_ops,w_ops,a_ops):
     outFile.write("    localRdData <= x\"00000000\";\n")
     outFile.write("    if localRdReq = '1' then\n")
     outFile.write("      localRdAck  <= '1';\n")
-    outFile.write("      case localAddress(7 downto 0) is\n")
+    outFile.write("      case localAddress("+regAddrRange+" downto 0) is\n")
 
     if len(r_ops) != 0:
         outFile.write(generateAlignedCase(r_ops))
@@ -473,7 +489,7 @@ def generateRegMap(baseName,r_ops,rw_ops,w_ops,a_ops):
         outFile.write("      "+line+"\n")
     
     outFile.write("      if localWrEn = '1' then\n")
-    outFile.write("        case localAddress(7 downto 0) is\n")
+    outFile.write("        case localAddress("+regAddrRange+" downto 0) is\n")
  
     if len(w_ops) != 0:
         outFile.write(generateAlignedCase(w_ops))
