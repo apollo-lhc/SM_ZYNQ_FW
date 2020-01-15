@@ -725,30 +725,7 @@ begin  -- architecture structure
       rx_P(2)     => m2_tts_P,    
       rx_N(0)     => ttc_N,
       rx_N(1)     => m1_tts_N,    
-      rx_N(2)     => m2_tts_N,    
-      clk_txusr     => open,--clk_txusr,   
-      clk_rxusr     => open,--clk_rxusr,   
-      ttc_data      => ttc_data,    
-      ttc_dv => ttc_dv,      
-      tts_data      => tts_data,    
-      tts_dv => tts_dv,      
-      fake_ttc_data => fake_ttc_data,      
-      fake_ttc_dv   => fake_ttc_dv, 
-      m1_tts_data   => m1_tts_data, 
-      m1_tts_dv     => m1_tts_dv,   
-      m2_tts_data   => m2_tts_data, 
-      m2_tts_dv     => m2_tts_dv);
-
-
- tts_data <= m1_tts_data or m2_tts_data;
- tts_dv <= m1_tts_dv and m2_tts_dv; 
- 
- fake_ttc_data <= ttc_data; 
- fake_ttc_dv <= ttc_dv; 
-
-
-
-
+      rx_N(2)     => m2_tts_N);
 
 
 
@@ -901,15 +878,5 @@ begin  -- architecture structure
 
   
 
---  c2c_ibert_1: entity work.c2c_ibert
---    port map (
---      TXN_O(0 to 1)       => AXI_C2C_Tx_N(0 to 1),
---      TXP_O(0 to 1)       => AXI_C2C_Tx_P(0 to 1),
---      RXOUTCLK_O  => open,
---      RXN_I       => AXI_C2C_Rx_N(0 to 1),
---      RXP_I       => AXI_C2C_Rx_P(0 to 1),
---      GTREFCLK0_I => open,
---      GTREFCLK1_I(0) => C2C1_phy_gt_refclk1_out,
---      SYSCLK_I    => C2C1_phy_gt_refclk1_out);
   
 end architecture structure;

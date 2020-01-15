@@ -197,13 +197,55 @@ package TCDS_CTRL is
     TX                         : TCDS_LINK2_TX_CTRL_t;          
   end record TCDS_LINK2_CTRL_t;
 
+  type TCDS_CTRL0_MON_t is record
+    CAPTURE_D                  : std_logic_vector(31 downto  0);
+    CAPTURE_K                  : std_logic_vector( 3 downto  0);
+  end record TCDS_CTRL0_MON_t;
+
+  type TCDS_CTRL0_CTRL_t is record
+    CAPTURE                    : std_logic;                     
+    FIXED_SEND_D               : std_logic_vector(31 downto  0);
+    FIXED_SEND_K               : std_logic_vector( 3 downto  0);
+    MODE                       : std_logic_vector( 3 downto  0);
+  end record TCDS_CTRL0_CTRL_t;
+
+  type TCDS_CTRL1_MON_t is record
+    CAPTURE_D                  : std_logic_vector(31 downto  0);
+    CAPTURE_K                  : std_logic_vector( 3 downto  0);
+  end record TCDS_CTRL1_MON_t;
+
+  type TCDS_CTRL1_CTRL_t is record
+    CAPTURE                    : std_logic;                     
+    FIXED_SEND_D               : std_logic_vector(31 downto  0);
+    FIXED_SEND_K               : std_logic_vector( 3 downto  0);
+    MODE                       : std_logic_vector( 3 downto  0);
+  end record TCDS_CTRL1_CTRL_t;
+
+  type TCDS_CTRL2_MON_t is record
+    CAPTURE_D                  : std_logic_vector(31 downto  0);
+    CAPTURE_K                  : std_logic_vector( 3 downto  0);
+  end record TCDS_CTRL2_MON_t;
+
+  type TCDS_CTRL2_CTRL_t is record
+    CAPTURE                    : std_logic;                     
+    FIXED_SEND_D               : std_logic_vector(31 downto  0);
+    FIXED_SEND_K               : std_logic_vector( 3 downto  0);
+    MODE                       : std_logic_vector( 3 downto  0);
+  end record TCDS_CTRL2_CTRL_t;
+
   type TCDS_MON_t is record
+    CTRL0                      : TCDS_CTRL0_MON_t;
+    CTRL1                      : TCDS_CTRL1_MON_t;
+    CTRL2                      : TCDS_CTRL2_MON_t;
     LINK0                      : TCDS_LINK0_MON_t;
     LINK1                      : TCDS_LINK1_MON_t;
     LINK2                      : TCDS_LINK2_MON_t;
   end record TCDS_MON_t;
 
   type TCDS_CTRL_t is record
+    CTRL0                      : TCDS_CTRL0_CTRL_t;
+    CTRL1                      : TCDS_CTRL1_CTRL_t;
+    CTRL2                      : TCDS_CTRL2_CTRL_t;
     LINK0                      : TCDS_LINK0_CTRL_t;
     LINK1                      : TCDS_LINK1_CTRL_t;
     LINK2                      : TCDS_LINK2_CTRL_t;

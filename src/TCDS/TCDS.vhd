@@ -25,19 +25,7 @@ entity TCDS is
     tx_P                 : out std_logic_vector(2 downto 0);
     tx_N                 : out std_logic_vector(2 downto 0);
     rx_P                 : in  std_logic_vector(2 downto 0);
-    rx_N                 : in  std_logic_vector(2 downto 0);
-    clk_txusr            : out std_logic_vector(2 downto 0);
-    clk_rxusr            : out std_logic_vector(2 downto 0);
-    ttc_data             : out std_logic_vector(35 downto 0);
-    ttc_dv               : out std_logic;
-    tts_data             : in  std_logic_vector(35 downto 0);
-    tts_dv               : in  std_logic;
-    fake_ttc_data        : in  std_logic_vector(35 downto 0);
-    fake_ttc_dv          : in  std_logic;
-    m1_tts_data          : out std_logic_vector(35 downto 0);
-    m1_tts_dv            : out std_logic;
-    m2_tts_data          : out std_logic_vector(35 downto 0);
-    m2_tts_dv            : out std_logic
+    rx_N                 : in  std_logic_vector(2 downto 0)
     );  
 end entity TCDS;
 
@@ -151,26 +139,6 @@ begin  -- architecture Behavioral
       Ctrl            => Ctrl);
   
 
-  tx_data (0)            <= tts_data(31 downto  0);
-  tx_kdata(0)            <= tts_data(35 downto 32);
-  tx_dv(0)               <= tts_dv;
-  ttc_data(31 downto  0) <= rx_data (0);
-  ttc_data(35 downto 32) <= rx_kdata(0);
-  ttc_dv                 <= rx_dv(0);   
-  
-  tx_data (1) <= fake_ttc_data(31 downto  0);
-  tx_kdata(1) <= fake_ttc_data(35 downto 32);
-  tx_dv(1)    <= fake_ttc_dv;
-  m1_tts_data(31 downto  0) <= rx_data (1);
-  m1_tts_data(35 downto 32) <= rx_kdata(1);
-  m1_tts_dv                 <= rx_dv(1);  
-  
-  tx_data (2) <= (others => '0');
-  tx_kdata(2) <= (others => '0');
-  tx_dv(2)    <= '0';
-  m2_tts_data(31 downto  0) <= rx_data (2);
-  m2_tts_data(35 downto 32) <= rx_kdata(2);
-  m2_tts_dv                 <= rx_dv(2);   
   
   LHC_GT_USRCLK_SOURCE_1: entity work.LHC_GT_USRCLK_SOURCE
     port map (
@@ -411,4 +379,51 @@ begin  -- architecture Behavioral
       drp2_do       => drp_intf(2).do,
       drp2_rdy      => drp_intf(2).rdy);
 
+
+  TCDS_Control_0: entity work.TCDS_Control
+    port map (
+      clk_axi      => clk_axi,
+      axi_reset_n  => reset_axi_n,
+      mode         => Ctrl.CTRL0.MODE,
+      fixed_send_d => Ctrl.CTRL0.FIXED_SEND_D,
+      fixed_send_k => Ctrl.CTRL0.FIXED_SEND_K,
+      capture      => Ctrl.CTRL0.CAPTURE,
+      capture_d    => Ctrl.MON0.CAPTURE_D,
+      capture_k    => Ctrl.MON0.CAPTURE_K,
+      clk_txrx     => tx_user_clk(0),
+      tx_data      => tx_data(0),
+      tx_k_data    => tx_kdata(0),
+      rx_data      => rx_data(0),
+      rx_k_data    => rx_kdata(0));
+  TCDS_Control_1: entity work.TCDS_Control
+    port map (
+      clk_axi      => clk_axi,
+      axi_reset_n  => reset_axi_n,
+      mode         => Ctrl.CTRL1.MODE,
+      fixed_send_d => Ctrl.CTRL1.FIXED_SEND_D,
+      fixed_send_k => Ctrl.CTRL1.FIXED_SEND_K,
+      capture      => Ctrl.CTRL1.CAPTURE,
+      capture_d    => Ctrl.MON1.CAPTURE_D,
+      capture_k    => Ctrl.MON1.CAPTURE_K,
+      clk_txrx     => tx_user_clk(1),
+      tx_data      => tx_data(1),
+      tx_k_data    => tx_kdata(1),
+      rx_data      => rx_data(1),
+      rx_k_data    => rx_kdata(1));
+  TCDS_Control_2: entity work.TCDS_Control
+    port map (
+      clk_axi      => clk_axi,
+      axi_reset_n  => reset_axi_n,
+      mode         => Ctrl.CTRL2.MODE,
+      fixed_send_d => Ctrl.CTRL2.FIXED_SEND_D,
+      fixed_send_k => Ctrl.CTRL2.FIXED_SEND_K,
+      capture      => Ctrl.CTRL2.CAPTURE,
+      capture_d    => Ctrl.MON2.CAPTURE_D,
+      capture_k    => Ctrl.MON2.CAPTURE_K,
+      clk_txrx     => tx_user_clk(2),
+      tx_data      => tx_data(2),
+      tx_k_data    => tx_kdata(2),
+      rx_data      => rx_data(2),
+      rx_k_data    => rx_kdata(2));
+  
 end architecture Behavioral;

@@ -38,6 +38,7 @@ set vhdl_files "\
      src/TCDS/MGBT2_common_reset.vhd \
      src/TCDS/MGBT2_common.vhd \
      src/TCDS/TCDS.vhd \
+     src/TCDS/TCDS_Control.vhd \
      src/TCDS/TCDS_map.vhd \
      src/TCDS/TCDS_PKG.vhd \
      "
