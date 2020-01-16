@@ -36,8 +36,7 @@ begin  -- architecture Behavioral
   
   pass_std_logic_vector_1: entity work.pass_std_logic_vector
     generic map (
-      DATA_WIDTH => 4,
-      RESET_VAL  => x"0")
+      DATA_WIDTH => 4)
     port map (
       clk_in   => clk_axi,
       clk_out  => clk_txrx,
@@ -48,8 +47,7 @@ begin  -- architecture Behavioral
   --pass fixed data to the txrx domain for sending
   pass_std_logic_vector_2: entity work.pass_std_logic_vector
     generic map (
-      DATA_WIDTH => 36,
-      RESET_VAL  => x"0"&x"00000000")
+      DATA_WIDTH => 36)
     port map (
       clk_in   => clk_axi,
       clk_out  => clk_txrx,

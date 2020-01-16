@@ -10,8 +10,7 @@ use ieee.std_logic_misc.all;
 
 entity pass_std_logic_vector is
   generic(
-    DATA_WIDTH : integer := 32;
-    RESET_VAL  : std_logic_vector(31 downto 0) := (others => '0')--x"00000000"
+    DATA_WIDTH : integer := 32
     );
   port (
     clk_in   : in  std_logic; 
@@ -25,10 +24,10 @@ end entity pass_std_logic_vector;
 
 architecture behavioral of pass_std_logic_vector is
 
-  signal pass_in_local    : std_logic_vector(DATA_WIDTH-1 downto 0) := RESET_VAL(DATA_WIDTH-1 downto 0);
-  signal pass_out_local_1 : std_logic_vector(DATA_WIDTH-1 downto 0) := RESET_VAL(DATA_WIDTH-1 downto 0);
-  signal pass_out_local_2 : std_logic_vector(DATA_WIDTH-1 downto 0) := RESET_VAL(DATA_WIDTH-1 downto 0);
-  signal pass_out_local_3 : std_logic_vector(DATA_WIDTH-1 downto 0) := RESET_VAL(DATA_WIDTH-1 downto 0);
+  signal pass_in_local    : std_logic_vector(DATA_WIDTH-1 downto 0) := (others => '0');
+  signal pass_out_local_1 : std_logic_vector(DATA_WIDTH-1 downto 0) := (others => '0');
+  signal pass_out_local_2 : std_logic_vector(DATA_WIDTH-1 downto 0) := (others => '0');
+  signal pass_out_local_3 : std_logic_vector(DATA_WIDTH-1 downto 0) := (others => '0');
   
 begin  -- architecture behavioral
 
@@ -36,7 +35,7 @@ begin  -- architecture behavioral
   buffer_clk_in: process (clk_in, reset) is
   begin  -- process buffer_clk_in
     if reset = '1' then                 -- asynchronous reset (active high)
-      pass_in_local <= RESET_VAL(DATA_WIDTH-1 downto 0);
+      pass_in_local <= (others => '0');
     elsif clk_in'event and clk_in = '1' then  -- rising clock edge
       pass_in_local <= pass_in;
     end if;
@@ -45,9 +44,9 @@ begin  -- architecture behavioral
   buffer_clk_out: process (clk_out, reset) is
   begin  -- process buffer_clk_out
     if reset = '1' then                 -- asynchronous reset (active high)
-      pass_out_local_1 <= RESET_VAL(DATA_WIDTH-1 downto 0);
-      pass_out_local_2 <= RESET_VAL(DATA_WIDTH-1 downto 0);
-      pass_out_local_3 <= RESET_VAL(DATA_WIDTH-1 downto 0);
+      pass_out_local_1 <= (others => '0');
+      pass_out_local_2 <= (others => '0');
+      pass_out_local_3 <= (others => '0');
     elsif clk_out'event and clk_out = '1' then  -- rising clock edge
       pass_out_local_1 <= pass_in_local;
       pass_out_local_2 <= pass_out_local_1;

@@ -34,6 +34,8 @@ set vhdl_files "\
      src/front_panel/LED_Paterns.vhd \
      src/SM_info/SM_info.vhd \
      src/misc/pass_time_domain.vhd \
+     src/misc/pacd.vhd \
+     src/misc/capture_CDC.vhd \
      src/TCDS/lhc_gt_usrclk_source.vhd \
      src/TCDS/MGBT2_common_reset.vhd \
      src/TCDS/MGBT2_common.vhd \
