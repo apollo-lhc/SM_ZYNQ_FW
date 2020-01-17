@@ -1,4 +1,4 @@
-<node>
+<node id="SLAVE_I2C">
   <node id="S1" address ="0x00">
     <node id="SM" address="0x0">
 	<node id="STATUS" address="0x0">

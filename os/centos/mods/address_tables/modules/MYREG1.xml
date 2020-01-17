@@ -1,4 +1,4 @@
-<node>
+<node id="MYREG1">
   <node id="CONST_1"  address="0x00000000" permission="rw"/>
   <node id="ADDRESS"  address="0x00000001" permission="rw"/>
   <node id="CONST_2"  address="0x00000002" permission="rw"/>

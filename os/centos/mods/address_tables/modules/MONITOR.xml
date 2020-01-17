@@ -1,4 +1,4 @@
-<node>
+<node id="MONITOR">
   <node id="RESET_REG"         address="0x00" permission="w" description="Only write 0xA to this"/>
   <node id="HARD_RESET_REG"    address="0x04" permission="w" description="bit 1"/>
   <node id="TEMP"              address="0x80" permission="r" mask="0xFFF0" parameters="Table=STATUS;Row=Zynq;Column=_2;Format=m_1_503975_4096000_0_27315_100;Status=1"/>

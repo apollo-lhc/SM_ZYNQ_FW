@@ -1,4 +1,4 @@
-<node>
+<node id="CM">
   <node id="CM1">                                                                                                     
     <node id="CTRL" address="0x00">                                                                               
       <node id="ENABLE_UC"         mask="0x1"   permission="rw" description="Tell CM uC to power-up" parameters="Table=CM;Column=UC;Row=CM1_REQ;Status=2"/>                      
