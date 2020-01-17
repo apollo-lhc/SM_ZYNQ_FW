@@ -1,0 +1,5 @@
+<node>
+  <node id="DRP_0"  module="file://Series7_GTX_Channel_DRP.xml" address="0x00000000"/>
+  <node id="DRP_1"  module="file://Series7_GTX_Channel_DRP.xml" address="0x00000200"/>
+  <node id="DRP_2"  module="file://Series7_GTX_Channel_DRP.xml" address="0x00000400"/>
+</node>
