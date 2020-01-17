@@ -35,3 +35,5 @@ git
 lighttpd
 strace
 minicom
+i2c-tools
+i2c-tools-eepromer
