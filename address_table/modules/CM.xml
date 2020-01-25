@@ -1,4 +1,4 @@
-<node>
+<node id="CM">
   <node id="CM1">                                                                                                     
     <node id="CTRL" address="0x00">                                                                               
       <node id="ENABLE_UC"         mask="0x1"   permission="rw" description="Tell CM uC to power-up" parameters="Table=CM;Column=UC;Row=CM1_REQ;Status=2"/>                      
@@ -23,7 +23,7 @@
 	<node id="PHY_MMCM_LOL" mask="0x400" permission="r" description="Aurora phy mmcm LOL"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
 	<node id="PHY_LANE_UP" mask="0x3000" permission="r" description="Aurora phy lanes up"  parameters="Table=C2C;Column=_4;Row=_2;Status=1"/>		
 	<node id="PHY_HARD_ERR" mask="0x10000" permission="r" description="Aurora phy hard error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
-	<node id="PHY_HARD_ERR" mask="0x20000" permission="r" description="Aurora phy soft error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
+	<node id="PHY_SOFT_ERR" mask="0x20000" permission="r" description="Aurora phy soft error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
 	<node id="CPLL_LOCK" mask="0x100000" permission="r" description="DEBUG cplllock" />
 	<node id="EYESCAN_DATA_ERROR" mask="0x200000" permission="r" description="DEBUG eyescan data error" />
 	<node id="EYESCAN_RESET" mask="0x400000" permission="rw" description="DEBUG eyescan reset" />
@@ -68,7 +68,7 @@
       <node id="MONITOR" address="0x15">
 	<node id="COUNT_16X_BAUD"                mask="0x000000FF" permission="rw" description="Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27" />
 	<node id="ACTIVE"                        mask="0x00000100" permission="r"  description="Monitoring active. Is zero when no update in the last second." parameters="Table=CM;Column=MON_STATE;Row=_2;Status=1;Show=z;Format=t_0_INACTIVE_1_ACTIVE" />
-	<node id="HISTORY_VALID"                 mask="0x0000F000" premission="r"  description="bytes valid in debug history"/>
+	<node id="HISTORY_VALID"                 mask="0x0000F000" permission="r"  description="bytes valid in debug history"/>
 	<node id="ERRORS"                        mask="0xFFFF0000" permission="r"  description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=CM;Column=MON_ERRORS;Row=_2;Status=1;Show=nz;Format=u"/>
 	<node id="HISTORY"        address="0x01" mask="0xFFFFFFFF" permission="r"  description="4 bytes of uart history"/>
       </node>

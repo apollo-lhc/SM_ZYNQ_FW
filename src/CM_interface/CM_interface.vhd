@@ -6,6 +6,7 @@ use work.AXIRegPkg.all;
 
 use work.types.all;
 use work.CM_package.all;
+use work.CM_Ctrl.all;
 
 
 
@@ -88,6 +89,9 @@ architecture behavioral of CM_interface is
   signal debug_history   : slv_32_t;
   signal debug_valid     : slv_4_t;
 
+  signal Mon              : CM_Mon_t;
+  signal Ctrl             : CM_Ctrl_t
+
   
 begin  -- architecture behavioral
 
@@ -145,8 +149,10 @@ begin  -- architecture behavioral
   -------------------------------------------------------------------------------
   --Power-up sequences
   -------------------------------------------------------------------------------
-  PWR_good(0)   <= from_CM1.PWR_good;
-  enableCM1     <= enable_uC(0);
+  enableCM1     <= Ctrl.CM1.CTRL.ENABLE_UC;
+  PWR_good(0)           <= from_CM1.PWR_good;
+  Mon.CM1.CTRL.PWR_GOOD <= PWR_good(0);  
+
   enableCM1_PWR <= enable_PWR(0);
   enableCM1_IOs <= enable_IOs(0);
   CM1_disable   <= not enable_IOs(0);
@@ -197,24 +203,58 @@ begin  -- architecture behavioral
       read_req    => localRdReq,
       read_ack    => localRdAck);
 
-  latch_reads: process (clk_axi) is
-  begin  -- process latch_reads
-    if clk_axi'event and clk_axi = '1' then  -- rising clock edge
-      if localRdReq = '1' then
-        localRdData_latch <= localRdData;        
-      end if;
-    end if;
-  end process latch_reads;
 
-  enable_uc       (0) <= reg_data(0)(0); --CM1 enabled
-  enableCM_PWR    (0) <= reg_data(0)(1); --CM1 power eneable
-  override_PWRGood(0) <= reg_data(0)(2); --CM1 override
-  reset_error_state(0) <= reg_data(0)(8); --CM1 reset error state
-  enable_uc       (1) <= reg_data(1)(0); --CM2 enabled
-  enableCM_PWR    (1) <= reg_data(1)(1); --CM2 power eneable
-  override_PWRGood(1) <= reg_data(1)(2); --CM2 override
-  reset_error_state(1) <= reg_data(1)(8); --CM2 reset error state
+  CM_interface_1: entity work.CM_interface
+    port map (
+      clk_axi         => clk_axi,
+      reset_axi_n     => reset_axi_n,
+      slave_readMOSI  => slave_readMOSI,
+      slave_readMISO  => slave_readMISO,
+      slave_writeMOSI => slave_writeMOSI,
+      slave_writeMISO => slave_writeMISO,
+      Mon             => Mon,
+      Ctrl            => Ctrl);
+
   
+  enable_uc       (0)      <= Ctrl.CM1.CTRL.ENABLE_UC;         --CM1 enabled
+  enableCM_PWR    (0)      <= Ctrl.CM1.CTRL.ENABLE_PWR;        --CM1 power eneable
+  override_PWRGood(0)      <= Ctrl.CM1.CTRL.OVERRIDE_PWR_GOOD; --CM1 override
+  reset_error_state(0)     <= Ctrl.CM1.CTRL.ERROR_STATE_RESET; --CM1 reset error state
+
+  enable_uc       (1)      <= Ctrl.CM2.CTRL.ENABLE_UC;         --CM2 enabled
+  enableCM_PWR    (1)      <= Ctrl.CM2.CTRL.ENABLE_PWR;        --CM2 power eneable
+  override_PWRGood(1)      <= Ctrl.CM2.CTRL.OVERRIDE_PWR_GOOD; --CM2 override
+  reset_error_state(1)     <= Ctrl.CM2.CTRL.ERROR_STATE_RESET; --CM2 reset error state
+
+  Mon.CM1.CTRL.STATE             <= CM_seq_state(3 downto 0);
+  Mon.CM1.CTRL.PWR_ENABLED       <= enable_PWR(0);
+  Mon.CM1.CTRL.IOS_ENABLED       <= enable_IOs(0);
+  Mon.CM1.C2C.CONFIG_ERROR       <= CM1_C2C_Mon.axi_c2c_config_error_out;
+  Mon.CM1.C2C.LINK_ERROR         <= CM1_C2C_Mon.axi_c2c_link_error_out;     
+  Mon.CM1.C2C.LINK_GOOD          <= CM1_C2C_Mon.axi_c2c_link_status_out;    
+  Mon.CM1.C2C.MB_ERROR           <= CM1_C2C_Mon.axi_c2c_multi_bit_error_out;
+  Mon.CM1.C2C.DO_CC              <= CM1_C2C_Mon.aurora_do_cc;
+  Mon.CM1.C2C.PHY_RESET          <= CM1_C2C_Mon.phy_link_reset_out;     
+  Mon.CM1.C2C.PHY_GT_PLL_LOCK    <= CM1_C2C_Mon.phy_gt_pll_lock;        
+  Mon.CM1.C2C.PHY_MMCM_LOL       <= CM1_C2C_Mon.phy_mmcm_not_locked_out;
+  Mon.CM1.C2C.PHY_LANE_UP        <= CM1_C2C_Mon.phy_lane_up;
+  Mon.CM1.C2C.PHY_HARD_ERR       <= CM1_C2C_Mon.phy_hard_err;           
+  Mon.CM1.C2C.PHY_SOFT_ERR       <= CM1_C2C_Mon.phy_soft_err;
+  Mon.CM1.C2C.CPLL_LOCK          <= CM1_C2C_Mon.cplllock;
+  Mon.CM1.C2C.EYESCAN_DATA_ERROR <= CM1_C2C_Mon.eyescandataerror;
+  Mon.CM1.C2C.DMONITOR           <= CM1_C2C_Mon.dmonitorout;
+  Mon.CM1.C2C.RX.BUF_STATUS      <= CM1_C2C_Mon.rxbufstatus;
+  Mon.CM1.C2C.RX.MONITOR         <= CM1_C2C_Mon.rxmonitorout;
+  Mon.CM1.C2C.RX.PRBS_ERR        <= CM1_C2C_Mon.rxprbserr;
+  Mon.CM1.C2C.RX.RESET_DONE      <= CM1_C2C_Mon.rxresetdone;
+  Mon.CM1.C2C.TX.BUF_STATUS      <= CM1_C2C_Mon.txbufstatus;
+  Mon.CM1.C2C.TX.RESET_DONE      <= CM1_C2C_Mon.txresetdone;
+  
+  
+  Mon.CM2.CTRL.STATE       <= CM_seq_state(7 downto 4);
+  Mon.CM2.CTRL.PWR_ENABLED <= enable_PWR(1);
+  Mon.CM2.CTRL.IOS_ENABLED <= enable_IOs(1);
+
   reads: process (localRdReq,localAddress,reg_data) is
   begin  -- process reads
     localRdAck  <= '0';
@@ -222,83 +262,6 @@ begin  -- architecture behavioral
     if localRdReq = '1' then
       localRdAck  <= '1';
       case localAddress(7 downto 0) is
-        when x"00" =>
-          --control
-          localRdData( 2 downto  0) <= reg_data(0)( 2 downto  0);
-          --pwr good
-          localRdData( 3)           <= PWR_good(0);
-          --pwr state
-          localRdData( 7 downto  4) <= CM_seq_state(3 downto 0);
-          --error state reset
-          localRdData(8)            <= reg_data(0)(8);
-          --pwr state outputs
-          localRdData( 9)            <= enable_PWR(0);
-          localRdData(10)            <= enable_IOs(0);
-        when x"01" =>
-          --control
-          localRdData( 2 downto  0) <= reg_data(1)( 2 downto  0);
-          --pwr good
-          localRdData( 3)           <= PWR_good(1);
-          --pwr state
-          localRdData( 7 downto  4) <= CM_seq_state(7 downto 4);
-          --error state reset
-          localRdData(8)            <= reg_data(1)(8);
-          --pwr state outputs
-          localRdData( 9)            <= enable_PWR(1);
-          localRdData(10)            <= enable_IOs(1);
-        when x"12" =>
-          localRdData(0) <= CM1_C2C_Mon.axi_c2c_config_error_out;   
-          localRdData(1) <= CM1_C2C_Mon.axi_c2c_link_error_out;     
-          localRdData(2) <= CM1_C2C_Mon.axi_c2c_link_status_out;    
-          localRdData(3) <= CM1_C2C_Mon.axi_c2c_multi_bit_error_out;
-          localRdData(4) <= CM1_C2C_Mon.aurora_do_cc;
-          localRdData(5) <= reg_data(18)(5);
-          
-          localRdData(8) <= CM1_C2C_Mon.phy_link_reset_out;     
-          localRdData(9) <= CM1_C2C_Mon.phy_gt_pll_lock;        
-          localRdData(10) <= CM1_C2C_Mon.phy_mmcm_not_locked_out;
-          localRdData(12 + CM1_C2C_Mon.phy_lane_up'length -1 downto 12) <= CM1_C2C_Mon.phy_lane_up;
-          localRdData(16) <= CM1_C2C_Mon.phy_hard_err;           
-          localRdData(17) <= CM1_C2C_Mon.phy_soft_err;
-
-          localRdData(20) <= CM1_C2C_Mon.cplllock;
-          localRdData(21) <= CM1_C2C_Mon.eyescandataerror;
-          localRdData(22) <= reg_data(18)(22); --eyescanreset;
-          localRdData(23) <= reg_data(18)(23); --eyescantrigger;
-          localRdData(31 downto 24) <= CM1_C2C_Mon.dmonitorout;
-
-        when x"13" =>
-          localRdData( 2 downto  0) <= CM1_C2C_Mon.rxbufstatus;
-          localRdData( 9 downto  3) <= CM1_C2C_Mon.rxmonitorout;     
-          localRdData(10) <= CM1_C2C_Mon.rxprbserr;        
-          localRdData(11) <= CM1_C2C_Mon.rxresetdone;                
-          localRdData(12) <= reg_data(19)(12);  --rxbufreset;       
-          localRdData(13) <= reg_data(19)(13);  --rxcdrhold;        
-          localRdData(14) <= reg_data(19)(14);  --rxdfeagchold;     
-          localRdData(15) <= reg_data(19)(15);  --rxdfeagcovrden;   
-          localRdData(16) <= reg_data(19)(16);  --rxdfelfhold;      
-          localRdData(17) <= reg_data(19)(17);  --rxdfelpmreset;    
-          localRdData(18) <= reg_data(19)(18);  --rxlpmen;          
-          localRdData(19) <= reg_data(19)(19);  --rxlpmhfovrden;    
-          localRdData(20) <= reg_data(19)(20);  --rxlpmlfklovrden;  
-          localRdData(22 downto 21) <= reg_data(19)(22 downto 21); --rxmonitorsel;     
-          localRdData(23) <= reg_data(19)(23);  --rxpcsreset;       
-          localRdData(24) <= reg_data(19)(24);  --rxpmareset;       
-          localRdData(25) <= reg_data(19)(25);  --rxprbscntreset;   
-          localRdData(28 downto 26) <= reg_data(19)(28 downto 26); --rxprbssel;        
-        when x"14" =>
-          localRdData( 1 downto  0) <= CM1_C2C_Mon.txbufstatus;
-          localRdData( 2)           <= CM1_C2C_Mon.txresetdone;
-          localRdData( 6 downto  3) <= reg_data(20)( 6 downto  3);  --txdiffctrl;
-          localRdData( 7)           <= reg_data(20)( 7)          ;  --txinhibit;
-          localRdData(14 downto  8) <= reg_data(20)(14 downto  8);  --txmaincursor;
-          localRdData(15)           <= reg_data(20)(15)          ;  --txpcsreset;    
-          localRdData(16)           <= reg_data(20)(16)          ;  --txpmareset;    
-          localRdData(17)           <= reg_data(20)(17)          ;  --txpolarity;    
-          localRdData(22 downto 18) <= reg_data(20)(22 downto 18);  --txpostcursor;  
-          localRdData(23)           <= reg_data(20)(23)          ;  --txprbsforceerr;
-          localRdData(26 downto 24) <= reg_data(20)(26 downto 24);  --txprbssel;     
-          localRdData(31 downto 27) <= reg_data(20)(31 downto 27);  --txprecursor;
         when x"15" =>
           localRdData( 7 downto  0) <= reg_data(21)( 7 downto  0); -- baud_16x_count
           localRdData( 8)           <= mon_active(0);          -- channel_active

@@ -1,4 +1,4 @@
-<node>    
+<node id="C2C1_AXILITE_FW">    
   <node id="STATUS" address="0x0">
     <node id="ERRS_BRESP" mask="0x00100000" permission="r" parameters="Table=C2C;Column=AXILITE_BRESP_ERR;Row=CM1_K;Status=1;Show=nz" description="error"/>
     <node id="RECS_WRITE_TO_BVALID_MAX_WAIT" mask="0x00080000" permission="r" parameters="Table=C2C;Column=AXILITE_BVALID_TIMEOUT;Row=CM1_K;Status=1;Show=nz" description="error"/>

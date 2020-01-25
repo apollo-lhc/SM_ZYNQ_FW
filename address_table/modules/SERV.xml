@@ -1,4 +1,4 @@
-<node>
+<node id="SERV">
   <node id="SI5344"  address="0x00" permission="r">
     <node id="OE" address="0x0" permission="rw" mask="0x1" description="Enable Si5344 outputs" parameters="Table=CLOCKING;Column=_3;Row=_2;Status=2"/>
     <node id="EN" address="0x0" permission="rw" mask="0x2" description="Power on Si5344" parameters="Table=CLOCKING;Column=_3;Row=_2;Status=2"/>
