@@ -53,7 +53,7 @@
 	<node id="TX" address="0x2">
 	  <node id="BUF_STATUS" mask="0x00000003" permission="r" description="DEBUG tx buf status" />
 	  <node id="RESET_DONE" mask="0x00000004" permission="r" description="DEBUG tx reset done" />
-	  <node id="DIFF_CTRL" mask="0x00000070" permission="rw" description="DEBUG tx diff control" />
+	  <node id="DIFF_CTRL" mask="0x00000078" permission="rw" description="DEBUG tx diff control" />
 	  <node id="INHIBIT" mask="0x00000080" permission="rw" description="DEBUG tx inhibit" />
 	  <node id="MAIN_CURSOR" mask="0x00007F00" permission="rw" description="DEBUG tx main cursor" />
 	  <node id="PCS_RESET" mask="0x00008000" permission="rw" description="DEBUG tx pcs reset" />
@@ -100,7 +100,7 @@
 	<node id="PHY_MMCM_LOL" mask="0x400" permission="r" description="Aurora phy mmcm LOL"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
 	<node id="PHY_LANE_UP" mask="0x3000" permission="r" description="Aurora phy lanes up"  parameters="Table=C2C;Column=_4;Row=_2;Status=1"/>		
 	<node id="PHY_HARD_ERR" mask="0x10000" permission="r" description="Aurora phy hard error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
-	<node id="PHY_HARD_ERR" mask="0x20000" permission="r" description="Aurora phy soft error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
+	<node id="PHY_SOFT_ERR" mask="0x20000" permission="r" description="Aurora phy soft error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
 	<node id="CPLL_LOCK" mask="0x100000" permission="r" description="DEBUG cplllock" />
 	<node id="EYESCAN_DATA_ERROR" mask="0x200000" permission="r" description="DEBUG eyescan data error" />
 	<node id="EYESCAN_RESET" mask="0x400000" permission="rw" description="DEBUG eyescan reset" />
@@ -130,7 +130,7 @@
 	<node id="TX" address="0x2">
 	  <node id="BUF_STATUS" mask="0x00000003" permission="r" description="DEBUG tx buf status" />
 	  <node id="RESET_DONE" mask="0x00000004" permission="r" description="DEBUG tx reset done" />
-	  <node id="DIFF_CTRL" mask="0x00000070" permission="rw" description="DEBUG tx diff control" />
+	  <node id="DIFF_CTRL" mask="0x00000078" permission="rw" description="DEBUG tx diff control" />
 	  <node id="INHIBIT" mask="0x00000080" permission="rw" description="DEBUG tx inhibit" />
 	  <node id="MAIN_CURSOR" mask="0x00007F00" permission="rw" description="DEBUG tx main cursor" />
 	  <node id="PCS_RESET" mask="0x00008000" permission="rw" description="DEBUG tx pcs reset" />

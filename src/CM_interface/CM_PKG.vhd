@@ -49,7 +49,7 @@ package CM_CTRL is
   end record CM_CM1_C2C_TX_MON_t;
 
   type CM_CM1_C2C_TX_CTRL_t is record
-    DIFF_CTRL                  : std_logic_vector( 2 downto  0);  -- DEBUG tx diff control
+    DIFF_CTRL                  : std_logic_vector( 3 downto  0);  -- DEBUG tx diff control
     INHIBIT                    : std_logic;                       -- DEBUG tx inhibit
     MAIN_CURSOR                : std_logic_vector( 6 downto  0);  -- DEBUG tx main cursor
     PCS_RESET                  : std_logic;                       -- DEBUG tx pcs reset
@@ -75,6 +75,7 @@ package CM_CTRL is
     PHY_LANE_UP                : std_logic_vector( 1 downto  0);  -- Aurora phy lanes up
     PHY_MMCM_LOL               : std_logic;                       -- Aurora phy mmcm LOL
     PHY_RESET                  : std_logic;                       -- Aurora phy in reset
+    PHY_SOFT_ERR               : std_logic;                       -- Aurora phy soft error
     RX                         : CM_CM1_C2C_RX_MON_t;           
     TX                         : CM_CM1_C2C_TX_MON_t;           
   end record CM_CM1_C2C_MON_t;
@@ -154,7 +155,7 @@ package CM_CTRL is
   end record CM_CM2_C2C_TX_MON_t;
 
   type CM_CM2_C2C_TX_CTRL_t is record
-    DIFF_CTRL                  : std_logic_vector( 2 downto  0);  -- DEBUG tx diff control
+    DIFF_CTRL                  : std_logic_vector( 3 downto  0);  -- DEBUG tx diff control
     INHIBIT                    : std_logic;                       -- DEBUG tx inhibit
     MAIN_CURSOR                : std_logic_vector( 6 downto  0);  -- DEBUG tx main cursor
     PCS_RESET                  : std_logic;                       -- DEBUG tx pcs reset
@@ -180,6 +181,7 @@ package CM_CTRL is
     PHY_LANE_UP                : std_logic_vector( 1 downto  0);  -- Aurora phy lanes up
     PHY_MMCM_LOL               : std_logic;                       -- Aurora phy mmcm LOL
     PHY_RESET                  : std_logic;                       -- Aurora phy in reset
+    PHY_SOFT_ERR               : std_logic;                       -- Aurora phy soft error
     RX                         : CM_CM2_C2C_RX_MON_t;           
     TX                         : CM_CM2_C2C_TX_MON_t;           
   end record CM_CM2_C2C_MON_t;

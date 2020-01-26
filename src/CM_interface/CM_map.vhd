@@ -96,7 +96,7 @@ begin  -- architecture behavioral
           localRdData(10)            <=  Mon.CM2.C2C.PHY_MMCM_LOL;            --Aurora phy mmcm LOL
           localRdData(13 downto 12)  <=  Mon.CM2.C2C.PHY_LANE_UP;             --Aurora phy lanes up
           localRdData(16)            <=  Mon.CM2.C2C.PHY_HARD_ERR;            --Aurora phy hard error
-          localRdData(16)            <=  Mon.CM2.C2C.PHY_HARD_ERR;            --Aurora phy hard error
+          localRdData(17)            <=  Mon.CM2.C2C.PHY_SOFT_ERR;            --Aurora phy soft error
           localRdData(20)            <=  Mon.CM2.C2C.CPLL_LOCK;               --DEBUG cplllock
           localRdData(21)            <=  Mon.CM2.C2C.EYESCAN_DATA_ERROR;      --DEBUG eyescan data error
           localRdData(22)            <=  reg_data(34)(22);                    --DEBUG eyescan reset
@@ -124,7 +124,7 @@ begin  -- architecture behavioral
         when x"24" =>
           localRdData( 1 downto  0)  <=  Mon.CM2.C2C.TX.BUF_STATUS;           --DEBUG tx buf status
           localRdData( 2)            <=  Mon.CM2.C2C.TX.RESET_DONE;           --DEBUG tx reset done
-          localRdData( 6 downto  4)  <=  reg_data(36)( 6 downto  4);          --DEBUG tx diff control
+          localRdData( 6 downto  3)  <=  reg_data(36)( 6 downto  3);          --DEBUG tx diff control
           localRdData( 7)            <=  reg_data(36)( 7);                    --DEBUG tx inhibit
           localRdData(14 downto  8)  <=  reg_data(36)(14 downto  8);          --DEBUG tx main cursor
           localRdData(15)            <=  reg_data(36)(15);                    --DEBUG tx pcs reset
@@ -146,7 +146,7 @@ begin  -- architecture behavioral
           localRdData(10)            <=  Mon.CM1.C2C.PHY_MMCM_LOL;            --Aurora phy mmcm LOL
           localRdData(13 downto 12)  <=  Mon.CM1.C2C.PHY_LANE_UP;             --Aurora phy lanes up
           localRdData(16)            <=  Mon.CM1.C2C.PHY_HARD_ERR;            --Aurora phy hard error
-          localRdData(16)            <=  Mon.CM1.C2C.PHY_HARD_ERR;            --Aurora phy hard error
+          localRdData(17)            <=  Mon.CM1.C2C.PHY_SOFT_ERR;            --Aurora phy soft error
           localRdData(20)            <=  Mon.CM1.C2C.CPLL_LOCK;               --DEBUG cplllock
           localRdData(21)            <=  Mon.CM1.C2C.EYESCAN_DATA_ERROR;      --DEBUG eyescan data error
           localRdData(22)            <=  reg_data(18)(22);                    --DEBUG eyescan reset
@@ -174,7 +174,7 @@ begin  -- architecture behavioral
         when x"14" =>
           localRdData( 1 downto  0)  <=  Mon.CM1.C2C.TX.BUF_STATUS;           --DEBUG tx buf status
           localRdData( 2)            <=  Mon.CM1.C2C.TX.RESET_DONE;           --DEBUG tx reset done
-          localRdData( 6 downto  4)  <=  reg_data(20)( 6 downto  4);          --DEBUG tx diff control
+          localRdData( 6 downto  3)  <=  reg_data(20)( 6 downto  3);          --DEBUG tx diff control
           localRdData( 7)            <=  reg_data(20)( 7);                    --DEBUG tx inhibit
           localRdData(14 downto  8)  <=  reg_data(20)(14 downto  8);          --DEBUG tx main cursor
           localRdData(15)            <=  reg_data(20)(15);                    --DEBUG tx pcs reset
@@ -221,7 +221,7 @@ begin  -- architecture behavioral
   Ctrl.CM1.C2C.RX.PMA_RESET          <=  reg_data(19)(24);               
   Ctrl.CM1.C2C.RX.PRBS_CNT_RST       <=  reg_data(19)(25);               
   Ctrl.CM1.C2C.RX.PRBS_SEL           <=  reg_data(19)(28 downto 26);     
-  Ctrl.CM1.C2C.TX.DIFF_CTRL          <=  reg_data(20)( 6 downto  4);     
+  Ctrl.CM1.C2C.TX.DIFF_CTRL          <=  reg_data(20)( 6 downto  3);     
   Ctrl.CM1.C2C.TX.INHIBIT            <=  reg_data(20)( 7);               
   Ctrl.CM1.C2C.TX.MAIN_CURSOR        <=  reg_data(20)(14 downto  8);     
   Ctrl.CM1.C2C.TX.PCS_RESET          <=  reg_data(20)(15);               
@@ -253,7 +253,7 @@ begin  -- architecture behavioral
   Ctrl.CM2.C2C.RX.PMA_RESET          <=  reg_data(35)(24);               
   Ctrl.CM2.C2C.RX.PRBS_CNT_RST       <=  reg_data(35)(25);               
   Ctrl.CM2.C2C.RX.PRBS_SEL           <=  reg_data(35)(28 downto 26);     
-  Ctrl.CM2.C2C.TX.DIFF_CTRL          <=  reg_data(36)( 6 downto  4);     
+  Ctrl.CM2.C2C.TX.DIFF_CTRL          <=  reg_data(36)( 6 downto  3);     
   Ctrl.CM2.C2C.TX.INHIBIT            <=  reg_data(36)( 7);               
   Ctrl.CM2.C2C.TX.MAIN_CURSOR        <=  reg_data(36)(14 downto  8);     
   Ctrl.CM2.C2C.TX.PCS_RESET          <=  reg_data(36)(15);               
@@ -304,7 +304,7 @@ begin  -- architecture behavioral
           reg_data(35)(25)            <=  localWrData(25);                --DEBUG rx PRBS counter reset
           reg_data(35)(28 downto 26)  <=  localWrData(28 downto 26);      --DEBUG rx PRBS select
         when x"24" =>
-          reg_data(36)( 6 downto  4)  <=  localWrData( 6 downto  4);      --DEBUG tx diff control
+          reg_data(36)( 6 downto  3)  <=  localWrData( 6 downto  3);      --DEBUG tx diff control
           reg_data(36)( 7)            <=  localWrData( 7);                --DEBUG tx inhibit
           reg_data(36)(14 downto  8)  <=  localWrData(14 downto  8);      --DEBUG tx main cursor
           reg_data(36)(15)            <=  localWrData(15);                --DEBUG tx pcs reset
@@ -334,7 +334,7 @@ begin  -- architecture behavioral
           reg_data(19)(25)            <=  localWrData(25);                --DEBUG rx PRBS counter reset
           reg_data(19)(28 downto 26)  <=  localWrData(28 downto 26);      --DEBUG rx PRBS select
         when x"14" =>
-          reg_data(20)( 6 downto  4)  <=  localWrData( 6 downto  4);      --DEBUG tx diff control
+          reg_data(20)( 6 downto  3)  <=  localWrData( 6 downto  3);      --DEBUG tx diff control
           reg_data(20)( 7)            <=  localWrData( 7);                --DEBUG tx inhibit
           reg_data(20)(14 downto  8)  <=  localWrData(14 downto  8);      --DEBUG tx main cursor
           reg_data(20)(15)            <=  localWrData(15);                --DEBUG tx pcs reset

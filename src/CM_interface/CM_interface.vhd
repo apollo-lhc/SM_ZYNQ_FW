@@ -14,7 +14,7 @@ Library UNISIM;
 use UNISIM.vcomponents.all;
 
 
-entity CM_interface is
+entity CM_intf is
   
   port (
     clk_axi          : in  std_logic;
@@ -45,9 +45,9 @@ entity CM_interface is
     CM1_C2C_Ctrl     : out C2C_Control_t;
     CM2_C2C_Ctrl     : out C2C_Control_t
     );
-end entity CM_interface;
+end entity CM_intf;
 
-architecture behavioral of CM_interface is
+architecture behavioral of CM_intf is
   signal localAddress : slv_32_t;
   signal localRdData  : slv_32_t;
   signal localRdData_latch  : slv_32_t;
@@ -90,7 +90,7 @@ architecture behavioral of CM_interface is
   signal debug_valid     : slv_4_t;
 
   signal Mon              : CM_Mon_t;
-  signal Ctrl             : CM_Ctrl_t
+  signal Ctrl             : CM_Ctrl_t;
 
   
 begin  -- architecture behavioral
@@ -188,22 +188,6 @@ begin  -- architecture behavioral
   -- AXI 
   -------------------------------------------------------------------------------
   -------------------------------------------------------------------------------
-  AXIRegBridge : entity work.axiLiteReg
-    port map (
-      clk_axi     => clk_axi,
-      reset_axi_n => reset_axi_n,
-      readMOSI    => slave_readMOSI,
-      readMISO    => slave_readMISO,
-      writeMOSI   => slave_writeMOSI,
-      writeMISO   => slave_writeMISO,
-      address     => localAddress,
-      rd_data     => localRdData_latch,
-      wr_data     => localWrData,
-      write_en    => localWrEn,
-      read_req    => localRdReq,
-      read_ack    => localRdAck);
-
-
   CM_interface_1: entity work.CM_interface
     port map (
       clk_axi         => clk_axi,
@@ -237,7 +221,7 @@ begin  -- architecture behavioral
   Mon.CM1.C2C.PHY_RESET          <= CM1_C2C_Mon.phy_link_reset_out;     
   Mon.CM1.C2C.PHY_GT_PLL_LOCK    <= CM1_C2C_Mon.phy_gt_pll_lock;        
   Mon.CM1.C2C.PHY_MMCM_LOL       <= CM1_C2C_Mon.phy_mmcm_not_locked_out;
-  Mon.CM1.C2C.PHY_LANE_UP        <= CM1_C2C_Mon.phy_lane_up;
+  Mon.CM1.C2C.PHY_LANE_UP(0)     <= CM1_C2C_Mon.phy_lane_up(0);
   Mon.CM1.C2C.PHY_HARD_ERR       <= CM1_C2C_Mon.phy_hard_err;           
   Mon.CM1.C2C.PHY_SOFT_ERR       <= CM1_C2C_Mon.phy_soft_err;
   Mon.CM1.C2C.CPLL_LOCK          <= CM1_C2C_Mon.cplllock;
@@ -249,132 +233,93 @@ begin  -- architecture behavioral
   Mon.CM1.C2C.RX.RESET_DONE      <= CM1_C2C_Mon.rxresetdone;
   Mon.CM1.C2C.TX.BUF_STATUS      <= CM1_C2C_Mon.txbufstatus;
   Mon.CM1.C2C.TX.RESET_DONE      <= CM1_C2C_Mon.txresetdone;
-  
+  Mon.CM1.MONITOR.ACTIVE         <= mon_active(0);
+  Mon.CM1.MONITOR.HISTORY_VALID  <= debug_valid;
+  Mon.CM1.MONITOR.ERRORS         <= mon_errors(0);
+  Mon.CM1.MONITOR.HISTORY        <= debug_history;
+
   
   Mon.CM2.CTRL.STATE       <= CM_seq_state(7 downto 4);
   Mon.CM2.CTRL.PWR_ENABLED <= enable_PWR(1);
   Mon.CM2.CTRL.IOS_ENABLED <= enable_IOs(1);
-
-  reads: process (localRdReq,localAddress,reg_data) is
-  begin  -- process reads
-    localRdAck  <= '0';
-    localRdData <= x"00000000";
-    if localRdReq = '1' then
-      localRdAck  <= '1';
-      case localAddress(7 downto 0) is
-        when x"15" =>
-          localRdData( 7 downto  0) <= reg_data(21)( 7 downto  0); -- baud_16x_count
-          localRdData( 8)           <= mon_active(0);          -- channel_active
-          localRdData(15 downto 12) <= debug_valid;            -- uart debug
-                                                               -- history valid
-          localRdData(31 downto 16) <= mon_errors(0);          -- error_count
-        when x"16" =>
-          localRdData(31 downto  0) <= debug_history;          -- uart debug history
-        when x"22" =>
-          localRdData(0) <= CM2_C2C_Mon.axi_c2c_config_error_out;   
-          localRdData(1) <= CM2_C2C_Mon.axi_c2c_link_error_out;     
-          localRdData(2) <= CM2_C2C_Mon.axi_c2c_link_status_out;    
-          localRdData(3) <= CM2_C2C_Mon.axi_c2c_multi_bit_error_out;
-          localRdData(4) <= CM2_C2C_Mon.aurora_do_cc;
-          localRdData(5) <= reg_data(34)(5);
-          
-          localRdData(8) <= CM2_C2C_Mon.phy_link_reset_out;     
-          localRdData(9) <= CM2_C2C_Mon.phy_gt_pll_lock;        
-          localRdData(10) <= CM2_C2C_Mon.phy_mmcm_not_locked_out;
-          localRdData(12 + CM2_C2C_Mon.phy_lane_up'length -1 downto 12) <= CM2_C2C_Mon.phy_lane_up;
-          localRdData(16) <= CM2_C2C_Mon.phy_hard_err;           
-          localRdData(17) <= CM2_C2C_Mon.phy_soft_err;                                       
-
-        when others =>
-          localRdData <= x"00000000";
-      end case;
-    end if;
-  end process reads;
+  Mon.CM2.C2C.CONFIG_ERROR       <= CM2_C2C_Mon.axi_c2c_config_error_out;
+  Mon.CM2.C2C.LINK_ERROR         <= CM2_C2C_Mon.axi_c2c_link_error_out;     
+  Mon.CM2.C2C.LINK_GOOD          <= CM2_C2C_Mon.axi_c2c_link_status_out;    
+  Mon.CM2.C2C.MB_ERROR           <= CM2_C2C_Mon.axi_c2c_multi_bit_error_out;
+  Mon.CM2.C2C.DO_CC              <= CM2_C2C_Mon.aurora_do_cc;
+  Mon.CM2.C2C.PHY_RESET          <= CM2_C2C_Mon.phy_link_reset_out;     
+  Mon.CM2.C2C.PHY_GT_PLL_LOCK    <= CM2_C2C_Mon.phy_gt_pll_lock;        
+  Mon.CM2.C2C.PHY_MMCM_LOL       <= CM2_C2C_Mon.phy_mmcm_not_locked_out;
+  Mon.CM2.C2C.PHY_LANE_UP(0)     <= CM2_C2C_Mon.phy_lane_up(0);
+  Mon.CM2.C2C.PHY_HARD_ERR       <= CM2_C2C_Mon.phy_hard_err;           
+  Mon.CM2.C2C.PHY_SOFT_ERR       <= CM2_C2C_Mon.phy_soft_err;
+  Mon.CM2.C2C.CPLL_LOCK          <= CM2_C2C_Mon.cplllock;
+  Mon.CM2.C2C.EYESCAN_DATA_ERROR <= CM2_C2C_Mon.eyescandataerror;
+  Mon.CM2.C2C.DMONITOR           <= CM2_C2C_Mon.dmonitorout;
+  Mon.CM2.C2C.RX.BUF_STATUS      <= CM2_C2C_Mon.rxbufstatus;
+  Mon.CM2.C2C.RX.MONITOR         <= CM2_C2C_Mon.rxmonitorout;
+  Mon.CM2.C2C.RX.PRBS_ERR        <= CM2_C2C_Mon.rxprbserr;
+  Mon.CM2.C2C.RX.RESET_DONE      <= CM2_C2C_Mon.rxresetdone;
+  Mon.CM2.C2C.TX.BUF_STATUS      <= CM2_C2C_Mon.txbufstatus;
+  Mon.CM2.C2C.TX.RESET_DONE      <= CM2_C2C_Mon.txresetdone;
 
 
-  CM1_C2C_Ctrl.aurora_pma_init_in <= reg_data(18)(5);
-  CM2_C2C_Ctrl.aurora_pma_init_in <= reg_data(34)(5);
-  CM1_C2C_Ctrl.eyescanreset    <=  reg_data(18)(22); 
-  CM1_C2C_Ctrl.eyescantrigger  <=  reg_data(18)(23);
-  CM1_C2C_Ctrl.rxbufreset      <=  reg_data(19)(12);           
-  CM1_C2C_Ctrl.rxcdrhold       <=  reg_data(19)(13);           
-  CM1_C2C_Ctrl.rxdfeagchold    <=  reg_data(19)(14);           
-  CM1_C2C_Ctrl.rxdfeagcovrden  <=  reg_data(19)(15);           
-  CM1_C2C_Ctrl.rxdfelfhold     <=  reg_data(19)(16);           
-  CM1_C2C_Ctrl.rxdfelpmreset   <=  reg_data(19)(17);           
-  CM1_C2C_Ctrl.rxlpmen         <=  reg_data(19)(18);           
-  CM1_C2C_Ctrl.rxlpmhfovrden   <=  reg_data(19)(19);           
-  CM1_C2C_Ctrl.rxlpmlfklovrden <=  reg_data(19)(20);           
-  CM1_C2C_Ctrl.rxmonitorsel    <=  reg_data(19)(22 downto 21); 
-  CM1_C2C_Ctrl.rxpcsreset      <=  reg_data(19)(23);           
-  CM1_C2C_Ctrl.rxpmareset      <=  reg_data(19)(24);           
-  CM1_C2C_Ctrl.rxprbscntreset  <=  reg_data(19)(25);           
-  CM1_C2C_Ctrl.rxprbssel       <=  reg_data(19)(28 downto 26); 
-  CM1_C2C_Ctrl.txdiffctrl      <=  reg_data(20)( 6 downto  3); 
-  CM1_C2C_Ctrl.txinhibit       <=  reg_data(20)( 7);           
-  CM1_C2C_Ctrl.txmaincursor    <=  reg_data(20)(14 downto  8); 
-  CM1_C2C_Ctrl.txpcsreset      <=  reg_data(20)(15);           
-  CM1_C2C_Ctrl.txpmareset      <=  reg_data(20)(16);           
-  CM1_C2C_Ctrl.txpolarity      <=  reg_data(20)(17);           
-  CM1_C2C_Ctrl.txpostcursor    <=  reg_data(20)(22 downto 18); 
-  CM1_C2C_Ctrl.txprbsforceerr  <=  reg_data(20)(23);           
-  CM1_C2C_Ctrl.txprbssel       <=  reg_data(20)(26 downto 24);
-  CM1_C2C_Ctrl.txprecursor     <=  reg_data(20)(31 downto 27); 
-  
-  reg_writes: process (clk_axi, reset_axi_n) is
-  begin  -- process reg_writes
-    if reset_axi_n = '0' then                 -- asynchronous reset (active high)
-      reg_data <= default_reg_data;
-    elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
-      if localWrEn = '1' then
-        case localAddress(7 downto 0) is
-          when x"00" =>
-            reg_data(0)( 2 downto  0) <= localWrData(2 downto 0);
-            reg_data(0)(8)            <= localWrData(8);
-          when x"01" =>
-            reg_data(1)( 2 downto  0) <= localWrData(2 downto 0);
-            reg_data(1)(8)            <= localWrData(8);
-          when x"12" =>
-            reg_data(18)(5)  <= localWrData(5);
-            reg_data(18)(22) <= localWrData(22); --eyescanreset;
-            reg_data(18)(23) <= localWrData(23); --eyescantrigger;
 
-          when x"13" =>
-            reg_data(19)(12)           <= localWrData(12);           --rxbufreset;       
-            reg_data(19)(13)           <= localWrData(13);           --rxcdrhold;        
-            reg_data(19)(14)           <= localWrData(14);           --rxdfeagchold;     
-            reg_data(19)(15)           <= localWrData(15);           --rxdfeagcovrden;   
-            reg_data(19)(16)           <= localWrData(16);           --rxdfelfhold;      
-            reg_data(19)(17)           <= localWrData(17);           --rxdfelpmreset;    
-            reg_data(19)(18)           <= localWrData(18);           --rxlpmen;          
-            reg_data(19)(19)           <= localWrData(19);           --rxlpmhfovrden;    
-            reg_data(19)(20)           <= localWrData(20);           --rxlpmlfklovrden;  
-            reg_data(19)(22 downto 21) <= localWrData(22 downto 21); --rxmonitorsel;     
-            reg_data(19)(23)           <= localWrData(23);           --rxpcsreset;       
-            reg_data(19)(24)           <= localWrData(24);           --rxpmareset;       
-            reg_data(19)(25)           <= localWrData(25);           --rxprbscntreset;   
-            reg_data(19)(28 downto 26) <= localWrData(28 downto 26); --rxprbssel;        
-          when x"14" =>
-            reg_data(20)( 6 downto  3) <= localWrData( 6 downto  3); --txdiffctrl;
-            reg_data(20)( 7)           <= localWrData( 7);           --txinhibit;
-            reg_data(20)(14 downto  8) <= localWrData(14 downto  8); --txmaincursor;
-            reg_data(20)(15)           <= localWrData(15);           --txpcsreset;    
-            reg_data(20)(16)           <= localWrData(16);           --txpmareset;    
-            reg_data(20)(17)           <= localWrData(17);           --txpolarity;    
-            reg_data(20)(22 downto 18) <= localWrData(22 downto 18); --txpostcursor;  
-            reg_data(20)(23)           <= localWrData(23);           --txprbsforceerr;
-            reg_data(20)(26 downto 24) <= localWrData(26 downto 24); --txprbssel;     
-            reg_data(20)(31 downto 27) <= localWrData(31 downto 27); --txprecursor;
+  CM1_C2C_Ctrl.aurora_pma_init_in <= CTRL.CM1.C2C.INITIALIZE;
+  CM1_C2C_Ctrl.eyescanreset       <= CTRL.CM1.C2C.EYESCAN_RESET;
+  CM1_C2C_Ctrl.eyescantrigger     <= CTRL.CM1.C2C.EYESCAN_TRIGGER;
+  CM1_C2C_Ctrl.rxbufreset         <= CTRL.CM1.C2C.RX.BUF_RESET;
+  CM1_C2C_Ctrl.rxcdrhold          <= CTRL.CM1.C2C.RX.CDR_HOLD;   
+  CM1_C2C_Ctrl.rxdfeagchold       <= CTRL.CM1.C2C.RX.DFE_AGC_HOLD;
+  CM1_C2C_Ctrl.rxdfeagcovrden     <= CTRL.CM1.C2C.RX.DFE_AGC_OVERRIDE;
+  CM1_C2C_Ctrl.rxdfelfhold        <= CTRL.CM1.C2C.RX.DFE_LF_HOLD;
+  CM1_C2C_Ctrl.rxdfelpmreset      <= CTRL.CM1.C2C.RX.DFE_LPM_RESET;
+  CM1_C2C_Ctrl.rxlpmen            <= CTRL.CM1.C2C.RX.LPM_EN;
+  CM1_C2C_Ctrl.rxlpmhfovrden      <= CTRL.CM1.C2C.RX.LPM_HF_OVERRIDE;
+  CM1_C2C_Ctrl.rxlpmlfklovrden    <= CTRL.CM1.C2C.RX.LPM_LFKL_OVERRIDE;
+  CM1_C2C_Ctrl.rxmonitorsel       <= CTRL.CM1.C2C.RX.MON_SEL;
+  CM1_C2C_Ctrl.rxpcsreset         <= CTRL.CM1.C2C.RX.PCS_RESET;
+  CM1_C2C_Ctrl.rxpmareset         <= CTRL.CM1.C2C.RX.PMA_RESET;
+  CM1_C2C_Ctrl.rxprbscntreset     <= CTRL.CM1.C2C.RX.PRBS_CNT_RST;
+  CM1_C2C_Ctrl.rxprbssel          <= CTRL.CM1.C2C.RX.PRBS_SEL;
+  CM1_C2C_Ctrl.txdiffctrl         <= CTRL.CM1.C2C.TX.DIFF_CTRL;
+  CM1_C2C_Ctrl.txinhibit          <= CTRL.CM1.C2C.TX.INHIBIT;
+  CM1_C2C_Ctrl.txmaincursor       <= CTRL.CM1.C2C.TX.MAIN_CURSOR;
+  CM1_C2C_Ctrl.txpcsreset         <= CTRL.CM1.C2C.TX.PCS_RESET;
+  CM1_C2C_Ctrl.txpmareset         <= CTRL.CM1.C2C.TX.PMA_RESET;
+  CM1_C2C_Ctrl.txpolarity         <= CTRL.CM1.C2C.TX.POLARITY;
+  CM1_C2C_Ctrl.txpostcursor       <= CTRL.CM1.C2C.TX.POST_CURSOR;
+  CM1_C2C_Ctrl.txprbsforceerr     <= CTRL.CM1.C2C.TX.PRBS_FORCE_ERR;
+  CM1_C2C_Ctrl.txprbssel          <= CTRL.CM1.C2C.TX.PRBS_SEL;
+  CM1_C2C_Ctrl.txprecursor        <= CTRL.CM1.C2C.TX.PRE_CURSOR;
 
-          when x"15" =>
-            reg_data(21)( 7 downto  0) <= localWrData( 7 downto  0); -- baud_16x_count
-          when x"22" =>
-            reg_data(34)(5)  <= localWrData(5);
-          when others => null;
-        end case;
-      end if;
-    end if;
-  end process reg_writes;
+  CM2_C2C_Ctrl.aurora_pma_init_in <= CTRL.CM2.C2C.INITIALIZE;
+  CM2_C2C_Ctrl.eyescanreset       <= CTRL.CM2.C2C.EYESCAN_RESET;
+  CM2_C2C_Ctrl.eyescantrigger     <= CTRL.CM2.C2C.EYESCAN_TRIGGER;
+  CM2_C2C_Ctrl.rxbufreset         <= CTRL.CM2.C2C.RX.BUF_RESET;
+  CM2_C2C_Ctrl.rxcdrhold          <= CTRL.CM2.C2C.RX.CDR_HOLD;   
+  CM2_C2C_Ctrl.rxdfeagchold       <= CTRL.CM2.C2C.RX.DFE_AGC_HOLD;
+  CM2_C2C_Ctrl.rxdfeagcovrden     <= CTRL.CM2.C2C.RX.DFE_AGC_OVERRIDE;
+  CM2_C2C_Ctrl.rxdfelfhold        <= CTRL.CM2.C2C.RX.DFE_LF_HOLD;
+  CM2_C2C_Ctrl.rxdfelpmreset      <= CTRL.CM2.C2C.RX.DFE_LPM_RESET;
+  CM2_C2C_Ctrl.rxlpmen            <= CTRL.CM2.C2C.RX.LPM_EN;
+  CM2_C2C_Ctrl.rxlpmhfovrden      <= CTRL.CM2.C2C.RX.LPM_HF_OVERRIDE;
+  CM2_C2C_Ctrl.rxlpmlfklovrden    <= CTRL.CM2.C2C.RX.LPM_LFKL_OVERRIDE;
+  CM2_C2C_Ctrl.rxmonitorsel       <= CTRL.CM2.C2C.RX.MON_SEL;
+  CM2_C2C_Ctrl.rxpcsreset         <= CTRL.CM2.C2C.RX.PCS_RESET;
+  CM2_C2C_Ctrl.rxpmareset         <= CTRL.CM2.C2C.RX.PMA_RESET;
+  CM2_C2C_Ctrl.rxprbscntreset     <= CTRL.CM2.C2C.RX.PRBS_CNT_RST;
+  CM2_C2C_Ctrl.rxprbssel          <= CTRL.CM2.C2C.RX.PRBS_SEL;
+  CM2_C2C_Ctrl.txdiffctrl         <= CTRL.CM2.C2C.TX.DIFF_CTRL;
+  CM2_C2C_Ctrl.txinhibit          <= CTRL.CM2.C2C.TX.INHIBIT;
+  CM2_C2C_Ctrl.txmaincursor       <= CTRL.CM2.C2C.TX.MAIN_CURSOR;
+  CM2_C2C_Ctrl.txpcsreset         <= CTRL.CM2.C2C.TX.PCS_RESET;
+  CM2_C2C_Ctrl.txpmareset         <= CTRL.CM2.C2C.TX.PMA_RESET;
+  CM2_C2C_Ctrl.txpolarity         <= CTRL.CM2.C2C.TX.POLARITY;
+  CM2_C2C_Ctrl.txpostcursor       <= CTRL.CM2.C2C.TX.POST_CURSOR;
+  CM2_C2C_Ctrl.txprbsforceerr     <= CTRL.CM2.C2C.TX.PRBS_FORCE_ERR;
+  CM2_C2C_Ctrl.txprbssel          <= CTRL.CM2.C2C.TX.PRBS_SEL;
+  CM2_C2C_Ctrl.txprecursor        <= CTRL.CM2.C2C.TX.PRE_CURSOR;
   -------------------------------------------------------------------------------
 
   CM_Monitoring_1: entity work.CM_Monitoring
