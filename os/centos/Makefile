@@ -73,10 +73,6 @@ ${OPT_PATH}/BUTool: ${OPT_PATH}/cactus | ${OPT_PATH} ${TMP_PATH}
 		git clone https://github.com/apollo-lhc/ApolloTool.git
 	cd ${TMP_PATH}/ApolloTool && \
 		make init
-	cd ${TMP_PATH}/ApolloTool/plugins/BUTool-IPBUS-Helpers && \
-		git checkout feature-newUIOuHAL
-	cd ${TMP_PATH}/ApolloTool/plugins/ApolloSM_plugin && \
-		git checkout feature-newUIOuHAL
 	cd ${TMP_PATH}/ApolloTool/plugins/ApolloSM_plugin && \
 		cp ${MODS_PATH}/build_BUTool.sh ${TMP_PATH}/ApolloTool/
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/ApolloTool/build_BUTool.sh
