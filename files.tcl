@@ -22,6 +22,8 @@ set vhdl_files "\
      src/services/SGMII_MON_pkg.vhd \
      src/IPMC_i2c_slave/i2c_slave.vhd \
      src/IPMC_i2c_slave/IPMC_i2c_slave.vhd \
+     src/CM_interface/CM_map.vhd \
+     src/CM_interface/CM_PKG.vhd \
      src/CM_interface/CM_interface.vhd \
      src/CM_interface/CM_Monitoring.vhd \
      src/CM_interface/CM_pwr.vhd \

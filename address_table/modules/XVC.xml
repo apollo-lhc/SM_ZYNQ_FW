@@ -1,4 +1,4 @@
-<node>
+<node id="XVC">
   <node id="LENGTH"  address="0x0" permission="rw" description="Length of shift operation in bits"/>
   <node id="TMS_VECTOR"  address="0x1" permission="rw" description="Test Mode Select (TMS) Bit Vector"/>
   <node id="TDI_VECTOR"  address="0x2" permission="rw" description="Test Data In (TDI) Bit Vector"/>

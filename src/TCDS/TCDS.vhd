@@ -9,6 +9,8 @@ entity TCDS is
   port (
     clk_axi              : in  std_logic;
     reset_axi_n          : in  std_logic;
+    clk_axi_DRP          : in  std_logic;
+    reset_axi_DRP_n      : in  std_logic;
     readMOSI             : in  AXIreadMOSI;
     readMISO             : out AXIreadMISO;
     writeMOSI            : in  AXIwriteMOSI;
@@ -22,6 +24,7 @@ entity TCDS is
     QPLL_CLK             : in  std_logic;
     QPLL_REF_CLK         : in  std_logic;
     reset                : in  std_logic;
+    clk_TCDS             : out std_logic;
     tx_P                 : out std_logic_vector(2 downto 0);
     tx_N                 : out std_logic_vector(2 downto 0);
     rx_P                 : in  std_logic_vector(2 downto 0);
@@ -160,7 +163,8 @@ begin  -- architecture Behavioral
       Q2_CLK1_GTREFCLK_PAD_N_IN => refclk_N,
       Q2_CLK1_GTREFCLK_PAD_P_IN => refclk_P,
       Q2_CLK1_GTREFCLK_OUT      => refclk);
-  
+
+  clk_TCDS <= tx_clk(0);
 
     LHC_2: entity work.LHC
       port map (
@@ -339,8 +343,8 @@ begin  -- architecture Behavioral
 
   TCDS_DRP_BRIDGE_1: entity work.TCDS_DRP_BRIDGE
     port map (
-      AXI_aclk      => clk_axi,
-      AXI_aresetn   => reset_axi_n,
+      AXI_aclk      => clk_axi_DRP,
+      AXI_aresetn   => reset_axi_DRP_n,
       S_AXI_araddr  => DRP_readMOSI.address,            
       S_AXI_arready => DRP_readMISO.ready_for_address,  
       S_AXI_arvalid => DRP_readMOSI.address_valid,      

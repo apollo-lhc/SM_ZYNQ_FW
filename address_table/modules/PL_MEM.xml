@@ -1,4 +1,4 @@
-<node>  
+<node id="PL_MEM">  
   <!-- <node id="0"   address="0x00000000" permission="rw"/> -->
   <!-- <node id="1"   address="0x00000001" permission="rw"/> -->
   <!-- <node id="2"   address="0x00000002" permission="rw"/> -->
