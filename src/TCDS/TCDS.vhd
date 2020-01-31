@@ -164,7 +164,8 @@ begin  -- architecture Behavioral
       Q2_CLK1_GTREFCLK_PAD_P_IN => refclk_P,
       Q2_CLK1_GTREFCLK_OUT      => refclk);
 
-  clk_TCDS <= tx_clk(0);
+--  clk_TCDS <= tx_clk(0);
+    clk_TCDS <= rx_user_clk2(0);
 
     LHC_2: entity work.LHC
       port map (
