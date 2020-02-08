@@ -30,11 +30,12 @@ set_property CONFIG.PCW_UIPARAM_DDR_PARTNO {MT41J256M16 RE-125} [get_bd_cells pr
 ###############################
 #AXI MASTERS
 ###############################
-set_property CONFIG.PCW_USE_M_AXI_GP0 {1} [get_bd_cells processing_system7_0]
-set_property CONFIG.PCW_USE_M_AXI_GP1 {1} [get_bd_cells processing_system7_0]
+set_property CONFIG.PCW_USE_M_AXI_GP0      {1} [get_bd_cells processing_system7_0]
+
+set_property CONFIG.PCW_USE_M_AXI_GP1      {1} [get_bd_cells processing_system7_0]
+set_property CONFIG.PCW_M_AXI_GP1_ENABLE_STATIC_REMAP {1} [get_bd_cells processing_system7_0]
 
 #connect FCLK_CLK0 to the master AXI_GP0 clock
-#set AXI_MASTER_CLK [get_bd_pins processing_system7_0/FCLK_CLK0]
 set AXI_MASTER_CLK processing_system7_0/FCLK_CLK0
 make_bd_pins_external -name axi_clk [get_bd_pins ${AXI_MASTER_CLK}]
 
