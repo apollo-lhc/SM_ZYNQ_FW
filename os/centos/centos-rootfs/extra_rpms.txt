@@ -6,6 +6,7 @@ dhclient
 python-devel
 python2-click.noarch
 pyserial.noarch
+python-matplotlib
 glibc-headers
 glibc-devel
 zlib-devel
