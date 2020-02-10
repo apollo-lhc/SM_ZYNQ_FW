@@ -37,7 +37,7 @@ PACKAGE_LINUX_IMAGE=$(ZYNQ_OS_PROJECT_PATH)/images/linux/image.elf
 
 KERNEL_USER_MODS_BASE=$(YOCTO_MOD_BASE)/recipes-kernel
 
-.PHONY: list  clean $(BUILD_ROOTFS) $(BUILD_BOOT) REBUILD_BOOTBIN NOTIFY_DAN_GOOD NOTIFY_DAN_BAD
+.PHONY: list  clean $(BUILD_ROOTFS) $(BUILD_BOOT) REBUILD_BOOTBIN NOTIFY_DAN_GOOD NOTIFY_DAN_BAD tarball
 
 all: 
 	$(MAKE) $(BOOT_FILES) || $(MAKE) NOTIFIFY_DAN_BAD
@@ -139,3 +139,7 @@ REBUILD_BOOTBIN:
 clean:
 	@rm -rf zynq_os
 	@rm -f  make_log.txt
+
+make tarball:
+	cd $(ZYNQ_OS_PROJECT_PATH)/images/linux/ && \
+	tar -zcf ../../..//$(shell date +%F)-SD_p1.tar.gz BOOT.BIN image.ub

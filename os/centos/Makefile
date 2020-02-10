@@ -22,7 +22,7 @@ ATLAS_GID=1001
 all: finalize_image
 
 ${INSTALL_PATH}:  centos-rootfs/extra_rpms.txt
-	rm -rf ${ISNTALL_PATH}
+	rm -rf ${INSTALL_PATH}
 	mkdir -p ${INSTALL_PATH}
 
 ${QEMU_PATH}/${QEMU} ${INSTALL_PATH}/${QEMU_PATH}/${QEMU}: | ${INSTALL_PATH}
@@ -142,3 +142,8 @@ clean:
 #list magic: https://stackoverflow.com/questions/4219255/how-do-you-get-the-list-of-targets-in-a-makefile
 list:
 	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]/]' -e '^$@$$' | column
+
+tarball:
+	cd ${INSTALL_PATH} && \
+	sudo tar --numeric-owner -p -zcf ../$(shell date +%F)-SD_p2.tar.gz ./
+
