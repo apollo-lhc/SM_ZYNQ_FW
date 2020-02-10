@@ -271,13 +271,12 @@ architecture structure of top is
 
   signal SI_OE_normal : std_logic;
   signal SI_EN_normal : std_logic;
-  signal Si_handoff_to_PS : std_logic;
   
   signal IPMC_SDA_o : std_logic;
   signal IPMC_SDA_t : std_logic;
   signal IPMC_SDA_i : std_logic;
 
-  signal  stupid_reset_test : std_logic;
+  signal  SI_init_reset : std_logic;
 
 
   signal XVC0_tck          : STD_LOGIC;
@@ -752,12 +751,11 @@ begin  -- architecture structure
     port map (
       clk_200Mhz => clk_200Mhz,
       clk_50Mhz  => AXI_C2C_aurora_init_clk,
-      reset      =>  stupid_reset_test,--'0',
+      reset      =>  SI_init_reset,--'0',
       locked     => clk_200Mhz_locked,
       clk_in1_n     => onboard_clk_n,
       clk_in1_p     => onboard_clk_p);
   reset_200Mhz <= not clk_200Mhz_locked ;
-  Si_handoff_to_PS <= '0';
 
   SI_OUT_DIS <= not SI_OE_normal;
   SI_ENABLE  <= SI_EN_normal;
@@ -777,8 +775,7 @@ begin  -- architecture structure
       SI_LOS          => SI_LOS,
       SI_OUT_EN       => SI_OE_normal,
       SI_ENABLE       => SI_EN_normal,
-      SI_Handoff      => Si_handoff_to_PS,
-      SI_init_reset   => stupid_reset_test,
+      SI_init_reset   => SI_init_reset,
       TTC_SRC_SEL     => TTC_SRC_SEL,
       LHC_CLK_CMS_LOS => LHC_CLK_CMS_LOS,
       LHC_CLK_OSC_LOS => LHC_CLK_OSC_LOS,

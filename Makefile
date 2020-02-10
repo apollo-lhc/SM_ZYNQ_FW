@@ -21,6 +21,8 @@ BUILD_TCL=scripts/Build.tcl
 SETUP_BUILD_TCL=scripts/SetupAndBuild.tcl
 HW_TCL=scripts/Run_hw.tcl
 
+
+
 #################################################################################
 # Source files
 #################################################################################
@@ -37,7 +39,7 @@ BIT=./bit/top.bit
 
 .SECONDARY:
 
-.PHONY: clean list bit NOTIFY_DAN_BAD NOTIFY_DAN_GOOD
+.PHONY: clean list bit NOTIFY_DAN_BAD NOTIFY_DAN_GOOD init
 
 all:
 	$(MAKE) bit || $(MAKE) NOTIFY_DAN_BAD
@@ -180,10 +182,21 @@ test_cm_monitor : $(TB_CM_MONITOR_VDBS)
 	$(MAKE) tb_cm_monitor USE_GUI="-onfinish quit -t ./quit.tcl"
 
 
+################################################################################# 
+# Generate MAP and PKG files from address table 
+################################################################################# 
+XML2VHD_PATH=regmap_helper
+ifneq ("$(wildcard $(XML2VHD_PATH)/xml_regmap.mk)","") 
+	include $(XML2VHD_PATH)/xml_regmap.mk
+endif
+
 #################################################################################
 # Help 
 #################################################################################
 
 #list magic: https://stackoverflow.com/questions/4219255/how-do-you-get-the-list-of-targets-in-a-makefile
 list:
-	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]/]' -e '^$@$$' | column
+	@$(MAKE) -pRrq -f $(MAKEFILE_LIST) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | column
+
+init:
+	git submodule update --init --recursive 
