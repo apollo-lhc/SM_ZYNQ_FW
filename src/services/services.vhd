@@ -51,22 +51,8 @@ entity services is
 end entity services;
 
 architecture behavioral of services is
-  signal localAddress : slv_32_t;
-  signal localRdData  : slv_32_t;
-  signal localRdData_latch  : slv_32_t;
-  signal localWrData  : slv_32_t;
-  signal localWrEn    : std_logic;
-  signal localRdReq   : std_logic;
-  signal localRdAck   : std_logic;
-  
-
-  signal reg_data :  slv32_array_t(integer range 0 to 15);
-  asdlfjaskdjflasjdlkfjsklaj
-  constant Default_reg_data : slv32_array_t(integer range 0 to 15) := (0 => x"00000003",
-                                                                       4 => x"00000001",
-                                                                       5 => x"00001010",
-                                                                       8 => x"00000800",
-                                                                       others => x"00000000");
+ signal Mon              :  SERV_Mon_t;
+ signal Ctrl             :  SERV_Ctrl_t;
 
 
   signal ESM_LEDs : slv_16_t;

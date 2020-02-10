@@ -67,25 +67,25 @@ begin  -- architecture behavioral
       localRdAck  <= '1';
       case to_integer(unsigned(localAddress(4 downto 0))) is
         when 0 => --0x0
-          localRdData( 1)            <=  Mon.GIT_VALID;                   --
+          localRdData( 1)            <=  Mon.GIT_VALID;             --
         when 1 => --0x1
-          localRdData(31 downto  0)  <=  Mon.GIT_HASH_1;                  --
+          localRdData(31 downto  0)  <=  Mon.GIT_HASH_1;            --
         when 2 => --0x2
-          localRdData(31 downto  0)  <=  Mon.GIT_HASH_2;                  --
+          localRdData(31 downto  0)  <=  Mon.GIT_HASH_2;            --
         when 3 => --0x3
-          localRdData(31 downto  0)  <=  Mon.GIT_HASH_3;                  --
+          localRdData(31 downto  0)  <=  Mon.GIT_HASH_3;            --
         when 4 => --0x4
-          localRdData(31 downto  0)  <=  Mon.GIT_HASH_4;                  --
+          localRdData(31 downto  0)  <=  Mon.GIT_HASH_4;            --
         when 5 => --0x5
-          localRdData(31 downto  0)  <=  Mon.GIT_HASH_5;                  --
+          localRdData(31 downto  0)  <=  Mon.GIT_HASH_5;            --
         when 16 => --0x10
-          localRdData( 7 downto  0)  <=  reg_data(16)( 7 downto  0);      --
-          localRdData(15 downto  8)  <=  reg_data(16)(15 downto  8);      --
-          localRdData(31 downto 16)  <=  reg_data(16)(31 downto 16);      --
+          localRdData( 7 downto  0)  <=  Mon.BUILD_DATE.DAY;        --
+          localRdData(15 downto  8)  <=  Mon.BUILD_DATE.MONTH;      --
+          localRdData(31 downto 16)  <=  Mon.BUILD_DATE.YEAR;       --
         when 17 => --0x11
-          localRdData( 7 downto  0)  <=  reg_data(17)( 7 downto  0);      --
-          localRdData(15 downto  8)  <=  reg_data(17)(15 downto  8);      --
-          localRdData(23 downto 16)  <=  reg_data(17)(23 downto 16);      --
+          localRdData( 7 downto  0)  <=  Mon.BUILD_TIME.SEC;        --
+          localRdData(15 downto  8)  <=  Mon.BUILD_TIME.MIN;        --
+          localRdData(23 downto 16)  <=  Mon.BUILD_TIME.HOUR;       --
         when others =>
           localRdData <= x"00000000";
       end case;
@@ -94,32 +94,13 @@ begin  -- architecture behavioral
 
 
 
-  -- Register mapping to ctrl structures
-  Ctrl.BUILD_DATE.YEAR   <=  reg_data(16)(31 downto 16);     
-  Ctrl.BUILD_DATE.MONTH  <=  reg_data(16)(15 downto  8);     
-  Ctrl.BUILD_DATE.DAY    <=  reg_data(16)( 7 downto  0);     
-  Ctrl.BUILD_TIME.SEC    <=  reg_data(17)( 7 downto  0);     
-  Ctrl.BUILD_TIME.MIN    <=  reg_data(17)(15 downto  8);     
-  Ctrl.BUILD_TIME.HOUR   <=  reg_data(17)(23 downto 16);     
-
-
-
   reg_writes: process (clk_axi, reset_axi_n) is
   begin  -- process reg_writes
     if reset_axi_n = '0' then                 -- asynchronous reset (active low)
-      reg_data <= default_reg_data;
     elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
       
       if localWrEn = '1' then
         case to_integer(unsigned(localAddress(4 downto 0))) is
-        when 16 => --0x10
-          reg_data(16)( 7 downto  0)  <=  localWrData( 7 downto  0);      --
-          reg_data(16)(15 downto  8)  <=  localWrData(15 downto  8);      --
-          reg_data(16)(31 downto 16)  <=  localWrData(31 downto 16);      --
-        when 17 => --0x11
-          reg_data(17)( 7 downto  0)  <=  localWrData( 7 downto  0);      --
-          reg_data(17)(15 downto  8)  <=  localWrData(15 downto  8);      --
-          reg_data(17)(23 downto 16)  <=  localWrData(23 downto 16);      --
           when others => null;
         end case;
       end if;

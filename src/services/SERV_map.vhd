@@ -79,19 +79,19 @@ begin  -- architecture behavioral
           localRdData( 0)            <=  Mon.CLOCKING.LHC_LOS_BP;           --Backplane LHC clk LOS
           localRdData( 1)            <=  Mon.CLOCKING.LHC_LOS_OSC;          --Local Si LHC clk LOS
           localRdData( 4)            <=  reg_data( 5)( 4);                  --LHC clk source select
-          localRdData( 4)            <=  reg_data( 5)( 4);                  --LHC clk source select
           localRdData( 8)            <=  Mon.CLOCKING.HQ_LOS_BP;            --Backplane HQ clk LOS
           localRdData( 9)            <=  Mon.CLOCKING.HQ_LOS_OSC;           --Local Si HQ clk LOS
+          localRdData(12)            <=  reg_data( 5)(12);                  --HQ clk source select
         when 8 => --0x8
           localRdData( 0)            <=  reg_data( 8)( 0);                  --reset FP LEDs
           localRdData( 1)            <=  reg_data( 8)( 1);                  --override FP LED page 0
           localRdData( 4 downto  2)  <=  reg_data( 8)( 4 downto  2);        --override FP LED page 0 pattern
-          localRdData( 5)            <=  reg_data( 8)( 5);                  --FP button (not debounced)
+          localRdData( 5)            <=  Mon.FP_LEDS.BUTTON;                --FP button (not debounced)
           localRdData(11 downto  8)  <=  reg_data( 8)(11 downto  8);        --page 0 speed
           localRdData(21 downto 16)  <=  reg_data( 8)(21 downto 16);        --Page to display
           localRdData(22)            <=  reg_data( 8)(22);                  --Force the display of a page (override button UI)
           localRdData(29 downto 24)  <=  reg_data( 8)(29 downto 24);        --Page to display
-          localRdData(31)            <=  reg_data( 8)(31);                  --FP button shutdown request
+          localRdData(31)            <=  Mon.FP_LEDS.FP_SHDWN_REQ;          --FP button shutdown request
         when 9 => --0x9
           localRdData(15 downto  0)  <=  Mon.SWITCH.STATUS;                 --Ethernet switch LEDs
         when 12 => --0xc
@@ -120,29 +120,40 @@ begin  -- architecture behavioral
 
 
   -- Register mapping to ctrl structures
-  Ctrl.SI5344.OE             <=  reg_data( 0)( 0);               
-  Ctrl.SI5344.EN             <=  reg_data( 0)( 1);               
-  Ctrl.SI5344.SOMETHING      <=  reg_data( 0)( 2);               
-  Ctrl.TCDS.TTC_SOURCE       <=  reg_data( 4)( 0);               
-  Ctrl.CLOCKING.SEL          <=  reg_data( 5)( 4);               
-  Ctrl.CLOCKING.SEL          <=  reg_data( 5)( 4);               
-  Ctrl.FP_LEDS.RESET         <=  reg_data( 8)( 0);               
-  Ctrl.FP_LEDS.PAGE0_FORCE   <=  reg_data( 8)( 1);               
-  Ctrl.FP_LEDS.PAGE0_MODE    <=  reg_data( 8)( 4 downto  2);     
-  Ctrl.FP_LEDS.BUTTON        <=  reg_data( 8)( 5);               
-  Ctrl.FP_LEDS.PAGE0_SPEED   <=  reg_data( 8)(11 downto  8);     
-  Ctrl.FP_LEDS.FORCED_PAGE   <=  reg_data( 8)(21 downto 16);     
-  Ctrl.FP_LEDS.FORCE_PAGE    <=  reg_data( 8)(22);               
-  Ctrl.FP_LEDS.PAGE          <=  reg_data( 8)(29 downto 24);     
-  Ctrl.FP_LEDS.FP_SHDWN_REQ  <=  reg_data( 8)(31);               
-  Ctrl.SGMII.RESET           <=  reg_data(12)( 0);               
+  Ctrl.SI5344.OE              <=  reg_data( 0)( 0);               
+  Ctrl.SI5344.EN              <=  reg_data( 0)( 1);               
+  Ctrl.SI5344.FPGA_PLL_RESET  <=  reg_data( 0)( 2);               
+  Ctrl.TCDS.TTC_SOURCE        <=  reg_data( 4)( 0);               
+  Ctrl.CLOCKING.LHC_SEL       <=  reg_data( 5)( 4);               
+  Ctrl.CLOCKING.HQ_SEL        <=  reg_data( 5)(12);               
+  Ctrl.FP_LEDS.RESET          <=  reg_data( 8)( 0);               
+  Ctrl.FP_LEDS.PAGE0_FORCE    <=  reg_data( 8)( 1);               
+  Ctrl.FP_LEDS.PAGE0_MODE     <=  reg_data( 8)( 4 downto  2);     
+  Ctrl.FP_LEDS.PAGE0_SPEED    <=  reg_data( 8)(11 downto  8);     
+  Ctrl.FP_LEDS.FORCED_PAGE    <=  reg_data( 8)(21 downto 16);     
+  Ctrl.FP_LEDS.FORCE_PAGE     <=  reg_data( 8)(22);               
+  Ctrl.FP_LEDS.PAGE           <=  reg_data( 8)(29 downto 24);     
+  Ctrl.SGMII.RESET            <=  reg_data(12)( 0);               
 
 
 
   reg_writes: process (clk_axi, reset_axi_n) is
   begin  -- process reg_writes
     if reset_axi_n = '0' then                 -- asynchronous reset (active low)
-      reg_data <= default_reg_data;
+      reg_data( 0)( 0)  <= DEFAULT_SERV_CTRL_t.SI5344.OE;
+      reg_data( 0)( 1)  <= DEFAULT_SERV_CTRL_t.SI5344.EN;
+      reg_data( 0)( 2)  <= DEFAULT_SERV_CTRL_t.SI5344.FPGA_PLL_RESET;
+      reg_data( 4)( 0)  <= DEFAULT_SERV_CTRL_t.TCDS.TTC_SOURCE;
+      reg_data( 5)( 4)  <= DEFAULT_SERV_CTRL_t.CLOCKING.LHC_SEL;
+      reg_data( 5)(12)  <= DEFAULT_SERV_CTRL_t.CLOCKING.HQ_SEL;
+      reg_data( 8)( 0)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.RESET;
+      reg_data( 8)( 1)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.PAGE0_FORCE;
+      reg_data( 8)( 4 downto  2)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.PAGE0_MODE;
+      reg_data( 8)(11 downto  8)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.PAGE0_SPEED;
+      reg_data( 8)(21 downto 16)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.FORCED_PAGE;
+      reg_data( 8)(22)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.FORCE_PAGE;
+      reg_data( 8)(29 downto 24)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.PAGE;
+      reg_data(12)( 0)  <= DEFAULT_SERV_CTRL_t.SGMII.RESET;
     elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
       
       if localWrEn = '1' then
@@ -155,17 +166,15 @@ begin  -- architecture behavioral
           reg_data( 8)( 0)            <=  localWrData( 0);                --reset FP LEDs
           reg_data( 8)( 1)            <=  localWrData( 1);                --override FP LED page 0
           reg_data( 8)( 4 downto  2)  <=  localWrData( 4 downto  2);      --override FP LED page 0 pattern
-          reg_data( 8)( 5)            <=  localWrData( 5);                --FP button (not debounced)
           reg_data( 8)(11 downto  8)  <=  localWrData(11 downto  8);      --page 0 speed
           reg_data( 8)(21 downto 16)  <=  localWrData(21 downto 16);      --Page to display
           reg_data( 8)(22)            <=  localWrData(22);                --Force the display of a page (override button UI)
           reg_data( 8)(29 downto 24)  <=  localWrData(29 downto 24);      --Page to display
-          reg_data( 8)(31)            <=  localWrData(31);                --FP button shutdown request
         when 4 => --0x4
           reg_data( 4)( 0)            <=  localWrData( 0);                --TTC source select (0:TCDS,1:TTC_FAKE
         when 5 => --0x5
           reg_data( 5)( 4)            <=  localWrData( 4);                --LHC clk source select
-          reg_data( 5)( 4)            <=  localWrData( 4);                --LHC clk source select
+          reg_data( 5)(12)            <=  localWrData(12);                --HQ clk source select
         when 12 => --0xc
           reg_data(12)( 0)            <=  localWrData( 0);                --Reset SGMII + SGMII clocking
           when others => null;

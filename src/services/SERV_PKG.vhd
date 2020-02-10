@@ -13,14 +13,22 @@ package SERV_CTRL is
 
   type SERV_SI5344_CTRL_t is record
     EN                         : std_logic;     -- Power on Si5344
+    FPGA_PLL_RESET             : std_logic;   
     OE                         : std_logic;     -- Enable Si5344 outputs
-    SOMETHING                  : std_logic;   
   end record SERV_SI5344_CTRL_t;
 
+  constant DEFAULT_SERV_SI5344_CTRL_t : SERV_SI5344_CTRL_t := (
+                                                               FPGA_PLL_RESET => (others => '0'),
+                                                               OE => 0x1,
+                                                               EN => 0x1
+                                                              );
   type SERV_TCDS_CTRL_t is record
     TTC_SOURCE                 : std_logic;     -- TTC source select (0:TCDS,1:TTC_FAKE
   end record SERV_TCDS_CTRL_t;
 
+  constant DEFAULT_SERV_TCDS_CTRL_t : SERV_TCDS_CTRL_t := (
+                                                           TTC_SOURCE => 0x1
+                                                          );
   type SERV_CLOCKING_MON_t is record
     HQ_LOS_BP                  : std_logic;     -- Backplane HQ clk LOS
     HQ_LOS_OSC                 : std_logic;     -- Local Si HQ clk LOS
@@ -29,14 +37,22 @@ package SERV_CTRL is
   end record SERV_CLOCKING_MON_t;
 
   type SERV_CLOCKING_CTRL_t is record
-    SEL                        : std_logic;     -- LHC clk source select
+    HQ_SEL                     : std_logic;     -- HQ clk source select
+    LHC_SEL                    : std_logic;     -- LHC clk source select
   end record SERV_CLOCKING_CTRL_t;
 
+  constant DEFAULT_SERV_CLOCKING_CTRL_t : SERV_CLOCKING_CTRL_t := (
+                                                                   HQ_SEL => 0x1,
+                                                                   LHC_SEL => 0x1
+                                                                  );
+  type SERV_FP_LEDS_MON_t is record
+    BUTTON                     : std_logic;     -- FP button (not debounced)
+    FP_SHDWN_REQ               : std_logic;     -- FP button shutdown request
+  end record SERV_FP_LEDS_MON_t;
+
   type SERV_FP_LEDS_CTRL_t is record
-    BUTTON                     : std_logic;                       -- FP button (not debounced)
     FORCED_PAGE                : std_logic_vector( 5 downto  0);  -- Page to display
     FORCE_PAGE                 : std_logic;                       -- Force the display of a page (override button UI)
-    FP_SHDWN_REQ               : std_logic;                       -- FP button shutdown request
     PAGE                       : std_logic_vector( 5 downto  0);  -- Page to display
     PAGE0_FORCE                : std_logic;                       -- override FP LED page 0
     PAGE0_MODE                 : std_logic_vector( 2 downto  0);  -- override FP LED page 0 pattern
@@ -44,6 +60,15 @@ package SERV_CTRL is
     RESET                      : std_logic;                       -- reset FP LEDs
   end record SERV_FP_LEDS_CTRL_t;
 
+  constant DEFAULT_SERV_FP_LEDS_CTRL_t : SERV_FP_LEDS_CTRL_t := (
+                                                                 RESET => (others => '0'),
+                                                                 PAGE0_FORCE => (others => '0'),
+                                                                 PAGE0_SPEED => 0x8,
+                                                                 FORCE_PAGE => (others => '0'),
+                                                                 PAGE0_MODE => (others => '0'),
+                                                                 FORCED_PAGE => (others => '0'),
+                                                                 PAGE => (others => '0')
+                                                                );
   type SERV_SWITCH_MON_t is record
     STATUS                     : std_logic_vector(15 downto  0);  -- Ethernet switch LEDs
   end record SERV_SWITCH_MON_t;
@@ -70,8 +95,12 @@ package SERV_CTRL is
     RESET                      : std_logic;     -- Reset SGMII + SGMII clocking
   end record SERV_SGMII_CTRL_t;
 
+  constant DEFAULT_SERV_SGMII_CTRL_t : SERV_SGMII_CTRL_t := (
+                                                             RESET => (others => '0')
+                                                            );
   type SERV_MON_t is record
     CLOCKING                   : SERV_CLOCKING_MON_t;
+    FP_LEDS                    : SERV_FP_LEDS_MON_t; 
     SGMII                      : SERV_SGMII_MON_t;   
     SI5344                     : SERV_SI5344_MON_t;  
     SWITCH                     : SERV_SWITCH_MON_t;  
@@ -85,6 +114,13 @@ package SERV_CTRL is
     TCDS                       : SERV_TCDS_CTRL_t;    
   end record SERV_CTRL_t;
 
+  constant DEFAULT_SERV_CTRL_t : SERV_CTRL_t := (
+                                                 FP_LEDS => DEFAULT_SERV_FP_LEDS_CTRL_t,
+                                                 SGMII => DEFAULT_SERV_SGMII_CTRL_t,
+                                                 SI5344 => DEFAULT_SERV_SI5344_CTRL_t,
+                                                 TCDS => DEFAULT_SERV_TCDS_CTRL_t,
+                                                 CLOCKING => DEFAULT_SERV_CLOCKING_CTRL_t
+                                                );
 
 
 end package SERV_CTRL;
