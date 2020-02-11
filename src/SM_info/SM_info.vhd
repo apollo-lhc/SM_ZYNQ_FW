@@ -27,8 +27,7 @@ entity SM_info is
 end entity SM_info;
 
 architecture behavioral of SM_info is
-  Mon              : in  FW_INFO_Mon_t;
-  Ctrl             : out FW_INFO_Ctrl_t;
+  signal Mon              :  FW_INFO_Mon_t;
 
 begin  -- architecture behavioral
 
@@ -44,8 +43,7 @@ begin  -- architecture behavioral
       slave_readMISO  => readMISO,
       slave_writeMOSI => writeMOSI,
       slave_writeMISO => writeMISO,
-      Mon             => Mon,
-      Ctrl            => Ctrl);
+      Mon             => Mon);
 
   Mon.GIT_VALID                     <= FW_HASH_VALID;
   Mon.GIT_HASH_1                    <= FW_HASH_1;

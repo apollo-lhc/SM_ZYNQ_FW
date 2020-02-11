@@ -14,8 +14,7 @@ entity FW_INFO_interface is
     slave_readMISO   : out AXIReadMISO  := DefaultAXIReadMISO;
     slave_writeMOSI  : in  AXIWriteMOSI;
     slave_writeMISO  : out AXIWriteMISO := DefaultAXIWriteMISO;
-    Mon              : in  FW_INFO_Mon_t;
-    Ctrl             : out FW_INFO_Ctrl_t
+    Mon              : in  FW_INFO_Mon_t
     );
 end entity FW_INFO_interface;
 architecture behavioral of FW_INFO_interface is
@@ -93,18 +92,5 @@ begin  -- architecture behavioral
   end process reads;
 
 
-
-  reg_writes: process (clk_axi, reset_axi_n) is
-  begin  -- process reg_writes
-    if reset_axi_n = '0' then                 -- asynchronous reset (active low)
-    elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
-      
-      if localWrEn = '1' then
-        case to_integer(unsigned(localAddress(4 downto 0))) is
-          when others => null;
-        end case;
-      end if;
-    end if;
-  end process reg_writes;
 
 end architecture behavioral;

@@ -18,16 +18,16 @@ package SERV_CTRL is
   end record SERV_SI5344_CTRL_t;
 
   constant DEFAULT_SERV_SI5344_CTRL_t : SERV_SI5344_CTRL_t := (
-                                                               FPGA_PLL_RESET => (others => '0'),
-                                                               OE => 0x1,
-                                                               EN => 0x1
+                                                               FPGA_PLL_RESET => '0',
+                                                               OE => '1',
+                                                               EN => '1'
                                                               );
   type SERV_TCDS_CTRL_t is record
     TTC_SOURCE                 : std_logic;     -- TTC source select (0:TCDS,1:TTC_FAKE
   end record SERV_TCDS_CTRL_t;
 
   constant DEFAULT_SERV_TCDS_CTRL_t : SERV_TCDS_CTRL_t := (
-                                                           TTC_SOURCE => 0x1
+                                                           TTC_SOURCE => '1'
                                                           );
   type SERV_CLOCKING_MON_t is record
     HQ_LOS_BP                  : std_logic;     -- Backplane HQ clk LOS
@@ -42,8 +42,8 @@ package SERV_CTRL is
   end record SERV_CLOCKING_CTRL_t;
 
   constant DEFAULT_SERV_CLOCKING_CTRL_t : SERV_CLOCKING_CTRL_t := (
-                                                                   HQ_SEL => 0x1,
-                                                                   LHC_SEL => 0x1
+                                                                   HQ_SEL => '1',
+                                                                   LHC_SEL => '1'
                                                                   );
   type SERV_FP_LEDS_MON_t is record
     BUTTON                     : std_logic;     -- FP button (not debounced)
@@ -61,10 +61,10 @@ package SERV_CTRL is
   end record SERV_FP_LEDS_CTRL_t;
 
   constant DEFAULT_SERV_FP_LEDS_CTRL_t : SERV_FP_LEDS_CTRL_t := (
-                                                                 RESET => (others => '0'),
-                                                                 PAGE0_FORCE => (others => '0'),
-                                                                 PAGE0_SPEED => 0x8,
-                                                                 FORCE_PAGE => (others => '0'),
+                                                                 RESET => '0',
+                                                                 PAGE0_FORCE => '0',
+                                                                 PAGE0_SPEED => x"8",
+                                                                 FORCE_PAGE => '0',
                                                                  PAGE0_MODE => (others => '0'),
                                                                  FORCED_PAGE => (others => '0'),
                                                                  PAGE => (others => '0')
@@ -96,7 +96,7 @@ package SERV_CTRL is
   end record SERV_SGMII_CTRL_t;
 
   constant DEFAULT_SERV_SGMII_CTRL_t : SERV_SGMII_CTRL_t := (
-                                                             RESET => (others => '0')
+                                                             RESET => '0'
                                                             );
   type SERV_MON_t is record
     CLOCKING                   : SERV_CLOCKING_MON_t;

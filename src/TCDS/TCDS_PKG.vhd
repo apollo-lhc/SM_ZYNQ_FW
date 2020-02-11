@@ -15,7 +15,7 @@ package TCDS_CTRL is
   end record TCDS_LINK0_CLOCKING_CTRL_t;
 
   constant DEFAULT_TCDS_LINK0_CLOCKING_CTRL_t : TCDS_LINK0_CLOCKING_CTRL_t := (
-                                                                               RESET => (others => '0')
+                                                                               RESET => '0'
                                                                               );
   type TCDS_LINK0_RX_MON_t is record
     BAD_CHAR                   : std_logic_vector( 3 downto  0);
@@ -37,12 +37,12 @@ package TCDS_CTRL is
 
   constant DEFAULT_TCDS_LINK0_RX_CTRL_t : TCDS_LINK0_RX_CTRL_t := (
                                                                    MONITOR_SEL => (others => '0'),
-                                                                   RESET => (others => '0'),
-                                                                   PMA_RESET => (others => '0'),
+                                                                   RESET => '0',
+                                                                   PMA_RESET => '0',
                                                                    PRBS_SEL => (others => '0'),
-                                                                   DFELPM_RESET => (others => '0'),
-                                                                   PRBS_RESET => (others => '0'),
-                                                                   USER_READY => (others => '0')
+                                                                   DFELPM_RESET => '0',
+                                                                   PRBS_RESET => '0',
+                                                                   USER_READY => '0'
                                                                   );
   type TCDS_LINK0_TX_MON_t is record
     RESET_DONE                 : std_logic;   
@@ -57,11 +57,11 @@ package TCDS_CTRL is
   end record TCDS_LINK0_TX_CTRL_t;
 
   constant DEFAULT_TCDS_LINK0_TX_CTRL_t : TCDS_LINK0_TX_CTRL_t := (
-                                                                   PRBS_FORCE_ERROR => (others => '0'),
-                                                                   RESET => (others => '0'),
+                                                                   PRBS_FORCE_ERROR => '0',
+                                                                   RESET => '0',
                                                                    PRBS_SEL => (others => '0'),
-                                                                   USER_READY => (others => '0'),
-                                                                   INHIBIT => (others => '0')
+                                                                   USER_READY => '0',
+                                                                   INHIBIT => '0'
                                                                   );
   type TCDS_LINK0_EYESCAN_MON_t is record
     DATA_ERROR                 : std_logic;   
@@ -73,8 +73,8 @@ package TCDS_CTRL is
   end record TCDS_LINK0_EYESCAN_CTRL_t;
 
   constant DEFAULT_TCDS_LINK0_EYESCAN_CTRL_t : TCDS_LINK0_EYESCAN_CTRL_t := (
-                                                                             RESET => (others => '0'),
-                                                                             TRIGGER => (others => '0')
+                                                                             RESET => '0',
+                                                                             TRIGGER => '0'
                                                                             );
   type TCDS_LINK0_MON_t is record
     CLOCKING                   : TCDS_LINK0_CLOCKING_MON_t;     
@@ -109,7 +109,7 @@ package TCDS_CTRL is
   end record TCDS_LINK1_CLOCKING_CTRL_t;
 
   constant DEFAULT_TCDS_LINK1_CLOCKING_CTRL_t : TCDS_LINK1_CLOCKING_CTRL_t := (
-                                                                               RESET => (others => '0')
+                                                                               RESET => '0'
                                                                               );
   type TCDS_LINK1_RX_MON_t is record
     BAD_CHAR                   : std_logic_vector( 3 downto  0);
@@ -131,12 +131,12 @@ package TCDS_CTRL is
 
   constant DEFAULT_TCDS_LINK1_RX_CTRL_t : TCDS_LINK1_RX_CTRL_t := (
                                                                    MONITOR_SEL => (others => '0'),
-                                                                   RESET => (others => '0'),
-                                                                   PMA_RESET => (others => '0'),
+                                                                   RESET => '0',
+                                                                   PMA_RESET => '0',
                                                                    PRBS_SEL => (others => '0'),
-                                                                   DFELPM_RESET => (others => '0'),
-                                                                   PRBS_RESET => (others => '0'),
-                                                                   USER_READY => (others => '0')
+                                                                   DFELPM_RESET => '0',
+                                                                   PRBS_RESET => '0',
+                                                                   USER_READY => '0'
                                                                   );
   type TCDS_LINK1_TX_MON_t is record
     RESET_DONE                 : std_logic;   
@@ -151,11 +151,11 @@ package TCDS_CTRL is
   end record TCDS_LINK1_TX_CTRL_t;
 
   constant DEFAULT_TCDS_LINK1_TX_CTRL_t : TCDS_LINK1_TX_CTRL_t := (
-                                                                   PRBS_FORCE_ERROR => (others => '0'),
-                                                                   RESET => (others => '0'),
+                                                                   PRBS_FORCE_ERROR => '0',
+                                                                   RESET => '0',
                                                                    PRBS_SEL => (others => '0'),
-                                                                   USER_READY => (others => '0'),
-                                                                   INHIBIT => (others => '0')
+                                                                   USER_READY => '0',
+                                                                   INHIBIT => '0'
                                                                   );
   type TCDS_LINK1_EYESCAN_MON_t is record
     DATA_ERROR                 : std_logic;   
@@ -167,8 +167,8 @@ package TCDS_CTRL is
   end record TCDS_LINK1_EYESCAN_CTRL_t;
 
   constant DEFAULT_TCDS_LINK1_EYESCAN_CTRL_t : TCDS_LINK1_EYESCAN_CTRL_t := (
-                                                                             RESET => (others => '0'),
-                                                                             TRIGGER => (others => '0')
+                                                                             RESET => '0',
+                                                                             TRIGGER => '0'
                                                                             );
   type TCDS_LINK1_MON_t is record
     CLOCKING                   : TCDS_LINK1_CLOCKING_MON_t;     
@@ -203,7 +203,7 @@ package TCDS_CTRL is
   end record TCDS_LINK2_CLOCKING_CTRL_t;
 
   constant DEFAULT_TCDS_LINK2_CLOCKING_CTRL_t : TCDS_LINK2_CLOCKING_CTRL_t := (
-                                                                               RESET => (others => '0')
+                                                                               RESET => '0'
                                                                               );
   type TCDS_LINK2_RX_MON_t is record
     BAD_CHAR                   : std_logic_vector( 3 downto  0);
@@ -225,12 +225,12 @@ package TCDS_CTRL is
 
   constant DEFAULT_TCDS_LINK2_RX_CTRL_t : TCDS_LINK2_RX_CTRL_t := (
                                                                    MONITOR_SEL => (others => '0'),
-                                                                   RESET => (others => '0'),
-                                                                   PMA_RESET => (others => '0'),
+                                                                   RESET => '0',
+                                                                   PMA_RESET => '0',
                                                                    PRBS_SEL => (others => '0'),
-                                                                   DFELPM_RESET => (others => '0'),
-                                                                   PRBS_RESET => (others => '0'),
-                                                                   USER_READY => (others => '0')
+                                                                   DFELPM_RESET => '0',
+                                                                   PRBS_RESET => '0',
+                                                                   USER_READY => '0'
                                                                   );
   type TCDS_LINK2_TX_MON_t is record
     RESET_DONE                 : std_logic;   
@@ -245,11 +245,11 @@ package TCDS_CTRL is
   end record TCDS_LINK2_TX_CTRL_t;
 
   constant DEFAULT_TCDS_LINK2_TX_CTRL_t : TCDS_LINK2_TX_CTRL_t := (
-                                                                   PRBS_FORCE_ERROR => (others => '0'),
-                                                                   RESET => (others => '0'),
+                                                                   PRBS_FORCE_ERROR => '0',
+                                                                   RESET => '0',
                                                                    PRBS_SEL => (others => '0'),
-                                                                   USER_READY => (others => '0'),
-                                                                   INHIBIT => (others => '0')
+                                                                   USER_READY => '0',
+                                                                   INHIBIT => '0'
                                                                   );
   type TCDS_LINK2_EYESCAN_MON_t is record
     DATA_ERROR                 : std_logic;   
@@ -261,8 +261,8 @@ package TCDS_CTRL is
   end record TCDS_LINK2_EYESCAN_CTRL_t;
 
   constant DEFAULT_TCDS_LINK2_EYESCAN_CTRL_t : TCDS_LINK2_EYESCAN_CTRL_t := (
-                                                                             RESET => (others => '0'),
-                                                                             TRIGGER => (others => '0')
+                                                                             RESET => '0',
+                                                                             TRIGGER => '0'
                                                                             );
   type TCDS_LINK2_MON_t is record
     CLOCKING                   : TCDS_LINK2_CLOCKING_MON_t;     
@@ -300,7 +300,7 @@ package TCDS_CTRL is
   end record TCDS_CTRL0_CTRL_t;
 
   constant DEFAULT_TCDS_CTRL0_CTRL_t : TCDS_CTRL0_CTRL_t := (
-                                                             CAPTURE => (others => '0'),
+                                                             CAPTURE => '0',
                                                              FIXED_SEND_D => (others => '0'),
                                                              MODE => (others => '0'),
                                                              FIXED_SEND_K => (others => '0')
@@ -318,7 +318,7 @@ package TCDS_CTRL is
   end record TCDS_CTRL1_CTRL_t;
 
   constant DEFAULT_TCDS_CTRL1_CTRL_t : TCDS_CTRL1_CTRL_t := (
-                                                             CAPTURE => (others => '0'),
+                                                             CAPTURE => '0',
                                                              FIXED_SEND_D => (others => '0'),
                                                              MODE => (others => '0'),
                                                              FIXED_SEND_K => (others => '0')
@@ -336,7 +336,7 @@ package TCDS_CTRL is
   end record TCDS_CTRL2_CTRL_t;
 
   constant DEFAULT_TCDS_CTRL2_CTRL_t : TCDS_CTRL2_CTRL_t := (
-                                                             CAPTURE => (others => '0'),
+                                                             CAPTURE => '0',
                                                              FIXED_SEND_D => (others => '0'),
                                                              MODE => (others => '0'),
                                                              FIXED_SEND_K => (others => '0')

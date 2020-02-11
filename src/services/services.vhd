@@ -154,10 +154,10 @@ begin  -- architecture behavioral
     port map (
       clk_axi         => clk_axi,
       reset_axi_n     => reset_axi_n,
-      slave_readMOSI  => slave_readMOSI,
-      slave_readMISO  => slave_readMISO,
-      slave_writeMOSI => slave_writeMOSI,
-      slave_writeMISO => slave_writeMISO,
+      slave_readMOSI  => readMOSI,
+      slave_readMISO  => readMISO,
+      slave_writeMOSI => writeMOSI,
+      slave_writeMISO => writeMISO,
       Mon             => Mon,
       Ctrl            => Ctrl);
  

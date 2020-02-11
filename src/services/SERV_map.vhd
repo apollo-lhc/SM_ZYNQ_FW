@@ -140,20 +140,20 @@ begin  -- architecture behavioral
   reg_writes: process (clk_axi, reset_axi_n) is
   begin  -- process reg_writes
     if reset_axi_n = '0' then                 -- asynchronous reset (active low)
-      reg_data( 0)( 0)  <= DEFAULT_SERV_CTRL_t.SI5344.OE;
-      reg_data( 0)( 1)  <= DEFAULT_SERV_CTRL_t.SI5344.EN;
-      reg_data( 0)( 2)  <= DEFAULT_SERV_CTRL_t.SI5344.FPGA_PLL_RESET;
-      reg_data( 4)( 0)  <= DEFAULT_SERV_CTRL_t.TCDS.TTC_SOURCE;
-      reg_data( 5)( 4)  <= DEFAULT_SERV_CTRL_t.CLOCKING.LHC_SEL;
-      reg_data( 5)(12)  <= DEFAULT_SERV_CTRL_t.CLOCKING.HQ_SEL;
-      reg_data( 8)( 0)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.RESET;
-      reg_data( 8)( 1)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.PAGE0_FORCE;
+           reg_data( 0)( 0)  <= DEFAULT_SERV_CTRL_t.SI5344.OE;
+           reg_data( 0)( 1)  <= DEFAULT_SERV_CTRL_t.SI5344.EN;
+           reg_data( 0)( 2)  <= DEFAULT_SERV_CTRL_t.SI5344.FPGA_PLL_RESET;
+           reg_data( 4)( 0)  <= DEFAULT_SERV_CTRL_t.TCDS.TTC_SOURCE;
+           reg_data( 5)( 4)  <= DEFAULT_SERV_CTRL_t.CLOCKING.LHC_SEL;
+           reg_data( 5)(12)  <= DEFAULT_SERV_CTRL_t.CLOCKING.HQ_SEL;
+           reg_data( 8)( 0)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.RESET;
+           reg_data( 8)( 1)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.PAGE0_FORCE;
       reg_data( 8)( 4 downto  2)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.PAGE0_MODE;
       reg_data( 8)(11 downto  8)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.PAGE0_SPEED;
       reg_data( 8)(21 downto 16)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.FORCED_PAGE;
-      reg_data( 8)(22)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.FORCE_PAGE;
+           reg_data( 8)(22)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.FORCE_PAGE;
       reg_data( 8)(29 downto 24)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.PAGE;
-      reg_data(12)( 0)  <= DEFAULT_SERV_CTRL_t.SGMII.RESET;
+           reg_data(12)( 0)  <= DEFAULT_SERV_CTRL_t.SGMII.RESET;
     elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
       
       if localWrEn = '1' then

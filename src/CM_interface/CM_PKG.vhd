@@ -20,10 +20,10 @@ package CM_CTRL is
   end record CM_CM1_CTRL_CTRL_t;
 
   constant DEFAULT_CM_CM1_CTRL_CTRL_t : CM_CM1_CTRL_CTRL_t := (
-                                                               OVERRIDE_PWR_GOOD => (others => '0'),
-                                                               ERROR_STATE_RESET => (others => '0'),
-                                                               ENABLE_UC => (others => '0'),
-                                                               ENABLE_PWR => (others => '0')
+                                                               OVERRIDE_PWR_GOOD => '0',
+                                                               ERROR_STATE_RESET => '0',
+                                                               ENABLE_UC => '0',
+                                                               ENABLE_PWR => '0'
                                                               );
   type CM_CM1_C2C_RX_MON_t is record
     BUF_STATUS                 : std_logic_vector( 2 downto  0);  -- DEBUG rx buf status
@@ -50,20 +50,20 @@ package CM_CTRL is
   end record CM_CM1_C2C_RX_CTRL_t;
 
   constant DEFAULT_CM_CM1_C2C_RX_CTRL_t : CM_CM1_C2C_RX_CTRL_t := (
-                                                                   DFE_LPM_RESET => (others => '0'),
-                                                                   LPM_EN => (others => '0'),
+                                                                   DFE_LPM_RESET => '0',
+                                                                   LPM_EN => '0',
                                                                    PRBS_SEL => (others => '0'),
-                                                                   CDR_HOLD => (others => '0'),
-                                                                   PRBS_CNT_RST => (others => '0'),
-                                                                   DFE_AGC_HOLD => (others => '0'),
+                                                                   CDR_HOLD => '0',
+                                                                   PRBS_CNT_RST => '0',
+                                                                   DFE_AGC_HOLD => '0',
                                                                    MON_SEL => (others => '0'),
-                                                                   LPM_LFKL_OVERRIDE => (others => '0'),
-                                                                   DFE_AGC_OVERRIDE => (others => '0'),
-                                                                   DFE_LF_HOLD => (others => '0'),
-                                                                   BUF_RESET => (others => '0'),
-                                                                   PMA_RESET => (others => '0'),
-                                                                   LPM_HF_OVERRIDE => (others => '0'),
-                                                                   PCS_RESET => (others => '0')
+                                                                   LPM_LFKL_OVERRIDE => '0',
+                                                                   DFE_AGC_OVERRIDE => '0',
+                                                                   DFE_LF_HOLD => '0',
+                                                                   BUF_RESET => '0',
+                                                                   PMA_RESET => '0',
+                                                                   LPM_HF_OVERRIDE => '0',
+                                                                   PCS_RESET => '0'
                                                                   );
   type CM_CM1_C2C_TX_MON_t is record
     BUF_STATUS                 : std_logic_vector( 1 downto  0);  -- DEBUG tx buf status
@@ -84,16 +84,16 @@ package CM_CTRL is
   end record CM_CM1_C2C_TX_CTRL_t;
 
   constant DEFAULT_CM_CM1_C2C_TX_CTRL_t : CM_CM1_C2C_TX_CTRL_t := (
-                                                                   POLARITY => (others => '0'),
-                                                                   INHIBIT => (others => '0'),
+                                                                   POLARITY => '0',
+                                                                   INHIBIT => '0',
                                                                    POST_CURSOR => (others => '0'),
                                                                    PRBS_SEL => (others => '0'),
-                                                                   PRBS_FORCE_ERR => (others => '0'),
+                                                                   PRBS_FORCE_ERR => '0',
                                                                    DIFF_CTRL => (others => '0'),
                                                                    MAIN_CURSOR => (others => '0'),
-                                                                   PMA_RESET => (others => '0'),
+                                                                   PMA_RESET => '0',
                                                                    PRE_CURSOR => (others => '0'),
-                                                                   PCS_RESET => (others => '0')
+                                                                   PCS_RESET => '0'
                                                                   );
   type CM_CM1_C2C_MON_t is record
     CONFIG_ERROR               : std_logic;                       -- C2C config error
@@ -123,10 +123,10 @@ package CM_CTRL is
   end record CM_CM1_C2C_CTRL_t;
 
   constant DEFAULT_CM_CM1_C2C_CTRL_t : CM_CM1_C2C_CTRL_t := (
-                                                             INITIALIZE => (others => '0'),
+                                                             INITIALIZE => '0',
                                                              RX => DEFAULT_CM_CM1_C2C_RX_CTRL_t,
-                                                             EYESCAN_RESET => (others => '0'),
-                                                             EYESCAN_TRIGGER => (others => '0'),
+                                                             EYESCAN_RESET => '0',
+                                                             EYESCAN_TRIGGER => '0',
                                                              TX => DEFAULT_CM_CM1_C2C_TX_CTRL_t
                                                             );
   type CM_CM1_MONITOR_MON_t is record
@@ -175,10 +175,10 @@ package CM_CTRL is
   end record CM_CM2_CTRL_CTRL_t;
 
   constant DEFAULT_CM_CM2_CTRL_CTRL_t : CM_CM2_CTRL_CTRL_t := (
-                                                               OVERRIDE_PWR_GOOD => (others => '0'),
-                                                               ERROR_STATE_RESET => (others => '0'),
-                                                               ENABLE_UC => (others => '0'),
-                                                               ENABLE_PWR => (others => '0')
+                                                               OVERRIDE_PWR_GOOD => '0',
+                                                               ERROR_STATE_RESET => '0',
+                                                               ENABLE_UC => '0',
+                                                               ENABLE_PWR => '0'
                                                               );
   type CM_CM2_C2C_RX_MON_t is record
     BUF_STATUS                 : std_logic_vector( 2 downto  0);  -- DEBUG rx buf status
@@ -205,20 +205,20 @@ package CM_CTRL is
   end record CM_CM2_C2C_RX_CTRL_t;
 
   constant DEFAULT_CM_CM2_C2C_RX_CTRL_t : CM_CM2_C2C_RX_CTRL_t := (
-                                                                   DFE_LPM_RESET => (others => '0'),
-                                                                   LPM_EN => (others => '0'),
+                                                                   DFE_LPM_RESET => '0',
+                                                                   LPM_EN => '0',
                                                                    PRBS_SEL => (others => '0'),
-                                                                   CDR_HOLD => (others => '0'),
-                                                                   PRBS_CNT_RST => (others => '0'),
-                                                                   DFE_AGC_HOLD => (others => '0'),
+                                                                   CDR_HOLD => '0',
+                                                                   PRBS_CNT_RST => '0',
+                                                                   DFE_AGC_HOLD => '0',
                                                                    MON_SEL => (others => '0'),
-                                                                   LPM_LFKL_OVERRIDE => (others => '0'),
-                                                                   DFE_AGC_OVERRIDE => (others => '0'),
-                                                                   DFE_LF_HOLD => (others => '0'),
-                                                                   BUF_RESET => (others => '0'),
-                                                                   PMA_RESET => (others => '0'),
-                                                                   LPM_HF_OVERRIDE => (others => '0'),
-                                                                   PCS_RESET => (others => '0')
+                                                                   LPM_LFKL_OVERRIDE => '0',
+                                                                   DFE_AGC_OVERRIDE => '0',
+                                                                   DFE_LF_HOLD => '0',
+                                                                   BUF_RESET => '0',
+                                                                   PMA_RESET => '0',
+                                                                   LPM_HF_OVERRIDE => '0',
+                                                                   PCS_RESET => '0'
                                                                   );
   type CM_CM2_C2C_TX_MON_t is record
     BUF_STATUS                 : std_logic_vector( 1 downto  0);  -- DEBUG tx buf status
@@ -239,16 +239,16 @@ package CM_CTRL is
   end record CM_CM2_C2C_TX_CTRL_t;
 
   constant DEFAULT_CM_CM2_C2C_TX_CTRL_t : CM_CM2_C2C_TX_CTRL_t := (
-                                                                   POLARITY => (others => '0'),
-                                                                   INHIBIT => (others => '0'),
+                                                                   POLARITY => '0',
+                                                                   INHIBIT => '0',
                                                                    POST_CURSOR => (others => '0'),
                                                                    PRBS_SEL => (others => '0'),
-                                                                   PRBS_FORCE_ERR => (others => '0'),
+                                                                   PRBS_FORCE_ERR => '0',
                                                                    DIFF_CTRL => (others => '0'),
                                                                    MAIN_CURSOR => (others => '0'),
-                                                                   PMA_RESET => (others => '0'),
+                                                                   PMA_RESET => '0',
                                                                    PRE_CURSOR => (others => '0'),
-                                                                   PCS_RESET => (others => '0')
+                                                                   PCS_RESET => '0'
                                                                   );
   type CM_CM2_C2C_MON_t is record
     CONFIG_ERROR               : std_logic;                       -- C2C config error
@@ -278,10 +278,10 @@ package CM_CTRL is
   end record CM_CM2_C2C_CTRL_t;
 
   constant DEFAULT_CM_CM2_C2C_CTRL_t : CM_CM2_C2C_CTRL_t := (
-                                                             INITIALIZE => (others => '0'),
+                                                             INITIALIZE => '0',
                                                              RX => DEFAULT_CM_CM2_C2C_RX_CTRL_t,
-                                                             EYESCAN_RESET => (others => '0'),
-                                                             EYESCAN_TRIGGER => (others => '0'),
+                                                             EYESCAN_RESET => '0',
+                                                             EYESCAN_TRIGGER => '0',
                                                              TX => DEFAULT_CM_CM2_C2C_TX_CTRL_t
                                                             );
   type CM_CM2_MON_t is record
