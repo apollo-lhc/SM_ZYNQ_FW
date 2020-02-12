@@ -193,7 +193,7 @@ begin  -- architecture behavioral
   TTC_SRC_SEL   <= Ctrl.TCDS.TTC_SOURCE;
   LHC_SRC_SEL   <= Ctrl.CLOCKING.LHC_SEL;
   HQ_SRC_SEL    <= Ctrl.CLOCKING.HQ_SEL;
-  FP_LED_RST    <= Ctrl.FP_LEDS.RESET;
+  FP_LED_RST    <= not Ctrl.FP_LEDS.RESET;
   SGMII_CTRL.reset <= Ctrl.SGMII.RESET;
 
 
