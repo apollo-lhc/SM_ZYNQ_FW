@@ -61,3 +61,8 @@ set xci_files "\
     	      "
 #	      cores/ila_i2c_debug/ila_i2c_debug.xci \
 #	      cores/c2c_ibert/c2c_ibert.xci \
+
+#DRP ip
+set ip_repo_path ../bd/IP
+set_property  ip_repo_paths ${ip_repo_path}  [current_project]
+update_ip_catalog
