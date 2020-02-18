@@ -44,3 +44,4 @@ ntp
 ntpdate
 rpm-build-libs
 rpm-build
+python2-pip
