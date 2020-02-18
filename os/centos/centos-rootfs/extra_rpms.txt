@@ -42,3 +42,5 @@ i2c-tools-eepromer
 screen
 ntp
 ntpdate
+rpm-build-libs
+rpm-build
