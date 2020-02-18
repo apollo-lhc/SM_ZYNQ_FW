@@ -65,8 +65,8 @@ begin  -- architecture behavioral
     localRdData <= x"00000000";
     if localRdReq = '1' then
       localRdAck  <= '1';
-      case localAddress(5 downto 0) is
-        when x"0" =>
+      case to_integer(unsigned(localAddress(5 downto 0))) is
+        when 0 => --0x0
           localRdData( 0)            <=  reg_data( 0)( 0);                    --Tell CM uC to power-up
           localRdData( 1)            <=  reg_data( 0)( 1);                    --Tell CM uC to power-up the rest of the CM
           localRdData( 2)            <=  reg_data( 0)( 2);                    --Ignore power good from CM
@@ -75,7 +75,7 @@ begin  -- architecture behavioral
           localRdData( 8)            <=  reg_data( 0)( 8);                    --CM power is good
           localRdData( 9)            <=  Mon.CM1.CTRL.PWR_ENABLED;            --power is enabled
           localRdData(10)            <=  Mon.CM1.CTRL.IOS_ENABLED;            --IOs to CM are enabled
-        when x"1" =>
+        when 1 => --0x1
           localRdData( 0)            <=  reg_data( 1)( 0);                    --Tell CM uC to power-up
           localRdData( 1)            <=  reg_data( 1)( 1);                    --Tell CM uC to power-up the rest of the CM
           localRdData( 2)            <=  reg_data( 1)( 2);                    --Ignore power good from CM
@@ -84,7 +84,7 @@ begin  -- architecture behavioral
           localRdData( 8)            <=  reg_data( 1)( 8);                    --CM power is good
           localRdData( 9)            <=  Mon.CM2.CTRL.PWR_ENABLED;            --power is enabled
           localRdData(10)            <=  Mon.CM2.CTRL.IOS_ENABLED;            --IOs to CM are enabled
-        when x"22" =>
+        when 34 => --0x22
           localRdData( 0)            <=  Mon.CM2.C2C.CONFIG_ERROR;            --C2C config error
           localRdData( 1)            <=  Mon.CM2.C2C.LINK_ERROR;              --C2C link error
           localRdData( 2)            <=  Mon.CM2.C2C.LINK_GOOD;               --C2C link FSM in SYNC
@@ -102,7 +102,7 @@ begin  -- architecture behavioral
           localRdData(22)            <=  reg_data(34)(22);                    --DEBUG eyescan reset
           localRdData(23)            <=  reg_data(34)(23);                    --DEBUG eyescan trigger
           localRdData(31 downto 24)  <=  Mon.CM2.C2C.DMONITOR;                --DEBUG d monitor
-        when x"23" =>
+        when 35 => --0x23
           localRdData( 2 downto  0)  <=  Mon.CM2.C2C.RX.BUF_STATUS;           --DEBUG rx buf status
           localRdData( 9 downto  3)  <=  Mon.CM2.C2C.RX.MONITOR;              --DEBUG rx status
           localRdData(10)            <=  Mon.CM2.C2C.RX.PRBS_ERR;             --DEBUG rx PRBS error
@@ -121,7 +121,7 @@ begin  -- architecture behavioral
           localRdData(24)            <=  reg_data(35)(24);                    --DEBUG rx pma reset
           localRdData(25)            <=  reg_data(35)(25);                    --DEBUG rx PRBS counter reset
           localRdData(28 downto 26)  <=  reg_data(35)(28 downto 26);          --DEBUG rx PRBS select
-        when x"24" =>
+        when 36 => --0x24
           localRdData( 1 downto  0)  <=  Mon.CM2.C2C.TX.BUF_STATUS;           --DEBUG tx buf status
           localRdData( 2)            <=  Mon.CM2.C2C.TX.RESET_DONE;           --DEBUG tx reset done
           localRdData( 6 downto  3)  <=  reg_data(36)( 6 downto  3);          --DEBUG tx diff control
@@ -134,7 +134,7 @@ begin  -- architecture behavioral
           localRdData(23)            <=  reg_data(36)(23);                    --DEBUG force PRBS error
           localRdData(26 downto 24)  <=  reg_data(36)(26 downto 24);          --DEBUG PRBS select
           localRdData(31 downto 27)  <=  reg_data(36)(31 downto 27);          --DEBUG pre cursor
-        when x"12" =>
+        when 18 => --0x12
           localRdData( 0)            <=  Mon.CM1.C2C.CONFIG_ERROR;            --C2C config error
           localRdData( 1)            <=  Mon.CM1.C2C.LINK_ERROR;              --C2C link error
           localRdData( 2)            <=  Mon.CM1.C2C.LINK_GOOD;               --C2C link FSM in SYNC
@@ -152,7 +152,7 @@ begin  -- architecture behavioral
           localRdData(22)            <=  reg_data(18)(22);                    --DEBUG eyescan reset
           localRdData(23)            <=  reg_data(18)(23);                    --DEBUG eyescan trigger
           localRdData(31 downto 24)  <=  Mon.CM1.C2C.DMONITOR;                --DEBUG d monitor
-        when x"13" =>
+        when 19 => --0x13
           localRdData( 2 downto  0)  <=  Mon.CM1.C2C.RX.BUF_STATUS;           --DEBUG rx buf status
           localRdData( 9 downto  3)  <=  Mon.CM1.C2C.RX.MONITOR;              --DEBUG rx status
           localRdData(10)            <=  Mon.CM1.C2C.RX.PRBS_ERR;             --DEBUG rx PRBS error
@@ -171,7 +171,7 @@ begin  -- architecture behavioral
           localRdData(24)            <=  reg_data(19)(24);                    --DEBUG rx pma reset
           localRdData(25)            <=  reg_data(19)(25);                    --DEBUG rx PRBS counter reset
           localRdData(28 downto 26)  <=  reg_data(19)(28 downto 26);          --DEBUG rx PRBS select
-        when x"14" =>
+        when 20 => --0x14
           localRdData( 1 downto  0)  <=  Mon.CM1.C2C.TX.BUF_STATUS;           --DEBUG tx buf status
           localRdData( 2)            <=  Mon.CM1.C2C.TX.RESET_DONE;           --DEBUG tx reset done
           localRdData( 6 downto  3)  <=  reg_data(20)( 6 downto  3);          --DEBUG tx diff control
@@ -184,12 +184,12 @@ begin  -- architecture behavioral
           localRdData(23)            <=  reg_data(20)(23);                    --DEBUG force PRBS error
           localRdData(26 downto 24)  <=  reg_data(20)(26 downto 24);          --DEBUG PRBS select
           localRdData(31 downto 27)  <=  reg_data(20)(31 downto 27);          --DEBUG pre cursor
-        when x"15" =>
+        when 21 => --0x15
           localRdData( 7 downto  0)  <=  reg_data(21)( 7 downto  0);          --Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
           localRdData( 8)            <=  Mon.CM1.MONITOR.ACTIVE;              --Monitoring active. Is zero when no update in the last second.
           localRdData(15 downto 12)  <=  Mon.CM1.MONITOR.HISTORY_VALID;       --bytes valid in debug history
           localRdData(31 downto 16)  <=  Mon.CM1.MONITOR.ERRORS;              --Monitoring errors. Count of invalid byte types in parsing.
-        when x"16" =>
+        when 22 => --0x16
           localRdData(31 downto  0)  <=  Mon.CM1.MONITOR.HISTORY;             --4 bytes of uart history
         when others =>
           localRdData <= x"00000000";
@@ -269,26 +269,88 @@ begin  -- architecture behavioral
   reg_writes: process (clk_axi, reset_axi_n) is
   begin  -- process reg_writes
     if reset_axi_n = '0' then                 -- asynchronous reset (active low)
-      reg_data <= default_reg_data;
+           reg_data( 0)( 0)  <= DEFAULT_CM_CTRL_t.CM1.CTRL.ENABLE_UC;
+           reg_data( 0)( 1)  <= DEFAULT_CM_CTRL_t.CM1.CTRL.ENABLE_PWR;
+           reg_data( 0)( 2)  <= DEFAULT_CM_CTRL_t.CM1.CTRL.OVERRIDE_PWR_GOOD;
+           reg_data( 0)( 8)  <= DEFAULT_CM_CTRL_t.CM1.CTRL.ERROR_STATE_RESET;
+           reg_data(18)( 5)  <= DEFAULT_CM_CTRL_t.CM1.C2C.INITIALIZE;
+           reg_data(18)(22)  <= DEFAULT_CM_CTRL_t.CM1.C2C.EYESCAN_RESET;
+           reg_data(18)(23)  <= DEFAULT_CM_CTRL_t.CM1.C2C.EYESCAN_TRIGGER;
+           reg_data(19)(12)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.BUF_RESET;
+           reg_data(19)(13)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.CDR_HOLD;
+           reg_data(19)(14)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.DFE_AGC_HOLD;
+           reg_data(19)(15)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.DFE_AGC_OVERRIDE;
+           reg_data(19)(16)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.DFE_LF_HOLD;
+           reg_data(19)(17)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.DFE_LPM_RESET;
+           reg_data(19)(18)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.LPM_EN;
+           reg_data(19)(19)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.LPM_HF_OVERRIDE;
+           reg_data(19)(20)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.LPM_LFKL_OVERRIDE;
+      reg_data(19)(22 downto 21)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.MON_SEL;
+           reg_data(19)(23)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.PCS_RESET;
+           reg_data(19)(24)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.PMA_RESET;
+           reg_data(19)(25)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.PRBS_CNT_RST;
+      reg_data(19)(28 downto 26)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.PRBS_SEL;
+      reg_data(20)( 6 downto  3)  <= DEFAULT_CM_CTRL_t.CM1.C2C.TX.DIFF_CTRL;
+           reg_data(20)( 7)  <= DEFAULT_CM_CTRL_t.CM1.C2C.TX.INHIBIT;
+      reg_data(20)(14 downto  8)  <= DEFAULT_CM_CTRL_t.CM1.C2C.TX.MAIN_CURSOR;
+           reg_data(20)(15)  <= DEFAULT_CM_CTRL_t.CM1.C2C.TX.PCS_RESET;
+           reg_data(20)(16)  <= DEFAULT_CM_CTRL_t.CM1.C2C.TX.PMA_RESET;
+           reg_data(20)(17)  <= DEFAULT_CM_CTRL_t.CM1.C2C.TX.POLARITY;
+      reg_data(20)(22 downto 18)  <= DEFAULT_CM_CTRL_t.CM1.C2C.TX.POST_CURSOR;
+           reg_data(20)(23)  <= DEFAULT_CM_CTRL_t.CM1.C2C.TX.PRBS_FORCE_ERR;
+      reg_data(20)(26 downto 24)  <= DEFAULT_CM_CTRL_t.CM1.C2C.TX.PRBS_SEL;
+      reg_data(20)(31 downto 27)  <= DEFAULT_CM_CTRL_t.CM1.C2C.TX.PRE_CURSOR;
+      reg_data(21)( 7 downto  0)  <= DEFAULT_CM_CTRL_t.CM1.MONITOR.COUNT_16X_BAUD;
+           reg_data( 1)( 0)  <= DEFAULT_CM_CTRL_t.CM2.CTRL.ENABLE_UC;
+           reg_data( 1)( 1)  <= DEFAULT_CM_CTRL_t.CM2.CTRL.ENABLE_PWR;
+           reg_data( 1)( 2)  <= DEFAULT_CM_CTRL_t.CM2.CTRL.OVERRIDE_PWR_GOOD;
+           reg_data( 1)( 8)  <= DEFAULT_CM_CTRL_t.CM2.CTRL.ERROR_STATE_RESET;
+           reg_data(34)( 5)  <= DEFAULT_CM_CTRL_t.CM2.C2C.INITIALIZE;
+           reg_data(34)(22)  <= DEFAULT_CM_CTRL_t.CM2.C2C.EYESCAN_RESET;
+           reg_data(34)(23)  <= DEFAULT_CM_CTRL_t.CM2.C2C.EYESCAN_TRIGGER;
+           reg_data(35)(12)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.BUF_RESET;
+           reg_data(35)(13)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.CDR_HOLD;
+           reg_data(35)(14)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.DFE_AGC_HOLD;
+           reg_data(35)(15)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.DFE_AGC_OVERRIDE;
+           reg_data(35)(16)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.DFE_LF_HOLD;
+           reg_data(35)(17)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.DFE_LPM_RESET;
+           reg_data(35)(18)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.LPM_EN;
+           reg_data(35)(19)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.LPM_HF_OVERRIDE;
+           reg_data(35)(20)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.LPM_LFKL_OVERRIDE;
+      reg_data(35)(22 downto 21)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.MON_SEL;
+           reg_data(35)(23)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.PCS_RESET;
+           reg_data(35)(24)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.PMA_RESET;
+           reg_data(35)(25)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.PRBS_CNT_RST;
+      reg_data(35)(28 downto 26)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.PRBS_SEL;
+      reg_data(36)( 6 downto  3)  <= DEFAULT_CM_CTRL_t.CM2.C2C.TX.DIFF_CTRL;
+           reg_data(36)( 7)  <= DEFAULT_CM_CTRL_t.CM2.C2C.TX.INHIBIT;
+      reg_data(36)(14 downto  8)  <= DEFAULT_CM_CTRL_t.CM2.C2C.TX.MAIN_CURSOR;
+           reg_data(36)(15)  <= DEFAULT_CM_CTRL_t.CM2.C2C.TX.PCS_RESET;
+           reg_data(36)(16)  <= DEFAULT_CM_CTRL_t.CM2.C2C.TX.PMA_RESET;
+           reg_data(36)(17)  <= DEFAULT_CM_CTRL_t.CM2.C2C.TX.POLARITY;
+      reg_data(36)(22 downto 18)  <= DEFAULT_CM_CTRL_t.CM2.C2C.TX.POST_CURSOR;
+           reg_data(36)(23)  <= DEFAULT_CM_CTRL_t.CM2.C2C.TX.PRBS_FORCE_ERR;
+      reg_data(36)(26 downto 24)  <= DEFAULT_CM_CTRL_t.CM2.C2C.TX.PRBS_SEL;
+      reg_data(36)(31 downto 27)  <= DEFAULT_CM_CTRL_t.CM2.C2C.TX.PRE_CURSOR;
     elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
       
       if localWrEn = '1' then
-        case localAddress(5 downto 0) is
-        when x"0" =>
+        case to_integer(unsigned(localAddress(5 downto 0))) is
+        when 0 => --0x0
           reg_data( 0)( 0)            <=  localWrData( 0);                --Tell CM uC to power-up
           reg_data( 0)( 1)            <=  localWrData( 1);                --Tell CM uC to power-up the rest of the CM
           reg_data( 0)( 2)            <=  localWrData( 2);                --Ignore power good from CM
           reg_data( 0)( 8)            <=  localWrData( 8);                --CM power is good
-        when x"1" =>
+        when 1 => --0x1
           reg_data( 1)( 0)            <=  localWrData( 0);                --Tell CM uC to power-up
           reg_data( 1)( 1)            <=  localWrData( 1);                --Tell CM uC to power-up the rest of the CM
           reg_data( 1)( 2)            <=  localWrData( 2);                --Ignore power good from CM
           reg_data( 1)( 8)            <=  localWrData( 8);                --CM power is good
-        when x"22" =>
+        when 34 => --0x22
           reg_data(34)( 5)            <=  localWrData( 5);                --C2C initialize
           reg_data(34)(22)            <=  localWrData(22);                --DEBUG eyescan reset
           reg_data(34)(23)            <=  localWrData(23);                --DEBUG eyescan trigger
-        when x"23" =>
+        when 35 => --0x23
           reg_data(35)(12)            <=  localWrData(12);                --DEBUG rx buf reset
           reg_data(35)(13)            <=  localWrData(13);                --DEBUG rx CDR hold
           reg_data(35)(14)            <=  localWrData(14);                --DEBUG rx DFE AGC HOLD
@@ -303,7 +365,7 @@ begin  -- architecture behavioral
           reg_data(35)(24)            <=  localWrData(24);                --DEBUG rx pma reset
           reg_data(35)(25)            <=  localWrData(25);                --DEBUG rx PRBS counter reset
           reg_data(35)(28 downto 26)  <=  localWrData(28 downto 26);      --DEBUG rx PRBS select
-        when x"24" =>
+        when 36 => --0x24
           reg_data(36)( 6 downto  3)  <=  localWrData( 6 downto  3);      --DEBUG tx diff control
           reg_data(36)( 7)            <=  localWrData( 7);                --DEBUG tx inhibit
           reg_data(36)(14 downto  8)  <=  localWrData(14 downto  8);      --DEBUG tx main cursor
@@ -314,11 +376,11 @@ begin  -- architecture behavioral
           reg_data(36)(23)            <=  localWrData(23);                --DEBUG force PRBS error
           reg_data(36)(26 downto 24)  <=  localWrData(26 downto 24);      --DEBUG PRBS select
           reg_data(36)(31 downto 27)  <=  localWrData(31 downto 27);      --DEBUG pre cursor
-        when x"12" =>
+        when 18 => --0x12
           reg_data(18)( 5)            <=  localWrData( 5);                --C2C initialize
           reg_data(18)(22)            <=  localWrData(22);                --DEBUG eyescan reset
           reg_data(18)(23)            <=  localWrData(23);                --DEBUG eyescan trigger
-        when x"13" =>
+        when 19 => --0x13
           reg_data(19)(12)            <=  localWrData(12);                --DEBUG rx buf reset
           reg_data(19)(13)            <=  localWrData(13);                --DEBUG rx CDR hold
           reg_data(19)(14)            <=  localWrData(14);                --DEBUG rx DFE AGC HOLD
@@ -333,7 +395,7 @@ begin  -- architecture behavioral
           reg_data(19)(24)            <=  localWrData(24);                --DEBUG rx pma reset
           reg_data(19)(25)            <=  localWrData(25);                --DEBUG rx PRBS counter reset
           reg_data(19)(28 downto 26)  <=  localWrData(28 downto 26);      --DEBUG rx PRBS select
-        when x"14" =>
+        when 20 => --0x14
           reg_data(20)( 6 downto  3)  <=  localWrData( 6 downto  3);      --DEBUG tx diff control
           reg_data(20)( 7)            <=  localWrData( 7);                --DEBUG tx inhibit
           reg_data(20)(14 downto  8)  <=  localWrData(14 downto  8);      --DEBUG tx main cursor
@@ -344,7 +406,7 @@ begin  -- architecture behavioral
           reg_data(20)(23)            <=  localWrData(23);                --DEBUG force PRBS error
           reg_data(20)(26 downto 24)  <=  localWrData(26 downto 24);      --DEBUG PRBS select
           reg_data(20)(31 downto 27)  <=  localWrData(31 downto 27);      --DEBUG pre cursor
-        when x"15" =>
+        when 21 => --0x15
           reg_data(21)( 7 downto  0)  <=  localWrData( 7 downto  0);      --Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
           when others => null;
         end case;

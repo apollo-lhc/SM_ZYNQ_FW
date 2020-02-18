@@ -19,6 +19,12 @@ package CM_CTRL is
     OVERRIDE_PWR_GOOD          : std_logic;     -- Ignore power good from CM
   end record CM_CM1_CTRL_CTRL_t;
 
+  constant DEFAULT_CM_CM1_CTRL_CTRL_t : CM_CM1_CTRL_CTRL_t := (
+                                                               OVERRIDE_PWR_GOOD => '0',
+                                                               ERROR_STATE_RESET => '0',
+                                                               ENABLE_UC => '0',
+                                                               ENABLE_PWR => '0'
+                                                              );
   type CM_CM1_C2C_RX_MON_t is record
     BUF_STATUS                 : std_logic_vector( 2 downto  0);  -- DEBUG rx buf status
     MONITOR                    : std_logic_vector( 6 downto  0);  -- DEBUG rx status
@@ -43,6 +49,22 @@ package CM_CTRL is
     PRBS_SEL                   : std_logic_vector( 2 downto  0);  -- DEBUG rx PRBS select
   end record CM_CM1_C2C_RX_CTRL_t;
 
+  constant DEFAULT_CM_CM1_C2C_RX_CTRL_t : CM_CM1_C2C_RX_CTRL_t := (
+                                                                   DFE_LPM_RESET => '0',
+                                                                   LPM_EN => '0',
+                                                                   PRBS_SEL => (others => '0'),
+                                                                   CDR_HOLD => '0',
+                                                                   PRBS_CNT_RST => '0',
+                                                                   DFE_AGC_HOLD => '0',
+                                                                   MON_SEL => (others => '0'),
+                                                                   LPM_LFKL_OVERRIDE => '0',
+                                                                   DFE_AGC_OVERRIDE => '0',
+                                                                   DFE_LF_HOLD => '0',
+                                                                   BUF_RESET => '0',
+                                                                   PMA_RESET => '0',
+                                                                   LPM_HF_OVERRIDE => '0',
+                                                                   PCS_RESET => '0'
+                                                                  );
   type CM_CM1_C2C_TX_MON_t is record
     BUF_STATUS                 : std_logic_vector( 1 downto  0);  -- DEBUG tx buf status
     RESET_DONE                 : std_logic;                       -- DEBUG tx reset done
@@ -61,6 +83,18 @@ package CM_CTRL is
     PRE_CURSOR                 : std_logic_vector( 4 downto  0);  -- DEBUG pre cursor
   end record CM_CM1_C2C_TX_CTRL_t;
 
+  constant DEFAULT_CM_CM1_C2C_TX_CTRL_t : CM_CM1_C2C_TX_CTRL_t := (
+                                                                   POLARITY => '0',
+                                                                   INHIBIT => '0',
+                                                                   POST_CURSOR => (others => '0'),
+                                                                   PRBS_SEL => (others => '0'),
+                                                                   PRBS_FORCE_ERR => '0',
+                                                                   DIFF_CTRL => (others => '0'),
+                                                                   MAIN_CURSOR => (others => '0'),
+                                                                   PMA_RESET => '0',
+                                                                   PRE_CURSOR => (others => '0'),
+                                                                   PCS_RESET => '0'
+                                                                  );
   type CM_CM1_C2C_MON_t is record
     CONFIG_ERROR               : std_logic;                       -- C2C config error
     CPLL_LOCK                  : std_logic;                       -- DEBUG cplllock
@@ -88,6 +122,13 @@ package CM_CTRL is
     TX                         : CM_CM1_C2C_TX_CTRL_t;
   end record CM_CM1_C2C_CTRL_t;
 
+  constant DEFAULT_CM_CM1_C2C_CTRL_t : CM_CM1_C2C_CTRL_t := (
+                                                             INITIALIZE => '0',
+                                                             RX => DEFAULT_CM_CM1_C2C_RX_CTRL_t,
+                                                             EYESCAN_RESET => '0',
+                                                             EYESCAN_TRIGGER => '0',
+                                                             TX => DEFAULT_CM_CM1_C2C_TX_CTRL_t
+                                                            );
   type CM_CM1_MONITOR_MON_t is record
     ACTIVE                     : std_logic;                       -- Monitoring active. Is zero when no update in the last second.
     ERRORS                     : std_logic_vector(15 downto  0);  -- Monitoring errors. Count of invalid byte types in parsing.
@@ -99,6 +140,9 @@ package CM_CTRL is
     COUNT_16X_BAUD             : std_logic_vector( 7 downto  0);  -- Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
   end record CM_CM1_MONITOR_CTRL_t;
 
+  constant DEFAULT_CM_CM1_MONITOR_CTRL_t : CM_CM1_MONITOR_CTRL_t := (
+                                                                     COUNT_16X_BAUD => (others => '0')
+                                                                    );
   type CM_CM1_MON_t is record
     C2C                        : CM_CM1_C2C_MON_t;    
     CTRL                       : CM_CM1_CTRL_MON_t;   
@@ -111,6 +155,11 @@ package CM_CTRL is
     MONITOR                    : CM_CM1_MONITOR_CTRL_t;
   end record CM_CM1_CTRL_t;
 
+  constant DEFAULT_CM_CM1_CTRL_t : CM_CM1_CTRL_t := (
+                                                     C2C => DEFAULT_CM_CM1_C2C_CTRL_t,
+                                                     MONITOR => DEFAULT_CM_CM1_MONITOR_CTRL_t,
+                                                     CTRL => DEFAULT_CM_CM1_CTRL_CTRL_t
+                                                    );
   type CM_CM2_CTRL_MON_t is record
     IOS_ENABLED                : std_logic;                       -- IOs to CM are enabled
     PWR_ENABLED                : std_logic;                       -- power is enabled
@@ -125,6 +174,12 @@ package CM_CTRL is
     OVERRIDE_PWR_GOOD          : std_logic;     -- Ignore power good from CM
   end record CM_CM2_CTRL_CTRL_t;
 
+  constant DEFAULT_CM_CM2_CTRL_CTRL_t : CM_CM2_CTRL_CTRL_t := (
+                                                               OVERRIDE_PWR_GOOD => '0',
+                                                               ERROR_STATE_RESET => '0',
+                                                               ENABLE_UC => '0',
+                                                               ENABLE_PWR => '0'
+                                                              );
   type CM_CM2_C2C_RX_MON_t is record
     BUF_STATUS                 : std_logic_vector( 2 downto  0);  -- DEBUG rx buf status
     MONITOR                    : std_logic_vector( 6 downto  0);  -- DEBUG rx status
@@ -149,6 +204,22 @@ package CM_CTRL is
     PRBS_SEL                   : std_logic_vector( 2 downto  0);  -- DEBUG rx PRBS select
   end record CM_CM2_C2C_RX_CTRL_t;
 
+  constant DEFAULT_CM_CM2_C2C_RX_CTRL_t : CM_CM2_C2C_RX_CTRL_t := (
+                                                                   DFE_LPM_RESET => '0',
+                                                                   LPM_EN => '0',
+                                                                   PRBS_SEL => (others => '0'),
+                                                                   CDR_HOLD => '0',
+                                                                   PRBS_CNT_RST => '0',
+                                                                   DFE_AGC_HOLD => '0',
+                                                                   MON_SEL => (others => '0'),
+                                                                   LPM_LFKL_OVERRIDE => '0',
+                                                                   DFE_AGC_OVERRIDE => '0',
+                                                                   DFE_LF_HOLD => '0',
+                                                                   BUF_RESET => '0',
+                                                                   PMA_RESET => '0',
+                                                                   LPM_HF_OVERRIDE => '0',
+                                                                   PCS_RESET => '0'
+                                                                  );
   type CM_CM2_C2C_TX_MON_t is record
     BUF_STATUS                 : std_logic_vector( 1 downto  0);  -- DEBUG tx buf status
     RESET_DONE                 : std_logic;                       -- DEBUG tx reset done
@@ -167,6 +238,18 @@ package CM_CTRL is
     PRE_CURSOR                 : std_logic_vector( 4 downto  0);  -- DEBUG pre cursor
   end record CM_CM2_C2C_TX_CTRL_t;
 
+  constant DEFAULT_CM_CM2_C2C_TX_CTRL_t : CM_CM2_C2C_TX_CTRL_t := (
+                                                                   POLARITY => '0',
+                                                                   INHIBIT => '0',
+                                                                   POST_CURSOR => (others => '0'),
+                                                                   PRBS_SEL => (others => '0'),
+                                                                   PRBS_FORCE_ERR => '0',
+                                                                   DIFF_CTRL => (others => '0'),
+                                                                   MAIN_CURSOR => (others => '0'),
+                                                                   PMA_RESET => '0',
+                                                                   PRE_CURSOR => (others => '0'),
+                                                                   PCS_RESET => '0'
+                                                                  );
   type CM_CM2_C2C_MON_t is record
     CONFIG_ERROR               : std_logic;                       -- C2C config error
     CPLL_LOCK                  : std_logic;                       -- DEBUG cplllock
@@ -194,6 +277,13 @@ package CM_CTRL is
     TX                         : CM_CM2_C2C_TX_CTRL_t;
   end record CM_CM2_C2C_CTRL_t;
 
+  constant DEFAULT_CM_CM2_C2C_CTRL_t : CM_CM2_C2C_CTRL_t := (
+                                                             INITIALIZE => '0',
+                                                             RX => DEFAULT_CM_CM2_C2C_RX_CTRL_t,
+                                                             EYESCAN_RESET => '0',
+                                                             EYESCAN_TRIGGER => '0',
+                                                             TX => DEFAULT_CM_CM2_C2C_TX_CTRL_t
+                                                            );
   type CM_CM2_MON_t is record
     C2C                        : CM_CM2_C2C_MON_t; 
     CTRL                       : CM_CM2_CTRL_MON_t;
@@ -204,6 +294,10 @@ package CM_CTRL is
     CTRL                       : CM_CM2_CTRL_CTRL_t;
   end record CM_CM2_CTRL_t;
 
+  constant DEFAULT_CM_CM2_CTRL_t : CM_CM2_CTRL_t := (
+                                                     C2C => DEFAULT_CM_CM2_C2C_CTRL_t,
+                                                     CTRL => DEFAULT_CM_CM2_CTRL_CTRL_t
+                                                    );
   type CM_MON_t is record
     CM1                        : CM_CM1_MON_t;
     CM2                        : CM_CM2_MON_t;
@@ -214,6 +308,10 @@ package CM_CTRL is
     CM2                        : CM_CM2_CTRL_t;
   end record CM_CTRL_t;
 
+  constant DEFAULT_CM_CTRL_t : CM_CTRL_t := (
+                                             CM2 => DEFAULT_CM_CM2_CTRL_t,
+                                             CM1 => DEFAULT_CM_CM1_CTRL_t
+                                            );
 
 
 end package CM_CTRL;

@@ -5,8 +5,9 @@ make
 dhclient
 python-devel
 python2-click.noarch
+python2-numpy.noarch
 pyserial.noarch
-python-matplotlib
+python2-matplotlib
 glibc-headers
 glibc-devel
 zlib-devel
@@ -41,3 +42,5 @@ i2c-tools-eepromer
 screen
 ntp
 ntpdate
+rpm-build-libs
+rpm-build

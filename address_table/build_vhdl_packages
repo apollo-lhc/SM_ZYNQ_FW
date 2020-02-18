@@ -210,6 +210,21 @@ def generateRecord(name,members,description,addr_order,outFileName):
     outfile.write("  end record "+name+";\n\n")
     outfile.close()
 
+def generateDefaultRecord(name,defaults,outFileName):
+    outfile = open(outFileName,'a')
+    outfile.write("  constant DEFAULT_" + name + " : " + name +" := (\n")
+    padding_size = 27 + (2 * len(name))
+    firstLine=True
+    for keys,values in defaults.items():
+        if firstLine:
+            firstLine=False
+        else:
+            outfile.write(",\n")
+        outfile.write(" ".ljust(padding_size,' ')+keys+" => "+values)
+    
+    outfile.write("\n ".ljust(padding_size,' ')+");\n");
+    return "DEFAULT_"+name
+
 def getBitRange(mask):
     bits = bin(mask)[2:].zfill(32)[::-1]
     start = -1
@@ -234,9 +249,12 @@ def getBitRange(mask):
 def traverseTree(Node,padding,baseAddress,baseName,outFileName):
     global action_ops
     global readwrite_ops
+    global default_ops
     baseName=Node.getPath()
+    
     package_mon_entries = dict()
     package_ctrl_entries = dict()
+    package_ctrl_entry_defaults = dict()
     package_description = dict()
     package_addr_order = dict()
     for childName in Node.getNodes():
@@ -255,6 +273,11 @@ def traverseTree(Node,padding,baseAddress,baseName,outFileName):
                 try:
                     child_records["ctrl"]
                     package_ctrl_entries[name] = (childNode.getPath()[4:]).replace('.','_')+"_CTRL_t"
+                except KeyError:
+                    None
+                try:
+                    child_records["ctrl_default"]
+                    package_ctrl_entry_defaults[name] = ("DEFAULT_"+childNode.getPath()[4:]).replace('.','_')+"_CTRL_t"
                 except KeyError:
                     None
             else:                
@@ -278,8 +301,15 @@ def traverseTree(Node,padding,baseAddress,baseName,outFileName):
                     else:
                         read_ops[local_address] =                           str("localRdData("+bits+")")+" <= Mon."+local_name+"; --"+childNode.getDescription()+"\n"
                 elif childNode.getPermission() == uhal.NodePermission.READWRITE:
-#                    package_mon_entries[name]  = package_entries
                     package_ctrl_entries[name] = package_entries
+
+                    # store data for default signal
+                    if childNode.getParameters().get("default") != None:
+                        package_ctrl_entry_defaults[name] = childNode.getParameters()["default"]
+                    else:
+                        package_ctrl_entry_defaults[name] = "(others => '0')"
+                    
+
                     if read_ops.has_key(local_address):
                         read_ops[local_address] = read_ops[local_address] + str("localRdData("+bits+")")+" <= "+"reg_data("+str(local_address).rjust(2)+")("+bits+"); --"+childNode.getDescription()+"\n"
                     else:
@@ -290,9 +320,15 @@ def traverseTree(Node,padding,baseAddress,baseName,outFileName):
                         write_ops[local_address] =                            str("reg_data("+str(local_address).rjust(2)+")("+bits+")") + " <= localWrData("+bits+"); --"+childNode.getDescription()+"\n"
 
                     readwrite_ops+=("Ctrl."+local_name) + " <= reg_data("+str(local_address).rjust(2)+")("+bits+");\n"
+                    default_ops+="reg_data("+str(local_address).rjust(2)+")("+bits+") <= "+("CTRL_t."+local_name)+";\n"
 
                 elif childNode.getPermission() == uhal.NodePermission.WRITE:
                     package_ctrl_entries[name] = package_entries
+                    if childNode.getParameters().find("default"):
+                        package_ctrl_entry_defaults[name] = childNode.getParameters()["default"]
+                    else:
+                        package_ctrl_entry_defaults[name] = "(others => '0')"
+
                     if write_ops.has_key(local_address):
                         write_ops[local_address] = write_ops[local_address] + ("Ctrl."+local_name) + " <= localWrData("+bits+");\n"
                     else:                                                     
@@ -310,7 +346,9 @@ def traverseTree(Node,padding,baseAddress,baseName,outFileName):
         ret["mon"] = generateRecord((baseName[4:]).replace('.','_')+"_MON_t",package_mon_entries,package_description,package_addr_order,outFileName)
     if bool(package_ctrl_entries):
         ret["ctrl"] = generateRecord((baseName[4:]).replace('.','_')+"_CTRL_t",package_ctrl_entries,package_description,package_addr_order,outFileName)
-
+        ret["ctrl_default"] = generateDefaultRecord((baseName[4:]).replace('.','_')+"_CTRL_t",package_ctrl_entry_defaults,outFileName)
+        for keys,values in package_ctrl_entry_defaults.items():
+            print(keys+": "+values)
     return ret
 
 def sortByBit(line):
@@ -361,7 +399,7 @@ def generateAlignedCase(operations):
                 
 
 
-def generateRegMap(baseName,r_ops,rw_ops,w_ops,a_ops):
+def generateRegMap(baseName,r_ops,rw_ops,w_ops,a_ops,def_ops):
 
     regMapSize=0
     if max(r_ops,key=int) > regMapSize:
@@ -482,7 +520,12 @@ def generateRegMap(baseName,r_ops,rw_ops,w_ops,a_ops):
     outFile.write("  reg_writes: process (clk_axi, reset_axi_n) is\n")
     outFile.write("  begin  -- process reg_writes\n")
     outFile.write("    if reset_axi_n = '0' then                 -- asynchronous reset (active low)\n")
-    outFile.write("      reg_data <= default_reg_data;\n")
+    for line in def_ops.split("\n"):
+        if(len(line)):
+            outFile.write("      "+line.split("<")[0])
+            outFile.write(" <= DEFAULT_"+baseName+"_"+line.split("=")[1].strip())
+            outFile.write("\n")
+        
     outFile.write("    elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge\n")
 
     for line in a_ops.split("\n"):
@@ -509,6 +552,7 @@ def main():
 
     global read_ops
     global write_ops
+    global default_ops
     global action_ops
     global readwrite_ops
     
@@ -516,6 +560,7 @@ def main():
     readwrite_ops = str()
     write_ops = dict(list())
     action_ops = str()
+    default_ops = str()
     
     # configure logger
     global log
@@ -582,7 +627,7 @@ def main():
             outFile=open(outFileName,'a')
             outFile.write("\n\nend package "+outFileBase+"_CTRL;")
 
-            generateRegMap(outFileBase,read_ops,readwrite_ops,write_ops,action_ops)
+            generateRegMap(outFileBase,read_ops,readwrite_ops,write_ops,action_ops,default_ops)
                    
 if __name__ == '__main__':
     main()

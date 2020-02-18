@@ -20,6 +20,8 @@ set vhdl_files "\
      src/SGMII/SGMII_INTF_resets.vhd \
      src/services/services.vhd \
      src/services/SGMII_MON_pkg.vhd \
+     src/services/SERV_map.vhd \
+     src/services/SERV_PKG.vhd \
      src/IPMC_i2c_slave/i2c_slave.vhd \
      src/IPMC_i2c_slave/IPMC_i2c_slave.vhd \
      src/CM_interface/CM_map.vhd \
@@ -34,6 +36,8 @@ set vhdl_files "\
      src/front_panel/LED_Encoder.vhd \
      src/front_panel/SR_Out.vhd \
      src/front_panel/LED_Paterns.vhd \
+     src/SM_info/FW_INFO_map.vhd \
+     src/SM_info/FW_INFO_PKG.vhd \
      src/SM_info/SM_info.vhd \
      src/misc/pass_time_domain.vhd \
      src/misc/pacd.vhd \
@@ -57,3 +61,8 @@ set xci_files "\
     	      "
 #	      cores/ila_i2c_debug/ila_i2c_debug.xci \
 #	      cores/c2c_ibert/c2c_ibert.xci \
+
+#DRP ip
+set ip_repo_path ../bd/IP
+set_property  ip_repo_paths ${ip_repo_path}  [current_project]
+update_ip_catalog
