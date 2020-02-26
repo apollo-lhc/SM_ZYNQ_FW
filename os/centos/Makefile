@@ -101,8 +101,9 @@ ${OPT_PATH}/BUTool: ${OPT_PATH}/cactus | ${OPT_PATH} ${TMP_PATH}
 ${OPT_PATH}/mcu_tools: | ${OPT_PATH} ${TEMP_PATH}
 	cd ${OPT_PATH} && \
 		git clone https://github.com/apollo-lhc/mcu_tools.git
+	#check out the correct tag of the uc tools
 	cd ${OPT_PATH}/mcu_tools && \
-		git checkout v0.1
+		git checkout v0.2
 	cp ${MODS_PATH}/build_mcu_tools.sh ${TMP_PATH}/
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/build_mcu_tools.sh
 
