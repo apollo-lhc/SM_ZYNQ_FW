@@ -303,7 +303,7 @@ architecture structure of top is
   signal linux_booted : std_logic;
 
   signal clk_TCDS : std_logic;
-  
+  signal clk_TCDS_reset_n : std_logic;
 begin  -- architecture structure
 
   pl_reset_n <= axi_reset_n ;
@@ -637,7 +637,8 @@ begin  -- architecture structure
       BRAM_PORTB_0_rst  => '0',
       BRAM_PORTB_0_we   => x"0",
 
-      TCDS_CLK          => clk_TCDS
+      TCDS_CLK          => clk_TCDS,
+      TCDS_reset_n      => clk_TCDS_reset_n
       );
 
 
@@ -698,10 +699,22 @@ begin  -- architecture structure
 
 
   axi_reset <= not axi_reset_n;
+
+  pass_std_logic_vector_2: entity work.pass_std_logic_vector
+    generic map (
+      DATA_WIDTH => 1)
+    port map (
+      clk_in   => axi_clk,
+      clk_out  => clk_TCDS,
+      reset    => axi_reset_n,
+      pass_in(0)  => axi_reset_n,
+      pass_out(0) => clk_TCDS_reset_n);
+  
+    
   TCDS_2: entity work.TCDS
     port map (
       clk_axi            => clk_TCDS,
-      reset_axi_n        => pl_reset_n,
+      reset_axi_n        => clk_TCDS_reset_n,--pl_reset_n,
       clk_axi_DRP        => axi_clk,
       reset_axi_DRP_n    => pl_reset_n,
       readMOSI           => AXI_BUS_RMOSI(5),
@@ -717,8 +730,9 @@ begin  -- architecture structure
       refclk_n      => refclk_TCDS_N,
       QPLL_CLK        => QPLL_CLK,    
       QPLL_REF_CLK    => QPLL_REF_CLK,        
-      reset         => axi_reset,
+--      reset         => axi_reset,
       clk_TCDS    => clk_TCDS,
+      clk_TCDS_reset_n => open,--clk_TCDS_reset_n,
       tx_P(0)     => tts_P,
       tx_P(1)     => fake_ttc_P,  
       tx_P(2)     => open, 

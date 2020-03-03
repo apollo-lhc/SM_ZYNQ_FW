@@ -10,6 +10,7 @@ set vhdl_files "\
      src/top.vhd \
      src/misc/types.vhd \
      src/misc/counter.vhd \
+     src/misc/counter_CDC.vhd \
      src/misc/asym_dualport_ram.vhd \
      src/misc/uart_rx6.vhd \
      src/axiReg/axiRegPkg.vhd \

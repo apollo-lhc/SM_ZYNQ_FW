@@ -4,6 +4,8 @@ use work.types.all;
 use work.AXIRegPKG.all;
 use work.TCDS_Ctrl.all;
 
+use ieee.std_logic_misc.all;
+
 entity TCDS is
   
   port (
@@ -23,8 +25,8 @@ entity TCDS is
     refclk_n             : in  std_logic;
     QPLL_CLK             : in  std_logic;
     QPLL_REF_CLK         : in  std_logic;
-    reset                : in  std_logic;
     clk_TCDS             : out std_logic;
+    clk_TCDS_reset_n     : out std_logic;
     tx_P                 : out std_logic_vector(2 downto 0);
     tx_N                 : out std_logic_vector(2 downto 0);
     rx_P                 : in  std_logic_vector(2 downto 0);
@@ -34,15 +36,14 @@ end entity TCDS;
 
 architecture Behavioral of TCDS is
 
-  type slv32_array_t is array (integer range <>) of std_logic_vector(31 downto 0);
-  type slv4_array_t  is array (integer range <>) of std_logic_vector(3  downto 0);
   signal tx_data : slv32_array_t(0 to 2);
   signal rx_data : slv32_array_t(0 to 2);
   signal tx_kdata : slv4_array_t(0 to 2);
   signal rx_kdata : slv4_array_t(0 to 2);
   signal tx_dv : std_logic_vector(2 downto 0);
   signal rx_dv : std_logic_vector(2 downto 0);
-
+  signal reset : std_logic;
+  
   type GT_Mon_t is record
     cpllfbclklost    : std_logic; --ro
     cplllock         : std_logic; --ro
@@ -111,7 +112,7 @@ architecture Behavioral of TCDS is
   type DRP_array_t is array (integer range <>) of DRP_t;
   signal drp_intf : DRP_array_t(0 to 2);
 
-  
+  signal  gt0_cpll_lock_out : std_logic;
   signal tx_reset_done : slv_3_t;
   signal rx_reset_done : slv_3_t;
 
@@ -122,6 +123,13 @@ architecture Behavioral of TCDS is
   signal tx_clk : slv_3_t;
   signal rx_user_clk : slv_3_t;
   signal rx_user_clk2 : slv_3_t;
+  signal rx_prbs_error : slv_3_t;
+  signal rx_prbs_error_buf : slv_3_t;
+  signal rx_bad_char : slv4_array_t(2 downto 0);
+  signal rx_bad_char_buf : slv4_array_t(2 downto 0);
+  signal rx_disp_error : slv4_array_t(2 downto 0);
+  signal rx_disp_error_buf : slv4_array_t(2 downto 0);
+  signal rx_counter_reset : slv_3_t;
 
   signal Mon              : TCDS_Mon_t;
   signal Ctrl             : TCDS_Ctrl_t;
@@ -165,8 +173,11 @@ begin  -- architecture Behavioral
       Q2_CLK1_GTREFCLK_OUT      => refclk);
 
 --  clk_TCDS <= tx_clk(0);
-    clk_TCDS <= rx_user_clk2(0);
+  clk_TCDS <= rx_user_clk2(0);
+  clk_TCDS_reset_n <= not gt0_cpll_lock_out;
 
+  reset <= not reset_axi_n;
+  Mon.LINK0.CLOCKING.CLK_LOCKED <= gt0_cpll_lock_out;
     LHC_2: entity work.LHC
       port map (
         SYSCLK_IN                   => clk_axi,
@@ -183,7 +194,7 @@ begin  -- architecture Behavioral
         GT2_RX_FSM_RESET_DONE_OUT   => rx_reset_done(2),
         GT2_DATA_VALID_IN           => tx_dv(2),        
         gt0_cpllfbclklost_out       => Mon.LINK0.CLOCKING.FB_CLK_LOST,         
-        gt0_cplllock_out            => Mon.LINK0.CLOCKING.CLK_LOCKED,
+        gt0_cplllock_out            => gt0_cpll_lock_out,
         gt0_cplllockdetclk_in       => clk_axi,
         gt0_cpllreset_in            => Ctrl.LINK0.CLOCKING.RESET,
         gt0_gtrefclk0_in            => '0',
@@ -204,11 +215,11 @@ begin  -- architecture Behavioral
         gt0_rxusrclk_in             => rx_user_clk(0),
         gt0_rxusrclk2_in            => rx_user_clk2(0),
         gt0_rxdata_out              => rx_data(0),
-        gt0_rxprbserr_out           => Mon.LINK0.RX.PRBS_ERROR,
+        gt0_rxprbserr_out           => rx_prbs_error(0),
         gt0_rxprbssel_in            => Ctrl.LINK0.RX.PRBS_SEL,
         gt0_rxprbscntreset_in       => Ctrl.LINK0.RX.PRBS_RESET,
-        gt0_rxdisperr_out           => Mon.LINK0.RX.DISP_ERROR,
-        gt0_rxnotintable_out        => Mon.LINK0.RX.BAD_CHAR,
+        gt0_rxdisperr_out           => rx_disp_error(0),
+        gt0_rxnotintable_out        => rx_bad_char(0),
         gt0_gtxrxp_in               => rx_P(0),
         gt0_gtxrxn_in               => rx_N(0),
         gt0_rxdfelpmreset_in        => Ctrl.LINK0.RX.DFELPM_RESET, 
@@ -256,11 +267,11 @@ begin  -- architecture Behavioral
         gt1_rxusrclk_in             => rx_user_clk(1),                  
         gt1_rxusrclk2_in            => rx_user_clk2(1),                 
         gt1_rxdata_out              => rx_data(1),
-        gt1_rxprbserr_out           => Mon.LINK1.RX.PRBS_ERROR,
+        gt1_rxprbserr_out           => rx_prbs_error(1),
         gt1_rxprbssel_in            => Ctrl.LINK1.RX.PRBS_SEL,
         gt1_rxprbscntreset_in       => Ctrl.LINK1.RX.PRBS_RESET,
-        gt1_rxdisperr_out           => Mon.LINK1.RX.DISP_ERROR,             
-        gt1_rxnotintable_out        => Mon.LINK1.RX.BAD_CHAR,          
+        gt1_rxdisperr_out           => rx_disp_error(1),
+        gt1_rxnotintable_out        => rx_bad_char(1),
         gt1_gtxrxp_in               => rx_P(1),                         
         gt1_gtxrxn_in               => rx_N(1),                         
         gt1_rxdfelpmreset_in        => Ctrl.LINK1.RX.DFELPM_RESET,        
@@ -308,11 +319,11 @@ begin  -- architecture Behavioral
         gt2_rxusrclk_in             => rx_user_clk(2),                  
         gt2_rxusrclk2_in            => rx_user_clk2(2),                 
         gt2_rxdata_out              => rx_data(2),
-        gt2_rxprbserr_out           => Mon.LINK2.RX.PRBS_ERROR,
+        gt2_rxprbserr_out           => rx_prbs_error(2),
         gt2_rxprbssel_in            => Ctrl.LINK2.RX.PRBS_SEL,
         gt2_rxprbscntreset_in       => Ctrl.LINK2.RX.PRBS_RESET,
-        gt2_rxdisperr_out           => Mon.LINK2.RX.DISP_ERROR,             
-        gt2_rxnotintable_out        => Mon.LINK2.RX.BAD_CHAR,          
+        gt2_rxdisperr_out           => rx_disp_error(2),
+        gt2_rxnotintable_out        => rx_bad_char(2),     
         gt2_gtxrxp_in               => rx_P(2),                         
         gt2_gtxrxn_in               => rx_N(2),                         
         gt2_rxdfelpmreset_in        => Ctrl.LINK2.RX.DFELPM_RESET,        
@@ -385,6 +396,114 @@ begin  -- architecture Behavioral
       drp2_rdy      => drp_intf(2).rdy);
 
 
+  
+  rx_counter_reset(0) <= not Ctrl.LINK0.RX.Counter_ENABLE;
+  PRBS_counter_0: entity work.counter
+    generic map (
+      roll_over   => '0')
+    port map (
+      clk         => rx_user_clk2(0),
+      reset_async => reset_axi_n,
+      reset_sync  => rx_counter_reset(0),
+      enable      => '1',
+      event       => rx_prbs_error(0),
+      count       => Mon.LINK0.RX.PRBS_ERR_COUNT,
+      at_max      => open);
+  BAD_CHAR_counter_0: entity work.counter
+    generic map (
+      roll_over   => '0')
+    port map (
+      clk         => rx_user_clk2(0),
+      reset_async => reset_axi_n,
+      reset_sync  => rx_counter_reset(0),
+      enable      => '1',
+      event       => or_reduce(rx_bad_char(0)),
+      count       => Mon.LINK0.RX.BAD_CHAR_COUNT,
+      at_max      => open);
+  DISP_ERR_counter_0: entity work.counter
+    generic map (
+      roll_over   => '0')
+    port map (
+      clk         => rx_user_clk2(0),
+      reset_async => reset_axi_n,
+      reset_sync  => rx_counter_reset(0),
+      enable      => '1',
+      event       => or_reduce(rx_disp_error(0)),
+      count       => Mon.LINK0.RX.DISP_ERR_COUNT,
+      at_max      => open);
+
+    rx_counter_reset(1) <= not Ctrl.LINK1.RX.Counter_ENABLE;
+    PRBS_counter_1: entity work.counter
+    generic map (
+      roll_over   => '0')
+    port map (
+      clk         => rx_user_clk2(1),
+      reset_async => reset_axi_n,
+      reset_sync  => rx_counter_reset(1),
+      enable      => '1',
+      event       => rx_prbs_error(1),
+      count       => Mon.LINK1.RX.PRBS_ERR_COUNT,
+      at_max      => open);
+  BAD_CHAR_counter_1: entity work.counter
+    generic map (
+      roll_over   => '0')
+    port map (
+      clk         => rx_user_clk2(1),
+      reset_async => reset_axi_n,
+      reset_sync  => rx_counter_reset(1),
+      enable      => '1',
+      event       => or_reduce(rx_bad_char(1)),
+      count       => Mon.LINK1.RX.BAD_CHAR_COUNT,
+      at_max      => open);
+  DISP_ERR_counter_1: entity work.counter
+    generic map (
+      roll_over   => '0')
+    port map (
+      clk         => rx_user_clk2(1),
+      reset_async => reset_axi_n,
+      reset_sync  => rx_counter_reset(1),
+      enable      => '1',
+      event       => or_reduce(rx_disp_error(1)),
+      count       => Mon.LINK1.RX.DISP_ERR_COUNT,
+      at_max      => open);
+
+  rx_counter_reset(2) <= not Ctrl.LINK2.RX.Counter_ENABLE;
+  PRBS_counter_2: entity work.counter
+    generic map (
+      roll_over   => '0')
+    port map (
+      clk         => rx_user_clk2(2),
+      reset_async => reset_axi_n,
+      reset_sync  => rx_counter_reset(2),
+      enable      => '1',
+      event       => rx_prbs_error(2),
+      count       => Mon.LINK2.RX.PRBS_ERR_COUNT,
+      at_max      => open);
+  BAD_CHAR_counter_2: entity work.counter
+    generic map (
+      roll_over   => '0')
+    port map (
+      clk         => rx_user_clk2(2),
+      reset_async => reset_axi_n,
+      reset_sync  => rx_counter_reset(2),
+      enable      => '1',
+      event       => or_reduce(rx_bad_char(2)),
+      count       => Mon.LINK2.RX.BAD_CHAR_COUNT,
+      at_max      => open);
+  DISP_ERR_counter_2: entity work.counter
+    generic map (
+      roll_over   => '0')
+    port map (
+      clk      => rx_user_clk2(2),
+      reset_async => reset_axi_n,
+      reset_sync  => rx_counter_reset(2),
+      enable      => '1',
+      event       => or_reduce(rx_disp_error(2)),
+      count       => Mon.LINK2.RX.DISP_ERR_COUNT,
+      at_max      => open);
+
+  
+  
   TCDS_Control_0: entity work.TCDS_Control
     port map (
       clk_axi      => clk_axi,
@@ -395,7 +514,6 @@ begin  -- architecture Behavioral
       capture      => Ctrl.CTRL0.CAPTURE,
       capture_d    => Mon.CTRL0.CAPTURE_D,
       capture_k    => Mon.CTRL0.CAPTURE_K,
-      clk_txrx     => tx_user_clk(0),
       tx_data      => tx_data(0),
       tx_k_data    => tx_kdata(0),
       rx_data      => rx_data(0),
@@ -410,7 +528,6 @@ begin  -- architecture Behavioral
       capture      => Ctrl.CTRL1.CAPTURE,
       capture_d    => Mon.CTRL1.CAPTURE_D,
       capture_k    => Mon.CTRL1.CAPTURE_K,
-      clk_txrx     => tx_user_clk(1),
       tx_data      => tx_data(1),
       tx_k_data    => tx_kdata(1),
       rx_data      => rx_data(1),
@@ -425,7 +542,6 @@ begin  -- architecture Behavioral
       capture      => Ctrl.CTRL2.CAPTURE,
       capture_d    => Mon.CTRL2.CAPTURE_D,
       capture_k    => Mon.CTRL2.CAPTURE_K,
-      clk_txrx     => tx_user_clk(2),
       tx_data      => tx_data(2),
       tx_k_data    => tx_kdata(2),
       rx_data      => rx_data(2),

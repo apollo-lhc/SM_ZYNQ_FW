@@ -18,14 +18,15 @@ package TCDS_CTRL is
                                                                                RESET => '0'
                                                                               );
   type TCDS_LINK0_RX_MON_t is record
-    BAD_CHAR                   : std_logic_vector( 3 downto  0);
-    DISP_ERROR                 : std_logic_vector( 3 downto  0);
+    BAD_CHAR_COUNT             : std_logic_vector(31 downto  0);
+    DISP_ERR_COUNT             : std_logic_vector(31 downto  0);
     MONITOR                    : std_logic_vector( 6 downto  0);
-    PRBS_ERROR                 : std_logic;                     
+    PRBS_ERR_COUNT             : std_logic_vector(31 downto  0);
     RESET_DONE                 : std_logic;                     
   end record TCDS_LINK0_RX_MON_t;
 
   type TCDS_LINK0_RX_CTRL_t is record
+    COUNTER_ENABLE             : std_logic;                     
     DFELPM_RESET               : std_logic;                     
     MONITOR_SEL                : std_logic_vector( 1 downto  0);
     PMA_RESET                  : std_logic;                     
@@ -36,11 +37,12 @@ package TCDS_CTRL is
   end record TCDS_LINK0_RX_CTRL_t;
 
   constant DEFAULT_TCDS_LINK0_RX_CTRL_t : TCDS_LINK0_RX_CTRL_t := (
+                                                                   COUNTER_ENABLE => '1',
                                                                    MONITOR_SEL => (others => '0'),
-                                                                   RESET => '0',
                                                                    PMA_RESET => '0',
                                                                    PRBS_SEL => (others => '0'),
                                                                    DFELPM_RESET => '0',
+                                                                   RESET => '0',
                                                                    PRBS_RESET => '0',
                                                                    USER_READY => '0'
                                                                   );
@@ -112,14 +114,15 @@ package TCDS_CTRL is
                                                                                RESET => '0'
                                                                               );
   type TCDS_LINK1_RX_MON_t is record
-    BAD_CHAR                   : std_logic_vector( 3 downto  0);
-    DISP_ERROR                 : std_logic_vector( 3 downto  0);
+    BAD_CHAR_COUNT             : std_logic_vector(31 downto  0);
+    DISP_ERR_COUNT             : std_logic_vector(31 downto  0);
     MONITOR                    : std_logic_vector( 6 downto  0);
-    PRBS_ERROR                 : std_logic;                     
+    PRBS_ERR_COUNT             : std_logic_vector(31 downto  0);
     RESET_DONE                 : std_logic;                     
   end record TCDS_LINK1_RX_MON_t;
 
   type TCDS_LINK1_RX_CTRL_t is record
+    COUNTER_ENABLE             : std_logic;                     
     DFELPM_RESET               : std_logic;                     
     MONITOR_SEL                : std_logic_vector( 1 downto  0);
     PMA_RESET                  : std_logic;                     
@@ -130,11 +133,12 @@ package TCDS_CTRL is
   end record TCDS_LINK1_RX_CTRL_t;
 
   constant DEFAULT_TCDS_LINK1_RX_CTRL_t : TCDS_LINK1_RX_CTRL_t := (
+                                                                   COUNTER_ENABLE => '1',
                                                                    MONITOR_SEL => (others => '0'),
-                                                                   RESET => '0',
                                                                    PMA_RESET => '0',
                                                                    PRBS_SEL => (others => '0'),
                                                                    DFELPM_RESET => '0',
+                                                                   RESET => '0',
                                                                    PRBS_RESET => '0',
                                                                    USER_READY => '0'
                                                                   );
@@ -206,14 +210,15 @@ package TCDS_CTRL is
                                                                                RESET => '0'
                                                                               );
   type TCDS_LINK2_RX_MON_t is record
-    BAD_CHAR                   : std_logic_vector( 3 downto  0);
-    DISP_ERROR                 : std_logic_vector( 3 downto  0);
+    BAD_CHAR_COUNT             : std_logic_vector(31 downto  0);
+    DISP_ERR_COUNT             : std_logic_vector(31 downto  0);
     MONITOR                    : std_logic_vector( 6 downto  0);
-    PRBS_ERROR                 : std_logic;                     
+    PRBS_ERR_COUNT             : std_logic_vector(31 downto  0);
     RESET_DONE                 : std_logic;                     
   end record TCDS_LINK2_RX_MON_t;
 
   type TCDS_LINK2_RX_CTRL_t is record
+    COUNTER_ENABLE             : std_logic;                     
     DFELPM_RESET               : std_logic;                     
     MONITOR_SEL                : std_logic_vector( 1 downto  0);
     PMA_RESET                  : std_logic;                     
@@ -224,11 +229,12 @@ package TCDS_CTRL is
   end record TCDS_LINK2_RX_CTRL_t;
 
   constant DEFAULT_TCDS_LINK2_RX_CTRL_t : TCDS_LINK2_RX_CTRL_t := (
+                                                                   COUNTER_ENABLE => '1',
                                                                    MONITOR_SEL => (others => '0'),
-                                                                   RESET => '0',
                                                                    PMA_RESET => '0',
                                                                    PRBS_SEL => (others => '0'),
                                                                    DFELPM_RESET => '0',
+                                                                   RESET => '0',
                                                                    PRBS_RESET => '0',
                                                                    USER_READY => '0'
                                                                   );
