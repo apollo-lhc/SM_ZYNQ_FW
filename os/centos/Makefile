@@ -96,6 +96,7 @@ ${OPT_PATH}/BUTool: ${OPT_PATH}/cactus | ${OPT_PATH} ${TMP_PATH}
 	sudo install -m 777 ${MODS_PATH}/rc.local ${ETC_PATH}/rc.d/rc.local
 	sudo rm ${ETC_PATH}/systemd/system/multi-user.target.wants/auditd.service
 	sudo install -m 664 ${MODS_PATH}/htmlStatus ${ETC_PATH}/htmlStatus
+	sudo install -m 664 ${MODS_PATH}/SM_boot ${ETC_PATH}/SM_boot
 
 ${OPT_PATH}/mcu_tools: | ${OPT_PATH} ${TEMP_PATH}
 	cd ${OPT_PATH} && \
