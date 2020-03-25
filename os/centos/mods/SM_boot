@@ -1,0 +1,4 @@
+polltime=10
+cm_powerup=true
+cm_powerup_time=10
+sensorsThroughZynq=false
