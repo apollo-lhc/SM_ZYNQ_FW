@@ -17,9 +17,22 @@ package FW_INFO_CTRL is
     SEC                        : std_logic_vector( 7 downto  0);
   end record FW_INFO_BUILD_TIME_MON_t;
 
+  type FW_INFO_FPGA_MON_t is record
+    WORD_00                    : std_logic_vector(31 downto  0);
+    WORD_01                    : std_logic_vector(31 downto  0);
+    WORD_02                    : std_logic_vector(31 downto  0);
+    WORD_03                    : std_logic_vector(31 downto  0);
+    WORD_04                    : std_logic_vector(31 downto  0);
+    WORD_05                    : std_logic_vector(31 downto  0);
+    WORD_06                    : std_logic_vector(31 downto  0);
+    WORD_07                    : std_logic_vector(31 downto  0);
+    WORD_08                    : std_logic_vector(31 downto  0);
+  end record FW_INFO_FPGA_MON_t;
+
   type FW_INFO_MON_t is record
     BUILD_DATE                 : FW_INFO_BUILD_DATE_MON_t;      
     BUILD_TIME                 : FW_INFO_BUILD_TIME_MON_t;      
+    FPGA                       : FW_INFO_FPGA_MON_t;            
     GIT_HASH_1                 : std_logic_vector(31 downto  0);
     GIT_HASH_2                 : std_logic_vector(31 downto  0);
     GIT_HASH_3                 : std_logic_vector(31 downto  0);
