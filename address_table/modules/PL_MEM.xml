@@ -1,11 +1,59 @@
 <node id="PL_MEM">  
-  <!-- <node id="0"   address="0x00000000" permission="rw"/> -->
-  <!-- <node id="1"   address="0x00000001" permission="rw"/> -->
-  <!-- <node id="2"   address="0x00000002" permission="rw"/> -->
-  <!-- <node id="3"   address="0x00000003" permission="rw"/> -->
   <node id="CM" address="0x00000080">
-    <node id="SENSOR_0" address="0x00" mask="0x0000FFFF" permission="rw" parameters="Table=CM_MON;Row=_3;Column=_;Format=m_1_1_100_1_0_1;Status=2"/>
-    <node id="SENSOR_1" address="0x00" mask="0xFFFF0000" permission="rw" parameters="Table=CM_MON;Row=_3;Column=_;Format=m_1_1_100_1_0_1;Status=2"/>
+    <node id="K01__12_Tx_GTH" address="0x00" mask="0x000000FF" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=m_1_1_1_1_0_1;Status=2"/>
+    <node id="K01__12_Rx_GTH" address="0x00" mask="0x00FF0000" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=m_1_1_1_1_0_1;Status=2"/>
+    <node id="K02__12_Tx_GTH" address="0x01" mask="0x000000FF" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=m_1_1_1_1_0_1;Status=2"/>
+    <node id="K02__12_Rx_GTH" address="0x01" mask="0x00FF0000" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=m_1_1_1_1_0_1;Status=2"/>
+    <node id="K03__12_Tx_GTH" address="0x02" mask="0x000000FF" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=m_1_1_1_1_0_1;Status=2"/>
+    <node id="K03__12_Rx_GTH" address="0x02" mask="0x00FF0000" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=m_1_1_1_1_0_1;Status=2"/>
+    <node id="K04_4_XCVR_GTY" address="0x03" mask="0x000000FF" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=m_1_1_1_1_0_1;Status=2"/>
+    <node id="K05_4_XCVR_GTY" address="0x03" mask="0x00FF0000" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=m_1_1_1_1_0_1;Status=2"/>
+    <node id="K06_4_XCVR_GTY" address="0x04" mask="0x000000FF" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=m_1_1_1_1_0_1;Status=2"/>
+    <node id="K07__12_Tx_GTY" address="0x04" mask="0x00FF0000" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=m_1_1_1_1_0_1;Status=2"/>
+    <node id="K07__12_Rx_GTY" address="0x05" mask="0x000000FF" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=m_1_1_1_1_0_1;Status=2"/>
+    <node id="V01_4_XCVR_GTY" address="0x05" mask="0x00FF0000" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=m_1_1_1_1_0_1;Status=2"/>
+    <node id="V02_4_XCVR_GTY" address="0x06" mask="0x000000FF" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=m_1_1_1_1_0_1;Status=2"/>
+    <node id="V03_4_XCVR_GTY" address="0x06" mask="0x00FF0000" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=m_1_1_1_1_0_1;Status=2"/>
+    <node id="V04_4_XCVR_GTY" address="0x07" mask="0x000000FF" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=m_1_1_1_1_0_1;Status=2"/>
+    <node id="V05_4_XCVR_GTY" address="0x07" mask="0x00FF0000" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=m_1_1_1_1_0_1;Status=2"/>
+    <node id="V06_4_XCVR_GTY" address="0x08" mask="0x000000FF" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=m_1_1_1_1_0_1;Status=2"/>
+    <node id="V07_4_XCVR_GTY" address="0x08" mask="0x00FF0000" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=m_1_1_1_1_0_1;Status=2"/>
+    <node id="V08_4_XCVR_GTY" address="0x09" mask="0x000000FF" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=m_1_1_1_1_0_1;Status=2"/>
+    <node id="V09_4_XCVR_GTY" address="0x09" mask="0x00FF0000" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=m_1_1_1_1_0_1;Status=2"/>
+    <node id="V10_4_XCVR_GTY" address="0x0a" mask="0x000000FF" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=m_1_1_1_1_0_1;Status=2"/>
+    <node id="V11__12_Tx_GTY" address="0x0a" mask="0x00FF0000" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=m_1_1_1_1_0_1;Status=2"/>
+    <node id="V11__12_Rx_GTY" address="0x0b" mask="0x000000FF" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=m_1_1_1_1_0_1;Status=2"/>
+    <node id="V12__12_Tx_GTY" address="0x0b" mask="0x00FF0000" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=m_1_1_1_1_0_1;Status=2"/>
+    <node id="V12__12_Rx_GTY" address="0x0c" mask="0x000000FF" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=m_1_1_1_1_0_1;Status=2"/>
+    <node id="3V3"            module="file://I2C_REGULATOR_MONITOR.xml"             address="0x10"/>
+    <node id="1V8"            module="file://I2C_REGULATOR_MONITOR.xml"             address="0x14"/>
+    <node id="K_VCC_INT1"     module="file://I2C_REGULATOR_MONITOR.xml"             address="0x18"/>
+    <node id="K_VCC_INT2"     module="file://I2C_REGULATOR_MONITOR.xml"             address="0x1C"/>
+    <node id="V_VCC_INT1"     module="file://I2C_REGULATOR_MONITOR.xml"             address="0x20"/>
+    <node id="V_VCC_INT2"     module="file://I2C_REGULATOR_MONITOR.xml"             address="0x24"/>
+    <node id="VCC_12V"        address="0x30" mask="0x0000FFFF" permission="r" parameters="Table=CM_MON;Row=_3;Column=Volts;Format=fp16;Status=2"/>
+    <node id="VCC_2V5"	      address="0x30" mask="0xFFFF0000" permission="r" parameters="Table=CM_MON;Row=_3;Column=Volts;Format=fp16;Status=2"/>
+    <node id="VCC_M3V3"	      address="0x31" mask="0x0000FFFF" permission="r" parameters="Table=CM_MON;Row=_3;Column=Volts;Format=fp16;Status=2"/>
+    <node id="VCC_3V3"	      address="0x31" mask="0xFFFF0000" permission="r" parameters="Table=CM_MON;Row=_3;Column=Volts;Format=fp16;Status=2"/>
+    <node id="VCC_1V8"	      address="0x32" mask="0x0000FFFF" permission="r" parameters="Table=CM_MON;Row=_3;Column=Volts;Format=fp16;Status=2"/>
+    <node id="VCC_M1V8"	      address="0x32" mask="0xFFFF0000" permission="r" parameters="Table=CM_MON;Row=_3;Column=Volts;Format=fp16;Status=2"/>
+    <node id="V_VCCINT"	      address="0x33" mask="0x0000FFFF" permission="r" parameters="Table=CM_MON;Row=_3;Column=Volts;Format=fp16;Status=2"/>
+    <node id="K_VCCINT"	      address="0x33" mask="0xFFFF0000" permission="r" parameters="Table=CM_MON;Row=_3;Column=Volts;Format=fp16;Status=2"/>
+    <node id="V_MGTY1_AVTT"   address="0x34" mask="0x0000FFFF" permission="r" parameters="Table=CM_MON;Row=_3;Column=Volts;Format=fp16;Status=2"/>
+    <node id="V_MGTY2_AVTT"   address="0x34" mask="0xFFFF0000" permission="r" parameters="Table=CM_MON;Row=_3;Column=Volts;Format=fp16;Status=2"/>
+    <node id="K_MGTH_AVTT"    address="0x35" mask="0x0000FFFF" permission="r" parameters="Table=CM_MON;Row=_3;Column=Volts;Format=fp16;Status=2"/>
+    <node id="K_MGTY_AVTT"    address="0x35" mask="0xFFFF0000" permission="r" parameters="Table=CM_MON;Row=_3;Column=Volts;Format=fp16;Status=2"/>
+    <node id="V_MGTY1_VCCAUX" address="0x36" mask="0x0000FFFF" permission="r" parameters="Table=CM_MON;Row=_3;Column=Volts;Format=fp16;Status=2"/>
+    <node id="V_MGTY2_VCCAUX" address="0x36" mask="0xFFFF0000" permission="r" parameters="Table=CM_MON;Row=_3;Column=Volts;Format=fp16;Status=2"/>
+    <node id="K_MGTY_VCCAUX"  address="0x37" mask="0x0000FFFF" permission="r" parameters="Table=CM_MON;Row=_3;Column=Volts;Format=fp16;Status=2"/>
+    <node id="K_MGTH_VCCAUX"  address="0x37" mask="0xFFFF0000" permission="r" parameters="Table=CM_MON;Row=_3;Column=Volts;Format=fp16;Status=2"/>
+    <node id="V_MGTY1_AVCC"   address="0x38" mask="0x0000FFFF" permission="r" parameters="Table=CM_MON;Row=_3;Column=Volts;Format=fp16;Status=2"/>
+    <node id="V_MGTY2_AVCC"   address="0x38" mask="0xFFFF0000" permission="r" parameters="Table=CM_MON;Row=_3;Column=Volts;Format=fp16;Status=2"/>
+    <node id="K_MGTY_AVCC"    address="0x39" mask="0x0000FFFF" permission="r" parameters="Table=CM_MON;Row=_3;Column=Volts;Format=fp16;Status=2"/>
+    <node id="K_MGTH_AVCC"    address="0x39" mask="0xFFFF0000" permission="r" parameters="Table=CM_MON;Row=_3;Column=Volts;Format=fp16;Status=2"/>
+    <node id="TM4C_TEMP"      address="0x3a" mask="0x0000FFFF" permission="r" parameters="Table=CM_MON;Row=_3;Column=Volts;Format=fp16;Status=2"/>
+    <node id="FPGA_1"         address="0x80" mask="0x0000FFFF" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=linear11;Status=2"/>    
+    <node id="FPGA_2"         address="0x80" mask="0xFFFF0000" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=linear11;Status=2"/>    
   </node>
   <node id="USERS_INFO" address="0x000007E0">
     <node id="SUPER_USERS" address="0x00000000">
