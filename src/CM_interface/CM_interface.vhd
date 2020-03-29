@@ -57,10 +57,6 @@ architecture behavioral of CM_intf is
   signal localRdAck   : std_logic;
   
 
-  signal reg_data :  slv32_array_t(integer range 0 to 64);
-  constant Default_reg_data : slv32_array_t(integer range 0 to 64) := (0 => x"00000000",
-                                                                       1 => x"00000000",
-                                                                       others => x"00000000");
 
   signal PWR_good         : slv_2_t;
   signal enableCM         : slv_2_t;
@@ -331,7 +327,7 @@ begin  -- architecture behavioral
       clk            => clk_axi,
       reset          => reset,
       uart_rx        => CM_mon_uart,
-      baud_16x_count => reg_data(21)(7 downto 0),
+      baud_16x_count => CTRL.CM1.MONITOR.COUNT_16X_BAUD,
       readMOSI       => master_readMOSI,
       readMISO       => master_readMISO,
       writeMOSI      => master_writeMOSI,

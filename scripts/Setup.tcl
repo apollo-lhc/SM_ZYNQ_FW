@@ -26,7 +26,7 @@ set_property target_language VHDL [current_project]
 #################################################################################
 
 #build the build timestamp file
-[build_fw_version ../src]
+[build_fw_version ../src $FPGA_part]
 
 
 #load list of vhd, xdc, and xci files

@@ -27,8 +27,8 @@ architecture behavioral of FW_INFO_interface is
   signal localRdAck         : std_logic;
 
 
-  signal reg_data :  slv32_array_t(integer range 0 to 17);
-  constant Default_reg_data : slv32_array_t(integer range 0 to 17) := (others => x"00000000");
+  signal reg_data :  slv32_array_t(integer range 0 to 26);
+  constant Default_reg_data : slv32_array_t(integer range 0 to 26) := (others => x"00000000");
 begin  -- architecture behavioral
 
   -------------------------------------------------------------------------------
@@ -85,6 +85,24 @@ begin  -- architecture behavioral
           localRdData( 7 downto  0)  <=  Mon.BUILD_TIME.SEC;        --
           localRdData(15 downto  8)  <=  Mon.BUILD_TIME.MIN;        --
           localRdData(23 downto 16)  <=  Mon.BUILD_TIME.HOUR;       --
+        when 18 => --0x12
+          localRdData(31 downto  0)  <=  Mon.FPGA.WORD_00;          --
+        when 19 => --0x13
+          localRdData(31 downto  0)  <=  Mon.FPGA.WORD_01;          --
+        when 20 => --0x14
+          localRdData(31 downto  0)  <=  Mon.FPGA.WORD_02;          --
+        when 21 => --0x15
+          localRdData(31 downto  0)  <=  Mon.FPGA.WORD_03;          --
+        when 22 => --0x16
+          localRdData(31 downto  0)  <=  Mon.FPGA.WORD_04;          --
+        when 23 => --0x17
+          localRdData(31 downto  0)  <=  Mon.FPGA.WORD_05;          --
+        when 24 => --0x18
+          localRdData(31 downto  0)  <=  Mon.FPGA.WORD_06;          --
+        when 25 => --0x19
+          localRdData(31 downto  0)  <=  Mon.FPGA.WORD_07;          --
+        when 26 => --0x1a
+          localRdData(31 downto  0)  <=  Mon.FPGA.WORD_08;          --
         when others =>
           localRdData <= x"00000000";
       end case;

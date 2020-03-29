@@ -59,7 +59,7 @@ ${HOME_PATH}/cms ${HOME_PATH}/atlas ${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_
 
 ${OPT_PATH}/cactus: | ${OPT_PATH} ${TMP_PATH}
 	cd ${TMP_PATH} && \
-		git clone https://github.com/ipbus/ipbus-software.git
+		git clone --branch v2.7.2 https://github.com/ipbus/ipbus-software.git
 	cp ${MODS_PATH}/build_ipbus.sh ${TMP_PATH}/ipbus-software/
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/ipbus-software/build_ipbus.sh
 	cd ${TMP_PATH} && \
@@ -73,8 +73,7 @@ ${OPT_PATH}/BUTool: ${OPT_PATH}/cactus | ${OPT_PATH} ${TMP_PATH}
 		git clone https://github.com/apollo-lhc/ApolloTool.git
 	cd ${TMP_PATH}/ApolloTool && \
 		make init
-	cd ${TMP_PATH}/ApolloTool/plugins/ApolloSM_plugin && \
-		cp ${MODS_PATH}/build_BUTool.sh ${TMP_PATH}/ApolloTool/
+	cp ${MODS_PATH}/build_BUTool.sh ${TMP_PATH}/ApolloTool/
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/ApolloTool/build_BUTool.sh
 	sudo install -d -m 755 ${OPT_PATH}/address_tables
 	(cd mods && find address_tables/ -type f -exec sudo install -Dm 666 "{}" "${OPT_PATH}/{}" \;)
@@ -97,6 +96,7 @@ ${OPT_PATH}/BUTool: ${OPT_PATH}/cactus | ${OPT_PATH} ${TMP_PATH}
 	sudo install -m 777 ${MODS_PATH}/rc.local ${ETC_PATH}/rc.d/rc.local
 	sudo rm ${ETC_PATH}/systemd/system/multi-user.target.wants/auditd.service
 	sudo install -m 664 ${MODS_PATH}/htmlStatus ${ETC_PATH}/htmlStatus
+	sudo install -m 664 ${MODS_PATH}/SM_boot ${ETC_PATH}/SM_boot
 
 ${OPT_PATH}/mcu_tools: | ${OPT_PATH} ${TEMP_PATH}
 	cd ${OPT_PATH} && \

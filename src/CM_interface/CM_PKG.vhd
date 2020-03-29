@@ -141,7 +141,7 @@ package CM_CTRL is
   end record CM_CM1_MONITOR_CTRL_t;
 
   constant DEFAULT_CM_CM1_MONITOR_CTRL_t : CM_CM1_MONITOR_CTRL_t := (
-                                                                     COUNT_16X_BAUD => (others => '0')
+                                                                     COUNT_16X_BAUD => x"1b"
                                                                     );
   type CM_CM1_MON_t is record
     C2C                        : CM_CM1_C2C_MON_t;    
