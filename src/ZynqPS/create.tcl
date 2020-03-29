@@ -13,9 +13,6 @@ source ../bd/Xilinx_AXI_slaves.tcl
 puts "Building CPU"
 source ../src/ZynqPS/build_CPU.tcl
 
-#Name of fast AXI clock
-set FAST_AXI_CLK processing_system7_0/FCLK_CLK1
-
 #================================================================================
 #  Create an AXI interconnect
 #================================================================================
@@ -62,9 +59,9 @@ set_property CONFIG.FREQ_HZ 50000000 [get_bd_ports ${INIT_CLK}]
 
 		              
 #XVC cores	              
-[AXI_IP_XVC XVC1              ${AXI_INTERCONNECT_NAME} ${FAST_AXI_CLK} ${AXI_MASTER_RSTN} 50000000 0x40010000 64K]
-[AXI_IP_XVC XVC2              ${AXI_INTERCONNECT_NAME} ${FAST_AXI_CLK} ${AXI_MASTER_RSTN} 50000000 0x40020000 64K]
-[AXI_IP_LOCAL_XVC XVC_LOCAL   ${AXI_INTERCONNECT_NAME} ${FAST_AXI_CLK} ${AXI_MASTER_RSTN} 50000000 0x40030000 64K]
+[AXI_IP_XVC XVC1              ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} 50000000 0x40010000 64K]
+[AXI_IP_XVC XVC2              ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} 50000000 0x40020000 64K]
+[AXI_IP_LOCAL_XVC XVC_LOCAL   ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} 50000000 0x40030000 64K]
 
 #PL slaves
 [AXI_PL_DEV_CONNECT SLAVE_I2C ${AXI_INTERCONNECT_NAME} PL_CLK PL_RESET_N 5000000 0x40008000 8K]

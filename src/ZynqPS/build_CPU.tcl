@@ -21,9 +21,6 @@ set_property CONFIG.PCW_APU_PERIPHERAL_FREQMHZ {667}	     [get_bd_cells processi
 #clock ratio settings
 set_property CONFIG.PCW_APU_CLK_RATIO_ENABLE {6:2:1}         [get_bd_cells processing_system7_0]
 
-#add an additional PS clock
-set_property CONFIG.PCW_EN_CLK1_PORT               {1}  [get_bd_cells processing_system7_0]
-set_property CONFIG.PCW_FPGA1_PERIPHERAL_FREQMHZ {100}  [get_bd_cells processing_system7_0]
 
 ###############################
 #RAM
