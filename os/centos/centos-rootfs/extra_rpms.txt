@@ -47,3 +47,4 @@ rpm-build
 python2-pip
 nss
 nss-devel
+freeipmi-devel

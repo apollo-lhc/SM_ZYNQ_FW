@@ -304,6 +304,7 @@ architecture structure of top is
 
   signal clk_TCDS : std_logic;
   signal clk_TCDS_reset_n : std_logic;
+  signal clk_TCDS_locked : std_logic;        
 begin  -- architecture structure
 
   pl_reset_n <= axi_reset_n ;
@@ -706,7 +707,7 @@ begin  -- architecture structure
     port map (
       clk_in   => axi_clk,
       clk_out  => clk_TCDS,
-      reset    => axi_reset_n,
+      reset    =>  clk_TCDS_locked,
       pass_in(0)  => axi_reset_n,
       pass_out(0) => clk_TCDS_reset_n);
   
@@ -732,7 +733,7 @@ begin  -- architecture structure
       QPLL_REF_CLK    => QPLL_REF_CLK,        
 --      reset         => axi_reset,
       clk_TCDS    => clk_TCDS,
-      clk_TCDS_reset_n => open,--clk_TCDS_reset_n,
+      clk_TCDS_reset_n => clk_TCDS_locked,--open,--clk_TCDS_reset_n,
       tx_P(0)     => tts_P,
       tx_P(1)     => fake_ttc_P,  
       tx_P(2)     => open, 
@@ -791,6 +792,7 @@ begin  -- architecture structure
       SI_ENABLE       => SI_EN_normal,
       SI_init_reset   => SI_init_reset,
       TTC_SRC_SEL     => TTC_SRC_SEL,
+      TCDS_REFCLK_LOCKED => clk_TCDS_locked,
       LHC_CLK_CMS_LOS => LHC_CLK_CMS_LOS,
       LHC_CLK_OSC_LOS => LHC_CLK_OSC_LOS,
       LHC_SRC_SEL     => LHC_SRC_SEL,

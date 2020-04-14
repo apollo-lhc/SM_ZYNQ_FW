@@ -176,11 +176,12 @@ begin  -- architecture Behavioral
   clk_TCDS <= rx_user_clk2(0);
   clk_TCDS_reset_n <= not gt0_cpll_lock_out;
 
-  reset <= not reset_axi_n;
+--  reset <= not reset_axi_n;
+  reset <= not reset_axi_DRP_n;
   Mon.LINK0.CLOCKING.CLK_LOCKED <= gt0_cpll_lock_out;
     LHC_2: entity work.LHC
       port map (
-        SYSCLK_IN                   => clk_axi,
+        SYSCLK_IN                   => clk_axi_DRP,--clk_axi,
         SOFT_RESET_TX_IN            => reset,
         SOFT_RESET_RX_IN            => reset,
         DONT_RESET_ON_DATA_ERROR_IN => '0',
@@ -195,7 +196,7 @@ begin  -- architecture Behavioral
         GT2_DATA_VALID_IN           => tx_dv(2),        
         gt0_cpllfbclklost_out       => Mon.LINK0.CLOCKING.FB_CLK_LOST,         
         gt0_cplllock_out            => gt0_cpll_lock_out,
-        gt0_cplllockdetclk_in       => clk_axi,
+        gt0_cplllockdetclk_in       => clk_axi_DRP,--clk_axi,
         gt0_cpllreset_in            => Ctrl.LINK0.CLOCKING.RESET,
         gt0_gtrefclk0_in            => '0',
         gt0_gtrefclk1_in            => refclk,
@@ -247,7 +248,7 @@ begin  -- architecture Behavioral
         gt0_txprbssel_in            => Ctrl.LINK0.TX.PRBS_SEL,
         gt1_cpllfbclklost_out       => Mon.LINK1.CLOCKING.FB_CLK_LOST,         
         gt1_cplllock_out            => Mon.LINK1.CLOCKING.CLK_LOCKED,              
-        gt1_cplllockdetclk_in       => clk_axi,                                
+        gt1_cplllockdetclk_in       => clk_axi_DRP,--clk_axi,                                
         gt1_cpllreset_in            => Ctrl.LINK1.CLOCKING.RESET,            
         gt1_gtrefclk0_in            => '0',                             
         gt1_gtrefclk1_in            => refclk,                       
@@ -299,7 +300,7 @@ begin  -- architecture Behavioral
         gt1_txprbssel_in            => Ctrl.LINK1.TX.PRBS_SEL,
         gt2_cpllfbclklost_out       => Mon.LINK2.CLOCKING.FB_CLK_LOST,         
         gt2_cplllock_out            => Mon.LINK2.CLOCKING.CLK_LOCKED,              
-        gt2_cplllockdetclk_in       => clk_axi,                                
+        gt2_cplllockdetclk_in       => clk_axi_DRP,--clk_axi,                                
         gt2_cpllreset_in            => Ctrl.LINK2.CLOCKING.RESET,            
         gt2_gtrefclk0_in            => '0',                             
         gt2_gtrefclk1_in            => refclk,                       
