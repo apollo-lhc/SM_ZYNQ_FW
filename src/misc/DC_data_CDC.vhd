@@ -8,7 +8,7 @@ use IEEE.STD_LOGIC_1164.all;
 use ieee.numeric_std.all;
 use ieee.std_logic_misc.all;
 
-entity pass_std_logic_vector is
+entity DC_data_CDC is
   generic(
     DATA_WIDTH : integer := 32
     );
@@ -20,9 +20,9 @@ entity pass_std_logic_vector is
     pass_out : out std_logic_vector(DATA_WIDTH-1 downto 0)
     );
 
-end entity pass_std_logic_vector;
+end entity DC_data_CDC;
 
-architecture behavioral of pass_std_logic_vector is
+architecture behavioral of DC_data_CDC is
 
   signal pass_in_local    : std_logic_vector(DATA_WIDTH-1 downto 0) := (others => '0');
   signal pass_out_local_1 : std_logic_vector(DATA_WIDTH-1 downto 0) := (others => '0');

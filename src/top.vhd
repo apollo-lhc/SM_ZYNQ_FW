@@ -304,7 +304,9 @@ architecture structure of top is
 
   signal clk_TCDS : std_logic;
   signal clk_TCDS_reset_n : std_logic;
-  signal clk_TCDS_locked : std_logic;        
+  signal clk_TCDS_locked : std_logic;
+
+  signal clk_C2C1_PHY : std_logic;
 begin  -- architecture structure
 
   pl_reset_n <= axi_reset_n ;
@@ -638,14 +640,16 @@ begin  -- architecture structure
       BRAM_PORTB_0_rst  => '0',
       BRAM_PORTB_0_we   => x"0",
 
+      C2C1_PHY_CLK      => clk_C2C1_PHY,
+      
       TCDS_CLK          => clk_TCDS,
-      TCDS_reset_n      => clk_TCDS_reset_n
+      TCDS_reset_n      => clk_TCDS_locked--clk_TCDS_reset_n
       );
 
 
 
 
-  pass_std_logic_vector_1: entity work.pass_std_logic_vector
+  DC_data_CDC_1: entity work.DC_data_CDC
     generic map (
       DATA_WIDTH => 22)
     port map (
@@ -701,21 +705,21 @@ begin  -- architecture structure
 
   axi_reset <= not axi_reset_n;
 
-  pass_std_logic_vector_2: entity work.pass_std_logic_vector
-    generic map (
-      DATA_WIDTH => 1)
-    port map (
-      clk_in   => axi_clk,
-      clk_out  => clk_TCDS,
-      reset    =>  clk_TCDS_locked,
-      pass_in(0)  => axi_reset_n,
-      pass_out(0) => clk_TCDS_reset_n);
+ -- DC_data_CDC_2: entity work.DC_data_CDC
+ --   generic map (
+ --     DATA_WIDTH => 1)
+ --   port map (
+ --     clk_in   => axi_clk,
+ --     clk_out  => clk_TCDS,
+ --     reset    =>  clk_TCDS_locked,
+ --     pass_in(0)  => axi_reset_n,
+ --     pass_out(0) => clk_TCDS_reset_n);
   
     
   TCDS_2: entity work.TCDS
     port map (
-      clk_axi            => clk_TCDS,
-      reset_axi_n        => clk_TCDS_reset_n,--pl_reset_n,
+      clk_axi            => axi_clk,--clk_TCDS,
+      reset_axi_n        => pl_reset_n,--clk_TCDS_reset_n,--pl_reset_n,
       clk_axi_DRP        => axi_clk,
       reset_axi_DRP_n    => pl_reset_n,
       readMOSI           => AXI_BUS_RMOSI(5),
@@ -885,9 +889,11 @@ begin  -- architecture structure
       to_CM2_out.TMS       => CM2_TMS,
       to_CM2_out.TDI       => CM2_TDI,
       to_CM2_out.TCK       => CM2_TCK,
+      clk_C2C1             => clk_C2C1_PHY,
       CM1_C2C_Mon          => CM1_C2C_Mon,
-      CM2_C2C_Mon          => CM2_C2C_Mon,
       CM1_C2C_Ctrl         => CM1_C2C_Ctrl,
+      clk_C2C2             => clk_C2C1_PHY,
+      CM2_C2C_Mon          => CM2_C2C_Mon,
       CM2_C2C_Ctrl         => CM2_C2C_Ctrl);
 
 

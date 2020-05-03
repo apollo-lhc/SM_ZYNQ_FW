@@ -91,15 +91,17 @@ package TCDS_CTRL is
     EYESCAN                    : TCDS_LINK0_EYESCAN_CTRL_t;     
     LOOPBACK                   : std_logic_vector( 2 downto  0);
     RX                         : TCDS_LINK0_RX_CTRL_t;          
+    TEST                       : std_logic_vector(31 downto  0);
     TX                         : TCDS_LINK0_TX_CTRL_t;          
   end record TCDS_LINK0_CTRL_t;
 
   constant DEFAULT_TCDS_LINK0_CTRL_t : TCDS_LINK0_CTRL_t := (
-                                                             EYESCAN => DEFAULT_TCDS_LINK0_EYESCAN_CTRL_t,
-                                                             RX => DEFAULT_TCDS_LINK0_RX_CTRL_t,
-                                                             TX => DEFAULT_TCDS_LINK0_TX_CTRL_t,
                                                              CLOCKING => DEFAULT_TCDS_LINK0_CLOCKING_CTRL_t,
-                                                             LOOPBACK => (others => '0')
+                                                             TX => DEFAULT_TCDS_LINK0_TX_CTRL_t,
+                                                             LOOPBACK => (others => '0'),
+                                                             RX => DEFAULT_TCDS_LINK0_RX_CTRL_t,
+                                                             TEST => x"deadbeef",
+                                                             EYESCAN => DEFAULT_TCDS_LINK0_EYESCAN_CTRL_t
                                                             );
   type TCDS_LINK1_CLOCKING_MON_t is record
     CLK_LOCKED                 : std_logic;   
@@ -187,15 +189,17 @@ package TCDS_CTRL is
     EYESCAN                    : TCDS_LINK1_EYESCAN_CTRL_t;     
     LOOPBACK                   : std_logic_vector( 2 downto  0);
     RX                         : TCDS_LINK1_RX_CTRL_t;          
+    TEST                       : std_logic_vector(31 downto  0);
     TX                         : TCDS_LINK1_TX_CTRL_t;          
   end record TCDS_LINK1_CTRL_t;
 
   constant DEFAULT_TCDS_LINK1_CTRL_t : TCDS_LINK1_CTRL_t := (
-                                                             EYESCAN => DEFAULT_TCDS_LINK1_EYESCAN_CTRL_t,
-                                                             RX => DEFAULT_TCDS_LINK1_RX_CTRL_t,
-                                                             TX => DEFAULT_TCDS_LINK1_TX_CTRL_t,
                                                              CLOCKING => DEFAULT_TCDS_LINK1_CLOCKING_CTRL_t,
-                                                             LOOPBACK => (others => '0')
+                                                             TX => DEFAULT_TCDS_LINK1_TX_CTRL_t,
+                                                             LOOPBACK => (others => '0'),
+                                                             RX => DEFAULT_TCDS_LINK1_RX_CTRL_t,
+                                                             TEST => x"deadbeef",
+                                                             EYESCAN => DEFAULT_TCDS_LINK1_EYESCAN_CTRL_t
                                                             );
   type TCDS_LINK2_CLOCKING_MON_t is record
     CLK_LOCKED                 : std_logic;   
@@ -283,15 +287,17 @@ package TCDS_CTRL is
     EYESCAN                    : TCDS_LINK2_EYESCAN_CTRL_t;     
     LOOPBACK                   : std_logic_vector( 2 downto  0);
     RX                         : TCDS_LINK2_RX_CTRL_t;          
+    TEST                       : std_logic_vector(31 downto  0);
     TX                         : TCDS_LINK2_TX_CTRL_t;          
   end record TCDS_LINK2_CTRL_t;
 
   constant DEFAULT_TCDS_LINK2_CTRL_t : TCDS_LINK2_CTRL_t := (
-                                                             EYESCAN => DEFAULT_TCDS_LINK2_EYESCAN_CTRL_t,
-                                                             RX => DEFAULT_TCDS_LINK2_RX_CTRL_t,
-                                                             TX => DEFAULT_TCDS_LINK2_TX_CTRL_t,
                                                              CLOCKING => DEFAULT_TCDS_LINK2_CLOCKING_CTRL_t,
-                                                             LOOPBACK => (others => '0')
+                                                             TX => DEFAULT_TCDS_LINK2_TX_CTRL_t,
+                                                             LOOPBACK => (others => '0'),
+                                                             RX => DEFAULT_TCDS_LINK2_RX_CTRL_t,
+                                                             TEST => x"deadbeef",
+                                                             EYESCAN => DEFAULT_TCDS_LINK2_EYESCAN_CTRL_t
                                                             );
   type TCDS_CTRL0_MON_t is record
     CAPTURE_D                  : std_logic_vector(31 downto  0);

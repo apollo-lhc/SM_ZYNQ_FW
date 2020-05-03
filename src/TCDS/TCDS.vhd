@@ -133,7 +133,8 @@ architecture Behavioral of TCDS is
 
   signal Mon              : TCDS_Mon_t;
   signal Ctrl             : TCDS_Ctrl_t;
-  
+
+  signal local_clk_TCDS : std_logic;
 begin  -- architecture Behavioral
 
 
@@ -173,8 +174,9 @@ begin  -- architecture Behavioral
       Q2_CLK1_GTREFCLK_OUT      => refclk);
 
 --  clk_TCDS <= tx_clk(0);
-  clk_TCDS <= rx_user_clk2(0);
-  clk_TCDS_reset_n <= not gt0_cpll_lock_out;
+  local_clk_TCDS <= rx_user_clk2(0);
+  clk_TCDS <= local_clk_TCDS;
+  clk_TCDS_reset_n <= gt0_cpll_lock_out;--not gt0_cpll_lock_out;
 
 --  reset <= not reset_axi_n;
   reset <= not reset_axi_DRP_n;
@@ -198,8 +200,8 @@ begin  -- architecture Behavioral
         gt0_cplllock_out            => gt0_cpll_lock_out,
         gt0_cplllockdetclk_in       => clk_axi_DRP,--clk_axi,
         gt0_cpllreset_in            => Ctrl.LINK0.CLOCKING.RESET,
-        gt0_gtrefclk0_in            => '0',
-        gt0_gtrefclk1_in            => refclk,
+        gt0_gtrefclk0_in            => refclk,--'0',
+        gt0_gtrefclk1_in            => '0',--refclk,
         gt0_drpaddr_in              => drp_intf(0).addr,
         gt0_drpclk_in               => clk_axi_DRP,
         gt0_drpdi_in                => drp_intf(0).di,
@@ -250,8 +252,8 @@ begin  -- architecture Behavioral
         gt1_cplllock_out            => Mon.LINK1.CLOCKING.CLK_LOCKED,              
         gt1_cplllockdetclk_in       => clk_axi_DRP,--clk_axi,                                
         gt1_cpllreset_in            => Ctrl.LINK1.CLOCKING.RESET,            
-        gt1_gtrefclk0_in            => '0',                             
-        gt1_gtrefclk1_in            => refclk,                       
+        gt1_gtrefclk0_in            => refclk,--'0',
+        gt1_gtrefclk1_in            => '0',--refclk,
         gt1_drpaddr_in              => drp_intf(1).addr,              
         gt1_drpclk_in               => clk_axi_DRP,                          
         gt1_drpdi_in                => drp_intf(1).di,                
@@ -397,111 +399,47 @@ begin  -- architecture Behavioral
       drp2_rdy      => drp_intf(2).rdy);
 
 
-  
-  rx_counter_reset(0) <= not Ctrl.LINK0.RX.Counter_ENABLE;
-  PRBS_counter_0: entity work.counter
-    generic map (
-      roll_over   => '0')
-    port map (
-      clk         => rx_user_clk2(0),
-      reset_async => reset_axi_n,
-      reset_sync  => rx_counter_reset(0),
-      enable      => '1',
-      event       => rx_prbs_error(0),
-      count       => Mon.LINK0.RX.PRBS_ERR_COUNT,
-      at_max      => open);
-  BAD_CHAR_counter_0: entity work.counter
-    generic map (
-      roll_over   => '0')
-    port map (
-      clk         => rx_user_clk2(0),
-      reset_async => reset_axi_n,
-      reset_sync  => rx_counter_reset(0),
-      enable      => '1',
-      event       => or_reduce(rx_bad_char(0)),
-      count       => Mon.LINK0.RX.BAD_CHAR_COUNT,
-      at_max      => open);
-  DISP_ERR_counter_0: entity work.counter
-    generic map (
-      roll_over   => '0')
-    port map (
-      clk         => rx_user_clk2(0),
-      reset_async => reset_axi_n,
-      reset_sync  => rx_counter_reset(0),
-      enable      => '1',
-      event       => or_reduce(rx_disp_error(0)),
-      count       => Mon.LINK0.RX.DISP_ERR_COUNT,
-      at_max      => open);
+  TCDS_Monitor_0: entity work.TCDS_Monitor
+    port map(
+      clk_axi        => clk_axi,
+      axi_reset_n    => reset_axi_n,
+      counters_en    => Ctrl.LINK0.RX.Counter_ENABLE,
+      prbs_err_count => Mon.LINK0.RX.PRBS_ERR_COUNT,
+      bad_word_count => Mon.LINK0.RX.BAD_CHAR_COUNT,
+      disp_err_count => Mon.LINK0.RX.DISP_ERR_COUNT,
+      clk_txrx       => local_clk_TCDS,
+      prbs_error     => rx_prbs_error(0),
+      bad_word       => or_reduce(rx_bad_char(0)),
+      disp_error     => or_reduce(rx_disp_error(0))
+      );
 
-    rx_counter_reset(1) <= not Ctrl.LINK1.RX.Counter_ENABLE;
-    PRBS_counter_1: entity work.counter
-    generic map (
-      roll_over   => '0')
-    port map (
-      clk         => rx_user_clk2(1),
-      reset_async => reset_axi_n,
-      reset_sync  => rx_counter_reset(1),
-      enable      => '1',
-      event       => rx_prbs_error(1),
-      count       => Mon.LINK1.RX.PRBS_ERR_COUNT,
-      at_max      => open);
-  BAD_CHAR_counter_1: entity work.counter
-    generic map (
-      roll_over   => '0')
-    port map (
-      clk         => rx_user_clk2(1),
-      reset_async => reset_axi_n,
-      reset_sync  => rx_counter_reset(1),
-      enable      => '1',
-      event       => or_reduce(rx_bad_char(1)),
-      count       => Mon.LINK1.RX.BAD_CHAR_COUNT,
-      at_max      => open);
-  DISP_ERR_counter_1: entity work.counter
-    generic map (
-      roll_over   => '0')
-    port map (
-      clk         => rx_user_clk2(1),
-      reset_async => reset_axi_n,
-      reset_sync  => rx_counter_reset(1),
-      enable      => '1',
-      event       => or_reduce(rx_disp_error(1)),
-      count       => Mon.LINK1.RX.DISP_ERR_COUNT,
-      at_max      => open);
+  TCDS_Monitor_1: entity work.TCDS_Monitor
+    port map(
+      clk_axi        => clk_axi,
+      axi_reset_n    => reset_axi_n,
+      counters_en    => Ctrl.LINK1.RX.Counter_ENABLE,
+      prbs_err_count => Mon.LINK1.RX.PRBS_ERR_COUNT,
+      bad_word_count => Mon.LINK1.RX.BAD_CHAR_COUNT,
+      disp_err_count => Mon.LINK1.RX.DISP_ERR_COUNT,
+      clk_txrx       => local_clk_TCDS,
+      prbs_error     => rx_prbs_error(1),
+      bad_word       => or_reduce(rx_bad_char(1)),
+      disp_error     => or_reduce(rx_disp_error(1))
+      );        
 
-  rx_counter_reset(2) <= not Ctrl.LINK2.RX.Counter_ENABLE;
-  PRBS_counter_2: entity work.counter
-    generic map (
-      roll_over   => '0')
-    port map (
-      clk         => rx_user_clk2(2),
-      reset_async => reset_axi_n,
-      reset_sync  => rx_counter_reset(2),
-      enable      => '1',
-      event       => rx_prbs_error(2),
-      count       => Mon.LINK2.RX.PRBS_ERR_COUNT,
-      at_max      => open);
-  BAD_CHAR_counter_2: entity work.counter
-    generic map (
-      roll_over   => '0')
-    port map (
-      clk         => rx_user_clk2(2),
-      reset_async => reset_axi_n,
-      reset_sync  => rx_counter_reset(2),
-      enable      => '1',
-      event       => or_reduce(rx_bad_char(2)),
-      count       => Mon.LINK2.RX.BAD_CHAR_COUNT,
-      at_max      => open);
-  DISP_ERR_counter_2: entity work.counter
-    generic map (
-      roll_over   => '0')
-    port map (
-      clk      => rx_user_clk2(2),
-      reset_async => reset_axi_n,
-      reset_sync  => rx_counter_reset(2),
-      enable      => '1',
-      event       => or_reduce(rx_disp_error(2)),
-      count       => Mon.LINK2.RX.DISP_ERR_COUNT,
-      at_max      => open);
+  TCDS_Monitor_2: entity work.TCDS_Monitor
+    port map(
+      clk_axi        => clk_axi,
+      axi_reset_n    => reset_axi_n,
+      counters_en    => Ctrl.LINK2.RX.Counter_ENABLE,
+      prbs_err_count => Mon.LINK2.RX.PRBS_ERR_COUNT,
+      bad_word_count => Mon.LINK2.RX.BAD_CHAR_COUNT,
+      disp_err_count => Mon.LINK2.RX.DISP_ERR_COUNT,
+      clk_txrx       => local_clk_TCDS,
+      prbs_error     => rx_prbs_error(2),
+      bad_word       => or_reduce(rx_bad_char(2)),
+      disp_error     => or_reduce(rx_disp_error(2))
+      );
 
   
   
@@ -509,6 +447,7 @@ begin  -- architecture Behavioral
     port map (
       clk_axi      => clk_axi,
       axi_reset_n  => reset_axi_n,
+      clk_txrx     => local_clk_TCDS,
       mode         => Ctrl.CTRL0.MODE,
       fixed_send_d => Ctrl.CTRL0.FIXED_SEND_D,
       fixed_send_k => Ctrl.CTRL0.FIXED_SEND_K,
@@ -523,6 +462,7 @@ begin  -- architecture Behavioral
     port map (
       clk_axi      => clk_axi,
       axi_reset_n  => reset_axi_n,
+      clk_txrx     => local_clk_TCDS,
       mode         => Ctrl.CTRL1.MODE,
       fixed_send_d => Ctrl.CTRL1.FIXED_SEND_D,
       fixed_send_k => Ctrl.CTRL1.FIXED_SEND_K,
@@ -537,6 +477,7 @@ begin  -- architecture Behavioral
     port map (
       clk_axi      => clk_axi,
       axi_reset_n  => reset_axi_n,
+      clk_txrx     => local_clk_TCDS,
       mode         => Ctrl.CTRL2.MODE,
       fixed_send_d => Ctrl.CTRL2.FIXED_SEND_D,
       fixed_send_k => Ctrl.CTRL2.FIXED_SEND_K,

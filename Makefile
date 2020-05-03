@@ -152,7 +152,7 @@ sim/vhdl/%.vdb : src/%.vhd
 	@cd sim && mkdir -p $(subst src,vhdl,$(dir $<))     
 	@cd sim && ln -f -s $(PWD)/sim/xsim.dir/work/$(notdir $@) $(subst src,vhdl,$(dir $<))     
 
-TB_MISC_VDBS=$(call build_vdb_list, src/misc/types.vhd )
+TB_MISC_VDBS=$(call build_vdb_list, src/misc/types.vhd src/misc/pacd.vhd src/misc/DC_data_CDC.vhd src/misc/data_CDC.vhd src/misc/counter.vhd src/misc/capture_CDC.vhd)
 
 TB_CM_PWR_VDBS=$(TB_MISC_VDBS) $(call build_vdb_list, src/CM_interface/CM_pwr.vhd)    
 tb_CM_pwr : $(TB_CM_PWR_VDBS)  
@@ -180,6 +180,12 @@ tb_cm_monitor : $(TB_CM_MONITOR_VDBS)
 	$(TB_RULE)     
 test_cm_monitor : $(TB_CM_MONITOR_VDBS)
 	$(MAKE) tb_cm_monitor USE_GUI="-onfinish quit -t ./quit.tcl"
+
+TB_TCDS_MONITOR_VDBS=$(TB_MISC_VDBS) $(call build_vdb_list, src/TCDS/TCDS_Monitor.vhd)    
+tb_TCDS_Monitor : $(TB_TCDS_MONITOR_VDBS)
+	$(TB_RULE)     
+test_TCDS_Monitor : $(TB_TCDS_MONITOR_VDBS)
+	$(MAKE) tb_TCDS_Monitor USE_GUI="-onfinish quit -t ./quit.tcl"
 
 
 ################################################################################# 

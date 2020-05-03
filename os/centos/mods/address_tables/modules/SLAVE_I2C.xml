@@ -30,6 +30,10 @@
 	  <node id="BYTE_5" address="0x1"        permission="r" mask="0x0000FF00" description="eth1 mac adder byte 6"/>
 	</node>
     </node>      
+    <node id="CM" address="0x8">
+      <node id="DONE_KINTEX" address="0x0"        permission="rw" mask="0x00000001" description="KINTEX_PGRM_DONE" parameters="Table=STATUS;Row=CM_FPGA;Column=_4;Format=u;Status=1"/>
+      <node id="DONE_VIRTEX" address="0x0"        permission="rw" mask="0x00000010" description="KINTEX_PGRM_DONE" parameters="Table=STATUS;Row=CM_FPGA;Column=_4;Format=u;Status=1"/>
+    </node>
     <!-- <node id="3"  address="0x3" permission="rw"/> -->
     <!-- <node id="4"  address="0x4" permission="rw"/> -->
     <!-- <node id="9"  address="0x9" permission="rw"/> -->
