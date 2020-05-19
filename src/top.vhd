@@ -718,10 +718,10 @@ begin  -- architecture structure
     
   TCDS_2: entity work.TCDS
     port map (
-      clk_axi            => axi_clk,--clk_TCDS,
-      reset_axi_n        => pl_reset_n,--clk_TCDS_reset_n,--pl_reset_n,
-      clk_axi_DRP        => axi_clk,
-      reset_axi_DRP_n    => pl_reset_n,
+      clk_axi            => pl_clk,--axi_clk,--clk_TCDS,
+      reset_axi_n        => pl_reset_n,--axi_reset_n,--pl_reset_n,--clk_TCDS_reset_n,--pl_reset_n,
+      clk_axi_DRP        => pl_clk,--axi_clk,
+      reset_axi_DRP_n    => pl_reset_n,--axi_reset_n,--pl_reset_n,
       readMOSI           => AXI_BUS_RMOSI(5),
       readMISO           => AXI_BUS_RMISO(5),
       writeMOSI          => AXI_BUS_WMOSI(5),
