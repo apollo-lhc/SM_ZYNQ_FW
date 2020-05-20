@@ -507,8 +507,25 @@ begin  -- architecture structure
       TCDS_wstrb               => AXI_BUS_WMOSI(5).data_write_strobe,
       TCDS_wvalid              => AXI_BUS_WMOSI(5).data_valid,
 
-
-      
+      XVC1_araddr               => AXI_BUS_RMOSI(6).address,
+      XVC1_arprot               => AXI_BUS_RMOSI(6).protection_type,
+      XVC1_arready              => AXI_BUS_RMISO(6).ready_for_address,
+      XVC1_arvalid              => AXI_BUS_RMOSI(6).address_valid,
+      XVC1_awaddr               => AXI_BUS_WMOSI(6).address,
+      XVC1_awprot               => AXI_BUS_WMOSI(6).protection_type,
+      XVC1_awready              => AXI_BUS_WMISO(6).ready_for_address,
+      XVC1_awvalid              => AXI_BUS_WMOSI(6).address_valid,
+      XVC1_bready               => AXI_BUS_WMOSI(6).ready_for_response,
+      XVC1_bresp                => AXI_BUS_WMISO(6).response,
+      XVC1_bvalid               => AXI_BUS_WMISO(6).response_valid,
+      XVC1_rdata                => AXI_BUS_RMISO(6).data,
+      XVC1_rready               => AXI_BUS_RMOSI(6).ready_for_data,
+      XVC1_rresp                => AXI_BUS_RMISO(6).response,
+      XVC1_rvalid               => AXI_BUS_RMISO(6).data_valid,
+      XVC1_wdata                => AXI_BUS_WMOSI(6).data,
+      XVC1_wready               => AXI_BUS_WMISO(6).ready_for_data,
+      XVC1_wstrb                => AXI_BUS_WMOSI(6).data_write_strobe,
+      XVC1_wvalid               => AXI_BUS_WMOSI(6).data_valid,
 
       tap_tck_0                 => XVC0_tck,
       tap_tdi_0                 => XVC0_tdi,
@@ -894,11 +911,5 @@ begin  -- architecture structure
         TDI             => plXVC_TDI,
         TDO             => plXVC_TDO,
         TCK             => plXVC_TCK);
-
-  
-
-
-  
-
   
 end architecture structure;
