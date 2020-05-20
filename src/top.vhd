@@ -109,8 +109,13 @@ entity top is
     CM2_tdo          : in    STD_LOGIC;
     CM2_tms          : out   STD_LOGIC;
 
-
-
+    -------------------------------------------------------------------------------------------
+    -- plXVC
+    -------------------------------------------------------------------------------------------
+    plXVC_TMS   : out std_logic;
+    plXVC_TDI   : out std_logic;
+    plXVC_TDO   : in  std_logic;
+    plXVC_TCK   : out std_logic;
 
     -------------------------------------------------------------------------------------------
     -- MGBT 1
@@ -232,7 +237,7 @@ architecture structure of top is
   
 -- AXI BUS
   signal AXI_clk : std_logic;
-  constant PL_AXI_SLAVE_COUNT : integer := 6;
+  constant PL_AXI_SLAVE_COUNT : integer := 7;
   signal AXI_BUS_RMOSI :  AXIReadMOSI_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIReadMOSI);
   signal AXI_BUS_RMISO :  AXIReadMISO_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIReadMISO);
   signal AXI_BUS_WMOSI : AXIWriteMOSI_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIWriteMOSI);
@@ -874,7 +879,21 @@ begin  -- architecture structure
       CM1_C2C_Ctrl         => CM1_C2C_Ctrl,
       CM2_C2C_Ctrl         => CM2_C2C_Ctrl);
 
-
+  plXVC_1: entity work.plXVC_intf
+    generic map (
+      TCK_RATIO         => 1,
+      IRQ_LENGTH        => 1)           
+      port map (
+        clk_axi         => axi_clk,
+        reset_axi_n     => pl_reset_n,
+        readMOSI        => AXI_BUS_RMOSI(6),
+        readMISO        => AXI_BUS_RMISO(6),
+        writeMOSI       => AXI_BUS_WMOSI(6),
+        writeMISO       => AXI_BUS_WMISO(6),
+        TMS             => plXVC_TMS,
+        TDI             => plXVC_TDI,
+        TDO             => plXVC_TDO,
+        TCK             => plXVC_TCK);
 
   
 
