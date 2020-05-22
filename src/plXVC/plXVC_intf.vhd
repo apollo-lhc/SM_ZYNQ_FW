@@ -1,6 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all; --maybe don't need
+
 use work.types.all; --maybe don't need
 use work.AXIRegPkg.all; --for AXIReadMOSI, AXIReadMISO, AXIWriteMOSI, and AXIWriteMISO
 use work.plXVC_CTRL.all; --for plXVC_MON_t and plXVC_CTRL_t

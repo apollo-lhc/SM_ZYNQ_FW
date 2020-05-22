@@ -112,10 +112,6 @@ entity top is
     -------------------------------------------------------------------------------------------
     -- plXVC
     -------------------------------------------------------------------------------------------
-    plXVC_TMS   : out std_logic;
-    plXVC_TDI   : out std_logic;
-    plXVC_TDO   : in  std_logic;
-    plXVC_TCK   : out std_logic;
 
     -------------------------------------------------------------------------------------------
     -- MGBT 1
@@ -284,14 +280,21 @@ architecture structure of top is
   signal  SI_init_reset : std_logic;
 
 
+
+  --For plXVC
+  signal plXVC1_TMS     : std_logic;
+  signal plXVC1_TDI     : std_logic;
+  signal plXVC1_TDO     : std_logic;
+  signal plXVC1_TCK     : std_logic;
+  
   signal XVC0_tck          : STD_LOGIC;
   signal XVC0_tdi          : STD_LOGIC;
   signal XVC0_tdo          : STD_LOGIC;
   signal XVC0_tms          : STD_LOGIC;
-  signal XVC1_tck          : STD_LOGIC;
-  signal XVC1_tdi          : STD_LOGIC;
-  signal XVC1_tdo          : STD_LOGIC;
-  signal XVC1_tms          : STD_LOGIC;
+--  signal XVC1_tck          : STD_LOGIC;
+--  signal XVC1_tdi          : STD_LOGIC;
+--  signal XVC1_tdo          : STD_LOGIC;
+--  signal XVC1_tms          : STD_LOGIC;
 
 
 
@@ -507,34 +510,34 @@ begin  -- architecture structure
       TCDS_wstrb               => AXI_BUS_WMOSI(5).data_write_strobe,
       TCDS_wvalid              => AXI_BUS_WMOSI(5).data_valid,
 
-      XVC1_araddr               => AXI_BUS_RMOSI(6).address,
-      XVC1_arprot               => AXI_BUS_RMOSI(6).protection_type,
-      XVC1_arready              => AXI_BUS_RMISO(6).ready_for_address,
-      XVC1_arvalid              => AXI_BUS_RMOSI(6).address_valid,
-      XVC1_awaddr               => AXI_BUS_WMOSI(6).address,
-      XVC1_awprot               => AXI_BUS_WMOSI(6).protection_type,
-      XVC1_awready              => AXI_BUS_WMISO(6).ready_for_address,
-      XVC1_awvalid              => AXI_BUS_WMOSI(6).address_valid,
-      XVC1_bready               => AXI_BUS_WMOSI(6).ready_for_response,
-      XVC1_bresp                => AXI_BUS_WMISO(6).response,
-      XVC1_bvalid               => AXI_BUS_WMISO(6).response_valid,
-      XVC1_rdata                => AXI_BUS_RMISO(6).data,
-      XVC1_rready               => AXI_BUS_RMOSI(6).ready_for_data,
-      XVC1_rresp                => AXI_BUS_RMISO(6).response,
-      XVC1_rvalid               => AXI_BUS_RMISO(6).data_valid,
-      XVC1_wdata                => AXI_BUS_WMOSI(6).data,
-      XVC1_wready               => AXI_BUS_WMISO(6).ready_for_data,
-      XVC1_wstrb                => AXI_BUS_WMOSI(6).data_write_strobe,
-      XVC1_wvalid               => AXI_BUS_WMOSI(6).data_valid,
+      PLXVC1_araddr               => AXI_BUS_RMOSI(6).address,
+      PLXVC1_arprot               => AXI_BUS_RMOSI(6).protection_type,
+      PLXVC1_arready              => AXI_BUS_RMISO(6).ready_for_address,
+      PLXVC1_arvalid              => AXI_BUS_RMOSI(6).address_valid,
+      PLXVC1_awaddr               => AXI_BUS_WMOSI(6).address,
+      PLXVC1_awprot               => AXI_BUS_WMOSI(6).protection_type,
+      PLXVC1_awready              => AXI_BUS_WMISO(6).ready_for_address,
+      PLXVC1_awvalid              => AXI_BUS_WMOSI(6).address_valid,
+      PLXVC1_bready               => AXI_BUS_WMOSI(6).ready_for_response,
+      PLXVC1_bresp                => AXI_BUS_WMISO(6).response,
+      PLXVC1_bvalid               => AXI_BUS_WMISO(6).response_valid,
+      PLXVC1_rdata                => AXI_BUS_RMISO(6).data,
+      PLXVC1_rready               => AXI_BUS_RMOSI(6).ready_for_data,
+      PLXVC1_rresp                => AXI_BUS_RMISO(6).response,
+      PLXVC1_rvalid               => AXI_BUS_RMISO(6).data_valid,
+      PLXVC1_wdata                => AXI_BUS_WMOSI(6).data,
+      PLXVC1_wready               => AXI_BUS_WMISO(6).ready_for_data,
+      PLXVC1_wstrb                => AXI_BUS_WMOSI(6).data_write_strobe,
+      PLXVC1_wvalid               => AXI_BUS_WMOSI(6).data_valid,
 
       tap_tck_0                 => XVC0_tck,
       tap_tdi_0                 => XVC0_tdi,
       tap_tdo_0                 => XVC0_tdo,
       tap_tms_0                 => XVC0_tms,
-      tap_tck_1                 => XVC1_tck,
-      tap_tdi_1                 => XVC1_tdi,
-      tap_tdo_1                 => XVC1_tdo,
-      tap_tms_1                 => XVC1_tms,
+      --tap_tck_1                 => XVC1_tck,
+      --tap_tdi_1                 => XVC1_tdi,
+      --tap_tdo_1                 => XVC1_tdo,
+      --tap_tms_1                 => XVC1_tms,
 
       init_clk        =>  AXI_C2C_aurora_init_clk,
       C2C1_phy_Rx_rxn =>  AXI_C2C_CM1_Rx_N(0 to 0),
@@ -720,39 +723,39 @@ begin  -- architecture structure
 
 
   axi_reset <= not axi_reset_n;
-  TCDS_2: entity work.TCDS
-    port map (
-      clk_axi            => clk_TCDS,
-      reset_axi_n        => pl_reset_n,
-      clk_axi_DRP        => axi_clk,
-      reset_axi_DRP_n    => pl_reset_n,
-      readMOSI           => AXI_BUS_RMOSI(5),
-      readMISO           => AXI_BUS_RMISO(5),
-      writeMOSI          => AXI_BUS_WMOSI(5),
-      writeMISO          => AXI_BUS_WMISO(5),
-      DRP_readMOSI       => AXI_BUS_RMOSI(4),
-      DRP_readMISO       => AXI_BUS_RMISO(4),
-      DRP_writeMOSI      => AXI_BUS_WMOSI(4),
-      DRP_writeMISO      => AXI_BUS_WMISO(4),
---      sysclk        => pl_clk,
-      refclk_p      => refclk_TCDS_P,
-      refclk_n      => refclk_TCDS_N,
-      QPLL_CLK        => QPLL_CLK,    
-      QPLL_REF_CLK    => QPLL_REF_CLK,        
-      reset         => axi_reset,
-      clk_TCDS    => clk_TCDS,
-      tx_P(0)     => tts_P,
-      tx_P(1)     => fake_ttc_P,  
-      tx_P(2)     => open, 
-      tx_N(0)     => tts_N,
-      tx_N(1)     => fake_ttc_N,  
-      tx_N(2)     => open, 
-      rx_P(0)     => ttc_P,
-      rx_P(1)     => m1_tts_P,    
-      rx_P(2)     => m2_tts_P,    
-      rx_N(0)     => ttc_N,
-      rx_N(1)     => m1_tts_N,    
-      rx_N(2)     => m2_tts_N);
+--  TCDS_2: entity work.TCDS
+--    port map (
+--      clk_axi            => clk_TCDS,
+--      reset_axi_n        => pl_reset_n,
+--      clk_axi_DRP        => axi_clk,
+--      reset_axi_DRP_n    => pl_reset_n,
+--      readMOSI           => AXI_BUS_RMOSI(5),
+--      readMISO           => AXI_BUS_RMISO(5),
+--      writeMOSI          => AXI_BUS_WMOSI(5),
+--      writeMISO          => AXI_BUS_WMISO(5),
+--      DRP_readMOSI       => AXI_BUS_RMOSI(4),
+--      DRP_readMISO       => AXI_BUS_RMISO(4),
+--      DRP_writeMOSI      => AXI_BUS_WMOSI(4),
+--      DRP_writeMISO      => AXI_BUS_WMISO(4),
+----      sysclk        => pl_clk,
+--      refclk_p      => refclk_TCDS_P,
+--      refclk_n      => refclk_TCDS_N,
+--      QPLL_CLK        => QPLL_CLK,    
+--      QPLL_REF_CLK    => QPLL_REF_CLK,        
+--      reset         => axi_reset,
+--      clk_TCDS    => clk_TCDS,
+--      tx_P(0)     => tts_P,
+--      tx_P(1)     => fake_ttc_P,  
+--      tx_P(2)     => open, 
+--      tx_N(0)     => tts_N,
+--      tx_N(1)     => fake_ttc_N,  
+--      tx_N(2)     => open, 
+--      rx_P(0)     => ttc_P,
+--      rx_P(1)     => m1_tts_P,    
+--      rx_P(2)     => m2_tts_P,    
+--      rx_N(0)     => ttc_N,
+--      rx_N(1)     => m1_tts_N,    
+--      rx_N(2)     => m2_tts_N);
 
 
 
@@ -847,7 +850,7 @@ begin  -- architecture structure
 
 
   XVC0_TDO <= CM1_TDO;
-  XVC1_TDO <= CM2_TDO;
+  plXVC1_TDO <= CM2_TDO;
   CM_interface_1: entity work.CM_intf
     port map (
       clk_axi              => axi_clk,
@@ -880,9 +883,9 @@ begin  -- architecture structure
       to_CM1_in.TDI        => XVC0_TDI,
       to_CM1_in.TCK        => XVC0_TCK,
       to_CM2_in.UART_Tx    => '0',--CM2_UART_Tx_internal,
-      to_CM2_in.TMS        => XVC1_TMS,
-      to_CM2_in.TDI        => XVC1_TDI,
-      to_CM2_in.TCK        => XVC1_TCK,
+      to_CM2_in.TMS        => plXVC1_TMS,
+      to_CM2_in.TDI        => plXVC1_TDI,
+      to_CM2_in.TCK        => plXVC1_TCK,
       to_CM1_out.UART_Tx   => CM1_UART_Tx,
       to_CM1_out.TMS       => CM1_TMS,
       to_CM1_out.TDI       => CM1_TDI,
@@ -907,9 +910,9 @@ begin  -- architecture structure
         readMISO        => AXI_BUS_RMISO(6),
         writeMOSI       => AXI_BUS_WMOSI(6),
         writeMISO       => AXI_BUS_WMISO(6),
-        TMS             => plXVC_TMS,
-        TDI             => plXVC_TDI,
-        TDO             => plXVC_TDO,
-        TCK             => plXVC_TCK);
+        TMS             => plXVC1_TMS,
+        TDI             => plXVC1_TDI,
+        TDO             => plXVC1_TDO,
+        TCK             => plXVC1_TCK);
   
 end architecture structure;

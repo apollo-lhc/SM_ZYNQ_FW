@@ -9,7 +9,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL; --For std_logic
 use IEEE.NUMERIC_STD.ALL; --For unsigned numbers
-use work.XVC_Ctrl.all --For XVC_Ctrl_t
+-- Not Needed? -- use work.plXVC_Ctrl.all; --For XVC_Ctrl_t
 
   entity virtualJTAG is
     generic (TCK_RATIO    : in  integer := 1;                   --ratio of axi_clk to TCK
@@ -158,7 +158,7 @@ begin
       case STATE is
         when IDLE =>
           interupt_sr <= '0' & interupt_sr((IRQ_LENGTH - 1) downto 1);
-          if (CTRL = X"00000001") then
+          if (CTRL = '1') then
             if (length /= X"00000000") then --don't do anything if length is 0
               if (interupt_sr = ready) then --not still in interupt
                 if (axi_clk = '0') then
