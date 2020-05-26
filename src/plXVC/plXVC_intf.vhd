@@ -8,7 +8,7 @@ use work.plXVC_CTRL.all; --for plXVC_MON_t and plXVC_CTRL_t
 
 entity plXVC_intf is
   generic (--Must be > 0
-    TCK_RATIO   : integer := 1; --ratio of axi_clk to TCK
+    -- not working TCK_RATIO   : integer := 1; --ratio of axi_clk to TCK
     IRQ_LENGTH  : integer :=1); --Length of IRQ in axi_clk ticks
   port (
     --signals for plXVC_interface
@@ -41,7 +41,7 @@ begin
   --Instansiate virtualJTAG
 virtualJTAG_1: entity work.virtualJTAG
   generic map (
-    TCK_RATIO => TCK_RATIO,             --ratio of axi_clk to TCK
+    -- not working TCK_RATIO => TCK_RATIO,             --ratio of axi_clk to TCK
     IRQ_LENGTH => IRQ_LENGTH)           --Length of IRQ in axi_clk ticks
   port map (
     axi_clk     => clk_axi,             --Input clk

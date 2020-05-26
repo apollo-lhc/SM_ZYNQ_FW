@@ -12,7 +12,7 @@ use IEEE.NUMERIC_STD.ALL; --For unsigned numbers
 -- Not Needed? -- use work.plXVC_Ctrl.all; --For XVC_Ctrl_t
 
   entity virtualJTAG is
-    generic (TCK_RATIO    : in  integer := 1;                   --ratio of axi_clk to TCK
+    generic (-- NOT WORKING CURRENTLY TCK_RATIO    : in  integer := 1;                   --ratio of axi_clk to TCK
              IRQ_LENGTH   : in  integer := 1);                  --Length of IRQ in axi_clk ticks
       port  (axi_clk      : in  std_logic;                      --Input axi_clk
              reset        : in  std_logic;                      --reset
@@ -35,6 +35,7 @@ architecture Behavioral of virtualJTAG is
   signal timer        : integer := 1;
   signal TCK_buffer   : std_logic;
   signal TCK_counter  : unsigned(5 downto 0);
+  constant TCK_RATIO  : integer := 1;
 
 -- *** Shifting *** --
   signal TMS_latch    : std_logic_vector(31 downto 0);
@@ -61,14 +62,14 @@ begin
 
 --This process handles the conversion from the axi_clk to the TCK defined by
 --the TCK_RATIO generic
-  Timing : process (axi_clk'event, reset)
+  Timing : process (axi_clk, reset)
   begin
     if (reset = '1') then --reset case
       TCK_counter <= "000000";
       timer <= 1;
       TCK_buffer <= '0';
       
-    else --rising and falling edges of axi_clk
+    elsif (axi_clk'event and axi_clk='1') then --rising 
       case STATE is
         when IDLE => --do nothing
           TCK_counter <= "000000";
@@ -99,14 +100,15 @@ begin
 
 --This process latchs the AXI inputs on CTRL signal and then shift out these
 --vectors to the JTAG single bit outputs
-  Shifting : process(axi_clk'event, reset)
+  Shifting : process(axi_clk, reset)
   begin
     if (reset = '1') then
       TMS_latch <= X"00000000";
       TDI_latch <= X"00000000";
       TDO_buffer <= X"00000000";
       length_latch <= "000000";
-    else 
+      
+    elsif (axi_clk'event and axi_clk='1') then
       case STATE is
         when IDLE =>
           if (CTRL = '1') then
@@ -149,25 +151,24 @@ begin
   end process Shifting;
 
 --This process sets the STATE of the vritualJTAG cable between IDLE and OPERATING
-  StateMachine : process(axi_clk'event, reset)
+  StateMachine : process(axi_clk, reset)
   begin
     if (reset = '1') then
       STATE <= IDLE;
       interupt_sr <= (others => '0');
-    else
+      
+    elsif (axi_clk'event and axi_clk='1') then
       case STATE is
         when IDLE =>
           interupt_sr <= '0' & interupt_sr((IRQ_LENGTH - 1) downto 1);
           if (CTRL = '1') then
             if (length /= X"00000000") then --don't do anything if length is 0
               if (interupt_sr = ready) then --not still in interupt
-                if (axi_clk = '0') then
-                  STATE <= OPERATING;
-                  busy <= '1';
-                else
-                  STATE <= IDLE;
-                  busy <= '0';
-                end if;
+                STATE <= OPERATING;
+                busy <= '1';
+              else
+                STATE <= IDLE;
+                busy <= '0';
               end if;
             else
               STATE <= IDLE;

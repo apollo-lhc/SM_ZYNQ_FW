@@ -899,20 +899,20 @@ begin  -- architecture structure
       CM1_C2C_Ctrl         => CM1_C2C_Ctrl,
       CM2_C2C_Ctrl         => CM2_C2C_Ctrl);
 
-  --plXVC_1: entity work.plXVC_intf
-  --  generic map (
-  --    TCK_RATIO         => 1,
-  --    IRQ_LENGTH        => 1)           
-  --    port map (
-  --      clk_axi         => axi_clk,
-  --      reset_axi_n     => pl_reset_n,
-  --      readMOSI        => AXI_BUS_RMOSI(6),
-  --      readMISO        => AXI_BUS_RMISO(6),
-  --      writeMOSI       => AXI_BUS_WMOSI(6),
-  --      writeMISO       => AXI_BUS_WMISO(6),
-  --      TMS             => plXVC1_TMS,
-  --      TDI             => plXVC1_TDI,
-  --      TDO             => plXVC1_TDO,
-  --      TCK             => plXVC1_TCK);
+  plXVC_1: entity work.plXVC_intf
+    generic map (
+      --not working TCK_RATIO         => 1,
+      IRQ_LENGTH        => 1)           
+      port map (
+        clk_axi         => axi_clk,
+        reset_axi_n     => pl_reset_n,
+        readMOSI        => AXI_BUS_RMOSI(6),
+        readMISO        => AXI_BUS_RMISO(6),
+        writeMOSI       => AXI_BUS_WMOSI(6),
+        writeMISO       => AXI_BUS_WMISO(6),
+        TMS             => plXVC1_TMS,
+        TDI             => plXVC1_TDI,
+        TDO             => plXVC1_TDO,
+        TCK             => plXVC1_TCK);
   
 end architecture structure;
