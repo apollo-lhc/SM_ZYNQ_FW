@@ -723,39 +723,39 @@ begin  -- architecture structure
 
 
   axi_reset <= not axi_reset_n;
---  TCDS_2: entity work.TCDS
---    port map (
---      clk_axi            => clk_TCDS,
---      reset_axi_n        => pl_reset_n,
---      clk_axi_DRP        => axi_clk,
---      reset_axi_DRP_n    => pl_reset_n,
---      readMOSI           => AXI_BUS_RMOSI(5),
---      readMISO           => AXI_BUS_RMISO(5),
---      writeMOSI          => AXI_BUS_WMOSI(5),
---      writeMISO          => AXI_BUS_WMISO(5),
---      DRP_readMOSI       => AXI_BUS_RMOSI(4),
---      DRP_readMISO       => AXI_BUS_RMISO(4),
---      DRP_writeMOSI      => AXI_BUS_WMOSI(4),
---      DRP_writeMISO      => AXI_BUS_WMISO(4),
-----      sysclk        => pl_clk,
---      refclk_p      => refclk_TCDS_P,
---      refclk_n      => refclk_TCDS_N,
---      QPLL_CLK        => QPLL_CLK,    
---      QPLL_REF_CLK    => QPLL_REF_CLK,        
---      reset         => axi_reset,
---      clk_TCDS    => clk_TCDS,
---      tx_P(0)     => tts_P,
---      tx_P(1)     => fake_ttc_P,  
---      tx_P(2)     => open, 
---      tx_N(0)     => tts_N,
---      tx_N(1)     => fake_ttc_N,  
---      tx_N(2)     => open, 
---      rx_P(0)     => ttc_P,
---      rx_P(1)     => m1_tts_P,    
---      rx_P(2)     => m2_tts_P,    
---      rx_N(0)     => ttc_N,
---      rx_N(1)     => m1_tts_N,    
---      rx_N(2)     => m2_tts_N);
+  TCDS_2: entity work.TCDS
+    port map (
+      clk_axi            => clk_TCDS,
+      reset_axi_n        => pl_reset_n,
+      clk_axi_DRP        => axi_clk,
+      reset_axi_DRP_n    => pl_reset_n,
+      readMOSI           => AXI_BUS_RMOSI(5),
+      readMISO           => AXI_BUS_RMISO(5),
+      writeMOSI          => AXI_BUS_WMOSI(5),
+      writeMISO          => AXI_BUS_WMISO(5),
+      DRP_readMOSI       => AXI_BUS_RMOSI(4),
+      DRP_readMISO       => AXI_BUS_RMISO(4),
+      DRP_writeMOSI      => AXI_BUS_WMOSI(4),
+      DRP_writeMISO      => AXI_BUS_WMISO(4),
+      --sysclk        => pl_clk,
+      refclk_p      => refclk_TCDS_P,
+      refclk_n      => refclk_TCDS_N,
+      QPLL_CLK        => QPLL_CLK,    
+      QPLL_REF_CLK    => QPLL_REF_CLK,        
+      reset         => axi_reset,
+      clk_TCDS    => clk_TCDS,
+      tx_P(0)     => tts_P,
+      tx_P(1)     => fake_ttc_P,  
+      tx_P(2)     => open, 
+      tx_N(0)     => tts_N,
+      tx_N(1)     => fake_ttc_N,  
+      tx_N(2)     => open, 
+      rx_P(0)     => ttc_P,
+      rx_P(1)     => m1_tts_P,    
+      rx_P(2)     => m2_tts_P,    
+      rx_N(0)     => ttc_N,
+      rx_N(1)     => m1_tts_N,    
+      rx_N(2)     => m2_tts_N);
 
 
 
@@ -899,20 +899,20 @@ begin  -- architecture structure
       CM1_C2C_Ctrl         => CM1_C2C_Ctrl,
       CM2_C2C_Ctrl         => CM2_C2C_Ctrl);
 
-  plXVC_1: entity work.plXVC_intf
-    generic map (
-      TCK_RATIO         => 1,
-      IRQ_LENGTH        => 1)           
-      port map (
-        clk_axi         => axi_clk,
-        reset_axi_n     => pl_reset_n,
-        readMOSI        => AXI_BUS_RMOSI(6),
-        readMISO        => AXI_BUS_RMISO(6),
-        writeMOSI       => AXI_BUS_WMOSI(6),
-        writeMISO       => AXI_BUS_WMISO(6),
-        TMS             => plXVC1_TMS,
-        TDI             => plXVC1_TDI,
-        TDO             => plXVC1_TDO,
-        TCK             => plXVC1_TCK);
+  --plXVC_1: entity work.plXVC_intf
+  --  generic map (
+  --    TCK_RATIO         => 1,
+  --    IRQ_LENGTH        => 1)           
+  --    port map (
+  --      clk_axi         => axi_clk,
+  --      reset_axi_n     => pl_reset_n,
+  --      readMOSI        => AXI_BUS_RMOSI(6),
+  --      readMISO        => AXI_BUS_RMISO(6),
+  --      writeMOSI       => AXI_BUS_WMOSI(6),
+  --      writeMISO       => AXI_BUS_WMISO(6),
+  --      TMS             => plXVC1_TMS,
+  --      TDI             => plXVC1_TDI,
+  --      TDO             => plXVC1_TDO,
+  --      TCK             => plXVC1_TCK);
   
 end architecture structure;
