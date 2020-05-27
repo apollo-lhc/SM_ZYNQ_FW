@@ -28,8 +28,8 @@ architecture behavioral of plXVC_interface is
   signal localRdAck         : std_logic;
 
 
-  signal reg_data :  slv32_array_t(integer range 0 to 5);
-  constant Default_reg_data : slv32_array_t(integer range 0 to 5) := (others => x"00000000");
+  signal reg_data :  slv32_array_t(integer range 0 to 4);
+  constant Default_reg_data : slv32_array_t(integer range 0 to 4) := (others => x"00000000");
 begin  -- architecture behavioral
 
   -------------------------------------------------------------------------------
@@ -74,8 +74,8 @@ begin  -- architecture behavioral
           localRdData(31 downto  0)  <=  reg_data( 2)(31 downto  0);      --Test Data In (TDI) Bit Vector
         when 3 => --0x3
           localRdData(31 downto  0)  <=  Mon.TDO_VECTOR;                  --Test Data Out (TDO) Capture Vector
-        when 5 => --0x5
-          localRdData( 0)            <=  Mon.BUSY;                        --Cable is operating
+        when 4 => --0x4
+          localRdData( 1)            <=  Mon.BUSY;                        --Cable is operating
         when others =>
           localRdData <= x"00000000";
       end case;
