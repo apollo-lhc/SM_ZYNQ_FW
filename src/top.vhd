@@ -287,14 +287,14 @@ architecture structure of top is
   signal plXVC1_TDO     : std_logic;
   signal plXVC1_TCK     : std_logic;
   
-  signal XVC0_tck          : STD_LOGIC;
-  signal XVC0_tdi          : STD_LOGIC;
-  signal XVC0_tdo          : STD_LOGIC;
-  signal XVC0_tms          : STD_LOGIC;
---  signal XVC1_tck          : STD_LOGIC;
---  signal XVC1_tdi          : STD_LOGIC;
---  signal XVC1_tdo          : STD_LOGIC;
---  signal XVC1_tms          : STD_LOGIC;
+  --signal XVC0_tck          : STD_LOGIC;
+  --signal XVC0_tdi          : STD_LOGIC;
+  --signal XVC0_tdo          : STD_LOGIC;
+  --signal XVC0_tms          : STD_LOGIC;
+  signal XVC1_tck          : STD_LOGIC;
+  signal XVC1_tdi          : STD_LOGIC;
+  signal XVC1_tdo          : STD_LOGIC;
+  signal XVC1_tms          : STD_LOGIC;
 
 
 
@@ -530,10 +530,10 @@ begin  -- architecture structure
       PLXVC1_wstrb                => AXI_BUS_WMOSI(6).data_write_strobe,
       PLXVC1_wvalid               => AXI_BUS_WMOSI(6).data_valid,
 
-      tap_tck_0                 => XVC0_tck,
-      tap_tdi_0                 => XVC0_tdi,
-      tap_tdo_0                 => XVC0_tdo,
-      tap_tms_0                 => XVC0_tms,
+      tap_tck_0                 => XVC1_tck,
+      tap_tdi_0                 => XVC1_tdi,
+      tap_tdo_0                 => XVC1_tdo,
+      tap_tms_0                 => XVC1_tms,
       --tap_tck_1                 => XVC1_tck,
       --tap_tdi_1                 => XVC1_tdi,
       --tap_tdo_1                 => XVC1_tdo,
@@ -849,8 +849,8 @@ begin  -- architecture structure
       O  => IPMC_SDA_i);
 
 
-  XVC0_TDO <= CM1_TDO;
-  plXVC1_TDO <= CM2_TDO;
+  plXVC1_TDO <= CM1_TDO;
+  XVC1_TDO <= CM2_TDO;
   CM_interface_1: entity work.CM_intf
     port map (
       clk_axi              => axi_clk,
@@ -879,13 +879,13 @@ begin  -- architecture structure
       from_CM2.GPIO        => CM2_GPIO,
       from_CM2.UART_Rx     => CM2_UART_rx,
       to_CM1_in.UART_Tx    => CM1_UART_Tx_internal,
-      to_CM1_in.TMS        => XVC0_TMS,
-      to_CM1_in.TDI        => XVC0_TDI,
-      to_CM1_in.TCK        => XVC0_TCK,
+      to_CM1_in.TMS        => plXVC1_TMS,
+      to_CM1_in.TDI        => plXVC1_TDI,
+      to_CM1_in.TCK        => plXVC1_TCK,
       to_CM2_in.UART_Tx    => '0',--CM2_UART_Tx_internal,
-      to_CM2_in.TMS        => plXVC1_TMS,
-      to_CM2_in.TDI        => plXVC1_TDI,
-      to_CM2_in.TCK        => plXVC1_TCK,
+      to_CM2_in.TMS        => XVC1_TMS,
+      to_CM2_in.TDI        => XVC1_TDI,
+      to_CM2_in.TCK        => XVC1_TCK,
       to_CM1_out.UART_Tx   => CM1_UART_Tx,
       to_CM1_out.TMS       => CM1_TMS,
       to_CM1_out.TDI       => CM1_TDI,
