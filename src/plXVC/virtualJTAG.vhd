@@ -55,10 +55,10 @@ begin
   TDO_vector <= TDO_buffer;     --Assign TDO from buffer
   interupt <= interupt_sr(0);   --Assign interupt from shift reg
   --Assign TDI and TMS from latches
-  TDI <= TDI_latch(31); --if MSB of AXI is bit 31
-  TMS <= TMS_latch(31); --if MSB of AXI is bit 31
---TDI <= TDI_latch(0); --if MSB of AXI is bit 0
---TMS <= TMS_latch(0); --if MSB of AXI is bit 0
+  --TDI <= TDI_latch(31); --if MSB of AXI is bit 0
+  --TMS <= TMS_latch(31); --if MSB of AXI is bit 0
+  TDI <= TDI_latch(0); --if MSB of AXI is bit 31 shift out bit 0
+  TMS <= TMS_latch(0); --if MSB of AXI is bit 31 shift out bit 0
 
 --This process handles the conversion from the axi_clk to the TCK defined by
 --the TCK_RATIO generic
@@ -129,14 +129,14 @@ begin
         when OPERATING =>
           if (timer = TCK_RATIO) then --TCK flip
             if (TCK_buffer = '1') then --negative edge of TCK so shift TDI & TMS
-              --TDI_latch(31 downto 0) <= '0' & TDI_latch(31 downto 1); --if MSB of AXI is bit 0
-              TDI_latch(31 downto 0) <= TDI_latch(30 downto 0) & '0'; --if MSB of AXI is bit 31
-              --TMS_latch(31 downto 0) <= '0' & TMS_latch(31 downto 1); --if MSB of AXI is bit 0
-              TMS_latch(31 downto 0) <= TMS_latch(30 downto 0) & '0'; --if MSB of AXI is bit 31
+              TDI_latch(31 downto 0) <= '0' & TDI_latch(31 downto 1); --if MSB of AXI is b31
+              --TDI_latch(31 downto 0) <= TDI_latch(30 downto 0) & '0'; --if MSB of AXI is bit 0
+              TMS_latch(31 downto 0) <= '0' & TMS_latch(31 downto 1); --if MSB of AXI is bit 31
+              --TMS_latch(31 downto 0) <= TMS_latch(30 downto 0) & '0'; --if MSB of AXI is bit 0
             else --positive edge of TCK so read in TDO
               if (TCK_counter /= "000000") then --not first TCK cycle
-                --TDO_buffer(31 downto 0) <= TDO_buffer(30 downto 0) & TDO; --if MSB of AXI is bit 0???
-                TDO_buffer(31 downto 0) <= TDO & TDO_buffer(31 downto 1); --if MSB of AXI is bit 31???
+                TDO_buffer(to_integer(TCK_counter - 1 )) <= TDO; --if MSB of AXI is bit 31???
+                --TDO_buffer(31 downto 0) <= TDO & TDO_buffer(31 downto 1); --if MSB of AXI is bit 0???
               end if;
             end if;
           end if;
