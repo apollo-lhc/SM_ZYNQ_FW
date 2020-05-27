@@ -36,16 +36,22 @@ architecture behavioral of plXVC_intf is
   -- *** Control record *** --
   signal Ctrl   : plXVC_Ctrl_t;
 
+  -- *** For reset *** ---
+  signal reset  : std_logic;
+  
 begin
 
+
+  
   --Instansiate virtualJTAG
+  reset <= not reset_axi_n;
 virtualJTAG_1: entity work.virtualJTAG
   generic map (
     -- not working TCK_RATIO => TCK_RATIO,             --ratio of axi_clk to TCK
     IRQ_LENGTH => IRQ_LENGTH)           --Length of IRQ in axi_clk ticks
   port map (
     axi_clk     => clk_axi,             --Input clk
-    reset       => reset_axi_n,         --reset
+    reset       => reset,               --reset
     TMS_vector  => Ctrl.TMS_VECTOR,     --axi tms input
     TDI_vector  => Ctrl.TDI_VECTOR,     --axi tdi input
     TDO         => TDO,                 --JTAG tdo input from programmable logic
