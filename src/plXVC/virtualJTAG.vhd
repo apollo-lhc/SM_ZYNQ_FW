@@ -65,14 +65,14 @@ begin
   Timing : process (axi_clk, reset)
   begin
     if (reset = '1') then --reset case
-      TCK_counter <= "000000";
+      TCK_counter <= "000001";
       timer <= 1;
       TCK_buffer <= '0';
       
     elsif (axi_clk'event and axi_clk='1') then --rising 
       case STATE is
         when IDLE => --do nothing
-          TCK_counter <= "000000";
+          TCK_counter <= "000001";
           timer <= 1;
           TCK_buffer <= '0';
           
@@ -90,7 +90,7 @@ begin
           end if;                
           
         when others => --default case
-          TCK_counter <= "000000";
+          TCK_counter <= "000001";
           timer <= 1;
           TCK_buffer <= '0';
       end case;
@@ -105,7 +105,6 @@ begin
     if (reset = '1') then
       TMS_latch <= X"00000000";
       TDI_latch <= X"00000000";
-      TDO_buffer <= X"00000000";
       length_latch <= "000000";
       
     elsif (axi_clk'event and axi_clk='1') then
@@ -114,13 +113,12 @@ begin
           if (CTRL = '1') then
             TMS_latch <= TMS_vector;
             TDI_latch <= TDI_vector;
-            TDO_buffer <= X"00000000";
-            --Without this if statement, TCK runs 1 too many times when TCK_RATIO = 1
-            if (TCK_RATIO = 1) then
-              length_latch <= unsigned(length(5 downto 0)) + 0;
-            else
-              length_latch <= unsigned(length(5 downto 0)) + 1;
-            end if;
+            --TDO_buffer <= X"00000000";
+ 
+            length_latch <= unsigned(length(5 downto 0)) + 0;
+
+         --length_latch <= unsigned(length(5 downto 0)) + 1;
+
           end if;
           
         -- *** NOTE *** ---
@@ -133,18 +131,18 @@ begin
               --TDI_latch(31 downto 0) <= TDI_latch(30 downto 0) & '0'; --if MSB of AXI is bit 0
               TMS_latch(31 downto 0) <= '0' & TMS_latch(31 downto 1); --if MSB of AXI is bit 31
               --TMS_latch(31 downto 0) <= TMS_latch(30 downto 0) & '0'; --if MSB of AXI is bit 0
-            else --positive edge of TCK so read in TDO
-              if (TCK_counter /= "000000") then --not first TCK cycle
-                TDO_buffer(to_integer(TCK_counter - 1 )) <= TDO; --if MSB of AXI is bit 31???
+              --TDO_buffer(to_integer(TCK_counter) - 1) <= TDO; --if MSB of AXI is bit 31???
+            --else --positive edge of TCK so read in TDO
+              --if (TCK_counter /= "000000") then --not first TCK cycle
+                --TDO_buffer(to_integer(TCK_counter - 1 )) <= TDO; --if MSB of AXI is bit 31???
                 --TDO_buffer(31 downto 0) <= TDO & TDO_buffer(31 downto 1); --if MSB of AXI is bit 0???
-              end if;
+              --end if;
             end if;
           end if;
           
         when others => --default case
           TMS_latch <= X"00000000";
           TDI_latch <= X"00000000";
-          TDO_buffer <= X"00000000";
           length_latch <= "000000";
       end case;
     end if;
@@ -155,6 +153,7 @@ begin
   begin
     if (reset = '1') then
       STATE <= IDLE;
+      TDO_buffer <= X"00000000";
       interupt_sr <= (others => '0');
       
     elsif (axi_clk'event and axi_clk='1') then
@@ -163,13 +162,14 @@ begin
           interupt_sr <= '0' & interupt_sr((IRQ_LENGTH - 1) downto 1);
           if (CTRL = '1') then
             if (length /= X"00000000") then --don't do anything if length is 0
-              if (interupt_sr = ready) then --not still in interupt
+              --if (interupt_sr = ready) then --not still in interupt
                 STATE <= OPERATING;
+                TDO_buffer <= X"00000000";
                 busy <= '1';
-              else
-                STATE <= IDLE;
-                busy <= '0';
-              end if;
+              --else
+                --STATE <= IDLE;
+                --busy <= '0';
+              --end if;
             else
               STATE <= IDLE;
               busy <= '0';
@@ -180,6 +180,7 @@ begin
           end if;
           
         when OPERATING =>
+          TDO_buffer(to_integer(TCK_counter) - 1) <= TDO; --if MSB of AXI is bit 31???
           if (TCK_counter = length_latch) then 
             if (timer = TCK_RATIO) then
               if (TCK_buffer = '1') then --After (length + 1) TCK clocks
@@ -204,6 +205,7 @@ begin
           
         when others => --default to IDLE
           STATE <= IDLE;
+          TDO_buffer <= X"00000000";
           busy <= '0';
           interupt_sr <= (others => '0');
       end case;

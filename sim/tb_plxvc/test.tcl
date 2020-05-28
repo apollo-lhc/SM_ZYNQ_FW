@@ -22,8 +22,8 @@ run 20ns
 #run Test1
 add_force {/sim/CTRL} -radix hex {1 0ns}
 add_force {/sim/length} -radix unsigned {4 0ns}
-add_force {/sim/TMS_vector} -radix hex {A0000000 0ns}
-add_force {/sim/TDI_vector} -radix hex {50000000 0ns}
+add_force {/sim/TMS_vector} -radix hex {0000000A 0ns}
+add_force {/sim/TDI_vector} -radix hex {00000005 0ns}
 add_force {/sim/TDO} -radix hex {1 0ns}
 run 30ns
 add_force {/sim/CTRL} -radix hex {0 0ns}

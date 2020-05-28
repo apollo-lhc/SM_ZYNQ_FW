@@ -33,7 +33,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity sim is
 generic (TCK_RATIO  : integer := 1;
-         IRQ_LENGTH : integer := 5);
+         IRQ_LENGTH : integer := 1);
 end sim;
 
 architecture Behavioral of sim is
@@ -75,6 +75,7 @@ port map (axi_clk       => axi_clk,
            TDI          => TDI,
            TDO_vector   => TDO_vector,
            TCK          => TCK,
+           busy         => busy,
            interupt     => interupt);
 
 end Behavioral;
