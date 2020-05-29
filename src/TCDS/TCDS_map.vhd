@@ -66,6 +66,7 @@ begin  -- architecture behavioral
     if localRdReq = '1' then
       localRdAck  <= '1';
       case to_integer(unsigned(localAddress(12 downto 0))) is
+
         when 0 => --0x0
           localRdData( 4)            <=  Mon.LINK0.CLOCKING.FB_CLK_LOST;      --
           localRdData( 5)            <=  Mon.LINK0.CLOCKING.CLK_LOCKED;       --
@@ -201,6 +202,8 @@ begin  -- architecture behavioral
           localRdData(18 downto 12)  <=  Mon.LINK2.RX.MONITOR;                --
         when 264 => --0x108
           localRdData( 2 downto  0)  <=  reg_data(264)( 2 downto  0);         --
+
+
         when others =>
           localRdData <= x"00000000";
       end case;
@@ -209,15 +212,16 @@ begin  -- architecture behavioral
 
 
 
+
   -- Register mapping to ctrl structures
   Ctrl.LINK0.CLOCKING.RESET   <=  reg_data( 1)( 0);                 
   Ctrl.LINK0.LOOPBACK         <=  reg_data( 8)( 2 downto  0);       
+  Ctrl.LINK0.RX.RESET         <=  reg_data(18)( 0);                 
+  Ctrl.LINK0.RX.PMA_RESET     <=  reg_data(18)( 1);                 
   Ctrl.LINK0.RX.PRBS_SEL      <=  reg_data(17)( 2 downto  0);       
   Ctrl.LINK0.RX.USER_READY    <=  reg_data(17)( 4);                 
   Ctrl.LINK0.RX.DFELPM_RESET  <=  reg_data(17)( 5);                 
   Ctrl.LINK0.RX.MONITOR_SEL   <=  reg_data(17)( 9 downto  8);       
-  Ctrl.LINK0.RX.RESET         <=  reg_data(18)( 0);                 
-  Ctrl.LINK0.RX.PMA_RESET     <=  reg_data(18)( 1);                 
   Ctrl.LINK0.TX.PRBS_SEL      <=  reg_data(33)( 2 downto  0);       
   Ctrl.LINK0.TX.INHIBIT       <=  reg_data(33)( 4);                 
   Ctrl.LINK0.TX.USER_READY    <=  reg_data(33)( 5);                 
@@ -225,12 +229,12 @@ begin  -- architecture behavioral
   Ctrl.LINK0.EYESCAN.RESET    <=  reg_data(49)( 0);                 
   Ctrl.LINK1.CLOCKING.RESET   <=  reg_data(257)( 0);                
   Ctrl.LINK1.LOOPBACK         <=  reg_data(264)( 2 downto  0);      
+  Ctrl.LINK1.RX.RESET         <=  reg_data(274)( 0);                
+  Ctrl.LINK1.RX.PMA_RESET     <=  reg_data(274)( 1);                
   Ctrl.LINK1.RX.PRBS_SEL      <=  reg_data(273)( 2 downto  0);      
   Ctrl.LINK1.RX.USER_READY    <=  reg_data(273)( 4);                
   Ctrl.LINK1.RX.DFELPM_RESET  <=  reg_data(273)( 5);                
   Ctrl.LINK1.RX.MONITOR_SEL   <=  reg_data(273)( 9 downto  8);      
-  Ctrl.LINK1.RX.RESET         <=  reg_data(274)( 0);                
-  Ctrl.LINK1.RX.PMA_RESET     <=  reg_data(274)( 1);                
   Ctrl.LINK1.TX.PRBS_SEL      <=  reg_data(289)( 2 downto  0);      
   Ctrl.LINK1.TX.INHIBIT       <=  reg_data(289)( 4);                
   Ctrl.LINK1.TX.USER_READY    <=  reg_data(289)( 5);                
@@ -238,80 +242,80 @@ begin  -- architecture behavioral
   Ctrl.LINK1.EYESCAN.RESET    <=  reg_data(305)( 0);                
   Ctrl.LINK2.CLOCKING.RESET   <=  reg_data(513)( 0);                
   Ctrl.LINK2.LOOPBACK         <=  reg_data(520)( 2 downto  0);      
+  Ctrl.LINK2.RX.RESET         <=  reg_data(530)( 0);                
+  Ctrl.LINK2.RX.PMA_RESET     <=  reg_data(530)( 1);                
   Ctrl.LINK2.RX.PRBS_SEL      <=  reg_data(529)( 2 downto  0);      
   Ctrl.LINK2.RX.USER_READY    <=  reg_data(529)( 4);                
   Ctrl.LINK2.RX.DFELPM_RESET  <=  reg_data(529)( 5);                
   Ctrl.LINK2.RX.MONITOR_SEL   <=  reg_data(529)( 9 downto  8);      
-  Ctrl.LINK2.RX.RESET         <=  reg_data(530)( 0);                
-  Ctrl.LINK2.RX.PMA_RESET     <=  reg_data(530)( 1);                
   Ctrl.LINK2.TX.PRBS_SEL      <=  reg_data(545)( 2 downto  0);      
   Ctrl.LINK2.TX.INHIBIT       <=  reg_data(545)( 4);                
   Ctrl.LINK2.TX.USER_READY    <=  reg_data(545)( 5);                
   Ctrl.LINK2.TX.RESET         <=  reg_data(546)( 6);                
   Ctrl.LINK2.EYESCAN.RESET    <=  reg_data(561)( 0);                
   Ctrl.CTRL0.MODE             <=  reg_data(4098)( 3 downto  0);     
-  Ctrl.CTRL0.FIXED_SEND_D     <=  reg_data(4102)(31 downto  0);     
   Ctrl.CTRL0.FIXED_SEND_K     <=  reg_data(4103)( 3 downto  0);     
+  Ctrl.CTRL0.FIXED_SEND_D     <=  reg_data(4102)(31 downto  0);     
   Ctrl.CTRL1.MODE             <=  reg_data(4354)( 3 downto  0);     
-  Ctrl.CTRL1.FIXED_SEND_D     <=  reg_data(4358)(31 downto  0);     
   Ctrl.CTRL1.FIXED_SEND_K     <=  reg_data(4359)( 3 downto  0);     
+  Ctrl.CTRL1.FIXED_SEND_D     <=  reg_data(4358)(31 downto  0);     
   Ctrl.CTRL2.MODE             <=  reg_data(4610)( 3 downto  0);     
-  Ctrl.CTRL2.FIXED_SEND_D     <=  reg_data(4614)(31 downto  0);     
   Ctrl.CTRL2.FIXED_SEND_K     <=  reg_data(4615)( 3 downto  0);     
-
+  Ctrl.CTRL2.FIXED_SEND_D     <=  reg_data(4614)(31 downto  0);     
 
 
   reg_writes: process (clk_axi, reset_axi_n) is
   begin  -- process reg_writes
     if reset_axi_n = '0' then                 -- asynchronous reset (active low)
-           reg_data( 1)( 0)  <= DEFAULT_TCDS_CTRL_t.LINK0.CLOCKING.RESET;
+      reg_data( 1)( 0)  <= DEFAULT_TCDS_CTRL_t.LINK0.CLOCKING.RESET;
       reg_data( 8)( 2 downto  0)  <= DEFAULT_TCDS_CTRL_t.LINK0.LOOPBACK;
+      reg_data(18)( 0)  <= DEFAULT_TCDS_CTRL_t.LINK0.RX.RESET;
+      reg_data(18)( 1)  <= DEFAULT_TCDS_CTRL_t.LINK0.RX.PMA_RESET;
       reg_data(17)( 2 downto  0)  <= DEFAULT_TCDS_CTRL_t.LINK0.RX.PRBS_SEL;
-           reg_data(17)( 4)  <= DEFAULT_TCDS_CTRL_t.LINK0.RX.USER_READY;
-           reg_data(17)( 5)  <= DEFAULT_TCDS_CTRL_t.LINK0.RX.DFELPM_RESET;
+      reg_data(17)( 4)  <= DEFAULT_TCDS_CTRL_t.LINK0.RX.USER_READY;
+      reg_data(17)( 5)  <= DEFAULT_TCDS_CTRL_t.LINK0.RX.DFELPM_RESET;
       reg_data(17)( 9 downto  8)  <= DEFAULT_TCDS_CTRL_t.LINK0.RX.MONITOR_SEL;
-           reg_data(18)( 0)  <= DEFAULT_TCDS_CTRL_t.LINK0.RX.RESET;
-           reg_data(18)( 1)  <= DEFAULT_TCDS_CTRL_t.LINK0.RX.PMA_RESET;
       reg_data(33)( 2 downto  0)  <= DEFAULT_TCDS_CTRL_t.LINK0.TX.PRBS_SEL;
-           reg_data(33)( 4)  <= DEFAULT_TCDS_CTRL_t.LINK0.TX.INHIBIT;
-           reg_data(33)( 5)  <= DEFAULT_TCDS_CTRL_t.LINK0.TX.USER_READY;
-           reg_data(34)( 6)  <= DEFAULT_TCDS_CTRL_t.LINK0.TX.RESET;
-           reg_data(49)( 0)  <= DEFAULT_TCDS_CTRL_t.LINK0.EYESCAN.RESET;
-          reg_data(257)( 0)  <= DEFAULT_TCDS_CTRL_t.LINK1.CLOCKING.RESET;
+      reg_data(33)( 4)  <= DEFAULT_TCDS_CTRL_t.LINK0.TX.INHIBIT;
+      reg_data(33)( 5)  <= DEFAULT_TCDS_CTRL_t.LINK0.TX.USER_READY;
+      reg_data(34)( 6)  <= DEFAULT_TCDS_CTRL_t.LINK0.TX.RESET;
+      reg_data(49)( 0)  <= DEFAULT_TCDS_CTRL_t.LINK0.EYESCAN.RESET;
+      reg_data(257)( 0)  <= DEFAULT_TCDS_CTRL_t.LINK1.CLOCKING.RESET;
       reg_data(264)( 2 downto  0)  <= DEFAULT_TCDS_CTRL_t.LINK1.LOOPBACK;
+      reg_data(274)( 0)  <= DEFAULT_TCDS_CTRL_t.LINK1.RX.RESET;
+      reg_data(274)( 1)  <= DEFAULT_TCDS_CTRL_t.LINK1.RX.PMA_RESET;
       reg_data(273)( 2 downto  0)  <= DEFAULT_TCDS_CTRL_t.LINK1.RX.PRBS_SEL;
-          reg_data(273)( 4)  <= DEFAULT_TCDS_CTRL_t.LINK1.RX.USER_READY;
-          reg_data(273)( 5)  <= DEFAULT_TCDS_CTRL_t.LINK1.RX.DFELPM_RESET;
+      reg_data(273)( 4)  <= DEFAULT_TCDS_CTRL_t.LINK1.RX.USER_READY;
+      reg_data(273)( 5)  <= DEFAULT_TCDS_CTRL_t.LINK1.RX.DFELPM_RESET;
       reg_data(273)( 9 downto  8)  <= DEFAULT_TCDS_CTRL_t.LINK1.RX.MONITOR_SEL;
-          reg_data(274)( 0)  <= DEFAULT_TCDS_CTRL_t.LINK1.RX.RESET;
-          reg_data(274)( 1)  <= DEFAULT_TCDS_CTRL_t.LINK1.RX.PMA_RESET;
       reg_data(289)( 2 downto  0)  <= DEFAULT_TCDS_CTRL_t.LINK1.TX.PRBS_SEL;
-          reg_data(289)( 4)  <= DEFAULT_TCDS_CTRL_t.LINK1.TX.INHIBIT;
-          reg_data(289)( 5)  <= DEFAULT_TCDS_CTRL_t.LINK1.TX.USER_READY;
-          reg_data(290)( 6)  <= DEFAULT_TCDS_CTRL_t.LINK1.TX.RESET;
-          reg_data(305)( 0)  <= DEFAULT_TCDS_CTRL_t.LINK1.EYESCAN.RESET;
-          reg_data(513)( 0)  <= DEFAULT_TCDS_CTRL_t.LINK2.CLOCKING.RESET;
+      reg_data(289)( 4)  <= DEFAULT_TCDS_CTRL_t.LINK1.TX.INHIBIT;
+      reg_data(289)( 5)  <= DEFAULT_TCDS_CTRL_t.LINK1.TX.USER_READY;
+      reg_data(290)( 6)  <= DEFAULT_TCDS_CTRL_t.LINK1.TX.RESET;
+      reg_data(305)( 0)  <= DEFAULT_TCDS_CTRL_t.LINK1.EYESCAN.RESET;
+      reg_data(513)( 0)  <= DEFAULT_TCDS_CTRL_t.LINK2.CLOCKING.RESET;
       reg_data(520)( 2 downto  0)  <= DEFAULT_TCDS_CTRL_t.LINK2.LOOPBACK;
+      reg_data(530)( 0)  <= DEFAULT_TCDS_CTRL_t.LINK2.RX.RESET;
+      reg_data(530)( 1)  <= DEFAULT_TCDS_CTRL_t.LINK2.RX.PMA_RESET;
       reg_data(529)( 2 downto  0)  <= DEFAULT_TCDS_CTRL_t.LINK2.RX.PRBS_SEL;
-          reg_data(529)( 4)  <= DEFAULT_TCDS_CTRL_t.LINK2.RX.USER_READY;
-          reg_data(529)( 5)  <= DEFAULT_TCDS_CTRL_t.LINK2.RX.DFELPM_RESET;
+      reg_data(529)( 4)  <= DEFAULT_TCDS_CTRL_t.LINK2.RX.USER_READY;
+      reg_data(529)( 5)  <= DEFAULT_TCDS_CTRL_t.LINK2.RX.DFELPM_RESET;
       reg_data(529)( 9 downto  8)  <= DEFAULT_TCDS_CTRL_t.LINK2.RX.MONITOR_SEL;
-          reg_data(530)( 0)  <= DEFAULT_TCDS_CTRL_t.LINK2.RX.RESET;
-          reg_data(530)( 1)  <= DEFAULT_TCDS_CTRL_t.LINK2.RX.PMA_RESET;
       reg_data(545)( 2 downto  0)  <= DEFAULT_TCDS_CTRL_t.LINK2.TX.PRBS_SEL;
-          reg_data(545)( 4)  <= DEFAULT_TCDS_CTRL_t.LINK2.TX.INHIBIT;
-          reg_data(545)( 5)  <= DEFAULT_TCDS_CTRL_t.LINK2.TX.USER_READY;
-          reg_data(546)( 6)  <= DEFAULT_TCDS_CTRL_t.LINK2.TX.RESET;
-          reg_data(561)( 0)  <= DEFAULT_TCDS_CTRL_t.LINK2.EYESCAN.RESET;
+      reg_data(545)( 4)  <= DEFAULT_TCDS_CTRL_t.LINK2.TX.INHIBIT;
+      reg_data(545)( 5)  <= DEFAULT_TCDS_CTRL_t.LINK2.TX.USER_READY;
+      reg_data(546)( 6)  <= DEFAULT_TCDS_CTRL_t.LINK2.TX.RESET;
+      reg_data(561)( 0)  <= DEFAULT_TCDS_CTRL_t.LINK2.EYESCAN.RESET;
       reg_data(4098)( 3 downto  0)  <= DEFAULT_TCDS_CTRL_t.CTRL0.MODE;
-      reg_data(4102)(31 downto  0)  <= DEFAULT_TCDS_CTRL_t.CTRL0.FIXED_SEND_D;
       reg_data(4103)( 3 downto  0)  <= DEFAULT_TCDS_CTRL_t.CTRL0.FIXED_SEND_K;
+      reg_data(4102)(31 downto  0)  <= DEFAULT_TCDS_CTRL_t.CTRL0.FIXED_SEND_D;
       reg_data(4354)( 3 downto  0)  <= DEFAULT_TCDS_CTRL_t.CTRL1.MODE;
-      reg_data(4358)(31 downto  0)  <= DEFAULT_TCDS_CTRL_t.CTRL1.FIXED_SEND_D;
       reg_data(4359)( 3 downto  0)  <= DEFAULT_TCDS_CTRL_t.CTRL1.FIXED_SEND_K;
+      reg_data(4358)(31 downto  0)  <= DEFAULT_TCDS_CTRL_t.CTRL1.FIXED_SEND_D;
       reg_data(4610)( 3 downto  0)  <= DEFAULT_TCDS_CTRL_t.CTRL2.MODE;
-      reg_data(4614)(31 downto  0)  <= DEFAULT_TCDS_CTRL_t.CTRL2.FIXED_SEND_D;
       reg_data(4615)( 3 downto  0)  <= DEFAULT_TCDS_CTRL_t.CTRL2.FIXED_SEND_K;
+      reg_data(4614)(31 downto  0)  <= DEFAULT_TCDS_CTRL_t.CTRL2.FIXED_SEND_D;
+
     elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
       Ctrl.LINK0.RX.PRBS_RESET <= '0';
       Ctrl.LINK0.TX.PRBS_FORCE_ERROR <= '0';
@@ -325,6 +329,8 @@ begin  -- architecture behavioral
       Ctrl.CTRL0.CAPTURE <= '0';
       Ctrl.CTRL1.CAPTURE <= '0';
       Ctrl.CTRL2.CAPTURE <= '0';
+      
+
       
       if localWrEn = '1' then
         case to_integer(unsigned(localAddress(12 downto 0))) is
@@ -421,10 +427,12 @@ begin  -- architecture behavioral
           reg_data(4614)(31 downto  0)    <=  localWrData(31 downto  0);      --
         when 264 => --0x108
           reg_data(264)( 2 downto  0)     <=  localWrData( 2 downto  0);      --
+
           when others => null;
         end case;
       end if;
     end if;
   end process reg_writes;
+
 
 end architecture behavioral;

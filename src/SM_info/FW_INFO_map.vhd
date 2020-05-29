@@ -65,6 +65,7 @@ begin  -- architecture behavioral
     if localRdReq = '1' then
       localRdAck  <= '1';
       case to_integer(unsigned(localAddress(4 downto 0))) is
+
         when 0 => --0x0
           localRdData( 1)            <=  Mon.GIT_VALID;             --
         when 1 => --0x1
@@ -103,11 +104,15 @@ begin  -- architecture behavioral
           localRdData(31 downto  0)  <=  Mon.FPGA.WORD_07;          --
         when 26 => --0x1a
           localRdData(31 downto  0)  <=  Mon.FPGA.WORD_08;          --
+
+
         when others =>
           localRdData <= x"00000000";
       end case;
     end if;
   end process reads;
+
+
 
 
 
