@@ -152,6 +152,15 @@ sim/vhdl/%.vdb : src/%.vhd
 	@cd sim && mkdir -p $(subst src,vhdl,$(dir $<))     
 	@cd sim && ln -f -s $(PWD)/sim/xsim.dir/work/$(notdir $@) $(subst src,vhdl,$(dir $<))     
 
+IPCORES=$(foreach  file,$(shell find ./cores | grep "netlist.vhdl"),../$(file))
+
+TB_IPCORES :
+	@echo "Building sim files for IPCores"
+	source $(VIVADO_SHELL) && \
+	cd sim && \
+	xvhdl $(IPCORES)
+
+
 TB_MISC_VDBS=$(call build_vdb_list, src/misc/types.vhd src/misc/pacd.vhd src/misc/DC_data_CDC.vhd src/misc/data_CDC.vhd src/misc/counter.vhd src/misc/capture_CDC.vhd)
 
 TB_CM_PWR_VDBS=$(TB_MISC_VDBS) $(call build_vdb_list, src/CM_interface/CM_pwr.vhd)    
@@ -186,6 +195,14 @@ tb_TCDS_Monitor : $(TB_TCDS_MONITOR_VDBS)
 	$(TB_RULE)     
 test_TCDS_Monitor : $(TB_TCDS_MONITOR_VDBS)
 	$(MAKE) tb_TCDS_Monitor USE_GUI="-onfinish quit -t ./quit.tcl"
+
+TB_AXIREG_VDBS=$(call build_vdb_list, src/axiReg/axiRegPkg.vhd src/axiReg/axiReg.vhd src/axiReg/axiRegMaster.vhd)    
+
+TB_TCDS_VDBS=TB_IPCORES $(TB_TCDS_MONITOR_VDBS) $(TB_AXIREG_VDBS) $(call build_vdb_list, src/misc/types.vhd src/TCDS/TCDS_PKG.vhd src/TCDS/TCDS_map.vhd src/TCDS/TCDS_Control.vhd src/TCDS/lhc_clock_module.vhd src/TCDS/lhc_gt_usrclk_source.vhd src/TCDS/lhc_support.vhd src/TCDS/MGBT2_common_reset.vhd src/TCDS/MGBT2_common.vhd src/TCDS/TCDS.vhd)    
+tb_TCDS : $(TB_TCDS_VDBS)
+	$(TB_RULE)     
+test_TCDS : $(TB_TCDS_VDBS)
+	$(MAKE) tb_TCDS USE_GUI="-onfinish quit -t ./quit.tcl"
 
 
 ################################################################################# 

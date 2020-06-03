@@ -151,6 +151,9 @@ begin  -- architecture Behavioral
       Ctrl            => Ctrl);
   
 
+  Mon.LINK0.TEST2 <= x"12345678";
+  Mon.LINK1.TEST2 <= x"abadcafe";
+  Mon.LINK2.TEST2 <= x"deadbeef";
   
   LHC_GT_USRCLK_SOURCE_1: entity work.LHC_GT_USRCLK_SOURCE
     port map (

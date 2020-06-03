@@ -83,6 +83,7 @@ package TCDS_CTRL is
     DMONITOR                   : std_logic_vector( 7 downto  0);
     EYESCAN                    : TCDS_LINK0_EYESCAN_MON_t;      
     RX                         : TCDS_LINK0_RX_MON_t;           
+    TEST2                      : std_logic_vector(31 downto  0);
     TX                         : TCDS_LINK0_TX_MON_t;           
   end record TCDS_LINK0_MON_t;
 
@@ -181,6 +182,7 @@ package TCDS_CTRL is
     DMONITOR                   : std_logic_vector( 7 downto  0);
     EYESCAN                    : TCDS_LINK1_EYESCAN_MON_t;      
     RX                         : TCDS_LINK1_RX_MON_t;           
+    TEST2                      : std_logic_vector(31 downto  0);
     TX                         : TCDS_LINK1_TX_MON_t;           
   end record TCDS_LINK1_MON_t;
 
@@ -279,6 +281,7 @@ package TCDS_CTRL is
     DMONITOR                   : std_logic_vector( 7 downto  0);
     EYESCAN                    : TCDS_LINK2_EYESCAN_MON_t;      
     RX                         : TCDS_LINK2_RX_MON_t;           
+    TEST2                      : std_logic_vector(31 downto  0);
     TX                         : TCDS_LINK2_TX_MON_t;           
   end record TCDS_LINK2_MON_t;
 
