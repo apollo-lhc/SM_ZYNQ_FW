@@ -66,6 +66,7 @@ begin  -- architecture behavioral
     if localRdReq = '1' then
       localRdAck  <= '1';
       case to_integer(unsigned(localAddress(5 downto 0))) is
+
         when 0 => --0x0
           localRdData( 0)            <=  reg_data( 0)( 0);                    --Tell CM uC to power-up
           localRdData( 1)            <=  reg_data( 0)( 1);                    --Tell CM uC to power-up the rest of the CM
@@ -191,11 +192,14 @@ begin  -- architecture behavioral
           localRdData(31 downto 16)  <=  Mon.CM1.MONITOR.ERRORS;              --Monitoring errors. Count of invalid byte types in parsing.
         when 22 => --0x16
           localRdData(31 downto  0)  <=  Mon.CM1.MONITOR.HISTORY;             --4 bytes of uart history
+
+
         when others =>
           localRdData <= x"00000000";
       end case;
     end if;
   end process reads;
+
 
 
 
@@ -265,74 +269,76 @@ begin  -- architecture behavioral
   Ctrl.CM2.C2C.TX.PRE_CURSOR         <=  reg_data(36)(31 downto 27);     
 
 
-
   reg_writes: process (clk_axi, reset_axi_n) is
   begin  -- process reg_writes
     if reset_axi_n = '0' then                 -- asynchronous reset (active low)
-           reg_data( 0)( 0)  <= DEFAULT_CM_CTRL_t.CM1.CTRL.ENABLE_UC;
-           reg_data( 0)( 1)  <= DEFAULT_CM_CTRL_t.CM1.CTRL.ENABLE_PWR;
-           reg_data( 0)( 2)  <= DEFAULT_CM_CTRL_t.CM1.CTRL.OVERRIDE_PWR_GOOD;
-           reg_data( 0)( 8)  <= DEFAULT_CM_CTRL_t.CM1.CTRL.ERROR_STATE_RESET;
-           reg_data(18)( 5)  <= DEFAULT_CM_CTRL_t.CM1.C2C.INITIALIZE;
-           reg_data(18)(22)  <= DEFAULT_CM_CTRL_t.CM1.C2C.EYESCAN_RESET;
-           reg_data(18)(23)  <= DEFAULT_CM_CTRL_t.CM1.C2C.EYESCAN_TRIGGER;
-           reg_data(19)(12)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.BUF_RESET;
-           reg_data(19)(13)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.CDR_HOLD;
-           reg_data(19)(14)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.DFE_AGC_HOLD;
-           reg_data(19)(15)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.DFE_AGC_OVERRIDE;
-           reg_data(19)(16)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.DFE_LF_HOLD;
-           reg_data(19)(17)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.DFE_LPM_RESET;
-           reg_data(19)(18)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.LPM_EN;
-           reg_data(19)(19)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.LPM_HF_OVERRIDE;
-           reg_data(19)(20)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.LPM_LFKL_OVERRIDE;
+      reg_data( 0)( 0)  <= DEFAULT_CM_CTRL_t.CM1.CTRL.ENABLE_UC;
+      reg_data( 0)( 1)  <= DEFAULT_CM_CTRL_t.CM1.CTRL.ENABLE_PWR;
+      reg_data( 0)( 2)  <= DEFAULT_CM_CTRL_t.CM1.CTRL.OVERRIDE_PWR_GOOD;
+      reg_data( 0)( 8)  <= DEFAULT_CM_CTRL_t.CM1.CTRL.ERROR_STATE_RESET;
+      reg_data(18)( 5)  <= DEFAULT_CM_CTRL_t.CM1.C2C.INITIALIZE;
+      reg_data(18)(22)  <= DEFAULT_CM_CTRL_t.CM1.C2C.EYESCAN_RESET;
+      reg_data(18)(23)  <= DEFAULT_CM_CTRL_t.CM1.C2C.EYESCAN_TRIGGER;
+      reg_data(19)(12)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.BUF_RESET;
+      reg_data(19)(13)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.CDR_HOLD;
+      reg_data(19)(14)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.DFE_AGC_HOLD;
+      reg_data(19)(15)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.DFE_AGC_OVERRIDE;
+      reg_data(19)(16)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.DFE_LF_HOLD;
+      reg_data(19)(17)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.DFE_LPM_RESET;
+      reg_data(19)(18)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.LPM_EN;
+      reg_data(19)(19)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.LPM_HF_OVERRIDE;
+      reg_data(19)(20)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.LPM_LFKL_OVERRIDE;
       reg_data(19)(22 downto 21)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.MON_SEL;
-           reg_data(19)(23)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.PCS_RESET;
-           reg_data(19)(24)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.PMA_RESET;
-           reg_data(19)(25)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.PRBS_CNT_RST;
+      reg_data(19)(23)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.PCS_RESET;
+      reg_data(19)(24)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.PMA_RESET;
+      reg_data(19)(25)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.PRBS_CNT_RST;
       reg_data(19)(28 downto 26)  <= DEFAULT_CM_CTRL_t.CM1.C2C.RX.PRBS_SEL;
       reg_data(20)( 6 downto  3)  <= DEFAULT_CM_CTRL_t.CM1.C2C.TX.DIFF_CTRL;
-           reg_data(20)( 7)  <= DEFAULT_CM_CTRL_t.CM1.C2C.TX.INHIBIT;
+      reg_data(20)( 7)  <= DEFAULT_CM_CTRL_t.CM1.C2C.TX.INHIBIT;
       reg_data(20)(14 downto  8)  <= DEFAULT_CM_CTRL_t.CM1.C2C.TX.MAIN_CURSOR;
-           reg_data(20)(15)  <= DEFAULT_CM_CTRL_t.CM1.C2C.TX.PCS_RESET;
-           reg_data(20)(16)  <= DEFAULT_CM_CTRL_t.CM1.C2C.TX.PMA_RESET;
-           reg_data(20)(17)  <= DEFAULT_CM_CTRL_t.CM1.C2C.TX.POLARITY;
+      reg_data(20)(15)  <= DEFAULT_CM_CTRL_t.CM1.C2C.TX.PCS_RESET;
+      reg_data(20)(16)  <= DEFAULT_CM_CTRL_t.CM1.C2C.TX.PMA_RESET;
+      reg_data(20)(17)  <= DEFAULT_CM_CTRL_t.CM1.C2C.TX.POLARITY;
       reg_data(20)(22 downto 18)  <= DEFAULT_CM_CTRL_t.CM1.C2C.TX.POST_CURSOR;
-           reg_data(20)(23)  <= DEFAULT_CM_CTRL_t.CM1.C2C.TX.PRBS_FORCE_ERR;
+      reg_data(20)(23)  <= DEFAULT_CM_CTRL_t.CM1.C2C.TX.PRBS_FORCE_ERR;
       reg_data(20)(26 downto 24)  <= DEFAULT_CM_CTRL_t.CM1.C2C.TX.PRBS_SEL;
       reg_data(20)(31 downto 27)  <= DEFAULT_CM_CTRL_t.CM1.C2C.TX.PRE_CURSOR;
       reg_data(21)( 7 downto  0)  <= DEFAULT_CM_CTRL_t.CM1.MONITOR.COUNT_16X_BAUD;
-           reg_data( 1)( 0)  <= DEFAULT_CM_CTRL_t.CM2.CTRL.ENABLE_UC;
-           reg_data( 1)( 1)  <= DEFAULT_CM_CTRL_t.CM2.CTRL.ENABLE_PWR;
-           reg_data( 1)( 2)  <= DEFAULT_CM_CTRL_t.CM2.CTRL.OVERRIDE_PWR_GOOD;
-           reg_data( 1)( 8)  <= DEFAULT_CM_CTRL_t.CM2.CTRL.ERROR_STATE_RESET;
-           reg_data(34)( 5)  <= DEFAULT_CM_CTRL_t.CM2.C2C.INITIALIZE;
-           reg_data(34)(22)  <= DEFAULT_CM_CTRL_t.CM2.C2C.EYESCAN_RESET;
-           reg_data(34)(23)  <= DEFAULT_CM_CTRL_t.CM2.C2C.EYESCAN_TRIGGER;
-           reg_data(35)(12)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.BUF_RESET;
-           reg_data(35)(13)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.CDR_HOLD;
-           reg_data(35)(14)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.DFE_AGC_HOLD;
-           reg_data(35)(15)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.DFE_AGC_OVERRIDE;
-           reg_data(35)(16)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.DFE_LF_HOLD;
-           reg_data(35)(17)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.DFE_LPM_RESET;
-           reg_data(35)(18)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.LPM_EN;
-           reg_data(35)(19)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.LPM_HF_OVERRIDE;
-           reg_data(35)(20)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.LPM_LFKL_OVERRIDE;
+      reg_data( 1)( 0)  <= DEFAULT_CM_CTRL_t.CM2.CTRL.ENABLE_UC;
+      reg_data( 1)( 1)  <= DEFAULT_CM_CTRL_t.CM2.CTRL.ENABLE_PWR;
+      reg_data( 1)( 2)  <= DEFAULT_CM_CTRL_t.CM2.CTRL.OVERRIDE_PWR_GOOD;
+      reg_data( 1)( 8)  <= DEFAULT_CM_CTRL_t.CM2.CTRL.ERROR_STATE_RESET;
+      reg_data(34)( 5)  <= DEFAULT_CM_CTRL_t.CM2.C2C.INITIALIZE;
+      reg_data(34)(22)  <= DEFAULT_CM_CTRL_t.CM2.C2C.EYESCAN_RESET;
+      reg_data(34)(23)  <= DEFAULT_CM_CTRL_t.CM2.C2C.EYESCAN_TRIGGER;
+      reg_data(35)(12)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.BUF_RESET;
+      reg_data(35)(13)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.CDR_HOLD;
+      reg_data(35)(14)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.DFE_AGC_HOLD;
+      reg_data(35)(15)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.DFE_AGC_OVERRIDE;
+      reg_data(35)(16)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.DFE_LF_HOLD;
+      reg_data(35)(17)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.DFE_LPM_RESET;
+      reg_data(35)(18)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.LPM_EN;
+      reg_data(35)(19)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.LPM_HF_OVERRIDE;
+      reg_data(35)(20)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.LPM_LFKL_OVERRIDE;
       reg_data(35)(22 downto 21)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.MON_SEL;
-           reg_data(35)(23)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.PCS_RESET;
-           reg_data(35)(24)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.PMA_RESET;
-           reg_data(35)(25)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.PRBS_CNT_RST;
+      reg_data(35)(23)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.PCS_RESET;
+      reg_data(35)(24)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.PMA_RESET;
+      reg_data(35)(25)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.PRBS_CNT_RST;
       reg_data(35)(28 downto 26)  <= DEFAULT_CM_CTRL_t.CM2.C2C.RX.PRBS_SEL;
       reg_data(36)( 6 downto  3)  <= DEFAULT_CM_CTRL_t.CM2.C2C.TX.DIFF_CTRL;
-           reg_data(36)( 7)  <= DEFAULT_CM_CTRL_t.CM2.C2C.TX.INHIBIT;
+      reg_data(36)( 7)  <= DEFAULT_CM_CTRL_t.CM2.C2C.TX.INHIBIT;
       reg_data(36)(14 downto  8)  <= DEFAULT_CM_CTRL_t.CM2.C2C.TX.MAIN_CURSOR;
-           reg_data(36)(15)  <= DEFAULT_CM_CTRL_t.CM2.C2C.TX.PCS_RESET;
-           reg_data(36)(16)  <= DEFAULT_CM_CTRL_t.CM2.C2C.TX.PMA_RESET;
-           reg_data(36)(17)  <= DEFAULT_CM_CTRL_t.CM2.C2C.TX.POLARITY;
+      reg_data(36)(15)  <= DEFAULT_CM_CTRL_t.CM2.C2C.TX.PCS_RESET;
+      reg_data(36)(16)  <= DEFAULT_CM_CTRL_t.CM2.C2C.TX.PMA_RESET;
+      reg_data(36)(17)  <= DEFAULT_CM_CTRL_t.CM2.C2C.TX.POLARITY;
       reg_data(36)(22 downto 18)  <= DEFAULT_CM_CTRL_t.CM2.C2C.TX.POST_CURSOR;
-           reg_data(36)(23)  <= DEFAULT_CM_CTRL_t.CM2.C2C.TX.PRBS_FORCE_ERR;
+      reg_data(36)(23)  <= DEFAULT_CM_CTRL_t.CM2.C2C.TX.PRBS_FORCE_ERR;
       reg_data(36)(26 downto 24)  <= DEFAULT_CM_CTRL_t.CM2.C2C.TX.PRBS_SEL;
       reg_data(36)(31 downto 27)  <= DEFAULT_CM_CTRL_t.CM2.C2C.TX.PRE_CURSOR;
+
     elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
+      
+
       
       if localWrEn = '1' then
         case to_integer(unsigned(localAddress(5 downto 0))) is
@@ -408,10 +414,12 @@ begin  -- architecture behavioral
           reg_data(20)(31 downto 27)  <=  localWrData(31 downto 27);      --DEBUG pre cursor
         when 21 => --0x15
           reg_data(21)( 7 downto  0)  <=  localWrData( 7 downto  0);      --Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
+
           when others => null;
         end case;
       end if;
     end if;
   end process reg_writes;
+
 
 end architecture behavioral;

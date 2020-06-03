@@ -66,6 +66,7 @@ begin  -- architecture behavioral
     if localRdReq = '1' then
       localRdAck  <= '1';
       case to_integer(unsigned(localAddress(3 downto 0))) is
+
         when 0 => --0x0
           localRdData( 0)            <=  reg_data( 0)( 0);                  --Enable Si5344 outputs
           localRdData( 1)            <=  reg_data( 0)( 1);                  --Power on Si5344
@@ -111,11 +112,14 @@ begin  -- architecture behavioral
           localRdData(23)            <=  Mon.SGMII.SV_PHY_LINK_STATUS;      --this bit represents the               link status of the external PHY device attached to the other end of the SGMII link (High               indicates that the PHY has obtained a link with its link partner; Low indicates that is has not               linked with its link partner). The value reflected is Link Partner Base AN Register 5 bit 15 in               SGMII MAC mode and the Advertisement Ability register 4 bit 15 in PHY mode. However, this               bit is only valid after successful completion of auto-negotiation across the SGMII link.
           localRdData(28)            <=  Mon.SGMII.SV_DUPLEX;               --1/0 Full/Half duplex
           localRdData(29)            <=  Mon.SGMII.SV_REMOTE_FAULT;         -- When this bit is logic one, it indicates that a remote fault is detected and the              type of remote fault is indicated by status_vector bits[9:8]. This bit reflects MDIO              register bit 1.4.
+
+
         when others =>
           localRdData <= x"00000000";
       end case;
     end if;
   end process reads;
+
 
 
 
@@ -136,25 +140,27 @@ begin  -- architecture behavioral
   Ctrl.SGMII.RESET            <=  reg_data(12)( 0);               
 
 
-
   reg_writes: process (clk_axi, reset_axi_n) is
   begin  -- process reg_writes
     if reset_axi_n = '0' then                 -- asynchronous reset (active low)
-           reg_data( 0)( 0)  <= DEFAULT_SERV_CTRL_t.SI5344.OE;
-           reg_data( 0)( 1)  <= DEFAULT_SERV_CTRL_t.SI5344.EN;
-           reg_data( 0)( 2)  <= DEFAULT_SERV_CTRL_t.SI5344.FPGA_PLL_RESET;
-           reg_data( 4)( 0)  <= DEFAULT_SERV_CTRL_t.TCDS.TTC_SOURCE;
-           reg_data( 5)( 4)  <= DEFAULT_SERV_CTRL_t.CLOCKING.LHC_SEL;
-           reg_data( 5)(12)  <= DEFAULT_SERV_CTRL_t.CLOCKING.HQ_SEL;
-           reg_data( 8)( 0)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.RESET;
-           reg_data( 8)( 1)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.PAGE0_FORCE;
+      reg_data( 0)( 0)  <= DEFAULT_SERV_CTRL_t.SI5344.OE;
+      reg_data( 0)( 1)  <= DEFAULT_SERV_CTRL_t.SI5344.EN;
+      reg_data( 0)( 2)  <= DEFAULT_SERV_CTRL_t.SI5344.FPGA_PLL_RESET;
+      reg_data( 4)( 0)  <= DEFAULT_SERV_CTRL_t.TCDS.TTC_SOURCE;
+      reg_data( 5)( 4)  <= DEFAULT_SERV_CTRL_t.CLOCKING.LHC_SEL;
+      reg_data( 5)(12)  <= DEFAULT_SERV_CTRL_t.CLOCKING.HQ_SEL;
+      reg_data( 8)( 0)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.RESET;
+      reg_data( 8)( 1)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.PAGE0_FORCE;
       reg_data( 8)( 4 downto  2)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.PAGE0_MODE;
       reg_data( 8)(11 downto  8)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.PAGE0_SPEED;
       reg_data( 8)(21 downto 16)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.FORCED_PAGE;
-           reg_data( 8)(22)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.FORCE_PAGE;
+      reg_data( 8)(22)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.FORCE_PAGE;
       reg_data( 8)(29 downto 24)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.PAGE;
-           reg_data(12)( 0)  <= DEFAULT_SERV_CTRL_t.SGMII.RESET;
+      reg_data(12)( 0)  <= DEFAULT_SERV_CTRL_t.SGMII.RESET;
+
     elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
+      
+
       
       if localWrEn = '1' then
         case to_integer(unsigned(localAddress(3 downto 0))) is
@@ -177,10 +183,12 @@ begin  -- architecture behavioral
           reg_data( 5)(12)            <=  localWrData(12);                --HQ clk source select
         when 12 => --0xc
           reg_data(12)( 0)            <=  localWrData( 0);                --Reset SGMII + SGMII clocking
+
           when others => null;
         end case;
       end if;
     end if;
   end process reg_writes;
+
 
 end architecture behavioral;

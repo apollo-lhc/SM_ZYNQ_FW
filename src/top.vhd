@@ -109,8 +109,9 @@ entity top is
     CM2_tdo          : in    STD_LOGIC;
     CM2_tms          : out   STD_LOGIC;
 
-
-
+    -------------------------------------------------------------------------------------------
+    -- plXVC
+    -------------------------------------------------------------------------------------------
 
     -------------------------------------------------------------------------------------------
     -- MGBT 1
@@ -232,7 +233,7 @@ architecture structure of top is
   
 -- AXI BUS
   signal AXI_clk : std_logic;
-  constant PL_AXI_SLAVE_COUNT : integer := 6;
+  constant PL_AXI_SLAVE_COUNT : integer := 7;
   signal AXI_BUS_RMOSI :  AXIReadMOSI_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIReadMOSI);
   signal AXI_BUS_RMISO :  AXIReadMISO_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIReadMISO);
   signal AXI_BUS_WMOSI : AXIWriteMOSI_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIWriteMOSI);
@@ -279,14 +280,22 @@ architecture structure of top is
   signal  SI_init_reset : std_logic;
 
 
-  signal XVC0_tck          : STD_LOGIC;
-  signal XVC0_tdi          : STD_LOGIC;
-  signal XVC0_tdo          : STD_LOGIC;
-  signal XVC0_tms          : STD_LOGIC;
-  signal XVC1_tck          : STD_LOGIC;
-  signal XVC1_tdi          : STD_LOGIC;
-  signal XVC1_tdo          : STD_LOGIC;
-  signal XVC1_tms          : STD_LOGIC;
+
+  --For plXVC
+  constant XVC_COUNT    : integer := 2;
+  signal plXVC_TMS      : std_logic_vector((XVC_COUNT -1) downto 0);
+  signal plXVC_TDI      : std_logic_vector((XVC_COUNT -1) downto 0);
+  signal plXVC_TDO      : std_logic_vector((XVC_COUNT -1) downto 0);
+  signal plXVC_TCK      : std_logic_vector((XVC_COUNT -1) downto 0);
+  
+  --signal XVC0_tck          : STD_LOGIC;
+  --signal XVC0_tdi          : STD_LOGIC;
+  --signal XVC0_tdo          : STD_LOGIC;
+  --signal XVC0_tms          : STD_LOGIC;
+  --signal XVC1_tck          : STD_LOGIC;
+  --signal XVC1_tdi          : STD_LOGIC;
+  --signal XVC1_tdo          : STD_LOGIC;
+  --signal XVC1_tms          : STD_LOGIC;
 
 
 
@@ -502,17 +511,34 @@ begin  -- architecture structure
       TCDS_wstrb               => AXI_BUS_WMOSI(5).data_write_strobe,
       TCDS_wvalid              => AXI_BUS_WMOSI(5).data_valid,
 
+      PLXVC_araddr               => AXI_BUS_RMOSI(6).address,
+      PLXVC_arprot               => AXI_BUS_RMOSI(6).protection_type,
+      PLXVC_arready              => AXI_BUS_RMISO(6).ready_for_address,
+      PLXVC_arvalid              => AXI_BUS_RMOSI(6).address_valid,
+      PLXVC_awaddr               => AXI_BUS_WMOSI(6).address,
+      PLXVC_awprot               => AXI_BUS_WMOSI(6).protection_type,
+      PLXVC_awready              => AXI_BUS_WMISO(6).ready_for_address,
+      PLXVC_awvalid              => AXI_BUS_WMOSI(6).address_valid,
+      PLXVC_bready               => AXI_BUS_WMOSI(6).ready_for_response,
+      PLXVC_bresp                => AXI_BUS_WMISO(6).response,
+      PLXVC_bvalid               => AXI_BUS_WMISO(6).response_valid,
+      PLXVC_rdata                => AXI_BUS_RMISO(6).data,
+      PLXVC_rready               => AXI_BUS_RMOSI(6).ready_for_data,
+      PLXVC_rresp                => AXI_BUS_RMISO(6).response,
+      PLXVC_rvalid               => AXI_BUS_RMISO(6).data_valid,
+      PLXVC_wdata                => AXI_BUS_WMOSI(6).data,
+      PLXVC_wready               => AXI_BUS_WMISO(6).ready_for_data,
+      PLXVC_wstrb                => AXI_BUS_WMOSI(6).data_write_strobe,
+      PLXVC_wvalid               => AXI_BUS_WMOSI(6).data_valid,
 
-      
-
-      tap_tck_0                 => XVC0_tck,
-      tap_tdi_0                 => XVC0_tdi,
-      tap_tdo_0                 => XVC0_tdo,
-      tap_tms_0                 => XVC0_tms,
-      tap_tck_1                 => XVC1_tck,
-      tap_tdi_1                 => XVC1_tdi,
-      tap_tdo_1                 => XVC1_tdo,
-      tap_tms_1                 => XVC1_tms,
+      --tap_tck_0                 => XVC1_tck,
+      --tap_tdi_0                 => XVC1_tdi,
+      --tap_tdo_0                 => XVC1_tdo,
+      --tap_tms_0                 => XVC1_tms,
+      --tap_tck_1                 => XVC1_tck,
+      --tap_tdi_1                 => XVC1_tdi,
+      --tap_tdo_1                 => XVC1_tdo,
+      --tap_tms_1                 => XVC1_tms,
 
       init_clk        =>  AXI_C2C_aurora_init_clk,
       C2C1_phy_Rx_rxn =>  AXI_C2C_CM1_Rx_N(0 to 0),
@@ -712,7 +738,7 @@ begin  -- architecture structure
       DRP_readMISO       => AXI_BUS_RMISO(4),
       DRP_writeMOSI      => AXI_BUS_WMOSI(4),
       DRP_writeMISO      => AXI_BUS_WMISO(4),
---      sysclk        => pl_clk,
+      --sysclk        => pl_clk,
       refclk_p      => refclk_TCDS_P,
       refclk_n      => refclk_TCDS_N,
       QPLL_CLK        => QPLL_CLK,    
@@ -824,8 +850,8 @@ begin  -- architecture structure
       O  => IPMC_SDA_i);
 
 
-  XVC0_TDO <= CM1_TDO;
-  XVC1_TDO <= CM2_TDO;
+  plXVC_TDO(0) <= CM1_TDO;
+  plXVC_TDO(1) <= CM2_TDO;
   CM_interface_1: entity work.CM_intf
     port map (
       clk_axi              => axi_clk,
@@ -854,13 +880,13 @@ begin  -- architecture structure
       from_CM2.GPIO        => CM2_GPIO,
       from_CM2.UART_Rx     => CM2_UART_rx,
       to_CM1_in.UART_Tx    => CM1_UART_Tx_internal,
-      to_CM1_in.TMS        => XVC0_TMS,
-      to_CM1_in.TDI        => XVC0_TDI,
-      to_CM1_in.TCK        => XVC0_TCK,
+      to_CM1_in.TMS        => plXVC_TMS(0),
+      to_CM1_in.TDI        => plXVC_TDI(0),
+      to_CM1_in.TCK        => plXVC_TCK(0),
       to_CM2_in.UART_Tx    => '0',--CM2_UART_Tx_internal,
-      to_CM2_in.TMS        => XVC1_TMS,
-      to_CM2_in.TDI        => XVC1_TDI,
-      to_CM2_in.TCK        => XVC1_TCK,
+      to_CM2_in.TMS        => plXVC_TMS(1),
+      to_CM2_in.TDI        => plXVC_TDI(1),
+      to_CM2_in.TCK        => plXVC_TCK(1),
       to_CM1_out.UART_Tx   => CM1_UART_Tx,
       to_CM1_out.TMS       => CM1_TMS,
       to_CM1_out.TDI       => CM1_TDI,
@@ -874,12 +900,21 @@ begin  -- architecture structure
       CM1_C2C_Ctrl         => CM1_C2C_Ctrl,
       CM2_C2C_Ctrl         => CM2_C2C_Ctrl);
 
-
-
-  
-
-
-  
-
+  plXVC_1: entity work.plXVC_intf
+    generic map (
+      --TCK_RATIO         => 1,
+      COUNT             => XVC_COUNT,
+      IRQ_LENGTH        => 1)           
+      port map (
+        clk_axi         => axi_clk,
+        reset_axi_n     => pl_reset_n,
+        readMOSI        => AXI_BUS_RMOSI(6),
+        readMISO        => AXI_BUS_RMISO(6),
+        writeMOSI       => AXI_BUS_WMOSI(6),
+        writeMISO       => AXI_BUS_WMISO(6),
+        TMS             => plXVC_TMS,
+        TDI             => plXVC_TDI,
+        TDO             => plXVC_TDO,
+        TCK             => plXVC_TCK);
   
 end architecture structure;
