@@ -6,7 +6,7 @@
   <!--<node id="GO"  address="0x4" mask="0x1" permission="r" description="Enable shift operation"/>-->
   <!--<node id="GO"  address="0x4" mask="0x1" permission="w" description="Enable shift operation"/>-->
   <!-- Go is bit one of adress 4, Busy is bit 2 of address4 -->
-  <node id="GO"  address="0x4" mask="0x1" permission="rmw" description="Enable shift operation"/>
+  <node id="GO"  address="0x4" mask="0x1" permission="w" description="Enable shift operation"/>
   <node id="BUSY" address="0x4" mask="0x2" permission="r" description="Cable is operating"/>
   <node id="LOCK" address="0x5" permission="rw" description="Lock cable from access"/>
   <!-- This node is from a previous XVC implimentation and can be ignored for now -->

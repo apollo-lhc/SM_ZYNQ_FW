@@ -28,22 +28,30 @@ entity CM_intf is
     master_writeMOSI : out AXIWriteMOSI := DefaultAXIWriteMOSI;
     master_writeMISO : in  AXIWriteMISO;
     CM_mon_uart      : in  std_logic := '1';
-    enableCM1        : out std_logic;
-    enableCM2        : out std_logic;
-    enableCM1_PWR    : out std_logic;
-    enableCM2_PWR    : out std_logic;
-    enableCM1_IOs    : out std_logic;
-    enableCM2_IOs    : out std_logic;
-    from_CM1         :  in from_CM_t;
-    from_CM2         :  in from_CM_t;
-    to_CM1_in        :  in to_CM_t;  --from SM
-    to_CM2_in        :  in to_CM_t;  --from SM
-    to_CM1_out       : out to_CM_t;  --from SM, but tristated
-    to_CM2_out       : out to_CM_t;  --from SM, but tristated
-    CM1_C2C_Mon      :  in C2C_Monitor_t;
-    CM2_C2C_Mon      :  in C2C_Monitor_t;
-    CM1_C2C_Ctrl     : out C2C_Control_t;
-    CM2_C2C_Ctrl     : out C2C_Control_t
+    enableCM         : out std_logic_vector(1 downto 0);
+    --enableCM1        : out std_logic;
+    --enableCM2        : out std_logic;
+    enableCM_PWR    : out std_logic_vector(1 downto 0);
+    --enableCM1_PWR    : out std_logic;
+    --enableCM2_PWR    : out std_logic;
+    enableCM_IOs     : out std_logic_vector(1 downto 0);
+    --enableCM1_IOs    : out std_logic;
+    --enableCM2_IOs    : out std_logic;
+    --from_CM1         :  in from_CM_t;
+    --from_CM2         :  in from_CM_t;
+    from_CM          : in from_CM_t;
+    --to_CM1_in        :  in to_CM_t;  --from SM
+    --to_CM2_in        :  in to_CM_t;  --from SM
+    to_CM_in         : in to_CM_t; --from SM
+    --to_CM1_out       : out to_CM_t;  --from SM, but tristated
+    --to_CM2_out       : out to_CM_t;  --from SM, but tristated
+    to_CM_out        : out to_CM_t; --from SM, but tristated
+    --CM1_C2C_Mon      :  in C2C_Monitor_t;
+    --CM2_C2C_Mon      :  in C2C_Monitor_t;
+    CM_C2C_Mon       : in C2C_Monitor_t;
+    --CM1_C2C_Ctrl     : out C2C_Control_t;
+    --CM2_C2C_Ctrl     : out C2C_Control_t
+    CM_C2C_Ctrl      : out C2C_Control_t
     );
 end entity CM_intf;
 
@@ -59,20 +67,21 @@ architecture behavioral of CM_intf is
 
 
   signal PWR_good         : slv_2_t;
-  signal enableCM         : slv_2_t;
-  signal enableCM_PWR     : slv_2_t;
+  signal enableCM_s       : slv_2_t;
+  signal enableCM_PWR_s   : slv_2_t;
   signal override_PWRGood : slv_2_t;
   signal reset_error_state : slv_2_t;
   signal enable_uC        : slv_2_t;
   signal enable_PWR       : slv_2_t;
   signal enable_IOs       : slv_2_t;
   signal CM_seq_state     : slv_8_t;
-  signal CM1_disable      : std_logic;
-  signal CM2_disable      : std_logic;
-
-  signal CM1_uCIO_disable      : std_logic;
-  signal CM2_uCIO_disable      : std_logic;
-
+  --signal CM1_disable      : std_logic;
+  --signal CM2_disable      : std_logic;
+  signal CM_disable     : std_logic_vector(1 downto 0);
+  
+  --signal CM1_uCIO_disable      : std_logic;
+  --signal CM2_uCIO_disable      : std_logic;
+  signal CM_uCIO_disable : std_logic_vector(1 downto 0);
 
   signal reset             : std_logic;                     
 
@@ -97,72 +106,33 @@ begin  -- architecture behavioral
   -- CM interface
   -------------------------------------------------------------------------------
   -------------------------------------------------------------------------------  
-  --CM1
-  CM1_UART_BUF : OBUFT
-    port map (
-      T => CM1_ucIO_disable,
-      I => to_CM1_in.UART_Tx,
-      O => to_CM1_out.UART_Tx);
-  CM1_TMS_BUF : OBUFT
-    port map (
-      T => CM1_disable,
-      I => to_CM1_in. TMS,
-      O => to_CM1_out.TMS);
-  CM1_TDI_BUF : OBUFT
-    port map (
-      T => CM1_disable,
-      I => to_CM1_in. TDI,
-      O => to_CM1_out.TDI);
-  CM1_TCK_BUF : OBUFT
-    port map (
-      T => CM1_disable,
-      I => to_CM1_in. TCK,
-      O => to_CM1_out.TCK);
-  --CM2
-  CM2_UART_BUF : OBUFT
-    port map (
-      T => CM2_ucIO_disable,
-      I => to_CM2_in.UART_Tx,
-      O => to_CM2_out.UART_Tx);
-  CM2_TMS_BUF : OBUFT
-    port map (
-      T => CM2_disable,
-      I => to_CM2_in. TMS,
-      O => to_CM2_out.TMS);
-  CM2_TDI_BUF : OBUFT
-    port map (
-      T => CM2_disable,
-      I => to_CM2_in. TDI,
-      O => to_CM2_out.TDI);
-  CM2_TCK_BUF : OBUFT
-    port map (
-      T => CM2_disable,
-      I => to_CM2_in. TCK,
-      O => to_CM2_out.TCK);
-
-
+  --Generate loop for buffers
+  GENERATE_BUF: for I in 1 to 2 generate
+    CM_UART_BUF_X : OBUFT
+      port map (
+        T => CM_ucIO_disable(I - 1),
+        I => to_CM_in.CM(I).UART_Tx,
+        O => to_CM_out.CM(I).UART_Tx);
+    CM_TMS_BUF_X : OBUFT
+      port map (
+        T => CM_disable(I - 1),
+        I => to_CM_in.CM(I).TMS,
+        O => to_CM_out.CM(I).TMS);
+    CM_TDI_BUF_X : OBUFT
+      port map (
+        T => CM_disable(I - 1),
+        I => to_CM_in.CM(I).TDI,
+        O => to_CM_out.CM(I).TDI);
+    CM_TCK_BUF_X : OBUFT
+      port map (
+        T => CM_disable(I - 1),
+        I => to_CM_in.CM(I).TCK,
+        O => to_CM_out.CM(I).TCK);
+  end generate GENERATE_BUF;
   
   -------------------------------------------------------------------------------
   --Power-up sequences
   -------------------------------------------------------------------------------
-  enableCM1     <= Ctrl.CM1.CTRL.ENABLE_UC;
-  PWR_good(0)           <= from_CM1.PWR_good;
-  Mon.CM1.CTRL.PWR_GOOD <= PWR_good(0);  
-
-  enableCM1_PWR <= enable_PWR(0);
-  enableCM1_IOs <= enable_IOs(0);
-  CM1_disable   <= not enable_IOs(0);
-  CM1_ucIO_disable   <= not enable_uc(0);
-
-  PWR_good(1)   <= from_CM2.PWR_good;
-  enableCM2     <= enable_uC(1);
-  enableCM2_PWR <= enable_PWR(1);
-  enableCM2_IOs <= enable_IOs(1);
-  CM2_disable   <= not enable_IOs(1);
-  CM2_ucIO_disable   <= not enable_uc(1);
-
-  
-  
   CM_PWR_SEQ: for iCM in 0 to 1 generate
     CM_pwr_1: entity work.CM_pwr
       generic map (
@@ -172,13 +142,24 @@ begin  -- architecture behavioral
         reset_async       => reset,
         reset_sync        => reset_error_state(iCM),
         uc_enabled        => enable_uC(iCM),
-        start_PWR         => enableCM_PWR(iCM),
+        start_PWR         => enableCM_PWR_s(iCM),
         sequence_override => override_PWRGood(iCM),
         current_state     => CM_seq_state((4*iCM) +3 downto 4*iCM),
         enabled_PWR       => enable_PWR(iCM),
         enabled_IOs       => enable_IOs(iCM),
         power_good        => PWR_good(iCM));
+
+    enableCM(iCM) <= Ctrl.CM(iCM + 1).CTRL.ENABLE_UC;
+    PWR_good(iCM) <= from_CM.CM(iCM + 1).PWR_good;
+    enableCM_PWR(iCM) <= enableCM_PWR_s(iCM);
+    enableCM_IOs(iCM) <= enable_IOs(iCM);
+    CM_disable(iCM) <= not enable_IOs(iCM);
+    CM_ucIO_disable(iCM) <= not enable_uc(iCM);
+    
   end generate CM_PWR_SEQ;
+
+  Mon.CM(1).CTRL.PWR_GOOD <= PWR_good(0);  
+
   
   -------------------------------------------------------------------------------
   -- AXI 
@@ -195,127 +176,71 @@ begin  -- architecture behavioral
       Mon             => Mon,
       Ctrl            => Ctrl);
 
-  
-  enable_uc       (0)      <= Ctrl.CM1.CTRL.ENABLE_UC;         --CM1 enabled
-  enableCM_PWR    (0)      <= Ctrl.CM1.CTRL.ENABLE_PWR;        --CM1 power eneable
-  override_PWRGood(0)      <= Ctrl.CM1.CTRL.OVERRIDE_PWR_GOOD; --CM1 override
-  reset_error_state(0)     <= Ctrl.CM1.CTRL.ERROR_STATE_RESET; --CM1 reset error state
+  GENERATE_CTRL_MON: for I in 1 to 2 generate
+    enable_uc(I - 1)            <= Ctrl.CM(I).CTRL.ENABLE_UC;         --CM enabled
+    enableCM_PWR_s(I - 1)         <= Ctrl.CM(I).CTRL.ENABLE_PWR;        --CM power eneable
+    override_PWRGood(I - 1)     <= Ctrl.CM(I).CTRL.OVERRIDE_PWR_GOOD; --CM override
+    reset_error_state(I - 1)    <= Ctrl.CM(I).CTRL.ERROR_STATE_RESET; --CM reset error state
 
-  enable_uc       (1)      <= Ctrl.CM2.CTRL.ENABLE_UC;         --CM2 enabled
-  enableCM_PWR    (1)      <= Ctrl.CM2.CTRL.ENABLE_PWR;        --CM2 power eneable
-  override_PWRGood(1)      <= Ctrl.CM2.CTRL.OVERRIDE_PWR_GOOD; --CM2 override
-  reset_error_state(1)     <= Ctrl.CM2.CTRL.ERROR_STATE_RESET; --CM2 reset error state
+    Mon.CM(I).CTRL.STATE             <= CM_seq_state(((I*4)-1) downto ((I - 1)*4));
+    Mon.CM(I).CTRL.PWR_ENABLED       <= enable_PWR(I - 1);
+    Mon.CM(I).CTRL.IOS_ENABLED       <= enable_IOs(I - 1);
+    Mon.CM(I).C2C.CONFIG_ERROR       <= CM_C2C_Mon.CM(I).axi_c2c_config_error_out;
+    Mon.CM(I).C2C.LINK_ERROR         <= CM_C2C_Mon.CM(I).axi_c2c_link_error_out;     
+    Mon.CM(I).C2C.LINK_GOOD          <= CM_C2C_Mon.CM(I).axi_c2c_link_status_out;    
+    Mon.CM(I).C2C.MB_ERROR           <= CM_C2C_Mon.CM(I).axi_c2c_multi_bit_error_out;
+    Mon.CM(I).C2C.DO_CC              <= CM_C2C_Mon.CM(I).aurora_do_cc;
+    Mon.CM(I).C2C.PHY_RESET          <= CM_C2C_Mon.CM(I).phy_link_reset_out;     
+    Mon.CM(I).C2C.PHY_GT_PLL_LOCK    <= CM_C2C_Mon.CM(I).phy_gt_pll_lock;        
+    Mon.CM(I).C2C.PHY_MMCM_LOL       <= CM_C2C_Mon.CM(I).phy_mmcm_not_locked_out;
+    Mon.CM(I).C2C.PHY_LANE_UP(0)     <= CM_C2C_Mon.CM(I).phy_lane_up(0);
+    Mon.CM(I).C2C.PHY_HARD_ERR       <= CM_C2C_Mon.CM(I).phy_hard_err;           
+    Mon.CM(I).C2C.PHY_SOFT_ERR       <= CM_C2C_Mon.CM(I).phy_soft_err;
+    Mon.CM(I).C2C.CPLL_LOCK          <= CM_C2C_Mon.CM(I).cplllock;
+    Mon.CM(I).C2C.EYESCAN_DATA_ERROR <= CM_C2C_Mon.CM(I).eyescandataerror;
+    Mon.CM(I).C2C.DMONITOR           <= CM_C2C_Mon.CM(I).dmonitorout;
+    Mon.CM(I).C2C.RX.BUF_STATUS      <= CM_C2C_Mon.CM(I).rxbufstatus;
+    Mon.CM(I).C2C.RX.MONITOR         <= CM_C2C_Mon.CM(I).rxmonitorout;
+    Mon.CM(I).C2C.RX.PRBS_ERR        <= CM_C2C_Mon.CM(I).rxprbserr;
+    Mon.CM(I).C2C.RX.RESET_DONE      <= CM_C2C_Mon.CM(I).rxresetdone;
+    Mon.CM(I).C2C.TX.BUF_STATUS      <= CM_C2C_Mon.CM(I).txbufstatus;
+    Mon.CM(I).C2C.TX.RESET_DONE      <= CM_C2C_Mon.CM(I).txresetdone;
 
-  Mon.CM1.CTRL.STATE             <= CM_seq_state(3 downto 0);
-  Mon.CM1.CTRL.PWR_ENABLED       <= enable_PWR(0);
-  Mon.CM1.CTRL.IOS_ENABLED       <= enable_IOs(0);
-  Mon.CM1.C2C.CONFIG_ERROR       <= CM1_C2C_Mon.axi_c2c_config_error_out;
-  Mon.CM1.C2C.LINK_ERROR         <= CM1_C2C_Mon.axi_c2c_link_error_out;     
-  Mon.CM1.C2C.LINK_GOOD          <= CM1_C2C_Mon.axi_c2c_link_status_out;    
-  Mon.CM1.C2C.MB_ERROR           <= CM1_C2C_Mon.axi_c2c_multi_bit_error_out;
-  Mon.CM1.C2C.DO_CC              <= CM1_C2C_Mon.aurora_do_cc;
-  Mon.CM1.C2C.PHY_RESET          <= CM1_C2C_Mon.phy_link_reset_out;     
-  Mon.CM1.C2C.PHY_GT_PLL_LOCK    <= CM1_C2C_Mon.phy_gt_pll_lock;        
-  Mon.CM1.C2C.PHY_MMCM_LOL       <= CM1_C2C_Mon.phy_mmcm_not_locked_out;
-  Mon.CM1.C2C.PHY_LANE_UP(0)     <= CM1_C2C_Mon.phy_lane_up(0);
-  Mon.CM1.C2C.PHY_HARD_ERR       <= CM1_C2C_Mon.phy_hard_err;           
-  Mon.CM1.C2C.PHY_SOFT_ERR       <= CM1_C2C_Mon.phy_soft_err;
-  Mon.CM1.C2C.CPLL_LOCK          <= CM1_C2C_Mon.cplllock;
-  Mon.CM1.C2C.EYESCAN_DATA_ERROR <= CM1_C2C_Mon.eyescandataerror;
-  Mon.CM1.C2C.DMONITOR           <= CM1_C2C_Mon.dmonitorout;
-  Mon.CM1.C2C.RX.BUF_STATUS      <= CM1_C2C_Mon.rxbufstatus;
-  Mon.CM1.C2C.RX.MONITOR         <= CM1_C2C_Mon.rxmonitorout;
-  Mon.CM1.C2C.RX.PRBS_ERR        <= CM1_C2C_Mon.rxprbserr;
-  Mon.CM1.C2C.RX.RESET_DONE      <= CM1_C2C_Mon.rxresetdone;
-  Mon.CM1.C2C.TX.BUF_STATUS      <= CM1_C2C_Mon.txbufstatus;
-  Mon.CM1.C2C.TX.RESET_DONE      <= CM1_C2C_Mon.txresetdone;
-  Mon.CM1.MONITOR.ACTIVE         <= mon_active(0);
-  Mon.CM1.MONITOR.HISTORY_VALID  <= debug_valid;
-  Mon.CM1.MONITOR.ERRORS         <= mon_errors(0);
-  Mon.CM1.MONITOR.HISTORY        <= debug_history;
+    CM_C2C_Ctrl.CM(I).aurora_pma_init_in <= CTRL.CM(I).C2C.INITIALIZE;
+    CM_C2C_Ctrl.CM(I).eyescanreset       <= CTRL.CM(I).C2C.EYESCAN_RESET;
+    CM_C2C_Ctrl.CM(I).eyescantrigger     <= CTRL.CM(I).C2C.EYESCAN_TRIGGER;
+    CM_C2C_Ctrl.CM(I).rxbufreset         <= CTRL.CM(I).C2C.RX.BUF_RESET;
+    CM_C2C_Ctrl.CM(I).rxcdrhold          <= CTRL.CM(I).C2C.RX.CDR_HOLD;   
+    CM_C2C_Ctrl.CM(I).rxdfeagchold       <= CTRL.CM(I).C2C.RX.DFE_AGC_HOLD;
+    CM_C2C_Ctrl.CM(I).rxdfeagcovrden     <= CTRL.CM(I).C2C.RX.DFE_AGC_OVERRIDE;
+    CM_C2C_Ctrl.CM(I).rxdfelfhold        <= CTRL.CM(I).C2C.RX.DFE_LF_HOLD;
+    CM_C2C_Ctrl.CM(I).rxdfelpmreset      <= CTRL.CM(I).C2C.RX.DFE_LPM_RESET;
+    CM_C2C_Ctrl.CM(I).rxlpmen            <= CTRL.CM(I).C2C.RX.LPM_EN;
+    CM_C2C_Ctrl.CM(I).rxlpmhfovrden      <= CTRL.CM(I).C2C.RX.LPM_HF_OVERRIDE;
+    CM_C2C_Ctrl.CM(I).rxlpmlfklovrden    <= CTRL.CM(I).C2C.RX.LPM_LFKL_OVERRIDE;
+    CM_C2C_Ctrl.CM(I).rxmonitorsel       <= CTRL.CM(I).C2C.RX.MON_SEL;
+    CM_C2C_Ctrl.CM(I).rxpcsreset         <= CTRL.CM(I).C2C.RX.PCS_RESET;
+    CM_C2C_Ctrl.CM(I).rxpmareset         <= CTRL.CM(I).C2C.RX.PMA_RESET;
+    CM_C2C_Ctrl.CM(I).rxprbscntreset     <= CTRL.CM(I).C2C.RX.PRBS_CNT_RST;
+    CM_C2C_Ctrl.CM(I).rxprbssel          <= CTRL.CM(I).C2C.RX.PRBS_SEL;
+    CM_C2C_Ctrl.CM(I).txdiffctrl         <= CTRL.CM(I).C2C.TX.DIFF_CTRL;
+    CM_C2C_Ctrl.CM(I).txinhibit          <= CTRL.CM(I).C2C.TX.INHIBIT;
+    CM_C2C_Ctrl.CM(I).txmaincursor       <= CTRL.CM(I).C2C.TX.MAIN_CURSOR;
+    CM_C2C_Ctrl.CM(I).txpcsreset         <= CTRL.CM(I).C2C.TX.PCS_RESET;
+    CM_C2C_Ctrl.CM(I).txpmareset         <= CTRL.CM(I).C2C.TX.PMA_RESET;
+    CM_C2C_Ctrl.CM(I).txpolarity         <= CTRL.CM(I).C2C.TX.POLARITY;
+    CM_C2C_Ctrl.CM(I).txpostcursor       <= CTRL.CM(I).C2C.TX.POST_CURSOR;
+    CM_C2C_Ctrl.CM(I).txprbsforceerr     <= CTRL.CM(I).C2C.TX.PRBS_FORCE_ERR;
+    CM_C2C_Ctrl.CM(I).txprbssel          <= CTRL.CM(I).C2C.TX.PRBS_SEL;
+    CM_C2C_Ctrl.CM(I).txprecursor        <= CTRL.CM(I).C2C.TX.PRE_CURSOR;
+    
+  end generate GENERATE_CTRL_MON;
 
-  
-  Mon.CM2.CTRL.STATE       <= CM_seq_state(7 downto 4);
-  Mon.CM2.CTRL.PWR_ENABLED <= enable_PWR(1);
-  Mon.CM2.CTRL.IOS_ENABLED <= enable_IOs(1);
-  Mon.CM2.C2C.CONFIG_ERROR       <= CM2_C2C_Mon.axi_c2c_config_error_out;
-  Mon.CM2.C2C.LINK_ERROR         <= CM2_C2C_Mon.axi_c2c_link_error_out;     
-  Mon.CM2.C2C.LINK_GOOD          <= CM2_C2C_Mon.axi_c2c_link_status_out;    
-  Mon.CM2.C2C.MB_ERROR           <= CM2_C2C_Mon.axi_c2c_multi_bit_error_out;
-  Mon.CM2.C2C.DO_CC              <= CM2_C2C_Mon.aurora_do_cc;
-  Mon.CM2.C2C.PHY_RESET          <= CM2_C2C_Mon.phy_link_reset_out;     
-  Mon.CM2.C2C.PHY_GT_PLL_LOCK    <= CM2_C2C_Mon.phy_gt_pll_lock;        
-  Mon.CM2.C2C.PHY_MMCM_LOL       <= CM2_C2C_Mon.phy_mmcm_not_locked_out;
-  Mon.CM2.C2C.PHY_LANE_UP(0)     <= CM2_C2C_Mon.phy_lane_up(0);
-  Mon.CM2.C2C.PHY_HARD_ERR       <= CM2_C2C_Mon.phy_hard_err;           
-  Mon.CM2.C2C.PHY_SOFT_ERR       <= CM2_C2C_Mon.phy_soft_err;
-  Mon.CM2.C2C.CPLL_LOCK          <= CM2_C2C_Mon.cplllock;
-  Mon.CM2.C2C.EYESCAN_DATA_ERROR <= CM2_C2C_Mon.eyescandataerror;
-  Mon.CM2.C2C.DMONITOR           <= CM2_C2C_Mon.dmonitorout;
-  Mon.CM2.C2C.RX.BUF_STATUS      <= CM2_C2C_Mon.rxbufstatus;
-  Mon.CM2.C2C.RX.MONITOR         <= CM2_C2C_Mon.rxmonitorout;
-  Mon.CM2.C2C.RX.PRBS_ERR        <= CM2_C2C_Mon.rxprbserr;
-  Mon.CM2.C2C.RX.RESET_DONE      <= CM2_C2C_Mon.rxresetdone;
-  Mon.CM2.C2C.TX.BUF_STATUS      <= CM2_C2C_Mon.txbufstatus;
-  Mon.CM2.C2C.TX.RESET_DONE      <= CM2_C2C_Mon.txresetdone;
-
-
-
-  CM1_C2C_Ctrl.aurora_pma_init_in <= CTRL.CM1.C2C.INITIALIZE;
-  CM1_C2C_Ctrl.eyescanreset       <= CTRL.CM1.C2C.EYESCAN_RESET;
-  CM1_C2C_Ctrl.eyescantrigger     <= CTRL.CM1.C2C.EYESCAN_TRIGGER;
-  CM1_C2C_Ctrl.rxbufreset         <= CTRL.CM1.C2C.RX.BUF_RESET;
-  CM1_C2C_Ctrl.rxcdrhold          <= CTRL.CM1.C2C.RX.CDR_HOLD;   
-  CM1_C2C_Ctrl.rxdfeagchold       <= CTRL.CM1.C2C.RX.DFE_AGC_HOLD;
-  CM1_C2C_Ctrl.rxdfeagcovrden     <= CTRL.CM1.C2C.RX.DFE_AGC_OVERRIDE;
-  CM1_C2C_Ctrl.rxdfelfhold        <= CTRL.CM1.C2C.RX.DFE_LF_HOLD;
-  CM1_C2C_Ctrl.rxdfelpmreset      <= CTRL.CM1.C2C.RX.DFE_LPM_RESET;
-  CM1_C2C_Ctrl.rxlpmen            <= CTRL.CM1.C2C.RX.LPM_EN;
-  CM1_C2C_Ctrl.rxlpmhfovrden      <= CTRL.CM1.C2C.RX.LPM_HF_OVERRIDE;
-  CM1_C2C_Ctrl.rxlpmlfklovrden    <= CTRL.CM1.C2C.RX.LPM_LFKL_OVERRIDE;
-  CM1_C2C_Ctrl.rxmonitorsel       <= CTRL.CM1.C2C.RX.MON_SEL;
-  CM1_C2C_Ctrl.rxpcsreset         <= CTRL.CM1.C2C.RX.PCS_RESET;
-  CM1_C2C_Ctrl.rxpmareset         <= CTRL.CM1.C2C.RX.PMA_RESET;
-  CM1_C2C_Ctrl.rxprbscntreset     <= CTRL.CM1.C2C.RX.PRBS_CNT_RST;
-  CM1_C2C_Ctrl.rxprbssel          <= CTRL.CM1.C2C.RX.PRBS_SEL;
-  CM1_C2C_Ctrl.txdiffctrl         <= CTRL.CM1.C2C.TX.DIFF_CTRL;
-  CM1_C2C_Ctrl.txinhibit          <= CTRL.CM1.C2C.TX.INHIBIT;
-  CM1_C2C_Ctrl.txmaincursor       <= CTRL.CM1.C2C.TX.MAIN_CURSOR;
-  CM1_C2C_Ctrl.txpcsreset         <= CTRL.CM1.C2C.TX.PCS_RESET;
-  CM1_C2C_Ctrl.txpmareset         <= CTRL.CM1.C2C.TX.PMA_RESET;
-  CM1_C2C_Ctrl.txpolarity         <= CTRL.CM1.C2C.TX.POLARITY;
-  CM1_C2C_Ctrl.txpostcursor       <= CTRL.CM1.C2C.TX.POST_CURSOR;
-  CM1_C2C_Ctrl.txprbsforceerr     <= CTRL.CM1.C2C.TX.PRBS_FORCE_ERR;
-  CM1_C2C_Ctrl.txprbssel          <= CTRL.CM1.C2C.TX.PRBS_SEL;
-  CM1_C2C_Ctrl.txprecursor        <= CTRL.CM1.C2C.TX.PRE_CURSOR;
-
-  CM2_C2C_Ctrl.aurora_pma_init_in <= CTRL.CM2.C2C.INITIALIZE;
-  CM2_C2C_Ctrl.eyescanreset       <= CTRL.CM2.C2C.EYESCAN_RESET;
-  CM2_C2C_Ctrl.eyescantrigger     <= CTRL.CM2.C2C.EYESCAN_TRIGGER;
-  CM2_C2C_Ctrl.rxbufreset         <= CTRL.CM2.C2C.RX.BUF_RESET;
-  CM2_C2C_Ctrl.rxcdrhold          <= CTRL.CM2.C2C.RX.CDR_HOLD;   
-  CM2_C2C_Ctrl.rxdfeagchold       <= CTRL.CM2.C2C.RX.DFE_AGC_HOLD;
-  CM2_C2C_Ctrl.rxdfeagcovrden     <= CTRL.CM2.C2C.RX.DFE_AGC_OVERRIDE;
-  CM2_C2C_Ctrl.rxdfelfhold        <= CTRL.CM2.C2C.RX.DFE_LF_HOLD;
-  CM2_C2C_Ctrl.rxdfelpmreset      <= CTRL.CM2.C2C.RX.DFE_LPM_RESET;
-  CM2_C2C_Ctrl.rxlpmen            <= CTRL.CM2.C2C.RX.LPM_EN;
-  CM2_C2C_Ctrl.rxlpmhfovrden      <= CTRL.CM2.C2C.RX.LPM_HF_OVERRIDE;
-  CM2_C2C_Ctrl.rxlpmlfklovrden    <= CTRL.CM2.C2C.RX.LPM_LFKL_OVERRIDE;
-  CM2_C2C_Ctrl.rxmonitorsel       <= CTRL.CM2.C2C.RX.MON_SEL;
-  CM2_C2C_Ctrl.rxpcsreset         <= CTRL.CM2.C2C.RX.PCS_RESET;
-  CM2_C2C_Ctrl.rxpmareset         <= CTRL.CM2.C2C.RX.PMA_RESET;
-  CM2_C2C_Ctrl.rxprbscntreset     <= CTRL.CM2.C2C.RX.PRBS_CNT_RST;
-  CM2_C2C_Ctrl.rxprbssel          <= CTRL.CM2.C2C.RX.PRBS_SEL;
-  CM2_C2C_Ctrl.txdiffctrl         <= CTRL.CM2.C2C.TX.DIFF_CTRL;
-  CM2_C2C_Ctrl.txinhibit          <= CTRL.CM2.C2C.TX.INHIBIT;
-  CM2_C2C_Ctrl.txmaincursor       <= CTRL.CM2.C2C.TX.MAIN_CURSOR;
-  CM2_C2C_Ctrl.txpcsreset         <= CTRL.CM2.C2C.TX.PCS_RESET;
-  CM2_C2C_Ctrl.txpmareset         <= CTRL.CM2.C2C.TX.PMA_RESET;
-  CM2_C2C_Ctrl.txpolarity         <= CTRL.CM2.C2C.TX.POLARITY;
-  CM2_C2C_Ctrl.txpostcursor       <= CTRL.CM2.C2C.TX.POST_CURSOR;
-  CM2_C2C_Ctrl.txprbsforceerr     <= CTRL.CM2.C2C.TX.PRBS_FORCE_ERR;
-  CM2_C2C_Ctrl.txprbssel          <= CTRL.CM2.C2C.TX.PRBS_SEL;
-  CM2_C2C_Ctrl.txprecursor        <= CTRL.CM2.C2C.TX.PRE_CURSOR;
+  --Signals only relavant to CM1
+  Mon.CM(1).MONITOR.ACTIVE         <= mon_active(0);
+  Mon.CM(1).MONITOR.HISTORY_VALID  <= debug_valid;
+  Mon.CM(1).MONITOR.ERRORS         <= mon_errors(0);
+  Mon.CM(1).MONITOR.HISTORY        <= debug_history;
   -------------------------------------------------------------------------------
 
   CM_Monitoring_1: entity work.CM_Monitoring
@@ -327,7 +252,7 @@ begin  -- architecture behavioral
       clk            => clk_axi,
       reset          => reset,
       uart_rx        => CM_mon_uart,
-      baud_16x_count => CTRL.CM1.MONITOR.COUNT_16X_BAUD,
+      baud_16x_count => CTRL.CM(1).MONITOR.COUNT_16X_BAUD,
       readMOSI       => master_readMOSI,
       readMISO       => master_readMISO,
       writeMOSI      => master_writeMOSI,
@@ -336,7 +261,5 @@ begin  -- architecture behavioral
       debug_valid    => debug_valid,
       error_count    => mon_errors(0),
       channel_active => mon_active(0));
-  
-
   
 end architecture behavioral;
