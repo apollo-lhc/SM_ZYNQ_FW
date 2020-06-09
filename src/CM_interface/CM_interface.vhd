@@ -29,28 +29,12 @@ entity CM_intf is
     master_writeMISO : in  AXIWriteMISO;
     CM_mon_uart      : in  std_logic := '1';
     enableCM         : out std_logic_vector(1 downto 0);
-    --enableCM1        : out std_logic;
-    --enableCM2        : out std_logic;
     enableCM_PWR    : out std_logic_vector(1 downto 0);
-    --enableCM1_PWR    : out std_logic;
-    --enableCM2_PWR    : out std_logic;
     enableCM_IOs     : out std_logic_vector(1 downto 0);
-    --enableCM1_IOs    : out std_logic;
-    --enableCM2_IOs    : out std_logic;
-    --from_CM1         :  in from_CM_t;
-    --from_CM2         :  in from_CM_t;
     from_CM          : in from_CM_t;
-    --to_CM1_in        :  in to_CM_t;  --from SM
-    --to_CM2_in        :  in to_CM_t;  --from SM
     to_CM_in         : in to_CM_t; --from SM
-    --to_CM1_out       : out to_CM_t;  --from SM, but tristated
-    --to_CM2_out       : out to_CM_t;  --from SM, but tristated
     to_CM_out        : out to_CM_t; --from SM, but tristated
-    --CM1_C2C_Mon      :  in C2C_Monitor_t;
-    --CM2_C2C_Mon      :  in C2C_Monitor_t;
     CM_C2C_Mon       : in C2C_Monitor_t;
-    --CM1_C2C_Ctrl     : out C2C_Control_t;
-    --CM2_C2C_Ctrl     : out C2C_Control_t
     CM_C2C_Ctrl      : out C2C_Control_t
     );
 end entity CM_intf;
@@ -64,8 +48,6 @@ architecture behavioral of CM_intf is
   signal localRdReq   : std_logic;
   signal localRdAck   : std_logic;
   
-
-
   signal PWR_good         : slv_2_t;
   signal enableCM_s       : slv_2_t;
   signal enableCM_PWR_s   : slv_2_t;
@@ -75,12 +57,7 @@ architecture behavioral of CM_intf is
   signal enable_PWR       : slv_2_t;
   signal enable_IOs       : slv_2_t;
   signal CM_seq_state     : slv_8_t;
-  --signal CM1_disable      : std_logic;
-  --signal CM2_disable      : std_logic;
   signal CM_disable     : std_logic_vector(1 downto 0);
-  
-  --signal CM1_uCIO_disable      : std_logic;
-  --signal CM2_uCIO_disable      : std_logic;
   signal CM_uCIO_disable : std_logic_vector(1 downto 0);
 
   signal reset             : std_logic;                     
@@ -177,11 +154,12 @@ begin  -- architecture behavioral
       Ctrl            => Ctrl);
 
   GENERATE_CTRL_MON: for I in 1 to 2 generate
+    --CM power/reset signals?
     enable_uc(I - 1)            <= Ctrl.CM(I).CTRL.ENABLE_UC;         --CM enabled
-    enableCM_PWR_s(I - 1)         <= Ctrl.CM(I).CTRL.ENABLE_PWR;        --CM power eneable
+    enableCM_PWR_s(I - 1)       <= Ctrl.CM(I).CTRL.ENABLE_PWR;        --CM power eneable
     override_PWRGood(I - 1)     <= Ctrl.CM(I).CTRL.OVERRIDE_PWR_GOOD; --CM override
     reset_error_state(I - 1)    <= Ctrl.CM(I).CTRL.ERROR_STATE_RESET; --CM reset error state
-
+    --CM monitor signals
     Mon.CM(I).CTRL.STATE             <= CM_seq_state(((I*4)-1) downto ((I - 1)*4));
     Mon.CM(I).CTRL.PWR_ENABLED       <= enable_PWR(I - 1);
     Mon.CM(I).CTRL.IOS_ENABLED       <= enable_IOs(I - 1);
@@ -205,7 +183,7 @@ begin  -- architecture behavioral
     Mon.CM(I).C2C.RX.RESET_DONE      <= CM_C2C_Mon.CM(I).rxresetdone;
     Mon.CM(I).C2C.TX.BUF_STATUS      <= CM_C2C_Mon.CM(I).txbufstatus;
     Mon.CM(I).C2C.TX.RESET_DONE      <= CM_C2C_Mon.CM(I).txresetdone;
-
+    --C2C control signals
     CM_C2C_Ctrl.CM(I).aurora_pma_init_in <= CTRL.CM(I).C2C.INITIALIZE;
     CM_C2C_Ctrl.CM(I).eyescanreset       <= CTRL.CM(I).C2C.EYESCAN_RESET;
     CM_C2C_Ctrl.CM(I).eyescantrigger     <= CTRL.CM(I).C2C.EYESCAN_TRIGGER;

@@ -62,7 +62,6 @@ entity top is
     ESM_LED_CLK       : in std_logic;
     ESM_LED_SDA       : in std_logic;
 
-
     -----------------------------------------------------------------------------
     -- CM interface
     -----------------------------------------------------------------------------
@@ -95,8 +94,6 @@ entity top is
     CM2_UART_RX   : in  std_logic;         
     ESM_UART_RX   : in  STD_LOGIC;
     ESM_UART_TX   : out STD_LOGIC;
-
-
     
     -------------------------------------
     --XVC
@@ -128,8 +125,7 @@ entity top is
 
     refclk_C2C_P      : in    std_logic_vector(0 downto 0);
     refclk_C2C_N      : in    std_logic_vector(0 downto 0);
-
-    
+   
 --    -------------------------------------------------------------------------------------------
 --    -- MGBT 2
 --    -------------------------------------------------------------------------------------------
@@ -169,7 +165,6 @@ architecture structure of top is
 
   signal pl_reset_n : std_logic;
   
-
 ------- SGMII
   signal ENET1_EXT_INTIN_0     : STD_LOGIC;
   signal GMII_ETHERNET_col     : STD_LOGIC;
@@ -202,7 +197,6 @@ architecture structure of top is
   signal m1_tts_dv : std_logic;
   signal m2_tts_dv : std_logic;
 
-
   -- AXI C2C
   signal AXI_C2CM1_RX_data              : STD_LOGIC_VECTOR(63 downto 0 ); -- (127 downto 0 );
   signal AXI_C2CM1_RX_dv                : STD_LOGIC;                          
@@ -224,13 +218,11 @@ architecture structure of top is
   signal AXI_C2C_WriteMOSI : AXIWriteMOSI_array_t(1 downto 0);
   signal AXI_C2C_WriteMISO : AXIWriteMISO_array_t(1 downto 0);
   
-
   signal C2C_gt_qpllclk_quad4 : std_logic;
   signal C2C_gt_qpllrefclk_quad4 : std_logic;
 
   signal AXI_C2C_powerdown : std_logic_vector(1 downto 0);
-  
-  
+    
 -- AXI BUS
   signal AXI_clk : std_logic;
   constant PL_AXI_SLAVE_COUNT : integer := 7;
@@ -244,12 +236,10 @@ architecture structure of top is
   signal AXI_MSTR_WMOSI : AXIWriteMOSI;
   signal AXI_MSTR_WMISO : AXIWriteMISO;
   
-
   --Monitoring
   signal SGMII_MON : SGMII_MONITOR_t;
   signal SGMII_MON_CDC : SGMII_MONITOR_t;
   signal SGMII_CTRL : SGMII_CONTROL_t;
-
   
   signal onbloard_clk_n : std_logic;
   signal onbloard_clk_p : std_logic;
@@ -279,35 +269,18 @@ architecture structure of top is
 
   signal  SI_init_reset : std_logic;
 
-
-
   --For plXVC
   constant XVC_COUNT    : integer := 2;
   signal plXVC_TMS      : std_logic_vector((XVC_COUNT -1) downto 0);
   signal plXVC_TDI      : std_logic_vector((XVC_COUNT -1) downto 0);
   signal plXVC_TDO      : std_logic_vector((XVC_COUNT -1) downto 0);
   signal plXVC_TCK      : std_logic_vector((XVC_COUNT -1) downto 0);
-  
-  --signal XVC0_tck          : STD_LOGIC;
-  --signal XVC0_tdi          : STD_LOGIC;
-  --signal XVC0_tdo          : STD_LOGIC;
-  --signal XVC0_tms          : STD_LOGIC;
-  --signal XVC1_tck          : STD_LOGIC;
-  --signal XVC1_tdi          : STD_LOGIC;
-  --signal XVC1_tdo          : STD_LOGIC;
-  --signal XVC1_tms          : STD_LOGIC;
-
-
 
   signal CM1_UART_Tx_internal : std_logic;
   signal CM2_UART_Tx_internal : std_logic;
-  --signal CM1_C2C_Mon : C2C_Monitor_t;
-  --signal CM2_C2C_Mon : C2C_Monitor_t;
   signal CM_C2C_Mon     : C2C_Monitor_t;
   
   signal CM_enable_IOs   : std_logic_vector(1 downto 0);
-  --signal CM1_C2C_Ctrl : C2C_Control_t;
-  --signal CM2_C2C_Ctrl : C2C_Control_t;
   signal CM_C2C_Ctrl : C2C_Control_t;
   signal C2C1_phy_gt_refclk1_out : std_logic;
 
@@ -533,15 +506,6 @@ begin  -- architecture structure
       PLXVC_wstrb                => AXI_BUS_WMOSI(6).data_write_strobe,
       PLXVC_wvalid               => AXI_BUS_WMOSI(6).data_valid,
 
-      --tap_tck_0                 => XVC1_tck,
-      --tap_tdi_0                 => XVC1_tdi,
-      --tap_tdo_0                 => XVC1_tdo,
-      --tap_tms_0                 => XVC1_tms,
-      --tap_tck_1                 => XVC1_tck,
-      --tap_tdi_1                 => XVC1_tdi,
-      --tap_tdo_1                 => XVC1_tdo,
-      --tap_tms_1                 => XVC1_tms,
-
       init_clk        =>  AXI_C2C_aurora_init_clk,
       C2C1_phy_Rx_rxn =>  AXI_C2C_CM1_Rx_N(0 to 0),
       C2C1_phy_Rx_rxp =>  AXI_C2C_CM1_Rx_P(0 to 0),
@@ -760,8 +724,6 @@ begin  -- architecture structure
       rx_N(1)     => m1_tts_N,    
       rx_N(2)     => m2_tts_N);
 
-
-
   SI_i2c_SDA : IOBUF
     port map (
       IO => SI_sda,
@@ -851,7 +813,6 @@ begin  -- architecture structure
       T  => IPMC_SDA_t,
       O  => IPMC_SDA_i);
 
-
   plXVC_TDO(0) <= CM1_TDO;
   plXVC_TDO(1) <= CM2_TDO;
   CM_interface_1: entity work.CM_intf
@@ -898,11 +859,7 @@ begin  -- architecture structure
       to_CM_out.CM(2).TMS       => CM2_TMS,
       to_CM_out.CM(2).TDI       => CM2_TDI,
       to_CM_out.CM(2).TCK       => CM2_TCK,
-      --CM1_C2C_Mon          => CM1_C2C_Mon,
-      --CM2_C2C_Mon          => CM2_C2C_Mon,
       CM_C2C_Mon             => CM_C2C_Mon,
-      --CM1_C2C_Ctrl         => CM1_C2C_Ctrl,
-      --CM2_C2C_Ctrl         => CM2_C2C_Ctrl);
       CM_C2C_Ctrl            => CM_C2C_Ctrl);
 
   plXVC_1: entity work.plXVC_intf
