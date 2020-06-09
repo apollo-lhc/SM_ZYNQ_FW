@@ -629,8 +629,7 @@ begin  -- architecture structure
       BRAM_PORTB_0_rst  => '0',
       BRAM_PORTB_0_we   => x"0",
 
-      TCDS_CLK          => clk_TCDS
-      );
+      TCDS_CLK          => clk_TCDS);
 
 
 
@@ -655,8 +654,7 @@ begin  -- architecture structure
       pass_out(3)  => SGMII_MON_CDC.pma_reset,    
       pass_out(4)  => SGMII_MON_CDC.mmcm_locked,  
       pass_out(20 downto 5)  => SGMII_MON_CDC.status_vector,
-      pass_out(21)  => SGMII_MON_CDC.reset              
-);
+      pass_out(21)  => SGMII_MON_CDC.reset);
 
 
 --  SGMII_MON_CDC <= SGMII_MON;
@@ -743,8 +741,8 @@ begin  -- architecture structure
       clk_50Mhz  => AXI_C2C_aurora_init_clk,
       reset      =>  SI_init_reset,--'0',
       locked     => clk_200Mhz_locked,
-      clk_in1_n     => onboard_clk_n,
-      clk_in1_p     => onboard_clk_p);
+      clk_in1_n  => onboard_clk_n,
+      clk_in1_p  => onboard_clk_p);
   reset_200Mhz <= not clk_200Mhz_locked ;
 
   SI_OUT_DIS <= not SI_OE_normal;
@@ -781,8 +779,7 @@ begin  -- architecture structure
       ESM_LED_CLK     => ESM_LED_CLK,
       ESM_LED_SDA     => ESM_LED_SDA,
       CM1_C2C_Mon     => CM_C2C_Mon.CM(1),
-      CM2_C2C_Mon     => CM_C2C_Mon.CM(2)
-      );
+      CM2_C2C_Mon     => CM_C2C_Mon.CM(2));
 
   SM_info_1: entity work.SM_info
     port map (
@@ -795,17 +792,17 @@ begin  -- architecture structure
   
   IPMC_i2c_slave_1: entity work.IPMC_i2c_slave
     port map (
-      clk_axi     => axi_clk,
-      reset_axi_n => pl_reset_n,
-      readMOSI        => AXI_BUS_RMOSI(1),
-      readMISO        => AXI_BUS_RMISO(1),
-      writeMOSI       => AXI_BUS_WMOSI(1),
-      writeMISO       => AXI_BUS_WMISO(1),
-      linux_booted    => linux_booted,
-      SDA_o       => IPMC_SDA_o,
-      SDA_t       => IPMC_SDA_t,
-      SDA_i       => IPMC_SDA_i,
-      SCL         => IPMC_SCL);
+      clk_axi      => axi_clk,
+      reset_axi_n  => pl_reset_n,
+      readMOSI     => AXI_BUS_RMOSI(1),
+      readMISO     => AXI_BUS_RMISO(1),
+      writeMOSI    => AXI_BUS_WMOSI(1),
+      writeMISO    => AXI_BUS_WMISO(1),
+      linux_booted => linux_booted,
+      SDA_o        => IPMC_SDA_o,
+      SDA_t        => IPMC_SDA_t,
+      SDA_i        => IPMC_SDA_i,
+      SCL          => IPMC_SCL);
   IPMC_i2c_SDA : IOBUF
     port map (
       IO => IPMC_SDA,
@@ -813,8 +810,6 @@ begin  -- architecture structure
       T  => IPMC_SDA_t,
       O  => IPMC_SDA_i);
 
-  plXVC_TDO(0) <= CM1_TDO;
-  plXVC_TDO(1) <= CM2_TDO;
   CM_interface_1: entity work.CM_intf
     port map (
       clk_axi              => axi_clk,
@@ -862,21 +857,23 @@ begin  -- architecture structure
       CM_C2C_Mon             => CM_C2C_Mon,
       CM_C2C_Ctrl            => CM_C2C_Ctrl);
 
+  plXVC_TDO(0) <= CM1_TDO;
+  plXVC_TDO(1) <= CM2_TDO;
+  
   plXVC_1: entity work.plXVC_intf
     generic map (
       --TCK_RATIO         => 1,
-      COUNT             => XVC_COUNT,
-      IRQ_LENGTH        => 1)           
-      port map (
-        clk_axi         => axi_clk,
-        reset_axi_n     => pl_reset_n,
-        readMOSI        => AXI_BUS_RMOSI(6),
-        readMISO        => AXI_BUS_RMISO(6),
-        writeMOSI       => AXI_BUS_WMOSI(6),
-        writeMISO       => AXI_BUS_WMISO(6),
-        TMS             => plXVC_TMS,
-        TDI             => plXVC_TDI,
-        TDO             => plXVC_TDO,
-        TCK             => plXVC_TCK);
-  
+      COUNT           => XVC_COUNT,
+      IRQ_LENGTH      => 1)           
+    port map (
+      clk_axi         => axi_clk,
+      reset_axi_n     => pl_reset_n,
+      readMOSI        => AXI_BUS_RMOSI(6),
+      readMISO        => AXI_BUS_RMISO(6),
+      writeMOSI       => AXI_BUS_WMOSI(6),
+      writeMISO       => AXI_BUS_WMISO(6),
+      TMS             => plXVC_TMS,
+      TDI             => plXVC_TDI,
+      TDO             => plXVC_TDO,
+      TCK             => plXVC_TCK);
 end architecture structure;

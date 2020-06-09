@@ -112,8 +112,7 @@ package CM_package is
   type to_CM_t is record
     CM : to_CM_t_ARRAY;
   end record to_CM_t;
-  
-  
+    
   --Array from_CM_t
   type single_from_CM_t is record
     PWR_good : std_logic;
@@ -125,6 +124,4 @@ package CM_package is
   type from_CM_t is record
     CM : from_CM_t_ARRAY;
   end record from_CM_t;
-  
-
 end package CM_package;
