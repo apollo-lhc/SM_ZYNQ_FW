@@ -11,6 +11,8 @@ Library UNISIM;
 use UNISIM.vcomponents.all;
 
 entity top is
+  generic (
+    CM_COUNT          : integer range(1 to 2) := 1); --Count for how many CMs are present
   port (
     DDR_addr          : inout STD_LOGIC_VECTOR ( 14 downto 0 );
     DDR_ba            : inout STD_LOGIC_VECTOR ( 2 downto 0 );
@@ -293,7 +295,7 @@ begin  -- architecture structure
   pl_reset_n <= axi_reset_n ;
   pl_clk <= axi_clk;
   AXI_C2C_powerdown(0) <= not CM_enable_IOs(0);
-  AXI_C2C_powerdown(1) <= not CM_enable_IOs(0); -- since we have one CM
+  AXI_C2C_powerdown(1) <= CM_enable_IOs(1) when (CM_COUNT = 1) else (not CM_enable_IOs(0)); --case for having only 1 CM
   CM_C2C_Mon.CM(2).phy_mmcm_not_locked_out  <= '0';
   CM_C2C_Mon.CM(2).cplllock <= '0';
   zynq_bd_wrapper_1: entity work.zynq_bd_wrapper
@@ -811,6 +813,8 @@ begin  -- architecture structure
       O  => IPMC_SDA_i);
 
   CM_interface_1: entity work.CM_intf
+    generic map (
+      CM_COUNT             => CM_COUNT)
     port map (
       clk_axi              => axi_clk,
       reset_axi_n          => pl_reset_n,
@@ -828,8 +832,6 @@ begin  -- architecture structure
       enableCM_PWR(0)        => CM1_PWR_enable,
       enableCM_PWR(1)        => CM2_PWR_enable,
       enableCM_IOs           => CM_enable_IOs,
-      --enableCM_IOs(0)        => CM_enable_IOs(0),
-      --enableCM_IOs(1)        => CM_enable_IOs(1),
       from_CM.CM(1).PWR_good    => CM1_PWR_good,
       from_CM.CM(1).TDO         => '0',
       from_CM.CM(1).GPIO        => CM1_GPIO,

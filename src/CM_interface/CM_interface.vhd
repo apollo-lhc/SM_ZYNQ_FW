@@ -3,19 +3,16 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 use work.AXIRegPkg.all;
-
 use work.types.all;
 use work.CM_package.all;
 use work.CM_Ctrl.all;
 
-
-
 Library UNISIM;
 use UNISIM.vcomponents.all;
 
-
 entity CM_intf is
-  
+  generic (
+    CM_COUNT         : integer range (1 to 2) := 1); --Count for how many Command Moduless are present
   port (
     clk_axi          : in  std_logic;
     reset_axi_n      : in  std_logic;
