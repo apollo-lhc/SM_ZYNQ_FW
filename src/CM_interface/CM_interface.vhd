@@ -12,7 +12,8 @@ use UNISIM.vcomponents.all;
 
 entity CM_intf is
   generic (
-    CM_COUNT         : integer range (1 to 2) := 1); --Count for how many Command Moduless are present
+    CM_COUNT         : integer range 1 to 2 := 1; --Count for how many Command Moduless are present
+    CLKFREQ          : integer :=  50000000); --clk frequency in Hz
   port (
     clk_axi          : in  std_logic;
     reset_axi_n      : in  std_logic;
@@ -26,7 +27,7 @@ entity CM_intf is
     master_writeMISO : in  AXIWriteMISO;
     CM_mon_uart      : in  std_logic := '1';
     enableCM         : out std_logic_vector(1 downto 0);
-    enableCM_PWR    : out std_logic_vector(1 downto 0);
+    enableCM_PWR     : out std_logic_vector(1 downto 0);
     enableCM_IOs     : out std_logic_vector(1 downto 0);
     from_CM          : in from_CM_t;
     to_CM_in         : in to_CM_t; --from SM
@@ -181,7 +182,7 @@ begin  -- architecture behavioral
     Mon.CM(I).C2C.TX.BUF_STATUS      <= CM_C2C_Mon.CM(I).txbufstatus;
     Mon.CM(I).C2C.TX.RESET_DONE      <= CM_C2C_Mon.CM(I).txresetdone;
     --C2C control signals
-    CM_C2C_Ctrl.CM(I).aurora_pma_init_in <= CTRL.CM(I).C2C.INITIALIZE;
+    --CM_C2C_Ctrl.CM(I).aurora_pma_init_in <= CTRL.CM(I).C2C.INITIALIZE;
     CM_C2C_Ctrl.CM(I).eyescanreset       <= CTRL.CM(I).C2C.EYESCAN_RESET;
     CM_C2C_Ctrl.CM(I).eyescantrigger     <= CTRL.CM(I).C2C.EYESCAN_TRIGGER;
     CM_C2C_Ctrl.CM(I).rxbufreset         <= CTRL.CM(I).C2C.RX.BUF_RESET;
@@ -216,6 +217,21 @@ begin  -- architecture behavioral
   Mon.CM(1).MONITOR.HISTORY_VALID  <= debug_valid;
   Mon.CM(1).MONITOR.ERRORS         <= mon_errors(0);
   Mon.CM(1).MONITOR.HISTORY        <= debug_history;
+
+  Phy_Lane_Control: entity work.phy_lane_control
+    generic map (
+      CM_COUNT => CM_COUNT,
+      CLKFREQ => CLKFREQ)
+    port map (
+      clk => clk_axi,
+      reset => reset,
+      initialize_in1 => CTRL.CM(1).C2C.INITIALIZE,
+      initialize_in2 => CTRL.CM(2).C2C.INITIALIZE,
+      phy_lane_1 => CM_C2C_Mon.CM(1).phy_lane_up(0),
+      phy_lane_2 => CM_C2C_Mon.CM(2).phy_lane_up(0),
+      initialize_out1 => CM_C2C_Ctrl.CM(1).aurora_pma_init_in,
+      initialize_out2 => CM_C2C_Ctrl.CM(2).aurora_pma_init_in);
+  
   -------------------------------------------------------------------------------
 
   CM_Monitoring_1: entity work.CM_Monitoring
