@@ -9,17 +9,15 @@ use UNISIM.vcomponents.all;
 
 entity phy_lane_control is
   generic (
-    CM_COUNT : integer range 1 to 2 := 1;
-    CLKFREQ : integer := 50000000);
+    CLKFREQ  : integer := 50000000);
   port (
-    clk             : in  std_logic;
-    reset           : in  std_logic;
-    initialize_in1  : in  std_logic;
-    initialize_in2  : in  std_logic;
-    phy_lane_1      : in  std_logic;
-    phy_lane_2      : in  std_logic;
-    initialize_out1 : out std_logic;
-    initialize_out2 : out std_logic);
+    clk            : in  std_logic;
+    reset          : in  std_logic;
+    enable         : in  std_logic;
+    initialize_in  : in  std_logic;
+    phy_lane_up    : in  std_logic;
+    initialize_out : out std_logic;
+    locked         : out std_logic);
 end entity phy_lane_control;
 architecture behavioral of phy_lane_control is
 
@@ -29,64 +27,88 @@ architecture behavioral of phy_lane_control is
   constant MILISEC : integer := CLKFREQ/1000;
   
   --- *** STATE_MACINE *** ---
-  type state_t is (WAITING, INITIALIZING, READING, RUNNING);
+  type state_t is (IDLE, WAITING, INITIALIZING, READING, LOCKED);
   signal state : state_t;
 
-  --- *** CONTROL *** ---
-  signal initialize_buffer : std_logic;
-  
 begin
-
-  --continuous output
-  INITIALIZE_out1 <= INITIALIZE_in1;
-  INITIALIZE_out2 <= INITIALIZE_in2 when (CM_COUNT = 2) else initialize_buffer;
-
-  --process for managing state
+-----------------------------------------------------------------------------------------
+--  
+--                                                          +-----------+
+--                                                          |           |
+--                                                          |  LOCKED   |
+--                                    +-------------------->+           |
+--                                    |    phylaneup = 1    +-------+---+
+--                                    |                             |
+--  ALL STATES                        |                             |
+--       +                            |                             |phylaneup = 0
+--       | enable = 0                 |                             |
+--       v                            |      timer = 1ms            v
+--   +---+----+             +---------+-+   phylaneup = 0   +-------+--------+
+--   |        |             |           +------------------>+                |
+--   |  IDLE  +------------>+   WAIT    |                   |  INITIALIZING  +-------+
+--   |        | enable = 1  |           +<------------------+                |       |
+--   +--------+             +-+--------++   COUNTER = 32    +-----------+----+       |
+--                            ^        |                                ^            |
+--                            |        |                                |            |
+--                            +--------+                                +------------+
+--                           Timer /= 1ms                                 COUNTER /= 32
+--                         
+-----------------------------------------------------------------------------------------
+                         
+--process for managing state
   STATE_MACHINE: process (clk, reset) is
   begin
     if reset = '1' then --async reset
-      state <= WAITING;
+      state <= IDLE;
       
     elsif clk'event and clk='1' then --rising clk edge
       case state is
-        when WAITING => --wait for phylane1 then transition based on phylane2
-          if phy_lane_1 = '1' then
-            if phy_lane_2 = '1' then
-              state <= RUNNING;
+        when IDLE => --move to INITIALIZE on enable
+          if enable = '1' then
+            state <= INITIALIZING;
+          else
+            state <= IDLE;
+          end if;
+          
+        when INITIALIZING => --move to WAITING after 32 clk's
+          if enable = '0' then
+            state <= IDLE;
+          else
+            if counter = "11111" then
+              state <= WAITING;
             else
               state <= INITIALIZING;
             end if;
-          else
-            state <= WAITING;
           end if;
           
-        when INITIALIZING => --wait for 32 clk
-          if count = "11111" then
-            state <= READING;
+        when WAITING => --read phy_lane_up for 1ms
+          if enable = '0' then
+            state <= IDLE;
           else
-            state <= INITIALIZING;
-          end if;
-          
-        when READING => --after 1ms, evaluate phy lane 2
-          if timer = MILISEC then
-            if phy_lane_2 = '1' then
-              state <= RUNNING;
+            if phy_lane_up = '1' then
+              state <= LOCKED;
             else
-              state <= INITIALIZING;
+              if timer = MILISEC then
+                state <= INITIALIZING;
+              else
+                state <= WAITING;
+              end if;
             end if;
-          else
-            state <= READING;
           end if;
           
-        when RUNNING => --holding state as long as phylan2 = 1
-          if phy_lane_2 = '1' then
-            state <= RUNNING;
+        when LOCKED =>
+          if enable = '0' then
+            state <= IDLE;
           else
-            state <= INITIALIZING;
+            if phy_lane_up '0' then
+              state <= INITIALIZING;
+            else
+              state <= LOCKED;
+            end if;
           end if;
           
-        when others => --reset state
-          state <= WAITING;
+        when others => --reset 
+          state <= IDLE;          
       end case;
     end if;
   end process STATE_MACHINE;
@@ -100,11 +122,11 @@ begin
       
     elsif clk'event and clk='1' then --rising clk edge
       case state is
-        when WAITING => --no counting
+        when IDLE => --no counting
           count <= "00000";
           timer <= 0;
           
-        when INITIALIZING => --count to 32
+        when INITIALIZING => --count 32 clk's
           if count = "11111" then
             count <= "00000";
           else
@@ -112,7 +134,7 @@ begin
           end if;
           timer <= 0;
           
-        when READING => --count to 1ms
+        when WAITING => --count to 1 ms
           count <= "00000";
           if timer = MILISEC then
             timer <= 0;
@@ -120,65 +142,46 @@ begin
             timer <= timer + 1;
           end if;
           
-        when RUNNING => --no counting
+        when LOCKED => --no counting
           count <= "00000";
           timer <= 0;
           
-        when others => --no counting
+        when others => --reset 
           count <= "00000";
           timer <= 0;
       end case;
-    end if;  
+    end if;
   end process TIMING;
 
   --Process for managing output signals
   CONTROL: process (reset, clk) is
   begin
     if reset = '1' then --async reset
-      initialize_buffer <= '0';
+      initialize_out <= '0';
+      locked <= '0';
       
     elsif clk'event and clk='1' then --rising clk edge
       case state is
-        when WAITING =>
-          if phy_lane_1 = '1' then
-            if phy_lane_2 = '1' then
-              initialize_buffer <= '0';
-            else
-              initialize_buffer <= '1';
-            end if;
-          else
-            initialize_buffer <= '0';
-          end if;
-
-        when INITIALIZING =>
-          if count = "11111" then
-            initialize_buffer <= '0';
-          else
-            initialize_buffer <= '1';
-          end if;
-
-        when READING =>
-          if timer = MILISEC then
-            if phy_lane_2 = '0' then
-              initialize_buffer <= '1';
-            else
-              initialize_buffer <= '0';
-            end if;
-          else
-            initialize_buffer <= '0';
-          end if;
-
-        when RUNNING =>
-          if phy_lane_2 = '0' then
-            initialize_buffer <= '1';
-          else
-            initialize_buffer <= '0';
-          end if;
+        when IDLE => --initialize is passed through
+          initialize_out <= initialize_in;
+          locked <= '0';
           
-        when others =>
-          initialize_buffer <= '0';
+        when INITIALIZING => --force initialize
+          initialize_out <= '1';
+          locked <='0';
+          
+        when WAITING => --hold at 0
+          initialize_out <= '0';
+          locked <= '0';
+          
+        when LOCKED => --set locked, hold initialize low
+          initialize_out <= '0';
+          locked <= '1';
+          
+        when others => --reset
+          initialize_out <= '0';
+          locked <= '0';
       end case;
-    end if;  
+    end if;
   end process CONTROL;
 end architecture behavioral;
-
