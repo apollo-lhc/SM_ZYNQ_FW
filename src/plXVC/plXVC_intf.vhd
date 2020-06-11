@@ -68,11 +68,11 @@ begin
       port map (
         axi_clk   => clk_axi,
         reset     => reset,
-        TMS_vector => Ctrl.PLXVC(I).TMS_VECTOR,
-        TDI_vector => Ctrl.PLXVC(I).TDI_VECTOR,
+        TMS_vector => Ctrl.XVC(I).TMS_VECTOR,
+        TDI_vector => Ctrl.XVC(I).TDI_VECTOR,
         TDO       => TDO(I - 1),
-        length  => Ctrl.PLXVC(I).LENGTH,
-        CTRL => Ctrl.PLXVC(I).GO,
+        length  => Ctrl.XVC(I).LENGTH,
+        CTRL => Ctrl.XVC(I).GO,
         TMS => TMS(I - 1),
         TDI => TDI(I - 1),
         TDO_vector => MON_TDO_VECTOR(I),
@@ -81,34 +81,11 @@ begin
         interupt => open);
 
     --Assign monitor signals
-    Mon.PLXVC(I).BUSY <= MON_BUSY(I - 1);
-    mon.PLXVC(I).TDO_VECTOR <= MON_TDO_VECTOR(I);
+    Mon.XVC(I).BUSY <= MON_BUSY(I - 1);
+    mon.XVC(I).TDO_VECTOR <= MON_TDO_VECTOR(I);
     
   end generate GENERATE_JTAG;
 
 
---  virtualJTAG_1: entity work.virtualJTAG
---    generic map (
---      --TCK_RATIO => TCK_RATIO,           --ratio of axi_clk to TCK
---      IRQ_LENGTH => IRQ_LENGTH)           --Length of IRQ in axi_clk ticks
---    port map (
---      axi_clk     => clk_axi,             --Input clk
---      reset       => reset,               --reset
---      TMS_vector  => Ctrl.TMS_VECTOR,     --axi tms input
---      TDI_vector  => Ctrl.TDI_VECTOR,     --axi tdi input
---      TDO         => TDO,                 --JTAG tdo input from programmable logic
---      length      => Ctrl.LENGTH,         --lenght of operation in bits
---      CTRL        => Ctrl.GO,             --Enable operation
---      TMS         => TMS,                 --JTAG tms output to programmable logic
---      TDI         => TDI,                 --JTAG tdi output to programmable logic
---      TDO_vector  => MON_TDO_VECTOR,      --axi tdo output
---      TCK         => TCK,                 --JTAG output TCK to programmable logic
---      busy        => MON_BUSY,            --virtualJTAG is outputting
---      interupt    => open);               --interupt, open for now TO BE IMPLEMENTED!!!
-
-
-----Assign Monitor signals
---  Mon.BUSY <= MON_BUSY;
---  Mon.TDO_VECTOR <= MON_TDO_VECTOR;
 
 end architecture behavioral;

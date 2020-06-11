@@ -5,7 +5,6 @@
   <node id="SERV"            module="file://modules/SERV.xml"             address="0x04000000"/>
   <node id="SLAVE_I2C"       module="file://modules/SLAVE_I2C.xml"        address="0x05000000"/>
   <node id="PLXVC"           module="file://modules/plXVC.xml"            address="0x06000000"/>
-  <!-- <node id="XVC2"            module="file://modules/XVC.xml"              address="0x07000000"/> -->
   <node id="XVC_LOCAL"       module="file://modules/XVC.xml"              address="0x08000000"/>
   <node id="KINTEX_SYS_MGMT" module="file://modules/KINTEX_SYS_MGMT.xml"  address="0x09000000"/>
   <node id="SM_INFO"         module="file://modules/FW_INFO.xml"          address="0x0A000000"/>
@@ -20,8 +19,8 @@
   <node id="C2C2_AXI_FW"     module="file://modules/C2C2_AXI_FW.xml"      address="0x13000000"/>
   <node id="C2C2_AXILITE_FW" module="file://modules/C2C2_AXILITE_FW.xml"  address="0x14000000"/>
   <node id="PL_MEM"          module="file://modules/PL_MEM.xml"           address="0x15000000"/>
-<!--  <node id="TCDS_DRP"        module="file://modules/TCDS_DRP.xml"         address="0x16000000"/>-->
-<!--  <node id="TCDS"            module="file://modules/TCDS.xml"             address="0x17000000"/>-->
+  <node id="TCDS_DRP"        module="file://modules/TCDS_DRP.xml"         address="0x16000000"/>
+  <node id="TCDS"            module="file://modules/TCDS.xml"             address="0x17000000"/>
   <node id="KINTEX_TCDS"     module="file://modules/KINTEX_TCDS.xml"      address="0x18000000"/>
   <node id="C2C1_PHY"        module="file://modules/DRP_7_GTX.xml"        address="0x19000000"/>
   <node id="K_C2CLINK_PHY"   module="file://modules/DRP_USP_GTY.xml"      address="0x1A000000"/>

@@ -312,7 +312,10 @@ architecture structure of top is
   signal linux_booted : std_logic;
 
   signal clk_TCDS : std_logic;
-  
+  signal clk_TCDS_reset_n : std_logic;
+  signal clk_TCDS_locked : std_logic;
+
+  signal clk_C2C1_PHY : std_logic;
 begin  -- architecture structure
 
   pl_reset_n <= axi_reset_n ;
@@ -389,8 +392,8 @@ begin  -- architecture structure
       AXIM_PL_rresp             => AXI_MSTR_RMISO.response,
       AXIM_PL_rvalid            => AXI_MSTR_RMISO.data_valid,
       AXIM_PL_rready            => AXI_MSTR_RMOSI.ready_for_data,
-      PL_CLK                    => pl_clk,
-      PL_RESET_N                => pl_reset_n,
+--      PL_CLK                    => pl_clk,
+--      PL_RESET_N                => pl_reset_n,
       SERV_araddr               => AXI_BUS_RMOSI(0).address,
       SERV_arprot               => AXI_BUS_RMOSI(0).protection_type,
       SERV_arready              => AXI_BUS_RMISO(0).ready_for_address,
@@ -663,13 +666,16 @@ begin  -- architecture structure
       BRAM_PORTB_0_rst  => '0',
       BRAM_PORTB_0_we   => x"0",
 
-      TCDS_CLK          => clk_TCDS
+      C2C1_PHY_CLK      => clk_C2C1_PHY,
+      
+      TCDS_CLK          => clk_TCDS,
+      TCDS_reset_n      => clk_TCDS_locked--clk_TCDS_reset_n
       );
 
 
 
 
-  pass_std_logic_vector_1: entity work.pass_std_logic_vector
+  DC_data_CDC_1: entity work.DC_data_CDC
     generic map (
       DATA_WIDTH => 22)
     port map (
@@ -724,12 +730,24 @@ begin  -- architecture structure
 
 
   axi_reset <= not axi_reset_n;
+
+ -- DC_data_CDC_2: entity work.DC_data_CDC
+ --   generic map (
+ --     DATA_WIDTH => 1)
+ --   port map (
+ --     clk_in   => axi_clk,
+ --     clk_out  => clk_TCDS,
+ --     reset    =>  clk_TCDS_locked,
+ --     pass_in(0)  => axi_reset_n,
+ --     pass_out(0) => clk_TCDS_reset_n);
+  
+    
   TCDS_2: entity work.TCDS
     port map (
-      clk_axi            => clk_TCDS,
-      reset_axi_n        => pl_reset_n,
-      clk_axi_DRP        => axi_clk,
-      reset_axi_DRP_n    => pl_reset_n,
+      clk_axi            => pl_clk,--axi_clk,--clk_TCDS,
+      reset_axi_n        => pl_reset_n,--axi_reset_n,--pl_reset_n,--clk_TCDS_reset_n,--pl_reset_n,
+      clk_axi_DRP        => pl_clk,--axi_clk,
+      reset_axi_DRP_n    => pl_reset_n,--axi_reset_n,--pl_reset_n,
       readMOSI           => AXI_BUS_RMOSI(5),
       readMISO           => AXI_BUS_RMISO(5),
       writeMOSI          => AXI_BUS_WMOSI(5),
@@ -743,8 +761,9 @@ begin  -- architecture structure
       refclk_n      => refclk_TCDS_N,
       QPLL_CLK        => QPLL_CLK,    
       QPLL_REF_CLK    => QPLL_REF_CLK,        
-      reset         => axi_reset,
+--      reset         => axi_reset,
       clk_TCDS    => clk_TCDS,
+      clk_TCDS_reset_n => clk_TCDS_locked,--open,--clk_TCDS_reset_n,
       tx_P(0)     => tts_P,
       tx_P(1)     => fake_ttc_P,  
       tx_P(2)     => open, 
@@ -803,6 +822,7 @@ begin  -- architecture structure
       SI_ENABLE       => SI_EN_normal,
       SI_init_reset   => SI_init_reset,
       TTC_SRC_SEL     => TTC_SRC_SEL,
+      TCDS_REFCLK_LOCKED => clk_TCDS_locked,
       LHC_CLK_CMS_LOS => LHC_CLK_CMS_LOS,
       LHC_CLK_OSC_LOS => LHC_CLK_OSC_LOS,
       LHC_SRC_SEL     => LHC_SRC_SEL,
@@ -895,9 +915,11 @@ begin  -- architecture structure
       to_CM2_out.TMS       => CM2_TMS,
       to_CM2_out.TDI       => CM2_TDI,
       to_CM2_out.TCK       => CM2_TCK,
+      clk_C2C1             => clk_C2C1_PHY,
       CM1_C2C_Mon          => CM1_C2C_Mon,
-      CM2_C2C_Mon          => CM2_C2C_Mon,
       CM1_C2C_Ctrl         => CM1_C2C_Ctrl,
+      clk_C2C2             => clk_C2C1_PHY,
+      CM2_C2C_Mon          => CM2_C2C_Mon,
       CM2_C2C_Ctrl         => CM2_C2C_Ctrl);
 
   plXVC_1: entity work.plXVC_intf

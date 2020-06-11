@@ -74,9 +74,9 @@ begin  -- architecture behavioral
         when 2 => --0x2
           localRdData(31 downto  0)  <=  reg_data( 2)(31 downto  0);      --Test Data In (TDI) Bit Vector
         when 3 => --0x3
-          localRdData(31 downto  0)  <=  Mon.PLXVC(1).TDO_VECTOR;         --Test Data Out (TDO) Capture Vector
+          localRdData(31 downto  0)  <=  Mon.XVC(1).TDO_VECTOR;           --Test Data Out (TDO) Capture Vector
         when 4 => --0x4
-          localRdData( 1)            <=  Mon.PLXVC(1).BUSY;               --Cable is operating
+          localRdData( 1)            <=  Mon.XVC(1).BUSY;                 --Cable is operating
         when 5 => --0x5
           localRdData(31 downto  0)  <=  reg_data( 5)(31 downto  0);      --Lock cable from access
         when 6 => --0x6
@@ -86,9 +86,9 @@ begin  -- architecture behavioral
         when 8 => --0x8
           localRdData(31 downto  0)  <=  reg_data( 8)(31 downto  0);      --Test Data In (TDI) Bit Vector
         when 9 => --0x9
-          localRdData(31 downto  0)  <=  Mon.PLXVC(2).TDO_VECTOR;         --Test Data Out (TDO) Capture Vector
+          localRdData(31 downto  0)  <=  Mon.XVC(2).TDO_VECTOR;           --Test Data Out (TDO) Capture Vector
         when 10 => --0xa
-          localRdData( 1)            <=  Mon.PLXVC(2).BUSY;               --Cable is operating
+          localRdData( 1)            <=  Mon.XVC(2).BUSY;                 --Cable is operating
         when 11 => --0xb
           localRdData(31 downto  0)  <=  reg_data(11)(31 downto  0);      --Lock cable from access
 
@@ -103,31 +103,31 @@ begin  -- architecture behavioral
 
 
   -- Register mapping to ctrl structures
-  Ctrl.PLXVC(1).LENGTH      <=  reg_data( 0)(31 downto  0);     
-  Ctrl.PLXVC(1).TMS_VECTOR  <=  reg_data( 1)(31 downto  0);     
-  Ctrl.PLXVC(1).TDI_VECTOR  <=  reg_data( 2)(31 downto  0);     
-  Ctrl.PLXVC(1).LOCK        <=  reg_data( 5)(31 downto  0);     
-  Ctrl.PLXVC(2).LENGTH      <=  reg_data( 6)(31 downto  0);     
-  Ctrl.PLXVC(2).TMS_VECTOR  <=  reg_data( 7)(31 downto  0);     
-  Ctrl.PLXVC(2).TDI_VECTOR  <=  reg_data( 8)(31 downto  0);     
-  Ctrl.PLXVC(2).LOCK        <=  reg_data(11)(31 downto  0);     
+  Ctrl.XVC(1).LENGTH      <=  reg_data( 0)(31 downto  0);     
+  Ctrl.XVC(1).TMS_VECTOR  <=  reg_data( 1)(31 downto  0);     
+  Ctrl.XVC(1).TDI_VECTOR  <=  reg_data( 2)(31 downto  0);     
+  Ctrl.XVC(1).LOCK        <=  reg_data( 5)(31 downto  0);     
+  Ctrl.XVC(2).LENGTH      <=  reg_data( 6)(31 downto  0);     
+  Ctrl.XVC(2).TMS_VECTOR  <=  reg_data( 7)(31 downto  0);     
+  Ctrl.XVC(2).TDI_VECTOR  <=  reg_data( 8)(31 downto  0);     
+  Ctrl.XVC(2).LOCK        <=  reg_data(11)(31 downto  0);     
 
 
   reg_writes: process (clk_axi, reset_axi_n) is
   begin  -- process reg_writes
     if reset_axi_n = '0' then                 -- asynchronous reset (active low)
-      reg_data( 0)(31 downto  0)  <= DEFAULT_plXVC_CTRL_t.PLXVC(1).LENGTH;
-      reg_data( 1)(31 downto  0)  <= DEFAULT_plXVC_CTRL_t.PLXVC(1).TMS_VECTOR;
-      reg_data( 2)(31 downto  0)  <= DEFAULT_plXVC_CTRL_t.PLXVC(1).TDI_VECTOR;
-      reg_data( 5)(31 downto  0)  <= DEFAULT_plXVC_CTRL_t.PLXVC(1).LOCK;
-      reg_data( 6)(31 downto  0)  <= DEFAULT_plXVC_CTRL_t.PLXVC(2).LENGTH;
-      reg_data( 7)(31 downto  0)  <= DEFAULT_plXVC_CTRL_t.PLXVC(2).TMS_VECTOR;
-      reg_data( 8)(31 downto  0)  <= DEFAULT_plXVC_CTRL_t.PLXVC(2).TDI_VECTOR;
-      reg_data(11)(31 downto  0)  <= DEFAULT_plXVC_CTRL_t.PLXVC(2).LOCK;
+      reg_data( 0)(31 downto  0)  <= DEFAULT_plXVC_CTRL_t.XVC(1).LENGTH;
+      reg_data( 1)(31 downto  0)  <= DEFAULT_plXVC_CTRL_t.XVC(1).TMS_VECTOR;
+      reg_data( 2)(31 downto  0)  <= DEFAULT_plXVC_CTRL_t.XVC(1).TDI_VECTOR;
+      reg_data( 5)(31 downto  0)  <= DEFAULT_plXVC_CTRL_t.XVC(1).LOCK;
+      reg_data( 6)(31 downto  0)  <= DEFAULT_plXVC_CTRL_t.XVC(2).LENGTH;
+      reg_data( 7)(31 downto  0)  <= DEFAULT_plXVC_CTRL_t.XVC(2).TMS_VECTOR;
+      reg_data( 8)(31 downto  0)  <= DEFAULT_plXVC_CTRL_t.XVC(2).TDI_VECTOR;
+      reg_data(11)(31 downto  0)  <= DEFAULT_plXVC_CTRL_t.XVC(2).LOCK;
 
     elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
-      Ctrl.PLXVC(1).GO <= '0';
-      Ctrl.PLXVC(2).GO <= '0';
+      Ctrl.XVC(1).GO <= '0';
+      Ctrl.XVC(2).GO <= '0';
       
 
       
@@ -140,7 +140,7 @@ begin  -- architecture behavioral
         when 2 => --0x2
           reg_data( 2)(31 downto  0)  <=  localWrData(31 downto  0);      --Test Data In (TDI) Bit Vector
         when 4 => --0x4
-          Ctrl.PLXVC(1).GO            <=  localWrData( 0);               
+          Ctrl.XVC(1).GO              <=  localWrData( 0);               
         when 5 => --0x5
           reg_data( 5)(31 downto  0)  <=  localWrData(31 downto  0);      --Lock cable from access
         when 6 => --0x6
@@ -150,7 +150,7 @@ begin  -- architecture behavioral
         when 8 => --0x8
           reg_data( 8)(31 downto  0)  <=  localWrData(31 downto  0);      --Test Data In (TDI) Bit Vector
         when 10 => --0xa
-          Ctrl.PLXVC(2).GO            <=  localWrData( 0);               
+          Ctrl.XVC(2).GO              <=  localWrData( 0);               
         when 11 => --0xb
           reg_data(11)(31 downto  0)  <=  localWrData(31 downto  0);      --Lock cable from access
 

@@ -1,0 +1,14 @@
+[Unit]
+Description=Graphite monitoring
+After=systemd-udevd.service
+
+[Service]
+Type=forking
+PIDFile=/var/run/graphite_monitor.pid
+Restart=always
+RestartSec=1
+User=root
+ExecStart=/opt/Graphite/bin/graphite_monitor
+
+[Install]
+WantedBy=basic.target

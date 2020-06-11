@@ -40,10 +40,12 @@ entity CM_intf is
     to_CM2_in        :  in to_CM_t;  --from SM
     to_CM1_out       : out to_CM_t;  --from SM, but tristated
     to_CM2_out       : out to_CM_t;  --from SM, but tristated
+    clk_C2C1         :  in std_logic;
     CM1_C2C_Mon      :  in C2C_Monitor_t;
-    CM2_C2C_Mon      :  in C2C_Monitor_t;
     CM1_C2C_Ctrl     : out C2C_Control_t;
-    CM2_C2C_Ctrl     : out C2C_Control_t
+    clk_C2C2         :  in std_logic;
+    CM2_C2C_Mon      :  in C2C_Monitor_t;
+    CM2_C2C_Ctrl     : out C2C_Control_t    
     );
 end entity CM_intf;
 
@@ -206,6 +208,31 @@ begin  -- architecture behavioral
   override_PWRGood(1)      <= Ctrl.CM2.CTRL.OVERRIDE_PWR_GOOD; --CM2 override
   reset_error_state(1)     <= Ctrl.CM2.CTRL.ERROR_STATE_RESET; --CM2 reset error state
 
+  DC_data_CDC_1: entity work.DC_data_CDC
+    generic map (
+      DATA_WIDTH => 4)
+    port map (
+      clk_in               => clk_axi,
+      clk_out              => clk_C2C1,
+      reset                => reset,
+      pass_in(0)           => CTRL.CM1.C2C.RX.PRBS_CNT_RST,
+      pass_in(3 downto 1)  => CTRL.CM1.C2C.RX.PRBS_SEL,
+      pass_out(0)          => CM1_C2C_Ctrl.rxprbscntreset,
+      pass_out(3 downto 1) => CM1_C2C_Ctrl.rxprbssel);
+
+  DC_data_CDC_2: entity work.DC_data_CDC
+    generic map (
+      DATA_WIDTH => 4)
+    port map (
+      clk_in               => clk_axi,
+      clk_out              => clk_C2C2,
+      reset                => reset,
+      pass_in(0)           => CTRL.CM2.C2C.RX.PRBS_CNT_RST,
+      pass_in(3 downto 1)  => CTRL.CM2.C2C.RX.PRBS_SEL,
+      pass_out(0)          => CM2_C2C_Ctrl.rxprbscntreset,
+      pass_out(3 downto 1) => CM2_C2C_Ctrl.rxprbssel);
+
+  
   Mon.CM1.CTRL.STATE             <= CM_seq_state(3 downto 0);
   Mon.CM1.CTRL.PWR_ENABLED       <= enable_PWR(0);
   Mon.CM1.CTRL.IOS_ENABLED       <= enable_IOs(0);
@@ -276,8 +303,6 @@ begin  -- architecture behavioral
   CM1_C2C_Ctrl.rxmonitorsel       <= CTRL.CM1.C2C.RX.MON_SEL;
   CM1_C2C_Ctrl.rxpcsreset         <= CTRL.CM1.C2C.RX.PCS_RESET;
   CM1_C2C_Ctrl.rxpmareset         <= CTRL.CM1.C2C.RX.PMA_RESET;
-  CM1_C2C_Ctrl.rxprbscntreset     <= CTRL.CM1.C2C.RX.PRBS_CNT_RST;
-  CM1_C2C_Ctrl.rxprbssel          <= CTRL.CM1.C2C.RX.PRBS_SEL;
   CM1_C2C_Ctrl.txdiffctrl         <= CTRL.CM1.C2C.TX.DIFF_CTRL;
   CM1_C2C_Ctrl.txinhibit          <= CTRL.CM1.C2C.TX.INHIBIT;
   CM1_C2C_Ctrl.txmaincursor       <= CTRL.CM1.C2C.TX.MAIN_CURSOR;
@@ -304,8 +329,6 @@ begin  -- architecture behavioral
   CM2_C2C_Ctrl.rxmonitorsel       <= CTRL.CM2.C2C.RX.MON_SEL;
   CM2_C2C_Ctrl.rxpcsreset         <= CTRL.CM2.C2C.RX.PCS_RESET;
   CM2_C2C_Ctrl.rxpmareset         <= CTRL.CM2.C2C.RX.PMA_RESET;
-  CM2_C2C_Ctrl.rxprbscntreset     <= CTRL.CM2.C2C.RX.PRBS_CNT_RST;
-  CM2_C2C_Ctrl.rxprbssel          <= CTRL.CM2.C2C.RX.PRBS_SEL;
   CM2_C2C_Ctrl.txdiffctrl         <= CTRL.CM2.C2C.TX.DIFF_CTRL;
   CM2_C2C_Ctrl.txinhibit          <= CTRL.CM2.C2C.TX.INHIBIT;
   CM2_C2C_Ctrl.txmaincursor       <= CTRL.CM2.C2C.TX.MAIN_CURSOR;

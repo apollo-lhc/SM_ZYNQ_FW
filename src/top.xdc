@@ -180,12 +180,30 @@ set_property -dict {PACKAGE_PIN Y3}  [get_ports AXI_C2C_CM2_Rx_N[1] ]
 
 
 
-set_clock_groups -asynchronous \
-		 -group [get_clocks clk_fpga_0      -include_generated_clocks] \
-	         -group [get_clocks onboard_CLK_P   -include_generated_clocks] \
+set_clock_groups -asynchronous												                                    \
+		 -group [get_clocks clk_fpga_0      -include_generated_clocks]						                                    \
+		 		    		    													    \
+	         -group [get_clocks onboard_CLK_P   -include_generated_clocks] 										    \
 		 -group [get_clocks SGMII_INTF_1/U0/transceiver_inst/gtwizard_inst/U0/gtwizard_i/gt0_GTWIZARD_i/gtxe2_i/TXOUTCLK -include_generated_clocks] \
 		 -group [get_clocks SGMII_INTF_1/U0/transceiver_inst/gtwizard_inst/U0/gtwizard_i/gt0_GTWIZARD_i/gtxe2_i/RXOUTCLK -include_generated_clocks] \
+		 		    												 			    \
+		 -group [get_clocks TCDS_2/LHC_2/U0/LHC_i/gt0_LHC_i/gtxe2_i/RXOUTCLKFABRIC -include_generated_clocks] 					    \
+		 -group [get_clocks TCDS_2/LHC_2/U0/LHC_i/gt0_LHC_i/gtxe2_i/TXOUTCLKFABRIC -include_generated_clocks] 					    \
+		 -group [get_clocks TCDS_2/LHC_2/U0/LHC_i/gt0_LHC_i/gtxe2_i/TXOUTCLK -include_generated_clocks] 					    \
+		 		    						     									    \
+		 -group [get_clocks TCDS_2/LHC_2/U0/LHC_i/gt1_LHC_i/gtxe2_i/RXOUTCLKFABRIC -include_generated_clocks] 					    \
+		 -group [get_clocks TCDS_2/LHC_2/U0/LHC_i/gt1_LHC_i/gtxe2_i/TXOUTCLKFABRIC -include_generated_clocks] 					    \
+		 -group [get_clocks TCDS_2/LHC_2/U0/LHC_i/gt1_LHC_i/gtxe2_i/TXOUTCLK -include_generated_clocks] 					    \
+		 		    						     									    \
+		 -group [get_clocks TCDS_2/LHC_2/U0/LHC_i/gt2_LHC_i/gtxe2_i/RXOUTCLKFABRIC -include_generated_clocks] 					    \
+		 -group [get_clocks TCDS_2/LHC_2/U0/LHC_i/gt2_LHC_i/gtxe2_i/TXOUTCLKFABRIC -include_generated_clocks] 					    \
+		 -group [get_clocks TCDS_2/LHC_2/U0/LHC_i/gt2_LHC_i/gtxe2_i/TXOUTCLK -include_generated_clocks] 					    \
+		 		    												 			    \
 		 -group [get_clocks zynq_bd_wrapper_1/zynq_bd_i/C2C1_PHY/inst/zynq_bd_C2C1_PHY_0_core_i/zynq_bd_C2C1_PHY_0_wrapper_i/zynq_bd_C2C1_PHY_0_multi_gt_i/zynq_bd_C2C1_PHY_0_gtx_inst/gtxe2_i/RXOUTCLK -include_generated_clocks] \
 		 -group [get_clocks zynq_bd_wrapper_1/zynq_bd_i/C2C1_PHY/inst/zynq_bd_C2C1_PHY_0_core_i/zynq_bd_C2C1_PHY_0_wrapper_i/zynq_bd_C2C1_PHY_0_multi_gt_i/zynq_bd_C2C1_PHY_0_gtx_inst/gtxe2_i/TXOUTCLK -include_generated_clocks] \
+		 		    																									   \
+		 -group [get_clocks zynq_bd_wrapper_1/zynq_bd_i/C2C2_PHY/inst/zynq_bd_C2C2_PHY_0_core_i/zynq_bd_C2C2_PHY_0_wrapper_i/zynq_bd_C2C2_PHY_0_multi_gt_i/zynq_bd_C2C2_PHY_0_gtx_inst/gtxe2_i/RXOUTCLK -include_generated_clocks] \
+		 -group [get_clocks zynq_bd_wrapper_1/zynq_bd_i/C2C2_PHY/inst/zynq_bd_C2C2_PHY_0_core_i/zynq_bd_C2C2_PHY_0_wrapper_i/zynq_bd_C2C2_PHY_0_multi_gt_i/zynq_bd_C2C2_PHY_0_gtx_inst/gtxe2_i/TXOUTCLK -include_generated_clocks] \
+		 		    																									   \
 		 -group [get_clocks zynq_bd_wrapper_1/zynq_bd_i/XVC_LOCAL/U0/bs_switch/inst/BSCAN_SWITCH.N_EXT_BSCAN.bscan_inst/SERIES7_BSCAN.bscan_inst/TCK -include_generated_clocks] 
  
