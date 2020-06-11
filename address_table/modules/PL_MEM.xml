@@ -112,7 +112,7 @@
   </node>
   <node id="XVC_LOCK" address="0x000007E5">
     <node id="XVC1"       address="0x0" mask="0x1" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=Locked;Status=1;Show=nz" description="warning"/>
-    <node id="XVC2"       address="0x1" mask="0x1" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=Locked;Status=1;Show=nz" description="warning"/>                       
+    <node id="XVC2"       address="0x1" mask="0x1" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=Locked;Status=1;Show=nz" description="warning"/>
     <node id="XVC_LOCAL"  address="0x2" mask="0x1" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=Locked;Status=1;Show=nz" description="warning"/>                       
   </node>
   <node id="SCRATCH" address="0x000007F0">

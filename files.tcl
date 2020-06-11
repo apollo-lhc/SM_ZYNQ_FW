@@ -53,6 +53,10 @@ set vhdl_files "\
      src/TCDS/TCDS_Monitor.vhd \
      src/TCDS/TCDS_map.vhd \
      src/TCDS/TCDS_PKG.vhd \
+     src/plXVC/plXVC_map.vhd \
+     src/plXVC/plXVC_PKG.vhd \
+     src/plXVC/plXVC_intf.vhd \
+     src/plXVC/virtualJTAG.vhd \
      "
 
 set xdc_files src/top.xdc
