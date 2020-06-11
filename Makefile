@@ -160,10 +160,10 @@ tb_CM_pwr : $(TB_CM_PWR_VDBS)
 test_CM_pwr : $(TB_CM_PWR_VDBS)
 	$(MAKE) tb_CM_pwr USE_GUI="-onfinish quit -t ./quit.tcl"
 
-TB_PHY_LANE_CONTROL_VDBS=$(TB_PHY_LANE_CONTROL) $(call build_vdb_list, src/CM_interface/phy_lane_control.vhd)
-tb_phy_lane_control : $(TB_PHY_LANE_CONTROL)
+TB_PHY_LANE_CONTROL_VDBS= $(call build_vdb_list, src/CM_interface/phy_lane_control.vhd)
+tb_phy_lane_control : $(TB_PHY_LANE_CONTROL_VDBS)
 	$(TB_RULE)
-test_phy_lane_control : $(TB_PHY_LANE_CONTROL)
+test_phy_lane_control : $(TB_PHY_LANE_CONTROL_VDBS)
 	$(MAKE) tb_phy_lane_control USE_GUI="-onfinish quit -t ./quit.tcl"
 
 TB_IPMC_I2C_SLAVE_VDBS=$(TB_MISC_VDBS) $(call build_vdb_list, src/misc/I2C_reg_master.vhd src/axiReg/axiRegPkg.vhd src/axiReg/axiReg.vhd src/IPMC_i2c_slave/i2c_slave.vhd src/misc/asym_dualport_ram.vhd src/misc/counter.vhd src/IPMC_i2c_slave/IPMC_i2c_slave.vhd)

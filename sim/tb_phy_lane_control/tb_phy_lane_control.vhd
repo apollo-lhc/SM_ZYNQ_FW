@@ -20,7 +20,7 @@ architecture behavioral of tb_phy_lane_control is
   signal initialize_in  : std_logic;
   signal phy_lane_up    : std_logic;
   signal initialize_out : std_logic;
-  signal locked         : std_logic;
+  signal lock           : std_logic;
   
 begin  -- architecture behavioral
 
@@ -31,9 +31,7 @@ begin  -- architecture behavioral
       enable <= '0';
       initialize_in <= '0';
       phy_lane_up <= '0';
-      initialize_out <= '0';
-      locked <= '0';
-      
+            
     elsif clk'event and clk = '1' then  -- rising clock edge
       counter <= counter + 1;
 
@@ -68,7 +66,7 @@ begin  -- architecture behavioral
       initialize_in => initialize_in,
       phy_lane_up => phy_lane_up,
       initialize_out => initialize_out,
-      locked => locked);
+      lock => lock);
 
   
 end architecture behavioral;

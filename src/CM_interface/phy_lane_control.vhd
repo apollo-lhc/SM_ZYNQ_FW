@@ -17,7 +17,7 @@ entity phy_lane_control is
     initialize_in  : in  std_logic;
     phy_lane_up    : in  std_logic;
     initialize_out : out std_logic;
-    locked         : out std_logic);
+    lock           : out std_logic);
 end entity phy_lane_control;
 architecture behavioral of phy_lane_control is
 
@@ -74,7 +74,7 @@ begin
           if enable = '0' then
             state <= IDLE;
           else
-            if counter = "11111" then
+            if count = "11111" then
               state <= WAITING;
             else
               state <= INITIALIZING;
@@ -100,7 +100,7 @@ begin
           if enable = '0' then
             state <= IDLE;
           else
-            if phy_lane_up '0' then
+            if phy_lane_up = '0' then
               state <= INITIALIZING;
             else
               state <= LOCKED;
@@ -158,29 +158,29 @@ begin
   begin
     if reset = '1' then --async reset
       initialize_out <= '0';
-      locked <= '0';
+      lock <= '0';
       
     elsif clk'event and clk='1' then --rising clk edge
       case state is
         when IDLE => --initialize is passed through
           initialize_out <= initialize_in;
-          locked <= '0';
+          lock <= '0';
           
         when INITIALIZING => --force initialize
           initialize_out <= '1';
-          locked <='0';
+          lock <='0';
           
         when WAITING => --hold at 0
           initialize_out <= '0';
-          locked <= '0';
+          lock <= '0';
           
         when LOCKED => --set locked, hold initialize low
           initialize_out <= '0';
-          locked <= '1';
+          lock <= '1';
           
         when others => --reset
           initialize_out <= '0';
-          locked <= '0';
+          lock <= '0';
       end case;
     end if;
   end process CONTROL;
