@@ -72,7 +72,7 @@ $(ZYNQ_OS_PROJECT) : $(HDF_FILE)
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
 	source $(VIVADO_PETALINUX) && \
 	petalinux-config --get-hw-description ../hw --oldconfig
-	DTSI_PATH=./hw $(ZYNQ_OS)_mods/device-tree/build_user_dtsi.sh > $(DEVICE_TREE_USER)
+	DTSI_PATH="./hw ./hw_user ./hw_remote" $(ZYNQ_OS)_mods/device-tree/build_user_dtsi.sh > $(DEVICE_TREE_USER)
 	make $(KERNEL_USER_MODS_BASE)
 	make $(FSBL)
 
