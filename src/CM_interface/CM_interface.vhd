@@ -58,6 +58,8 @@ architecture behavioral of CM_intf is
   signal CM_disable     : std_logic_vector(1 downto 0);
   signal CM_uCIO_disable : std_logic_vector(1 downto 0);
 
+  signal phylanelock : std_logic;
+  
   signal reset             : std_logic;                     
 
   signal mon_active : slv_2_t;
@@ -218,19 +220,31 @@ begin  -- architecture behavioral
   Mon.CM(1).MONITOR.ERRORS         <= mon_errors(0);
   Mon.CM(1).MONITOR.HISTORY        <= debug_history;
 
-  Phy_Lane_Control: entity work.phy_lane_control
+  Phy_Lane_Control_1: entity work.phy_lane_control
     generic map (
-      CM_COUNT => CM_COUNT,
       CLKFREQ => CLKFREQ)
     port map (
       clk => clk_axi,
       reset => reset,
-      initialize_in1 => CTRL.CM(1).C2C.INITIALIZE,
-      initialize_in2 => CTRL.CM(2).C2C.INITIALIZE,
-      phy_lane_1 => CM_C2C_Mon.CM(1).phy_lane_up(0),
-      phy_lane_2 => CM_C2C_Mon.CM(2).phy_lane_up(0),
-      initialize_out1 => CM_C2C_Ctrl.CM(1).aurora_pma_init_in,
-      initialize_out2 => CM_C2C_Ctrl.CM(2).aurora_pma_init_in);
+      enable => '1',
+      initialize_in => CTRL.CM(1).C2C.INITIALIZE,
+      phy_lane_ => CM_C2C_Mon.CM(1).phy_lane_up(0),
+      initialize_out => CM_C2C_Ctrl.CM(1).aurora_pma_init_in,
+      lock => phylanelock);
+
+    Phy_Lane_Control_2: entity work.phy_lane_control
+    generic map (
+      CLKFREQ => CLKFREQ)
+    port map (
+      clk => clk_axi,
+      reset => reset,
+      enable => phylanelock,
+      initialize_in => CTRL.CM(2).C2C.INITIALIZE,
+      phy_lane_ => CM_C2C_Mon.CM(2).phy_lane_up(0),
+      initialize_out => CM_C2C_Ctrl.CM(2).aurora_pma_init_in,
+      lock => open);
+
+  
   
   -------------------------------------------------------------------------------
 
