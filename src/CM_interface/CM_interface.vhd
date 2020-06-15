@@ -226,9 +226,9 @@ begin  -- architecture behavioral
     port map (
       clk => clk_axi,
       reset => reset,
-      enable => '1',
+      enable => CTRL.CM(1).CTRL.ENABLE_PHY_CTRL,
       initialize_in => CTRL.CM(1).C2C.INITIALIZE,
-      phy_lane_ => CM_C2C_Mon.CM(1).phy_lane_up(0),
+      phy_lane_up => CM_C2C_Mon.CM(1).phy_lane_up(0),
       initialize_out => CM_C2C_Ctrl.CM(1).aurora_pma_init_in,
       lock => phylanelock);
 
@@ -240,10 +240,28 @@ begin  -- architecture behavioral
       reset => reset,
       enable => phylanelock,
       initialize_in => CTRL.CM(2).C2C.INITIALIZE,
-      phy_lane_ => CM_C2C_Mon.CM(2).phy_lane_up(0),
+      phy_lane_up => CM_C2C_Mon.CM(2).phy_lane_up(0),
       initialize_out => CM_C2C_Ctrl.CM(2).aurora_pma_init_in,
       lock => open);
-
+  
+  GENERATE_COUNTER: for I in 1 to 2 generate
+    Counter_X: entity work.counter
+      generic map (
+        roll_over   => '1',
+        end_value   => x"FFFFFFFF",
+        start_value => x"00000000",
+        A_RST_CNT   => x"00000000",
+        DATA_WIDTH  => 32)
+      port map (
+        clk         => clk_axi,
+        reset_async => '0',
+        reset_sync  => reset,
+        enable      => '1',
+        event       => CM_C2C_Ctrl.CM(I).aurora_pma_init_in,
+        count       => Mon.CM(I).MONITOR.AURORA_PMA_INIT_COUNT,
+        at_max      => open);
+  end generate GENERATE_COUNTER;
+  
   
   
   -------------------------------------------------------------------------------

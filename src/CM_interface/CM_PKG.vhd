@@ -18,10 +18,12 @@ package CM_CTRL is
     ENABLE_PWR                 :std_logic;     -- Tell CM uC to power-up the rest of the CM
     OVERRIDE_PWR_GOOD          :std_logic;     -- Ignore power good from CM
     ERROR_STATE_RESET          :std_logic;     -- CM power is good
+    ENABLE_PHY_CTRL            :std_logic;     -- phy_lane_control is enabled
   end record CM_CM_CTRL_CTRL_t;
 
 
   constant DEFAULT_CM_CM_CTRL_CTRL_t : CM_CM_CTRL_CTRL_t := (
+                                                             ENABLE_PHY_CTRL => '0',
                                                              OVERRIDE_PWR_GOOD => '0',
                                                              ERROR_STATE_RESET => '0',
                                                              ENABLE_UC => '0',
@@ -142,6 +144,7 @@ package CM_CTRL is
     HISTORY_VALID              :std_logic_vector( 3 downto 0);  -- bytes valid in debug history
     ERRORS                     :std_logic_vector(15 downto 0);  -- Monitoring errors. Count of invalid byte types in parsing.
     HISTORY                    :std_logic_vector(31 downto 0);  -- 4 bytes of uart history
+    AURORA_PMA_INIT_COUNT      :std_logic_vector(31 downto 0);  -- Counter for aurora_pma_init
   end record CM_CM_MONITOR_MON_t;
 
 
