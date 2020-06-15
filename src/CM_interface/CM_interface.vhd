@@ -58,7 +58,12 @@ architecture behavioral of CM_intf is
   signal CM_disable     : std_logic_vector(1 downto 0);
   signal CM_uCIO_disable : std_logic_vector(1 downto 0);
 
-  signal phylanelock : std_logic;
+  --phy_lane_control
+  signal phylanelock     : std_logic;
+  signal aurora_init_buf : std_logic_vector(1 downto 0);
+
+  
+
   
   signal reset             : std_logic;                     
 
@@ -229,7 +234,7 @@ begin  -- architecture behavioral
       enable => CTRL.CM(1).CTRL.ENABLE_PHY_CTRL,
       initialize_in => CTRL.CM(1).C2C.INITIALIZE,
       phy_lane_up => CM_C2C_Mon.CM(1).phy_lane_up(0),
-      initialize_out => CM_C2C_Ctrl.CM(1).aurora_pma_init_in,
+      initialize_out => aurora_init_buf(0),
       lock => phylanelock);
 
     Phy_Lane_Control_2: entity work.phy_lane_control
@@ -241,7 +246,7 @@ begin  -- architecture behavioral
       enable => phylanelock,
       initialize_in => CTRL.CM(2).C2C.INITIALIZE,
       phy_lane_up => CM_C2C_Mon.CM(2).phy_lane_up(0),
-      initialize_out => CM_C2C_Ctrl.CM(2).aurora_pma_init_in,
+      initialize_out => aurora_init_buf(1),
       lock => open);
   
   GENERATE_COUNTER: for I in 1 to 2 generate
@@ -257,12 +262,15 @@ begin  -- architecture behavioral
         reset_async => '0',
         reset_sync  => reset,
         enable      => '1',
-        event       => CM_C2C_Ctrl.CM(I).aurora_pma_init_in,
+        event       => aurora_init_buf(I-1),
         count       => Mon.CM(I).MONITOR.AURORA_PMA_INIT_COUNT,
         at_max      => open);
   end generate GENERATE_COUNTER;
-  
-  
+
+  CM_C2C_Ctrl.CM(1).aurora_pma_init_in <= aurora_init_buf(0);
+  CM_C2C_Ctrl.CM(2).aurora_pma_init_in <= aurora_init_buf(1);
+
+
   
   -------------------------------------------------------------------------------
 
