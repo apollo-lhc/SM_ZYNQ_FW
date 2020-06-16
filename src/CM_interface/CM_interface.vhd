@@ -258,7 +258,7 @@ begin  -- architecture behavioral
   Mon.CM1.C2C.TX.RESET_DONE      <= CM1_C2C_Mon.txresetdone;
   Mon.CM1.MONITOR.ACTIVE         <= mon_active(0);
   Mon.CM1.MONITOR.HISTORY_VALID  <= debug_valid;
-  Mon.CM1.MONITOR.ERRORS         <= mon_errors(0);
+--           <= mon_errors(0);
   Mon.CM1.MONITOR.HISTORY        <= debug_history;
 
   
@@ -356,8 +356,20 @@ begin  -- architecture behavioral
       writeMOSI      => master_writeMOSI,
       writeMISO      => master_writeMISO,
       debug_history  => debug_history,
-      debug_valid    => debug_valid,
-      error_count    => mon_errors(0),
+      debug_valid    => debug_valid,      
+      error_reset    => CTRL.CM1.MONITOR.ERRORS.RESET,
+      error_count(0) => Mon.CM1.MONITOR.ERRORS.CNT_BAD_SOF,
+      error_count(1) => Mon.CM1.MONITOR.ERRORS.CNT_AXI_BUSY_BYTE2,
+      error_count(2) => Mon.CM1.MONITOR.ERRORS.CNT_BYTE2_NOT_DATA,
+      error_count(3) => Mon.CM1.MONITOR.ERRORS.CNT_BYTE3_NOT_DATA,
+      error_count(4) => Mon.CM1.MONITOR.ERRORS.CNT_BYTE4_NOT_DATA,
+      error_count(5) => Mon.CM1.MONITOR.ERRORS.CNT_UNKNOWN,
+      bad_transaction(31 downto 24)  => Mon.CM1.MONITOR.BAD_TRANS.ERROR_MASK,
+      bad_transaction(23 downto  8)  => Mon.CM1.MONITOR.BAD_TRANS.DATA,
+      bad_transaction( 7 downto  0)  => Mon.CM1.MONITOR.BAD_TRANS.ADDR,
+      last_transaction(31 downto 24) => Mon.CM1.MONITOR.LAST_TRANS.ERROR_MASK,
+      last_transaction(23 downto  8) => Mon.CM1.MONITOR.LAST_TRANS.DATA,
+      last_transaction( 7 downto  0) => Mon.CM1.MONITOR.LAST_TRANS.ADDR,
       channel_active => mon_active(0));
   
 

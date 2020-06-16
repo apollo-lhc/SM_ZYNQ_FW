@@ -137,20 +137,56 @@ package CM_CTRL is
                                                              EYESCAN_TRIGGER => '0',
                                                              TX => DEFAULT_CM_CM1_C2C_TX_CTRL_t
                                                             );
+  type CM_CM1_MONITOR_BAD_TRANS_MON_t is record
+    ADDR                       :std_logic_vector( 7 downto 0);  -- Sensor addr bits
+    DATA                       :std_logic_vector(15 downto 0);  -- Sensor data bits
+    ERROR_MASK                 :std_logic_vector( 7 downto 0);  -- Sensor error bits
+  end record CM_CM1_MONITOR_BAD_TRANS_MON_t;
+
+
+  type CM_CM1_MONITOR_LAST_TRANS_MON_t is record
+    ADDR                       :std_logic_vector( 7 downto 0);  -- Sensor addr bits
+    DATA                       :std_logic_vector(15 downto 0);  -- Sensor data bits
+    ERROR_MASK                 :std_logic_vector( 7 downto 0);  -- Sensor error bits
+  end record CM_CM1_MONITOR_LAST_TRANS_MON_t;
+
+
+  type CM_CM1_MONITOR_ERRORS_MON_t is record
+    CNT_BAD_SOF                :std_logic_vector(15 downto 0);  -- Monitoring errors. Count of invalid byte types in parsing.
+    CNT_AXI_BUSY_BYTE2         :std_logic_vector(15 downto 0);  -- Monitoring errors. Count of invalid byte types in parsing.
+    CNT_BYTE2_NOT_DATA         :std_logic_vector(15 downto 0);  -- Monitoring errors. Count of invalid byte types in parsing.
+    CNT_BYTE3_NOT_DATA         :std_logic_vector(15 downto 0);  -- Monitoring errors. Count of invalid byte types in parsing.
+    CNT_BYTE4_NOT_DATA         :std_logic_vector(15 downto 0);  -- Monitoring errors. Count of invalid byte types in parsing.
+    CNT_UNKNOWN                :std_logic_vector(15 downto 0);  -- Monitoring errors. Count of invalid byte types in parsing.
+  end record CM_CM1_MONITOR_ERRORS_MON_t;
+
+
+  type CM_CM1_MONITOR_ERRORS_CTRL_t is record
+    RESET                      :std_logic;     -- Reset monitoring error counters
+  end record CM_CM1_MONITOR_ERRORS_CTRL_t;
+
+
+  constant DEFAULT_CM_CM1_MONITOR_ERRORS_CTRL_t : CM_CM1_MONITOR_ERRORS_CTRL_t := (
+                                                                                   RESET => '0'
+                                                                                  );
   type CM_CM1_MONITOR_MON_t is record
     ACTIVE                     :std_logic;     -- Monitoring active. Is zero when no update in the last second.
     HISTORY_VALID              :std_logic_vector( 3 downto 0);  -- bytes valid in debug history
-    ERRORS                     :std_logic_vector(15 downto 0);  -- Monitoring errors. Count of invalid byte types in parsing.
     HISTORY                    :std_logic_vector(31 downto 0);  -- 4 bytes of uart history
+    BAD_TRANS                  :CM_CM1_MONITOR_BAD_TRANS_MON_t;
+    LAST_TRANS                 :CM_CM1_MONITOR_LAST_TRANS_MON_t;
+    ERRORS                     :CM_CM1_MONITOR_ERRORS_MON_t;    
   end record CM_CM1_MONITOR_MON_t;
 
 
   type CM_CM1_MONITOR_CTRL_t is record
     COUNT_16X_BAUD             :std_logic_vector( 7 downto 0);  -- Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
+    ERRORS                     :CM_CM1_MONITOR_ERRORS_CTRL_t; 
   end record CM_CM1_MONITOR_CTRL_t;
 
 
   constant DEFAULT_CM_CM1_MONITOR_CTRL_t : CM_CM1_MONITOR_CTRL_t := (
+                                                                     ERRORS => DEFAULT_CM_CM1_MONITOR_ERRORS_CTRL_t,
                                                                      COUNT_16X_BAUD => x"1b"
                                                                     );
   type CM_CM1_MON_t is record
