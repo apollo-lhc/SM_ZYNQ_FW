@@ -24,8 +24,8 @@ architecture behavioral of CM_phy_lane_control is
 
   --- *** TIMING *** ---
   signal   counter : unsigned(4 downto 0);
-  signal   timer   : integer range 0 to (CLKFREQ/100);
-  constant TENMILISEC : integer := CLKFREQ/100;
+  signal   timer   : integer range 0 to (CLKFREQ);
+  constant TENMILISEC : integer := CLKFREQ;
   
   --- *** STATE_MACINE *** ---
   type state_t is (IDLE, WAITING, INITIALIZING, READING, LOCKED);
