@@ -20,7 +20,6 @@ architecture behavioral of tb_phy_lane_control is
   signal aurora          : std_logic;
   -- For module under testing
   signal enable          : std_logic;
-  signal initialize_in   : std_logic;
   signal phy_lane_up     : std_logic;
   signal initialize_out  : std_logic;
   signal lock            : std_logic;
