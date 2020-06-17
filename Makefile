@@ -160,7 +160,7 @@ tb_CM_pwr : $(TB_CM_PWR_VDBS)
 test_CM_pwr : $(TB_CM_PWR_VDBS)
 	$(MAKE) tb_CM_pwr USE_GUI="-onfinish quit -t ./quit.tcl"
 
-TB_PHY_LANE_CONTROL_VDBS= $(call build_vdb_list, src/CM_interface/phy_lane_control.vhd)
+TB_PHY_LANE_CONTROL_VDBS=$(TB_MISC_VDBS) $(call build_vdb_list, src/CM_interface/CM_phy_lane_control.vhd)
 tb_phy_lane_control : $(TB_PHY_LANE_CONTROL_VDBS)
 	$(TB_RULE)
 test_phy_lane_control : $(TB_PHY_LANE_CONTROL_VDBS)
