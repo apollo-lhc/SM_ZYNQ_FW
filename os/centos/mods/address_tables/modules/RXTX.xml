@@ -4,6 +4,8 @@
     <node id="CLK_LOCKED"       address="0x000" mask="0x00000020" permission="r"/>
     <node id="RESET"            address="0x001" mask="0x00000001" permission="rw"/>
   </node>
+  <node id="TEST"               address="0x002" mask="0xFFFFFFFF" permission="rw" parameters="default=0xdeadbeef"/>
+  <node id="TEST2"              address="0x003" mask="0xFFFFFFFF" permission="r"/>
   <node id="LOOPBACK"           address="0x008" mask="0x00000007" permission="rw"/>
   <node id="DMONITOR"           address="0x009" mask="0x000000FF" permission="r"/>
   <node id="RX"                 address="0x010">    
