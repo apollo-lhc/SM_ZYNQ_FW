@@ -102,7 +102,7 @@ NOTIFY_DAN_BAD:
 # FPGA building
 #################################################################################
 bit	:
-	$(MAKE) $(BIT) || $(MAKE) NOTIFY_DAN_BAD
+	time $(MAKE) $(BIT) || $(MAKE) NOTIFY_DAN_BAD
 
 interactive : 
 	source $(VIVADO_SHELL) &&\

@@ -208,6 +208,8 @@ begin  -- architecture behavioral
         when 28 => --0x1c
           localRdData(15 downto  0)  <=  Mon.CM1.MONITOR.ERRORS.CNT_BYTE4_NOT_DATA;      --Monitoring errors. Count of invalid byte types in parsing.
           localRdData(31 downto 16)  <=  Mon.CM1.MONITOR.ERRORS.CNT_UNKNOWN;             --Monitoring errors. Count of invalid byte types in parsing.
+        when 29 => --0x1d
+          localRdData(31 downto  0)  <=  Mon.CM1.MONITOR.UART_BYTES;                     --Count of UART bytes from CM MCU
 
 
         when others =>

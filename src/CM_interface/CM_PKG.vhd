@@ -176,6 +176,7 @@ package CM_CTRL is
     BAD_TRANS                  :CM_CM1_MONITOR_BAD_TRANS_MON_t;
     LAST_TRANS                 :CM_CM1_MONITOR_LAST_TRANS_MON_t;
     ERRORS                     :CM_CM1_MONITOR_ERRORS_MON_t;    
+    UART_BYTES                 :std_logic_vector(31 downto 0);    -- Count of UART bytes from CM MCU
   end record CM_CM1_MONITOR_MON_t;
 
 

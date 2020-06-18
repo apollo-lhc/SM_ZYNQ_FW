@@ -73,12 +73,12 @@
 	<node id="BAD_TRANS" address="0x2">
 	  <node id="ADDR"       mask="0x000000FF" permission="r" description="Sensor addr bits"  parameters="Table=CM;Column=_5;Row=_4;Status=2"/>
 	  <node id="DATA"       mask="0x00FFFF00" permission="r" description="Sensor data bits"  parameters="Table=CM;Column=_5;Row=_4;Status=2"/>
-	  <node id="ERROR_MASK" mask="0xFF000000" permission="r" description="Sensor error bits" parameters="Table=CM;Column=_5;Row=_4;Status=2;Format=t_0_BadSOF_2_AXIBusyByte2_4_Byte2NotData_8_Byte3NotData_16_Byte4NotData_32_UNKNOWN"/>
+	  <node id="ERROR_MASK" mask="0xFF000000" permission="r" description="Sensor error bits" parameters="Table=CM;Column=_5;Row=_4;Status=2;Format=t_0_OK_1_BadSOF_2_AXIBusyByte2_4_Byte2NotData_8_Byte3NotData_16_Byte4NotData_32_UNKNOWN"/>
 	</node>
 	<node id="LAST_TRANS" address="0x3">
 	  <node id="ADDR"       mask="0x000000FF" permission="r" description="Sensor addr bits"  parameters="Table=CM;Column=_5;Row=_4;Status=2"/>
 	  <node id="DATA"       mask="0x00FFFF00" permission="r" description="Sensor data bits"  parameters="Table=CM;Column=_5;Row=_4;Status=2"/>
-	  <node id="ERROR_MASK" mask="0xFF000000" permission="r" description="Sensor error bits" parameters="Table=CM;Column=_5;Row=_4;Status=2;Format=t_0_BadSOF_2_AXIBusyByte2_4_Byte2NotData_8_Byte3NotData_16_Byte4NotData_32_UNKNOWN"/>
+	  <node id="ERROR_MASK" mask="0xFF000000" permission="r" description="Sensor error bits" parameters="Table=CM;Column=_5;Row=_4;Status=2;Format=t_0_OK_1_BadSOF_2_AXIBusyByte2_4_Byte2NotData_8_Byte3NotData_16_Byte4NotData_32_UNKNOWN"/>
 	</node>
 	<node id="ERRORS" address="0x4">
 	  <node id="RESET"               address="0x0"       mask="0x1"        permission="w"  description="Reset monitoring error counters"/>
@@ -89,6 +89,7 @@
 	  <node id="CNT_BYTE4_NOT_DATA"  address="0x3"       mask="0x0000FFFF" permission="r"  description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=CM;Column=_5;Row=_4;Status=1;Show=nz;Format=u"/>
 	  <node id="CNT_UNKNOWN"         address="0x3"       mask="0xFFFF0000" permission="r"  description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=CM;Column=_5;Row=_4;Status=1;Show=nz;Format=u"/>
 	</node>
+	<node id="UART_BYTES" address="0x8" mask="0xFFFFFFFF" permission="r" description="Count of UART bytes from CM MCU" parameters="Table=CM;Column=Bytes;ROW=_4;Status=3;Format=u"/>
 
 
       </node>

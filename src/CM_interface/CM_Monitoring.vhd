@@ -25,6 +25,7 @@ entity CM_Monitoring is
     readMISO        : in  AXIreadMISO;
     writeMOSI       : out AXIwriteMOSI;
     writeMISO       : in  AXIwriteMISO;
+    uart_byte_count : out slv_32_t;
     debug_history   : out slv_32_t;
     debug_valid     : out slv_4_t;
     error_reset     : in  std_logic;
@@ -396,6 +397,22 @@ begin  -- architecture behavioral
         at_max      => open);
   end generate error_counting;
 
+  byte_counter_1: entity work.counter
+    generic map (
+      roll_over   => '1',
+      end_value   => x"FFFFFFFF",
+      start_value => x"00000000",
+      DATA_WIDTH  => 32)
+    port map (
+      clk         => clk,
+      reset_async => reset,
+      reset_sync  => '0',
+      enable      => '1',
+      event       => uart_rd_en,
+      count       => uart_byte_count,
+      at_max      => open);
+
+  
   channel_active <= not channel_inactive;
   counter_2: entity work.counter
     generic map (
