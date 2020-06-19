@@ -1,4 +1,4 @@
 <node id="CM">
   <node id="CM_1" address="0x00" fwinfo="type=array" module="file://CM_single.xml"/>
-  <node id="CM_2" address="0x1f" fwinfo="type=array" module="file://CM_single.xml"/>
+  <node id="CM_2" address="0x20" fwinfo="type=array" module="file://CM_single.xml"/>
 </node>

@@ -13,8 +13,9 @@ use UNISIM.vcomponents.all;
 entity CM_intf is
   generic (
     CM_COUNT         : integer range 1 to 2 := 1; --Count for how many Command Moduless are present
-    CLKFREQ          : integer :=  50000000;      --clk frequency in Hz
-    COUNT_ERROR_WAIT : integer :=  50000000);     --Wait time for error checking states
+    COUNTER_COUNT    : integer := 5               --Count for counters in loop
+    CLKFREQ          : integer := 50000000;       --clk frequency in Hz
+    COUNT_ERROR_WAIT : integer := 50000000);      --Wait time for error checking states
   port (
     clk_axi          : in  std_logic;
     reset_axi_n      : in  std_logic;
@@ -78,7 +79,9 @@ architecture behavioral of CM_intf is
   signal debug_history   : slv_32_t;
   signal debug_valid     : slv_4_t;
   signal counter_en      : std_logic_vector(1 downto 0);
-
+  signal C2C_counter     : slv32_array_t(1 to 10);
+  signal counter_events  : std_logic_vector(9 downto 0);
+  
   signal Mon  : CM_Mon_t;
   signal Ctrl : CM_Ctrl_t;
 
@@ -273,80 +276,35 @@ begin
     -------------------------------------------------------------------------------
     -- COUNTERS
     -------------------------------------------------------------------------------
-    Count_Config_Err_X: entity work.counter
-      generic map(
-        roll_over   => '0',
-        end_value   => x"FFFFFFFF",
-        start_value => x"00000000",
-        A_RST_CNT   => x"00000000",
-        DATA_WIDTH  => DATA_WIDTH)
-      port map (
-        clk         => clk_axi,
-        reset_async => CTRL.CM(iCM).CTRL.RESET_COUNTERS,
-        reset_sync  => '0',
-        enable      => counter_en(iCM - 1),
-        event       => Mon.CM(iCM).C2C.CONFIG_ERROR,
-        count       => Mon.CM(iCM).MONITOR.CONFIG_ERROR_COUNT,
-        at_max      => open);
-    Count_Link_Err_X: entity work.counter
-      generic map(
-        roll_over   => '0',
-        end_value   => x"FFFFFFFF",
-        start_value => x"00000000",
-        A_RST_CNT   => x"00000000",
-        DATA_WIDTH  => DATA_WIDTH)
-      port map (
-        clk         => clk_axi,
-        reset_async => CTRL.CM(iCM).CTRL.RESET_COUNTERS,
-        reset_sync  => '0',
-        enable      => counter_en(iCM - 1),
-        event       => Mon.CM(iCM).C2C.LINK_ERROR,
-        count       => Mon.CM(iCM).MONITOR.LINK_ERROR_COUNT,
-        at_max      => open);
-    Count_MB_Err_X: entity work.counter
-      generic map(
-        roll_over   => '0',
-        end_value   => x"FFFFFFFF",
-        start_value => x"00000000",
-        A_RST_CNT   => x"00000000",
-        DATA_WIDTH  => DATA_WIDTH)
-      port map (
-        clk         => clk_axi,
-        reset_async => CTRL.CM(iCM).CTRL.RESET_COUNTERS,
-        reset_sync  => '0',
-        enable      => counter_en(iCM - 1),
-        event       => Mon.CM(iCM).C2C.MB_ERROR,
-        count       => Mon.CM(iCM).MONITOR.MB_ERROR_COUNT,
-        at_max      => open);
-    Count_Phy_Hard_Err_X: entity work.counter
-      generic map(
-        roll_over   => '0',
-        end_value   => x"FFFFFFFF",
-        start_value => x"00000000",
-        A_RST_CNT   => x"00000000",
-        DATA_WIDTH  => DATA_WIDTH)
-      port map (
-        clk         => clk_axi,
-        reset_async => CTRL.CM(iCM).CTRL.RESET_COUNTERS,
-        reset_sync  => '0',
-        enable      => counter_en(iCM - 1),
-        event       => Mon.CM(iCM).C2C.PHY_HARD_ERR,
-        count       => Mon.CM(iCM).MONITOR.PHY_HARD_ERROR_COUNT,
-        at_max      => open);
-    Count_Phy_Soft_Err_X: entity work.counter
-      generic map(
-        roll_over   => '0',
-        end_value   => x"FFFFFFFF",
-        start_value => x"00000000",
-        A_RST_CNT   => x"00000000",
-        DATA_WIDTH  => DATA_WIDTH)
-      port map (
-        clk         => clk_axi,
-        reset_async => CTRL.CM(iCM).CTRL.RESET_COUNTERS,
-        reset_sync  => '0',
-        enable      => counter_en(iCM - 1),
-        event       => Mon.CM(iCM).C2C.PHY_SOFT_ERR,
-        count       => Mon.CM(iCM).MONITOR.PHY_SOFT_ERROR_COUNT,
-        at_max      => open);
-  end generate GENERATE_LOOP;    
+    GENERATE_COUNTERS_LOOP: for iCNT in 1 to COUNTER_COUNT generate
+      Counter_X: entity work.counter
+        generic map (
+          roll_over   => '0',
+          end_value   => x"FFFFFFFF",
+          start_value => x"00000000",
+          A_RST_CNT   => x"00000000",
+          DATA_WIDTH  => 32)
+        port map (
+          clk         => clk_axi,
+          reset_async => reset,
+          reset_sync  => CTRL.CM(iCM).CTRL.RESET_COUNTERS,
+          enable      => counter_en(iCM - 1),
+          event       => counter_events((iCNT - 1) + ((iCM - 1)*COUNTER_COUNT)) --runs 0 to (COUNTER_COUNT - 1)
+          count       => C2C_Counter(iCNT + ((iCM - 1)*COUNTER_COUNT));         --runs 1 to COUNTER_COUNT
+          at_max      => open);   
+    end generate GENERATE_COUNTERS_LOOP;
+    --PATTERN FOR COUNTERS
+    --setting events, run 0 to (COUNTER_COUNT - 1)
+    counter_events(0 + ((iCM - 1) * COUNTER_COUNT)) <= Mon.CM(iCM).C2C.CONFIG_ERROR;
+    counter_events(1 + ((iCM - 1) * COUNTER_COUNT)) <= Mon.CM(iCM).C2C.LINK_ERROR; 
+    counter_events(2 + ((iCM - 1) * COUNTER_COUNT)) <= Mon.CM(iCM).C2C.MB_ERROR;
+    counter_events(3 + ((iCM - 1) * COUNTER_COUNT)) <= Mon.CM(iCM).C2C.PHY_HARD_ERR;
+    counter_events(4 + ((iCM - 1) * COUNTER_COUNT)) <= Mon.CM(iCM).C2C.PHY_SOFT_ERR;
+    --setting counters, run 1 to COUNTER_COUNT
+    Mon.CM(iCM).C2C.CNT.CONFIG_ERROR_COUNT   <= C2C_Counter(1 + ((iCM - 1) * COUNTER_COUNT));
+    Mon.CM(iCM).C2C.CNT.LINK_ERROR_COUNT     <= C2C_Counter(1 + ((iCM - 1) * COUNTER_COUNT));
+    Mon.CM(iCM).C2C.CNT.MB_ERROR_COUNT       <= C2C_Counter(1 + ((iCM - 1) * COUNTER_COUNT));
+    Mon.CM(iCM).C2C.CNT.PHY_HARD_ERROR_COUNT <= C2C_Counter(1 + ((iCM - 1) * COUNTER_COUNT));
+    Mon.CM(iCM).C2C.CNT.PHY_SOFT_ERROR_COUNT <= C2C_Counter(1 + ((iCM - 1) * COUNTER_COUNT));   
+  end generate GENERATE_LOOP;
 end architecture behavioral;

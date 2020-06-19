@@ -9,7 +9,6 @@
     <node id="PWR_ENABLED"       mask="0x0200" permission="r"  description="power is enabled" parameters="Table=CM;Column=PWR;Row=_2;Status=2"/>
     <node id="IOS_ENABLED"       mask="0x0400" permission="r"  description="IOs to CM are enabled" parameters="Table=CM;Column=_4;Row=_2;Status=1"/>
     <node id="ENABLE_PHY_CTRL"   mask="0x0800" permission="rw" description="phy_lane_control is enabled" parameters="Table=CM;Column=_4;Row=2;Status=1;show=nz;default=0x1"/>
-    <node id="RESET_COUNTERS"    mask="0x1000" permission="rw"  description="Reset counters in Monitor"/>
   </node>
 
   <node id="C2C" address="0x12">
@@ -64,21 +63,24 @@
       <node id="PRBS_SEL" mask="0x07000000" permission="rw" description="DEBUG PRBS select" />
       <node id="PRE_CURSOR" mask="0xF8000000" permission="rw" description="DEBUG pre cursor" />
     </node>
+    <node id="MON" address="0x3">
+      <node id="C2C_INITIALIZE_ALLTIME" address="0x0" permission="r" description="Counter for every PHYLANEUP cycle" parameters="Table=CM;Column=PHYLANE_SINGLEBIT_ERROR;Row=_2;Status=1;Show=nz;Format=u"/>
+      <node id="C2C_INITIALIZE_SHORTTERM" address="0x1" permission="r" description="Counter for PHYLANEUP cycles since lase C2C INITIALIZE" parameters="Table=CM;Column=PHYLANE_MULTIBIT_ERROR;Row=_2;Status=1;Show=nz;Format=u"/>
+      <node id="CONFIG_ERROR_COUNT"   address="0x2" permission="r" description="Counter for CONFIG_ERROR"                 parameters="Table=CM;Column=CONFIG_ERROR_COUNT;Row=_2;Status=1;Show=nz;Format=u"/>
+      <node id="LINK_ERROR_COUNT"     address="0x3" permission="r" description="Counter for LINK_ERROR"                   parameters="Table=CM;Column=LINK_ERROR_COUNT;Row=_2;Status=1;Show=nz;Format=u"/>
+      <node id="MB_ERROR_COUNT"       address="0x4" permission="r" description="Counter for MB_ERROR"                     parameters="Table=CM;Column=MB_ERROR_COUNT;Row=_2;Status=1;Show=nz;Format=u"/>
+      <node id="PHY_HARD_ERROR_COUNT" address="0x5" permission="r" description="Counter for PHY_HARD_ERROR"               parameters="Table=CM;Column=PHY_HARD_ERR_COUNT;Row=_2;Status=1;Show=nz;Format=u"/>
+      <node id="PHY_SOFT_ERROR_COUNT" address="0x6" permission="r" description="Counter for PHY_SOFT_ERROR"               parameters="Table=CM;Column=PHY_SOFT_ERR_COUNT;Row=_2;Status=1;Show=nz;Format=u"/>
+      <node id="PHYLANE_STATE"        address="0x7" permission="r" description="Current state of phy_lane_control module" parameters="Table=CM;Column=PHYLANE_STATE;Row=_2;Status=1;Format=u"/>
+      <node id="RESET_COUNTERS"       address="0x8" permission="w" description="Reset counters in Monitor"/>
+    </node>
   </node>
-
-  <node id="MONITOR" address="0x15">
+  
+  <node id="CNT" address="0x1e">
     <node id="COUNT_16X_BAUD"                mask="0x000000FF" permission="rw" description="Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27" parameters="Table=CM;Column=MON_STATE;Row=_2;Status=4;default=0x1B" />
     <node id="ACTIVE"                        mask="0x00000100" permission="r"  description="Monitoring active. Is zero when no update in the last second." parameters="Table=CM;Column=MON_STATE;Row=_2;Status=1;Show=z;Format=t_0_INACTIVE_1_ACTIVE" />
     <node id="HISTORY_VALID"                 mask="0x0000F000" permission="r"  description="bytes valid in debug history"/>
     <node id="ERRORS"                        mask="0xFFFF0000" permission="r"  description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=CM;Column=MON_ERRORS;Row=_2;Status=1;Show=nz;Format=u"/>
     <node id="HISTORY"        address="0x01" mask="0xFFFFFFFF" permission="r"  description="4 bytes of uart history"/>
-    <node id="C2C_INITIALIZE_ALLTIME" address="0x02" permission="r" description="Counter for every PHYLANEUP cycle" parameters="Table=CM;Column=PHYLANE_SINGLEBIT_ERROR;Row=_2;Status=1;Show=nz;Format=u"/>
-    <node id="C2C_INITIALIZE_SHORTTERM" address="0x03" permission="r" description="Counter for PHYLANEUP cycles since lase C2C INITIALIZE" parameters="Table=CM;Column=PHYLANE_MULTIBIT_ERROR;Row=_2;Status=1;Show=nz;Format=u"/>
-    <node id="CONFIG_ERROR_COUNT" address="0x04" permission="r" description="Counter for CONFIG_ERROR" parameters="Table=CM;Column=CONFIG_ERROR_COUNT;Row=_2;Status=1;Show=nz;Format=u"/>
-    <node id="LINK_ERROR_COUNT" address="0x05" permission="r" description="Counter for LINK_ERROR" parameters="Table=CM;Column=LINK_ERROR_COUNT;Row=_2;Status=1;Show=nz;Format=u"/>
-    <node id="MB_ERROR_COUNT" address="0x06" permission="r" description="Counter for MB_ERROR" parameters="Table=CM;Column=MB_ERROR_COUNT;Row=_2;Status=1;Show=nz;Format=u"/>
-    <node id="PHY_HARD_ERROR_COUNT" address="0x07" permission="r" description="Counter for PHY_HARD_ERROR" parameters="Table=CM;Column=PHY_HARD_ERR_COUNT;Row=_2;Status=1;Show=nz;Format=u"/>
-    <node id="PHY_SOFT_ERROR_COUNT" address="0x08" permission="r" description="Counter for PHY_SOFT_ERROR" parameters="Table=CM;Column=PHY_SOFT_ERR_COUNT;Row=_2;Status=1;Show=nz;Format=u"/>
-    <node id="PHYLANE_STATE" address="0x9" permission="r" description="Current state of phy_lane_control module" parameters="Table=CM;Column=PHYLANE_STATE;Row=_2;Status=1;Format=u"/>
   </node>
 </node>                                                                                                 

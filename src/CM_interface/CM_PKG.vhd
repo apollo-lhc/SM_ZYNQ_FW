@@ -19,17 +19,15 @@ package CM_CTRL is
     OVERRIDE_PWR_GOOD          :std_logic;     -- Ignore power good from CM
     ERROR_STATE_RESET          :std_logic;     -- CM power is good
     ENABLE_PHY_CTRL            :std_logic;     -- phy_lane_control is enabled
-    RESET_COUNTERS             :std_logic;     -- Reset counters in Monitor
   end record CM_CM_CTRL_CTRL_t;
 
 
   constant DEFAULT_CM_CM_CTRL_CTRL_t : CM_CM_CTRL_CTRL_t := (
                                                              ENABLE_PHY_CTRL => '1',
-                                                             ENABLE_UC => '0',
-                                                             RESET_COUNTERS => '0',
                                                              OVERRIDE_PWR_GOOD => '0',
-                                                             ENABLE_PWR => '0',
-                                                             ERROR_STATE_RESET => '0'
+                                                             ERROR_STATE_RESET => '0',
+                                                             ENABLE_UC => '0',
+                                                             ENABLE_PWR => '0'
                                                             );
   type CM_CM_C2C_RX_MON_t is record
     BUF_STATUS                 :std_logic_vector( 2 downto 0);  -- DEBUG rx buf status
@@ -105,6 +103,26 @@ package CM_CTRL is
                                                                  PRE_CURSOR => (others => '0'),
                                                                  PCS_RESET => '0'
                                                                 );
+  type CM_CM_C2C_MON_MON_t is record
+    C2C_INITIALIZE_ALLTIME     :std_logic_vector(31 downto 0);  -- Counter for every PHYLANEUP cycle
+    C2C_INITIALIZE_SHORTTERM   :std_logic_vector(31 downto 0);  -- Counter for PHYLANEUP cycles since lase C2C INITIALIZE
+    CONFIG_ERROR_COUNT         :std_logic_vector(31 downto 0);  -- Counter for CONFIG_ERROR
+    LINK_ERROR_COUNT           :std_logic_vector(31 downto 0);  -- Counter for LINK_ERROR
+    MB_ERROR_COUNT             :std_logic_vector(31 downto 0);  -- Counter for MB_ERROR
+    PHY_HARD_ERROR_COUNT       :std_logic_vector(31 downto 0);  -- Counter for PHY_HARD_ERROR
+    PHY_SOFT_ERROR_COUNT       :std_logic_vector(31 downto 0);  -- Counter for PHY_SOFT_ERROR
+    PHYLANE_STATE              :std_logic_vector(31 downto 0);  -- Current state of phy_lane_control module
+  end record CM_CM_C2C_MON_MON_t;
+
+
+  type CM_CM_C2C_MON_CTRL_t is record
+    RESET_COUNTERS             :std_logic_vector(31 downto 0);  -- Reset counters in Monitor
+  end record CM_CM_C2C_MON_CTRL_t;
+
+
+  constant DEFAULT_CM_CM_C2C_MON_CTRL_t : CM_CM_C2C_MON_CTRL_t := (
+                                                                   RESET_COUNTERS => (others => '0')
+                                                                  );
   type CM_CM_C2C_MON_t is record
     CONFIG_ERROR               :std_logic;     -- C2C config error
     LINK_ERROR                 :std_logic;     -- C2C link error
@@ -122,6 +140,7 @@ package CM_CTRL is
     DMONITOR                   :std_logic_vector( 7 downto 0);  -- DEBUG d monitor
     RX                         :CM_CM_C2C_RX_MON_t;           
     TX                         :CM_CM_C2C_TX_MON_t;           
+    MON                        :CM_CM_C2C_MON_MON_t;          
   end record CM_CM_C2C_MON_t;
 
 
@@ -131,57 +150,51 @@ package CM_CTRL is
     EYESCAN_TRIGGER            :std_logic;     -- DEBUG eyescan trigger
     RX                         :CM_CM_C2C_RX_CTRL_t;
     TX                         :CM_CM_C2C_TX_CTRL_t;
+    MON                        :CM_CM_C2C_MON_CTRL_t;
   end record CM_CM_C2C_CTRL_t;
 
 
   constant DEFAULT_CM_CM_C2C_CTRL_t : CM_CM_C2C_CTRL_t := (
-                                                           INITIALIZE => '0',
+                                                           TX => DEFAULT_CM_CM_C2C_TX_CTRL_t,
                                                            RX => DEFAULT_CM_CM_C2C_RX_CTRL_t,
                                                            EYESCAN_RESET => '0',
-                                                           EYESCAN_TRIGGER => '0',
-                                                           TX => DEFAULT_CM_CM_C2C_TX_CTRL_t
+                                                           MON => DEFAULT_CM_CM_C2C_MON_CTRL_t,
+                                                           INITIALIZE => '0',
+                                                           EYESCAN_TRIGGER => '0'
                                                           );
-  type CM_CM_MONITOR_MON_t is record
+  type CM_CM_CNT_MON_t is record
     ACTIVE                     :std_logic;     -- Monitoring active. Is zero when no update in the last second.
     HISTORY_VALID              :std_logic_vector( 3 downto 0);  -- bytes valid in debug history
     ERRORS                     :std_logic_vector(15 downto 0);  -- Monitoring errors. Count of invalid byte types in parsing.
     HISTORY                    :std_logic_vector(31 downto 0);  -- 4 bytes of uart history
-    C2C_INITIALIZE_ALLTIME     :std_logic_vector(31 downto 0);  -- Counter for every PHYLANEUP cycle
-    C2C_INITIALIZE_SHORTTERM   :std_logic_vector(31 downto 0);  -- Counter for PHYLANEUP cycles since lase C2C INITIALIZE
-    CONFIG_ERROR_COUNT         :std_logic_vector(31 downto 0);  -- Counter for CONFIG_ERROR
-    LINK_ERROR_COUNT           :std_logic_vector(31 downto 0);  -- Counter for LINK_ERROR
-    MB_ERROR_COUNT             :std_logic_vector(31 downto 0);  -- Counter for MB_ERROR
-    PHY_HARD_ERROR_COUNT       :std_logic_vector(31 downto 0);  -- Counter for PHY_HARD_ERROR
-    PHY_SOFT_ERROR_COUNT       :std_logic_vector(31 downto 0);  -- Counter for PHY_SOFT_ERROR
-    PHYLANE_STATE              :std_logic_vector(31 downto 0);  -- Current state of phy_lane_control module
-  end record CM_CM_MONITOR_MON_t;
+  end record CM_CM_CNT_MON_t;
 
 
-  type CM_CM_MONITOR_CTRL_t is record
+  type CM_CM_CNT_CTRL_t is record
     COUNT_16X_BAUD             :std_logic_vector( 7 downto 0);  -- Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
-  end record CM_CM_MONITOR_CTRL_t;
+  end record CM_CM_CNT_CTRL_t;
 
 
-  constant DEFAULT_CM_CM_MONITOR_CTRL_t : CM_CM_MONITOR_CTRL_t := (
-                                                                   COUNT_16X_BAUD => x"1b"
-                                                                  );
+  constant DEFAULT_CM_CM_CNT_CTRL_t : CM_CM_CNT_CTRL_t := (
+                                                           COUNT_16X_BAUD => x"1b"
+                                                          );
   type CM_CM_MON_t is record
     CTRL                       :CM_CM_CTRL_MON_t;
     C2C                        :CM_CM_C2C_MON_t; 
-    MONITOR                    :CM_CM_MONITOR_MON_t;
+    CNT                        :CM_CM_CNT_MON_t; 
   end record CM_CM_MON_t;
   type CM_CM_MON_t_ARRAY is array(1 to 2) of CM_CM_MON_t;
 
   type CM_CM_CTRL_t is record
     CTRL                       :CM_CM_CTRL_CTRL_t;
     C2C                        :CM_CM_C2C_CTRL_t; 
-    MONITOR                    :CM_CM_MONITOR_CTRL_t;
+    CNT                        :CM_CM_CNT_CTRL_t; 
   end record CM_CM_CTRL_t;
   type CM_CM_CTRL_t_ARRAY is array(1 to 2) of CM_CM_CTRL_t;
 
   constant DEFAULT_CM_CM_CTRL_t : CM_CM_CTRL_t := (
                                                    C2C => DEFAULT_CM_CM_C2C_CTRL_t,
-                                                   MONITOR => DEFAULT_CM_CM_MONITOR_CTRL_t,
+                                                   CNT => DEFAULT_CM_CM_CNT_CTRL_t,
                                                    CTRL => DEFAULT_CM_CM_CTRL_CTRL_t
                                                   );
   type CM_MON_t is record
