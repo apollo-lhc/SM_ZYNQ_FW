@@ -13,7 +13,7 @@ use UNISIM.vcomponents.all;
 entity CM_intf is
   generic (
     CM_COUNT         : integer range 1 to 2 := 1; --Count for how many Command Moduless are present
-    COUNTER_COUNT    : integer := 5               --Count for counters in loop
+    COUNTER_COUNT    : integer := 5;               --Count for counters in loop
     CLKFREQ          : integer := 50000000;       --clk frequency in Hz
     COUNT_ERROR_WAIT : integer := 50000000);      --Wait time for error checking states
   port (
@@ -289,8 +289,8 @@ begin
           reset_async => reset,
           reset_sync  => CTRL.CM(iCM).CTRL.RESET_COUNTERS,
           enable      => counter_en(iCM - 1),
-          event       => counter_events((iCNT - 1) + ((iCM - 1)*COUNTER_COUNT)) --runs 0 to (COUNTER_COUNT - 1)
-          count       => C2C_Counter(iCNT + ((iCM - 1)*COUNTER_COUNT));         --runs 1 to COUNTER_COUNT
+          event       => counter_events((iCNT - 1) + ((iCM - 1)*COUNTER_COUNT)), --runs 0 to (COUNTER_COUNT - 1)
+          count       => C2C_Counter(iCNT + ((iCM - 1)*COUNTER_COUNT)),          --runs 1 to COUNTER_COUNT
           at_max      => open);   
     end generate GENERATE_COUNTERS_LOOP;
     --PATTERN FOR COUNTERS
