@@ -21,6 +21,7 @@ entity CM_phy_lane_control is
     initialize_out   : out std_logic;
     lock             : out std_logic;
     state_out        : out std_logic_vector(2 downto 0);
+    count_error_wait : out std_logic_vector(DATA_WIDTH-1 downto 0);
     count_alltime    : out std_logic_vector(DATA_WIDTH-1 downto 0);
     count_shortterm  : out std_logic_vector(DATA_WIDTH-1 downto 0));
 end entity CM_phy_lane_control;
@@ -38,9 +39,9 @@ architecture behavioral of CM_phy_lane_control is
   signal state     : state_t;
   
   --- *** COUNTER *** ---
-  signal event   : std_logic;
-  signal event2  : std_logic;
-  signal reset_c : std_logic;
+  signal event       : std_logic;
+  signal event_error : std_logic;
+  signal reset_c     : std_logic;
   
 begin
 -----------------------------------------------------------------------------------------
@@ -164,16 +165,18 @@ begin
     if reset = '1' then --async reset
       counter      <= "00000";
       timer_read   <= 0;
-      event        <= '0';
       timer_error  <= 0;
+      event        <= '0';
+      event_error  <= '0';
       
     elsif clk'event and clk='1' then --rising clk edge
       case state is
         when IDLE => --no counting
           counter     <= "00000";
           timer_read  <= 0;
-          event       <= '0';
           timer_error <= 0;
+          event       <= '0';
+          event_error <= '0';
           
         when INITIALIZING => --count 32 clk's
           if counter = "11111" then
@@ -183,6 +186,7 @@ begin
             counter <= counter + 1;
             event   <= '0';
           end if;
+          event_error <= '0';
           timer_read  <= 0;
           timer_error <= 0;
           
@@ -193,7 +197,9 @@ begin
           else
             timer_read <= timer_read + 1;
           end if;
-          event  <= '0';
+          timer_error <= '0';
+          event       <= '0';
+          event_error <= '0';
           
         when LOCKED => --no counting
           counter     <= "00000";
@@ -207,15 +213,18 @@ begin
           event      <= '0';
           if timer_error = COUNT_ERROR_WAIT then
             timer_error <= 0;
+            event_error <= '1';
           else
             timer_error <= timer_error + 1;
+            event_error <= '0';
           end if;
           
         when others => --reset 
           counter     <= "00000";
           timer_read  <= 0;
-          event       <= '0';
           timer_error <= 0;
+          event       <= '0';
+          event_error <= '0';
       end case;
     end if;
   end process TIMING;
@@ -293,5 +302,20 @@ begin
       enable      => enable,
       event       => event,
       count       => count_alltime,
-      at_max      => open);      
+      at_max      => open);
+  Count_error: entity work.counter
+        generic map (
+      roll_over   => '0',
+      end_value   => x"FFFFFFFF",
+      start_value => x"00000000",
+      A_RST_CNT   => x"00000000",
+      DATA_WIDTH  => DATA_WIDTH)
+    port map (
+      clk         => clk,
+      reset_async => reset_counter,
+      reset_sync  => '0',
+      enable      => enable,
+      event       => event_error,
+      count       => count_error_wait,
+      at_max      => open);
 end architecture behavioral;

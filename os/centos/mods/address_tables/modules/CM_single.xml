@@ -73,10 +73,11 @@
       <node id="PHY_SOFT_ERROR_COUNT" address="0x6" permission="r" description="Counter for PHY_SOFT_ERROR"               parameters="Table=CM;Column=PHY_SOFT_ERR_COUNT;Row=_2;Status=1;Show=nz;Format=u"/>
       <node id="PHYLANE_STATE"        address="0x7" mask="0x7" permission="r" description="Current state of phy_lane_control module" parameters="Table=CM;Column=PHYLANE_STATE;Row=_2;Status=1;Format=u"/>
       <node id="RESET_COUNTERS"       address="0x8" mask="0x1" permission="w" description="Reset counters in Monitor"/>
+      <node id="PHYLANE_ERROR_COUNT"  address="0x9" permission="r" description="Count number of times CM_phy_lane_countrol enters error state"/>
     </node>
   </node>
   
-  <node id="MONITOR" address="0x1e">
+  <node id="MONITOR" address="0x1f">
     <node id="COUNT_16X_BAUD"                mask="0x000000FF" permission="rw" description="Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27" parameters="Table=CM;Column=MON_STATE;Row=_2;Status=4;default=0x1B" />
     <node id="ACTIVE"                        mask="0x00000100" permission="r"  description="Monitoring active. Is zero when no update in the last second." parameters="Table=CM;Column=MON_STATE;Row=_2;Status=1;Show=z;Format=t_0_INACTIVE_1_ACTIVE" />
     <node id="HISTORY_VALID"                 mask="0x0000F000" permission="r"  description="bytes valid in debug history"/>
