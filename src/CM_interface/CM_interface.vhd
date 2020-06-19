@@ -179,14 +179,14 @@ begin
       port map (
         clk              => clk_axi,
         reset            => reset,
-        reset_counter    => CTRL.CM(iCM).CTRL.RESET_COUNTERS,
+        reset_counter    => CTRL.CM(iCM).CNT.RESET_COUNTERS,
         enable           => phycontrol_en(iCM - 1),
         phy_lane_up      => CM_C2C_Mon.CM(iCM).phy_lane_up(0),
         initialize_out   => aurora_init_buf(iCM - 1),
         lock             => phylanelock(iCM - 1),
-        state_out        => Mon.CM(iCM).MONITOR.PHYLANE_STATE,
-        count_alltime    => Mon.CM(iCM).MONITOR.C2C_INITIALIZE_ALLTIME,
-        count_shortterm  => Mon.CM(iCM).MONITOR.C2C_INITIALIZE_SHORTTERM);
+        state_out        => Mon.CM(iCM).CNT.PHYLANE_STATE,
+        count_alltime    => Mon.CM(iCM).CNT.C2C_INITIALIZE_ALLTIME,
+        count_shortterm  => Mon.CM(iCM).CNT.C2C_INITIALIZE_SHORTTERM);
     CM_C2C_Ctrl.CM(iCM).aurora_pma_init_in <= (aurora_init_buf(iCM - 1) and CTRL.CM(iCM).CTRL.ENABLE_PHY_CTRL) or (CTRL.CM(iCM).C2C.INITIALIZE and (not CTRL.CM(iCM).CTRL.ENABLE_PHY_CTRL));
     
     -------------------------------------------------------------------------------
@@ -287,7 +287,7 @@ begin
         port map (
           clk         => clk_axi,
           reset_async => reset,
-          reset_sync  => CTRL.CM(iCM).CTRL.RESET_COUNTERS,
+          reset_sync  => CTRL.CM(iCM).CNT.RESET_COUNTERS,
           enable      => counter_en(iCM - 1),
           event       => counter_events((iCNT - 1) + ((iCM - 1)*COUNTER_COUNT)), --runs 0 to (COUNTER_COUNT - 1)
           count       => C2C_Counter(iCNT + ((iCM - 1)*COUNTER_COUNT)),          --runs 1 to COUNTER_COUNT

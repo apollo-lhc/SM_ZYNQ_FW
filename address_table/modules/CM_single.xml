@@ -63,7 +63,7 @@
       <node id="PRBS_SEL" mask="0x07000000" permission="rw" description="DEBUG PRBS select" />
       <node id="PRE_CURSOR" mask="0xF8000000" permission="rw" description="DEBUG pre cursor" />
     </node>
-    <node id="MON" address="0x3">
+    <node id="CNT" address="0x3">
       <node id="C2C_INITIALIZE_ALLTIME" address="0x0" permission="r" description="Counter for every PHYLANEUP cycle" parameters="Table=CM;Column=PHYLANE_SINGLEBIT_ERROR;Row=_2;Status=1;Show=nz;Format=u"/>
       <node id="C2C_INITIALIZE_SHORTTERM" address="0x1" permission="r" description="Counter for PHYLANEUP cycles since lase C2C INITIALIZE" parameters="Table=CM;Column=PHYLANE_MULTIBIT_ERROR;Row=_2;Status=1;Show=nz;Format=u"/>
       <node id="CONFIG_ERROR_COUNT"   address="0x2" permission="r" description="Counter for CONFIG_ERROR"                 parameters="Table=CM;Column=CONFIG_ERROR_COUNT;Row=_2;Status=1;Show=nz;Format=u"/>
@@ -76,7 +76,7 @@
     </node>
   </node>
   
-  <node id="CNT" address="0x1e">
+  <node id="MONITOR" address="0x1e">
     <node id="COUNT_16X_BAUD"                mask="0x000000FF" permission="rw" description="Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27" parameters="Table=CM;Column=MON_STATE;Row=_2;Status=4;default=0x1B" />
     <node id="ACTIVE"                        mask="0x00000100" permission="r"  description="Monitoring active. Is zero when no update in the last second." parameters="Table=CM;Column=MON_STATE;Row=_2;Status=1;Show=z;Format=t_0_INACTIVE_1_ACTIVE" />
     <node id="HISTORY_VALID"                 mask="0x0000F000" permission="r"  description="bytes valid in debug history"/>

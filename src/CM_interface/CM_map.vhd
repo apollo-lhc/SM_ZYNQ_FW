@@ -128,28 +128,28 @@ begin  -- architecture behavioral
           localRdData(26 downto 24)  <=  reg_data(20)(26 downto 24);                      --DEBUG PRBS select
           localRdData(31 downto 27)  <=  reg_data(20)(31 downto 27);                      --DEBUG pre cursor
         when 21 => --0x15
-          localRdData(31 downto  0)  <=  Mon.CM(1).C2C.MON.C2C_INITIALIZE_ALLTIME;        --Counter for every PHYLANEUP cycle
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C.CNT.C2C_INITIALIZE_ALLTIME;        --Counter for every PHYLANEUP cycle
         when 22 => --0x16
-          localRdData(31 downto  0)  <=  Mon.CM(1).C2C.MON.C2C_INITIALIZE_SHORTTERM;      --Counter for PHYLANEUP cycles since lase C2C INITIALIZE
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C.CNT.C2C_INITIALIZE_SHORTTERM;      --Counter for PHYLANEUP cycles since lase C2C INITIALIZE
         when 23 => --0x17
-          localRdData(31 downto  0)  <=  Mon.CM(1).C2C.MON.CONFIG_ERROR_COUNT;            --Counter for CONFIG_ERROR
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C.CNT.CONFIG_ERROR_COUNT;            --Counter for CONFIG_ERROR
         when 24 => --0x18
-          localRdData(31 downto  0)  <=  Mon.CM(1).C2C.MON.LINK_ERROR_COUNT;              --Counter for LINK_ERROR
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C.CNT.LINK_ERROR_COUNT;              --Counter for LINK_ERROR
         when 25 => --0x19
-          localRdData(31 downto  0)  <=  Mon.CM(1).C2C.MON.MB_ERROR_COUNT;                --Counter for MB_ERROR
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C.CNT.MB_ERROR_COUNT;                --Counter for MB_ERROR
         when 26 => --0x1a
-          localRdData(31 downto  0)  <=  Mon.CM(1).C2C.MON.PHY_HARD_ERROR_COUNT;          --Counter for PHY_HARD_ERROR
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C.CNT.PHY_HARD_ERROR_COUNT;          --Counter for PHY_HARD_ERROR
         when 27 => --0x1b
-          localRdData(31 downto  0)  <=  Mon.CM(1).C2C.MON.PHY_SOFT_ERROR_COUNT;          --Counter for PHY_SOFT_ERROR
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C.CNT.PHY_SOFT_ERROR_COUNT;          --Counter for PHY_SOFT_ERROR
         when 28 => --0x1c
-          localRdData(31 downto  0)  <=  Mon.CM(1).C2C.MON.PHYLANE_STATE;                 --Current state of phy_lane_control module
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C.CNT.PHYLANE_STATE;                 --Current state of phy_lane_control module
         when 30 => --0x1e
           localRdData( 7 downto  0)  <=  reg_data(30)( 7 downto  0);                      --Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
-          localRdData( 8)            <=  Mon.CM(1).CNT.ACTIVE;                            --Monitoring active. Is zero when no update in the last second.
-          localRdData(15 downto 12)  <=  Mon.CM(1).CNT.HISTORY_VALID;                     --bytes valid in debug history
-          localRdData(31 downto 16)  <=  Mon.CM(1).CNT.ERRORS;                            --Monitoring errors. Count of invalid byte types in parsing.
+          localRdData( 8)            <=  Mon.CM(1).MONITOR.ACTIVE;                        --Monitoring active. Is zero when no update in the last second.
+          localRdData(15 downto 12)  <=  Mon.CM(1).MONITOR.HISTORY_VALID;                 --bytes valid in debug history
+          localRdData(31 downto 16)  <=  Mon.CM(1).MONITOR.ERRORS;                        --Monitoring errors. Count of invalid byte types in parsing.
         when 31 => --0x1f
-          localRdData(31 downto  0)  <=  Mon.CM(1).CNT.HISTORY;                           --4 bytes of uart history
+          localRdData(31 downto  0)  <=  Mon.CM(1).MONITOR.HISTORY;                       --4 bytes of uart history
         when 32 => --0x20
           localRdData( 0)            <=  reg_data(32)( 0);                                --Tell CM uC to power-up
           localRdData( 1)            <=  reg_data(32)( 1);                                --Tell CM uC to power-up the rest of the CM
@@ -211,28 +211,28 @@ begin  -- architecture behavioral
           localRdData(26 downto 24)  <=  reg_data(52)(26 downto 24);                      --DEBUG PRBS select
           localRdData(31 downto 27)  <=  reg_data(52)(31 downto 27);                      --DEBUG pre cursor
         when 53 => --0x35
-          localRdData(31 downto  0)  <=  Mon.CM(2).C2C.MON.C2C_INITIALIZE_ALLTIME;        --Counter for every PHYLANEUP cycle
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C.CNT.C2C_INITIALIZE_ALLTIME;        --Counter for every PHYLANEUP cycle
         when 54 => --0x36
-          localRdData(31 downto  0)  <=  Mon.CM(2).C2C.MON.C2C_INITIALIZE_SHORTTERM;      --Counter for PHYLANEUP cycles since lase C2C INITIALIZE
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C.CNT.C2C_INITIALIZE_SHORTTERM;      --Counter for PHYLANEUP cycles since lase C2C INITIALIZE
         when 55 => --0x37
-          localRdData(31 downto  0)  <=  Mon.CM(2).C2C.MON.CONFIG_ERROR_COUNT;            --Counter for CONFIG_ERROR
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C.CNT.CONFIG_ERROR_COUNT;            --Counter for CONFIG_ERROR
         when 56 => --0x38
-          localRdData(31 downto  0)  <=  Mon.CM(2).C2C.MON.LINK_ERROR_COUNT;              --Counter for LINK_ERROR
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C.CNT.LINK_ERROR_COUNT;              --Counter for LINK_ERROR
         when 57 => --0x39
-          localRdData(31 downto  0)  <=  Mon.CM(2).C2C.MON.MB_ERROR_COUNT;                --Counter for MB_ERROR
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C.CNT.MB_ERROR_COUNT;                --Counter for MB_ERROR
         when 58 => --0x3a
-          localRdData(31 downto  0)  <=  Mon.CM(2).C2C.MON.PHY_HARD_ERROR_COUNT;          --Counter for PHY_HARD_ERROR
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C.CNT.PHY_HARD_ERROR_COUNT;          --Counter for PHY_HARD_ERROR
         when 59 => --0x3b
-          localRdData(31 downto  0)  <=  Mon.CM(2).C2C.MON.PHY_SOFT_ERROR_COUNT;          --Counter for PHY_SOFT_ERROR
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C.CNT.PHY_SOFT_ERROR_COUNT;          --Counter for PHY_SOFT_ERROR
         when 60 => --0x3c
-          localRdData(31 downto  0)  <=  Mon.CM(2).C2C.MON.PHYLANE_STATE;                 --Current state of phy_lane_control module
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C.CNT.PHYLANE_STATE;                 --Current state of phy_lane_control module
         when 62 => --0x3e
           localRdData( 7 downto  0)  <=  reg_data(62)( 7 downto  0);                      --Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
-          localRdData( 8)            <=  Mon.CM(2).CNT.ACTIVE;                            --Monitoring active. Is zero when no update in the last second.
-          localRdData(15 downto 12)  <=  Mon.CM(2).CNT.HISTORY_VALID;                     --bytes valid in debug history
-          localRdData(31 downto 16)  <=  Mon.CM(2).CNT.ERRORS;                            --Monitoring errors. Count of invalid byte types in parsing.
+          localRdData( 8)            <=  Mon.CM(2).MONITOR.ACTIVE;                        --Monitoring active. Is zero when no update in the last second.
+          localRdData(15 downto 12)  <=  Mon.CM(2).MONITOR.HISTORY_VALID;                 --bytes valid in debug history
+          localRdData(31 downto 16)  <=  Mon.CM(2).MONITOR.ERRORS;                        --Monitoring errors. Count of invalid byte types in parsing.
         when 63 => --0x3f
-          localRdData(31 downto  0)  <=  Mon.CM(2).CNT.HISTORY;                           --4 bytes of uart history
+          localRdData(31 downto  0)  <=  Mon.CM(2).MONITOR.HISTORY;                       --4 bytes of uart history
 
 
         when others =>
@@ -277,7 +277,7 @@ begin  -- architecture behavioral
   Ctrl.CM(1).C2C.TX.PRBS_FORCE_ERR     <=  reg_data(20)(23);               
   Ctrl.CM(1).C2C.TX.PRBS_SEL           <=  reg_data(20)(26 downto 24);     
   Ctrl.CM(1).C2C.TX.PRE_CURSOR         <=  reg_data(20)(31 downto 27);     
-  Ctrl.CM(1).CNT.COUNT_16X_BAUD        <=  reg_data(30)( 7 downto  0);     
+  Ctrl.CM(1).MONITOR.COUNT_16X_BAUD    <=  reg_data(30)( 7 downto  0);     
   Ctrl.CM(2).CTRL.ENABLE_UC            <=  reg_data(32)( 0);               
   Ctrl.CM(2).CTRL.ENABLE_PWR           <=  reg_data(32)( 1);               
   Ctrl.CM(2).CTRL.OVERRIDE_PWR_GOOD    <=  reg_data(32)( 2);               
@@ -310,7 +310,7 @@ begin  -- architecture behavioral
   Ctrl.CM(2).C2C.TX.PRBS_FORCE_ERR     <=  reg_data(52)(23);               
   Ctrl.CM(2).C2C.TX.PRBS_SEL           <=  reg_data(52)(26 downto 24);     
   Ctrl.CM(2).C2C.TX.PRE_CURSOR         <=  reg_data(52)(31 downto 27);     
-  Ctrl.CM(2).CNT.COUNT_16X_BAUD        <=  reg_data(62)( 7 downto  0);     
+  Ctrl.CM(2).MONITOR.COUNT_16X_BAUD    <=  reg_data(62)( 7 downto  0);     
 
 
   reg_writes: process (clk_axi, reset_axi_n) is
@@ -348,7 +348,7 @@ begin  -- architecture behavioral
       reg_data(20)(23)  <= DEFAULT_CM_CTRL_t.CM(1).C2C.TX.PRBS_FORCE_ERR;
       reg_data(20)(26 downto 24)  <= DEFAULT_CM_CTRL_t.CM(1).C2C.TX.PRBS_SEL;
       reg_data(20)(31 downto 27)  <= DEFAULT_CM_CTRL_t.CM(1).C2C.TX.PRE_CURSOR;
-      reg_data(30)( 7 downto  0)  <= DEFAULT_CM_CTRL_t.CM(1).CNT.COUNT_16X_BAUD;
+      reg_data(30)( 7 downto  0)  <= DEFAULT_CM_CTRL_t.CM(1).MONITOR.COUNT_16X_BAUD;
       reg_data(32)( 0)  <= DEFAULT_CM_CTRL_t.CM(2).CTRL.ENABLE_UC;
       reg_data(32)( 1)  <= DEFAULT_CM_CTRL_t.CM(2).CTRL.ENABLE_PWR;
       reg_data(32)( 2)  <= DEFAULT_CM_CTRL_t.CM(2).CTRL.OVERRIDE_PWR_GOOD;
@@ -381,11 +381,11 @@ begin  -- architecture behavioral
       reg_data(52)(23)  <= DEFAULT_CM_CTRL_t.CM(2).C2C.TX.PRBS_FORCE_ERR;
       reg_data(52)(26 downto 24)  <= DEFAULT_CM_CTRL_t.CM(2).C2C.TX.PRBS_SEL;
       reg_data(52)(31 downto 27)  <= DEFAULT_CM_CTRL_t.CM(2).C2C.TX.PRE_CURSOR;
-      reg_data(62)( 7 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).CNT.COUNT_16X_BAUD;
+      reg_data(62)( 7 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).MONITOR.COUNT_16X_BAUD;
 
     elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
-      Ctrl.CM(1).C2C.MON.RESET_COUNTERS <= (others => '0');
-      Ctrl.CM(2).C2C.MON.RESET_COUNTERS <= (others => '0');
+      Ctrl.CM(1).C2C.CNT.RESET_COUNTERS <= (others => '0');
+      Ctrl.CM(2).C2C.CNT.RESET_COUNTERS <= (others => '0');
       
 
       
@@ -423,7 +423,7 @@ begin  -- architecture behavioral
           reg_data(50)(22)                   <=  localWrData(22);                --DEBUG eyescan reset
           reg_data(50)(23)                   <=  localWrData(23);                --DEBUG eyescan trigger
         when 61 => --0x3d
-          Ctrl.CM(2).C2C.MON.RESET_COUNTERS  <=  localWrData(31 downto  0);     
+          Ctrl.CM(2).C2C.CNT.RESET_COUNTERS  <=  localWrData(31 downto  0);     
         when 18 => --0x12
           reg_data(18)( 5)                   <=  localWrData( 5);                --C2C initialize
           reg_data(18)(22)                   <=  localWrData(22);                --DEBUG eyescan reset
@@ -468,7 +468,7 @@ begin  -- architecture behavioral
           reg_data(52)(26 downto 24)         <=  localWrData(26 downto 24);      --DEBUG PRBS select
           reg_data(52)(31 downto 27)         <=  localWrData(31 downto 27);      --DEBUG pre cursor
         when 29 => --0x1d
-          Ctrl.CM(1).C2C.MON.RESET_COUNTERS  <=  localWrData(31 downto  0);     
+          Ctrl.CM(1).C2C.CNT.RESET_COUNTERS  <=  localWrData(31 downto  0);     
         when 30 => --0x1e
           reg_data(30)( 7 downto  0)         <=  localWrData( 7 downto  0);      --Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
 
