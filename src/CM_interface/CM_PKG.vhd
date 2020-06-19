@@ -116,12 +116,12 @@ package CM_CTRL is
 
 
   type CM_CM_C2C_CNT_CTRL_t is record
-    RESET_COUNTERS             :std_logic_vector(31 downto 0);  -- Reset counters in Monitor
+    RESET_COUNTERS             :std_logic;     -- Reset counters in Monitor
   end record CM_CM_C2C_CNT_CTRL_t;
 
 
   constant DEFAULT_CM_CM_C2C_CNT_CTRL_t : CM_CM_C2C_CNT_CTRL_t := (
-                                                                   RESET_COUNTERS => (others => '0')
+                                                                   RESET_COUNTERS => '0'
                                                                   );
   type CM_CM_C2C_MON_t is record
     CONFIG_ERROR               :std_logic;     -- C2C config error

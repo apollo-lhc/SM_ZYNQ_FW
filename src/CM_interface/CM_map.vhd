@@ -384,8 +384,8 @@ begin  -- architecture behavioral
       reg_data(62)( 7 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).MONITOR.COUNT_16X_BAUD;
 
     elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
-      Ctrl.CM(1).C2C.CNT.RESET_COUNTERS <= (others => '0');
-      Ctrl.CM(2).C2C.CNT.RESET_COUNTERS <= (others => '0');
+      Ctrl.CM(1).C2C.CNT.RESET_COUNTERS <= '0';
+      Ctrl.CM(2).C2C.CNT.RESET_COUNTERS <= '0';
       
 
       
@@ -423,7 +423,7 @@ begin  -- architecture behavioral
           reg_data(50)(22)                   <=  localWrData(22);                --DEBUG eyescan reset
           reg_data(50)(23)                   <=  localWrData(23);                --DEBUG eyescan trigger
         when 61 => --0x3d
-          Ctrl.CM(2).C2C.CNT.RESET_COUNTERS  <=  localWrData(31 downto  0);     
+          Ctrl.CM(2).C2C.CNT.RESET_COUNTERS  <=  localWrData( 0);               
         when 18 => --0x12
           reg_data(18)( 5)                   <=  localWrData( 5);                --C2C initialize
           reg_data(18)(22)                   <=  localWrData(22);                --DEBUG eyescan reset
@@ -468,7 +468,7 @@ begin  -- architecture behavioral
           reg_data(52)(26 downto 24)         <=  localWrData(26 downto 24);      --DEBUG PRBS select
           reg_data(52)(31 downto 27)         <=  localWrData(31 downto 27);      --DEBUG pre cursor
         when 29 => --0x1d
-          Ctrl.CM(1).C2C.CNT.RESET_COUNTERS  <=  localWrData(31 downto  0);     
+          Ctrl.CM(1).C2C.CNT.RESET_COUNTERS  <=  localWrData( 0);               
         when 30 => --0x1e
           reg_data(30)( 7 downto  0)         <=  localWrData( 7 downto  0);      --Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
 
