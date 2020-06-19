@@ -74,10 +74,12 @@ begin
     if reset = '1' then --async reset
       state <= IDLE;
       state_out <= "000";
+      event_error <= '0';
       
     elsif clk'event and clk='1' then --rising clk edge
       case state is
         when IDLE => --move to INITIALIZE on enable
+          event_error <= '0';
           if enable = '1' then
             state     <= WAITING;
             state_out <= "010";
@@ -87,6 +89,7 @@ begin
           end if;
         -----------------------------------------------------  
         when INITIALIZING => --move to WAITING after 32 clk's
+          event_error <= '0';
           if enable = '0' then
             state     <= IDLE;
             state_out <= "000";
@@ -101,6 +104,7 @@ begin
           end if;
         -----------------------------------------------------  
         when WAITING => --read phy_lane_up for 1ms
+          event_error <= '0';
           if enable = '0' then
             state <= IDLE;
             state_out <= "000";
@@ -123,17 +127,21 @@ begin
           if enable = '0' then
             state <= IDLE;
             state_out <= "000";
+            event_error <= '0';
           else
             if phy_lane_up = '0' then
               state <= ERROR_WAIT;
               state_out <= "110";
+              event_error <= '1';
             else
               state <= LOCKED;
               state_out <= "111";
+              event_error <= '0';
             end if;
           end if;
         -----------------------------------------------------
         when ERROR_WAIT =>
+          event_error <= '0';
           if enable = '0' then
             state <= IDLE;
             state_out <= "000";
@@ -152,9 +160,10 @@ begin
             end if;
           end if;
         -----------------------------------------------------
-        when others => --reset 
-          state     <= IDLE;
-          state_out <= "000";
+        when others => --reset
+          event_error <= '0';
+          state       <= IDLE;
+          state_out   <= "000";
       end case;
     end if;
   end process STATE_MACHINE;
@@ -167,8 +176,7 @@ begin
       timer_read   <= 0;
       timer_error  <= 0;
       event        <= '0';
-      event_error  <= '0';
-      
+            
     elsif clk'event and clk='1' then --rising clk edge
       case state is
         when IDLE => --no counting
@@ -176,7 +184,6 @@ begin
           timer_read  <= 0;
           timer_error <= 0;
           event       <= '0';
-          event_error <= '0';
           
         when INITIALIZING => --count 32 clk's
           if counter = "11111" then
@@ -186,7 +193,6 @@ begin
             counter <= counter + 1;
             event   <= '0';
           end if;
-          event_error <= '0';
           timer_read  <= 0;
           timer_error <= 0;
           
@@ -199,8 +205,7 @@ begin
           end if;
           timer_error <= 0;
           event       <= '0';
-          event_error <= '0';
-          
+                
         when LOCKED => --no counting
           counter     <= "00000";
           timer_read  <= 0;
@@ -213,10 +218,8 @@ begin
           event      <= '0';
           if timer_error = ERROR_WAIT_TIME then
             timer_error <= 0;
-            event_error <= '1';
           else
             timer_error <= timer_error + 1;
-            event_error <= '0';
           end if;
           
         when others => --reset 
@@ -224,7 +227,6 @@ begin
           timer_read  <= 0;
           timer_error <= 0;
           event       <= '0';
-          event_error <= '0';
       end case;
     end if;
   end process TIMING;
