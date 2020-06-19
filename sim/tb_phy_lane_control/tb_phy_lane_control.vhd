@@ -19,11 +19,14 @@ architecture behavioral of tb_phy_lane_control is
   signal aurora          : std_logic;
   signal aurora_good     : std_logic;
   -- For module under testing
+  signal reset_counter   : std_logic;
   signal enable          : std_logic;
   signal phy_lane_up     : std_logic;
   signal initialize_out  : std_logic;
   signal lock            : std_logic;
-  signal count           : std_logic_vector(31 downto 0);
+  signal state_out       : std_logic_vector(2 downto 0);
+  signal count_short     : std_logic_vector(31 downto 0);
+  signal count_all       : std_logic_vector(31 downto 0);
     
 begin  -- architecture behavioral
 
@@ -40,8 +43,7 @@ begin  -- architecture behavioral
             
     elsif clk'event and clk = '1' then  -- rising clock edge
       counter <= counter + 1;
-      
-      
+            
       case counter is
         when 10 =>
           initialize_test <= '1';
@@ -83,14 +85,18 @@ begin  -- architecture behavioral
   --Module under testing
   phy_lane_1: entity work.CM_phy_lane_control
     generic map (
-      CLKFREQ        => 10, --WAITING should last 10 clk cycles
-      DATA_WIDTH     => 32)    
+      CLKFREQ          => 10, --WAITING should last 10 clk cycles
+      DATA_WIDTH       => 32,
+      COUNT_ERROR_WAIT => 10) --error wait last 10 clks    
     port map (
-      clk            => clk,
-      reset          => reset,
-      enable         => enable,
-      phy_lane_up    => phy_lane_up,
-      initialize_out => initialize_out,
-      lock           => lock,
-      count          => count);
+      clk             => clk,
+      reset           => reset,
+      reset_counter   => reset_counter,
+      enable          => enable,
+      phy_lane_up     => phy_lane_up,
+      initialize_out  => initialize_out,
+      lock            => lock,
+      state_out       => state_out,
+      count_alltime   => count_all,
+      count_shortterm => count_short);
 end architecture behavioral;
