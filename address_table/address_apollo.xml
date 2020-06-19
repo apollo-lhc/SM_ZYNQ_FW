@@ -26,4 +26,6 @@
   <node id="K_C2CLINK_PHY"   module="file://modules/DRP_USP_GTY.xml"      address="0x1A000000"/>
   <node id="C2C2_PHY"        module="file://modules/DRP_7_GTX.xml"        address="0x1B000000"/>
   <node id="V_C2CLINK_PHY"   module="file://modules/DRP_USP_GTY.xml"      address="0x1C000000"/>
+  <node id="V_SLINK"         module="file://modules/V_SLINK.xml"          address="0x1D000000"/>  
+  <node id="IPBUS_VIRTEX"                                                 address="0x1E000000"  mode="non-incremental" size="0x3F"/>  
 </node>
