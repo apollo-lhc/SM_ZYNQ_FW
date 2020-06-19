@@ -15,7 +15,7 @@ entity CM_intf is
     CM_COUNT         : integer range 1 to 2 := 1; --Count for how many Command Moduless are present
     COUNTER_COUNT    : integer := 5;               --Count for counters in loop
     CLKFREQ          : integer := 50000000;       --clk frequency in Hz
-    COUNT_ERROR_WAIT : integer := 50000000);      --Wait time for error checking states
+    ERROR_WAIT_TIME  : integer := 50000000);      --Wait time for error checking states
   port (
     clk_axi          : in  std_logic;
     reset_axi_n      : in  std_logic;
@@ -175,7 +175,7 @@ begin
       generic map (
         CLKFREQ          => CLKFREQ,
         DATA_WIDTH       => DATA_WIDTH,
-        COUNT_ERROR_WAIT => COUNT_ERROR_WAIT)
+        ERROR_WAIT_TIME => ERROR_WAIT_TIME)
       port map (
         clk              => clk_axi,
         reset            => reset,
@@ -195,7 +195,7 @@ begin
     -------------------------------------------------------------------------------
     CM_PWR_SEQ_X: entity work.CM_pwr
       generic map (
-        COUNT_ERROR_WAIT  => COUNT_ERROR_WAIT)
+        COUNT_ERROR_WAIT  => ERROR_WAIT_TIME)
       port map (
         clk               => clk_axi,
         reset_async       => reset,

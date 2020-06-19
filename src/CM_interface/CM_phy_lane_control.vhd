@@ -11,7 +11,7 @@ entity CM_phy_lane_control is
   generic (
     CLKFREQ          : integer := 50000000;  --Frequency of clk (hz)
     DATA_WIDTH       : integer := 32;        --Data width for error counter
-    COUNT_ERROR_WAIT : integer := 50000000); --Wait time for error checking state
+    ERROR_WAIT_TIME  : integer := 50000000); --Wait time for error checking state
   port (
     clk              : in  std_logic;
     reset            : in  std_logic;
@@ -31,7 +31,7 @@ architecture behavioral of CM_phy_lane_control is
   constant READ_TIME   : integer := CLKFREQ/100; --10ms
   signal   counter     : unsigned(4 downto 0);
   signal   timer_read  : integer range 0 to READ_TIME;
-  signal   timer_error : integer range 0 to COUNT_ERROR_WAIT;
+  signal   timer_error : integer range 0 to ERROR_WAIT_TIME;
 
   
   --- *** STATE_MACINE *** ---
@@ -135,14 +135,14 @@ begin
         -----------------------------------------------------
         when ERROR_WAIT =>
           if enable = '0' then
-            state <= ILDE;
+            state <= IDLE;
             state_out <= "000";
           else
             if phy_lane_up = '1' then
               state <= LOCKED;
               state_out <= "111";
             else
-              if timer_error = COUNT_ERROR_WAIT then
+              if timer_error = ERROR_WAIT_TIME then
                 state <= INITIALIZING;
                 state_out <= "001";
               else
@@ -197,7 +197,7 @@ begin
           else
             timer_read <= timer_read + 1;
           end if;
-          timer_error <= '0';
+          timer_error <= 0;
           event       <= '0';
           event_error <= '0';
           
@@ -211,7 +211,7 @@ begin
           counter    <= "00000";
           timer_read <= 0;
           event      <= '0';
-          if timer_error = COUNT_ERROR_WAIT then
+          if timer_error = ERROR_WAIT_TIME then
             timer_error <= 0;
             event_error <= '1';
           else
