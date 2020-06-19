@@ -142,7 +142,7 @@ begin  -- architecture behavioral
         when 27 => --0x1b
           localRdData(31 downto  0)  <=  Mon.CM(1).C2C.CNT.PHY_SOFT_ERROR_COUNT;          --Counter for PHY_SOFT_ERROR
         when 28 => --0x1c
-          localRdData(31 downto  0)  <=  Mon.CM(1).C2C.CNT.PHYLANE_STATE;                 --Current state of phy_lane_control module
+          localRdData( 2 downto  0)  <=  Mon.CM(1).C2C.CNT.PHYLANE_STATE;                 --Current state of phy_lane_control module
         when 30 => --0x1e
           localRdData( 7 downto  0)  <=  reg_data(30)( 7 downto  0);                      --Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
           localRdData( 8)            <=  Mon.CM(1).MONITOR.ACTIVE;                        --Monitoring active. Is zero when no update in the last second.
@@ -225,7 +225,7 @@ begin  -- architecture behavioral
         when 59 => --0x3b
           localRdData(31 downto  0)  <=  Mon.CM(2).C2C.CNT.PHY_SOFT_ERROR_COUNT;          --Counter for PHY_SOFT_ERROR
         when 60 => --0x3c
-          localRdData(31 downto  0)  <=  Mon.CM(2).C2C.CNT.PHYLANE_STATE;                 --Current state of phy_lane_control module
+          localRdData( 2 downto  0)  <=  Mon.CM(2).C2C.CNT.PHYLANE_STATE;                 --Current state of phy_lane_control module
         when 62 => --0x3e
           localRdData( 7 downto  0)  <=  reg_data(62)( 7 downto  0);                      --Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
           localRdData( 8)            <=  Mon.CM(2).MONITOR.ACTIVE;                        --Monitoring active. Is zero when no update in the last second.

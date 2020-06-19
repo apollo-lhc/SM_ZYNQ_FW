@@ -111,7 +111,7 @@ package CM_CTRL is
     MB_ERROR_COUNT             :std_logic_vector(31 downto 0);  -- Counter for MB_ERROR
     PHY_HARD_ERROR_COUNT       :std_logic_vector(31 downto 0);  -- Counter for PHY_HARD_ERROR
     PHY_SOFT_ERROR_COUNT       :std_logic_vector(31 downto 0);  -- Counter for PHY_SOFT_ERROR
-    PHYLANE_STATE              :std_logic_vector(31 downto 0);  -- Current state of phy_lane_control module
+    PHYLANE_STATE              :std_logic_vector( 2 downto 0);  -- Current state of phy_lane_control module
   end record CM_CM_C2C_CNT_MON_t;
 
 

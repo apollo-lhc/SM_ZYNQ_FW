@@ -27,10 +27,10 @@ end entity CM_phy_lane_control;
 architecture behavioral of CM_phy_lane_control is
 
   --- *** TIMING *** ---
-  constant READ_TIME  : integer := CLKFREQ/100; --10ms
-  signal   counter    : unsigned(4 downto 0);
-  signal   timer      : integer range 0 to READ_TIME;
-  signal   timer2     : integer range 0 to COUNT_ERROR_WAIT;
+  constant READ_TIME   : integer := CLKFREQ/100; --10ms
+  signal   counter     : unsigned(4 downto 0);
+  signal   timer_read  : integer range 0 to READ_TIME;
+  signal   timer_error : integer range 0 to COUNT_ERROR_WAIT;
 
   
   --- *** STATE_MACINE *** ---
@@ -108,7 +108,7 @@ begin
               state <= LOCKED;
               state_out <= "111";
             else
-              if timer = READ_TIME then
+              if timer_read = READ_TIME then
                 state <= INITIALIZING;
                 state_out <= "001";
               else
@@ -133,16 +133,21 @@ begin
           end if;
         -----------------------------------------------------
         when ERROR_WAIT =>
-          if phy_lane_up = '1' then
-            state <= LOCKED;
-            state_out <= "111";
+          if enable = '0' then
+            state <= ILDE;
+            state_out <= "000";
           else
-            if timer = COUNT_ERROR_WAIT then
-              state <= INITIALIZING;
-              state_out <= "001";
+            if phy_lane_up = '1' then
+              state <= LOCKED;
+              state_out <= "111";
             else
-              state <= ERROR_WAIT;
-              state_out <= "110";
+              if timer_error = COUNT_ERROR_WAIT then
+                state <= INITIALIZING;
+                state_out <= "001";
+              else
+                state <= ERROR_WAIT;
+                state_out <= "110";
+              end if;
             end if;
           end if;
         -----------------------------------------------------
@@ -157,60 +162,60 @@ begin
   TIMING: process (reset, clk) is
   begin
     if reset = '1' then --async reset
-      counter <= "00000";
-      timer   <= 0;
-      event   <= '0';
-      timer2  <= 0;
+      counter      <= "00000";
+      timer_read   <= 0;
+      event        <= '0';
+      timer_error  <= 0;
       
     elsif clk'event and clk='1' then --rising clk edge
       case state is
         when IDLE => --no counting
-          counter <= "00000";
-          timer   <= 0;
-          event   <= '0';
-          timer2  <= 0;
+          counter     <= "00000";
+          timer_read  <= 0;
+          event       <= '0';
+          timer_error <= 0;
           
         when INITIALIZING => --count 32 clk's
           if counter = "11111" then
             counter <= "00000";
-            event  <= '1';
+            event   <= '1';
           else
             counter <= counter + 1;
             event   <= '0';
           end if;
-          timer  <= 0;
-          timer2 <= 0;
+          timer_read  <= 0;
+          timer_error <= 0;
           
         when WAITING => --count to 1 ms
           counter <= "00000";
-          if timer = READ_TIME then
-            timer <= 0;
+          if timer_read = READ_TIME then
+            timer_read <= 0;
           else
-            timer <= timer + 1;
+            timer_read <= timer_read + 1;
           end if;
           event  <= '0';
           
         when LOCKED => --no counting
-          counter <= "00000";
-          timer   <= 0;
-          event   <= '0';
-          timer2  <= 0;
+          counter     <= "00000";
+          timer_read  <= 0;
+          event       <= '0';
+          timer_error <= 0;
 
         when ERROR_WAIT =>
-          counter <= "00000";
-          timer   <= 0;
-          event   <= '0';
-          if timer2 = COUNT_ERROR_WAIT then
-            timer2 <= 0;
+          counter    <= "00000";
+          timer_read <= 0;
+          event      <= '0';
+          if timer_error = COUNT_ERROR_WAIT then
+            timer_error <= 0;
           else
-            timer2 <= timer2 + 1;
+            timer_error <= timer_error + 1;
           end if;
           
         when others => --reset 
-          counter <= "00000";
-          timer   <= 0;
-          event   <= '0';
-          timer2  <= 0;
+          counter     <= "00000";
+          timer_read  <= 0;
+          event       <= '0';
+          timer_error <= 0;
       end case;
     end if;
   end process TIMING;
