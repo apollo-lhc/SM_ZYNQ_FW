@@ -13,7 +13,8 @@ use UNISIM.vcomponents.all;
 entity CM_intf is
   generic (
     CM_COUNT         : integer range 1 to 2 := 1; --Count for how many Command Moduless are present
-    CLKFREQ          : integer :=  50000000); --clk frequency in Hz
+    CLKFREQ          : integer :=  50000000;      --clk frequency in Hz
+    COUNT_ERROR_WAIT : integer :=  50000000);     --Wait time for error checking states
   port (
     clk_axi          : in  std_logic;
     reset_axi_n      : in  std_logic;
@@ -38,6 +39,9 @@ entity CM_intf is
 end entity CM_intf;
 
 architecture behavioral of CM_intf is
+
+  constant DATA_WIDTH : integer := 32;
+  
   signal localAddress      : slv_32_t;
   signal localRdData       : slv_32_t;
   signal localRdData_latch : slv_32_t;
@@ -73,6 +77,7 @@ architecture behavioral of CM_intf is
 
   signal debug_history   : slv_32_t;
   signal debug_valid     : slv_4_t;
+  signal counter_en      : std_logic_vector(1 downto 0);
 
   signal Mon  : CM_Mon_t;
   signal Ctrl : CM_Ctrl_t;
@@ -82,9 +87,17 @@ begin
   --reset
   reset <= not reset_axi_n;
 
-  --For phy_lane_control
-  phycontrol_en(0) <= CTRL.CM(1).CTRL.ENABLE_PHY_CTRL;-- and PWR_good(0);
-  phycontrol_en(1) <= CTRL.CM(2).CTRL.ENABLE_PHY_CTRL;-- and phylanelock(0);-- and PWR_good(1);
+  --For signals variable on CM_COUNT
+  phycontrol_en(0) <= PWR_good(0) and CTRL.CM(1).CTRL.ENABLE_PHY_CTRL;
+  counter_en(0)    <= PWR_good(0);
+  CM_CTRL_GENERATE_1: if CM_COUNT = 1 generate
+    phycontrol_en(1) <= phylanelock(0) and PWR_good(0) and CTRL.CM(2).CTRL.ENABLE_PHY_CTRL;
+    counter_en(1)    <= PWR_good(0);
+  end generate CM_CTRL_GENERATE_1;
+  CM_CTRL_GENERATE_2: if CM_COUNT = 2 generate
+    phycontrol_en(1) <= PWR_good(1) and CTRL.CM(2).CTRL.ENABLE_PHY_CTRL;
+    counter_en(1)    <= PWR_good(1);
+  end generate CM_CTRL_GENERATE_2;
 
   --For Power-up Sequences
   Mon.CM(1).CTRL.PWR_GOOD <= PWR_good(0);  
@@ -157,16 +170,20 @@ begin
     -------------------------------------------------------------------------------
     Phy_lane_control_X: entity work.CM_phy_lane_control
       generic map (
-        CLKFREQ        => CLKFREQ,
-        DATA_WIDTH     => 32)
+        CLKFREQ          => CLKFREQ,
+        DATA_WIDTH       => DATA_WIDTH,
+        COUNT_ERROR_WAIT => COUNT_ERROR_WAIT)
       port map (
-        clk            => clk_axi,
-        reset          => reset,
-        enable         => phycontrol_en(iCM - 1),
-        phy_lane_up    => CM_C2C_Mon.CM(iCM).phy_lane_up(0),
-        initialize_out => aurora_init_buf(iCM - 1),
-        lock           => phylanelock(iCM - 1),
-        count          => Mon.CM(iCM).MONITOR.AURORA_PMA_INIT_COUNT);
+        clk              => clk_axi,
+        reset            => reset,
+        reset_counter    => CTRL.CM(iCM).CTRL.RESET_COUNTERS,
+        enable           => phycontrol_en(iCM - 1),
+        phy_lane_up      => CM_C2C_Mon.CM(iCM).phy_lane_up(0),
+        initialize_out   => aurora_init_buf(iCM - 1),
+        lock             => phylanelock(iCM - 1),
+        state_out        => Mon.CM(iCM).MONITOR.PHYLANE_STATE,
+        count_alltime    => Mon.CM(iCM).MONITOR.C2C_INITIALIZE_ALLTIME,
+        count_shortterm  => Mon.CM(iCM).MONITOR.C2C_INITIALIZE_SHORTTERM);
     CM_C2C_Ctrl.CM(iCM).aurora_pma_init_in <= (aurora_init_buf(iCM - 1) and CTRL.CM(iCM).CTRL.ENABLE_PHY_CTRL) or (CTRL.CM(iCM).C2C.INITIALIZE and (not CTRL.CM(iCM).CTRL.ENABLE_PHY_CTRL));
     
     -------------------------------------------------------------------------------
@@ -174,18 +191,18 @@ begin
     -------------------------------------------------------------------------------
     CM_PWR_SEQ_X: entity work.CM_pwr
       generic map (
-        COUNT_ERROR_WAIT => 50000000)
+        COUNT_ERROR_WAIT  => COUNT_ERROR_WAIT)
       port map (
-        clk => clk_axi,
-        reset_async => reset,
-        reset_sync => reset_error_state(iCM - 1),
-        uc_enabled => enable_uC(iCM - 1),
-        start_PWR => enableCM_PWR_s(iCM - 1),
+        clk               => clk_axi,
+        reset_async       => reset,
+        reset_sync        => reset_error_state(iCM - 1),
+        uc_enabled        => enable_uC(iCM - 1),
+        start_PWR         => enableCM_PWR_s(iCM - 1),
         sequence_override => override_PWRGood(iCM -1),
-        current_state => CM_seq_state((iCM * 4) - 1 downto (iCM - 1) * 4),
-        enabled_PWR => enable_PWR(iCM - 1),
-        enabled_IOs => enable_IOs(iCM - 1),
-        power_good => PWR_good(iCM - 1));
+        current_state     => CM_seq_state((iCM * 4) - 1 downto (iCM - 1) * 4),
+        enabled_PWR       => enable_PWR(iCM - 1),
+        enabled_IOs       => enable_IOs(iCM - 1),
+        power_good        => PWR_good(iCM - 1));
     enableCM(iCM - 1)       <= Ctrl.CM(iCM).CTRL.ENABLE_UC;
     PWR_good(iCM - 1)       <= from_CM.CM(iCM).PWR_good;
     enableCM_PWR(iCM - 1)   <= enableCM_PWR_s(iCM - 1);
@@ -253,5 +270,83 @@ begin
     CM_C2C_Ctrl.CM(iCM).txprbsforceerr     <= CTRL.CM(iCM).C2C.TX.PRBS_FORCE_ERR;
     CM_C2C_Ctrl.CM(iCM).txprbssel          <= CTRL.CM(iCM).C2C.TX.PRBS_SEL;
     CM_C2C_Ctrl.CM(iCM).txprecursor        <= CTRL.CM(iCM).C2C.TX.PRE_CURSOR;
+    -------------------------------------------------------------------------------
+    -- COUNTERS
+    -------------------------------------------------------------------------------
+    Count_Config_Err_X: entity work.counter
+      generic map(
+        roll_over   => '0',
+        end_value   => x"FFFFFFFF",
+        start_value => x"00000000",
+        A_RST_CNT   => x"00000000",
+        DATA_WIDTH  => DATA_WIDTH)
+      port map (
+        clk         => clk_axi,
+        reset_async => CTRL.CM(iCM).CTRL.RESET_COUNTERS,
+        reset_sync  => '0',
+        enable      => counter_en(iCM - 1),
+        event       => Mon.CM(iCM).C2C.CONFIG_ERROR,
+        count       => Mon.CM(iCM).MONITOR.CONFIG_ERROR_COUNT,
+        at_max      => open);
+    Count_Link_Err_X: entity work.counter
+      generic map(
+        roll_over   => '0',
+        end_value   => x"FFFFFFFF",
+        start_value => x"00000000",
+        A_RST_CNT   => x"00000000",
+        DATA_WIDTH  => DATA_WIDTH)
+      port map (
+        clk         => clk_axi,
+        reset_async => CTRL.CM(iCM).CTRL.RESET_COUNTERS,
+        reset_sync  => '0',
+        enable      => counter_en(iCM - 1),
+        event       => Mon.CM(iCM).C2C.LINK_ERROR,
+        count       => Mon.CM(iCM).MONITOR.LINK_ERROR_COUNT,
+        at_max      => open);
+    Count_MB_Err_X: entity work.counter
+      generic map(
+        roll_over   => '0',
+        end_value   => x"FFFFFFFF",
+        start_value => x"00000000",
+        A_RST_CNT   => x"00000000",
+        DATA_WIDTH  => DATA_WIDTH)
+      port map (
+        clk         => clk_axi,
+        reset_async => CTRL.CM(iCM).CTRL.RESET_COUNTERS,
+        reset_sync  => '0',
+        enable      => counter_en(iCM - 1),
+        event       => Mon.CM(iCM).C2C.MB_ERROR,
+        count       => Mon.CM(iCM).MONITOR.MB_ERROR_COUNT,
+        at_max      => open);
+    Count_Phy_Hard_Err_X: entity work.counter
+      generic map(
+        roll_over   => '0',
+        end_value   => x"FFFFFFFF",
+        start_value => x"00000000",
+        A_RST_CNT   => x"00000000",
+        DATA_WIDTH  => DATA_WIDTH)
+      port map (
+        clk         => clk_axi,
+        reset_async => CTRL.CM(iCM).CTRL.RESET_COUNTERS,
+        reset_sync  => '0',
+        enable      => counter_en(iCM - 1),
+        event       => Mon.CM(iCM).C2C.PHY_HARD_ERR,
+        count       => Mon.CM(iCM).MONITOR.PHY_HARD_ERROR_COUNT,
+        at_max      => open);
+    Count_Phy_Soft_Err_X: entity work.counter
+      generic map(
+        roll_over   => '0',
+        end_value   => x"FFFFFFFF",
+        start_value => x"00000000",
+        A_RST_CNT   => x"00000000",
+        DATA_WIDTH  => DATA_WIDTH)
+      port map (
+        clk         => clk_axi,
+        reset_async => CTRL.CM(iCM).CTRL.RESET_COUNTERS,
+        reset_sync  => '0',
+        enable      => counter_en(iCM - 1),
+        event       => Mon.CM(iCM).C2C.PHY_SOFT_ERR,
+        count       => Mon.CM(iCM).MONITOR.PHY_SOFT_ERROR_COUNT,
+        at_max      => open);
   end generate GENERATE_LOOP;    
 end architecture behavioral;

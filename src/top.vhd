@@ -813,7 +813,8 @@ begin  -- architecture structure
   CM_interface_1: entity work.CM_intf
     generic map (
       CM_COUNT             => 1,
-      CLKFREQ              => 50000000)
+      CLKFREQ              => 50000000,
+      COUNT_ERROR_WAIT     => 50000000)
     port map (
       clk_axi              => axi_clk,
       reset_axi_n          => pl_reset_n,

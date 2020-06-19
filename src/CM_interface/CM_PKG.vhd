@@ -19,15 +19,17 @@ package CM_CTRL is
     OVERRIDE_PWR_GOOD          :std_logic;     -- Ignore power good from CM
     ERROR_STATE_RESET          :std_logic;     -- CM power is good
     ENABLE_PHY_CTRL            :std_logic;     -- phy_lane_control is enabled
+    RESET_COUNTERS             :std_logic;     -- Reset counters in Monitor
   end record CM_CM_CTRL_CTRL_t;
 
 
   constant DEFAULT_CM_CM_CTRL_CTRL_t : CM_CM_CTRL_CTRL_t := (
-                                                             ENABLE_PHY_CTRL => '0',
-                                                             OVERRIDE_PWR_GOOD => '0',
-                                                             ERROR_STATE_RESET => '0',
+                                                             ENABLE_PHY_CTRL => '1',
                                                              ENABLE_UC => '0',
-                                                             ENABLE_PWR => '0'
+                                                             RESET_COUNTERS => '0',
+                                                             OVERRIDE_PWR_GOOD => '0',
+                                                             ENABLE_PWR => '0',
+                                                             ERROR_STATE_RESET => '0'
                                                             );
   type CM_CM_C2C_RX_MON_t is record
     BUF_STATUS                 :std_logic_vector( 2 downto 0);  -- DEBUG rx buf status
@@ -144,7 +146,14 @@ package CM_CTRL is
     HISTORY_VALID              :std_logic_vector( 3 downto 0);  -- bytes valid in debug history
     ERRORS                     :std_logic_vector(15 downto 0);  -- Monitoring errors. Count of invalid byte types in parsing.
     HISTORY                    :std_logic_vector(31 downto 0);  -- 4 bytes of uart history
-    AURORA_PMA_INIT_COUNT      :std_logic_vector(31 downto 0);  -- Counter for aurora_pma_init
+    C2C_INITIALIZE_ALLTIME     :std_logic_vector(31 downto 0);  -- Counter for every PHYLANEUP cycle
+    C2C_INITIALIZE_SHORTTERM   :std_logic_vector(31 downto 0);  -- Counter for PHYLANEUP cycles since lase C2C INITIALIZE
+    CONFIG_ERROR_COUNT         :std_logic_vector(31 downto 0);  -- Counter for CONFIG_ERROR
+    LINK_ERROR_COUNT           :std_logic_vector(31 downto 0);  -- Counter for LINK_ERROR
+    MB_ERROR_COUNT             :std_logic_vector(31 downto 0);  -- Counter for MB_ERROR
+    PHY_HARD_ERROR_COUNT       :std_logic_vector(31 downto 0);  -- Counter for PHY_HARD_ERROR
+    PHY_SOFT_ERROR_COUNT       :std_logic_vector(31 downto 0);  -- Counter for PHY_SOFT_ERROR
+    PHYLANE_STATE              :std_logic_vector(31 downto 0);  -- Current state of phy_lane_control module
   end record CM_CM_MONITOR_MON_t;
 
 
