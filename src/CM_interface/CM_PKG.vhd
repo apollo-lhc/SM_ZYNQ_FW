@@ -112,7 +112,7 @@ package CM_CTRL is
     PHY_HARD_ERROR_COUNT       :std_logic_vector(31 downto 0);  -- Counter for PHY_HARD_ERROR
     PHY_SOFT_ERROR_COUNT       :std_logic_vector(31 downto 0);  -- Counter for PHY_SOFT_ERROR
     PHYLANE_STATE              :std_logic_vector( 2 downto 0);  -- Current state of phy_lane_control module
-    PHYLANE_ERROR_COUNT        :std_logic_vector(31 downto 0);  -- Count number of times CM_phy_lane_countrol enters error state
+    PHYLANE_ERROR_COUNT        :std_logic_vector(31 downto 0);  -- Count for phylane in error state
   end record CM_CM_C2C_CNT_MON_t;
 
 
