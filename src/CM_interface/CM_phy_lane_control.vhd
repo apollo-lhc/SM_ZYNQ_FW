@@ -46,7 +46,7 @@ architecture behavioral of CM_phy_lane_control is
 begin
 -----------------------------------------------------------------------------------------
 --  
---                                                          +-----------+
+--                                                            +-----------+
 --                                                          |           |
 --                                                          |  LOCKED   |
 --                                    +-------------------->+  111      |
@@ -79,83 +79,74 @@ begin
     elsif clk'event and clk='1' then --rising clk edge
       case state is
         when IDLE => --move to INITIALIZE on enable
+          state_out <= "000";
           event_error <= '0';
           if enable = '1' then
-            state     <= WAITING;
-            state_out <= "010";
+            state <= WAITING;
           else
-            state     <= IDLE;
-            state_out <= "000";
+            state <= IDLE;
           end if;
         -----------------------------------------------------  
         when INITIALIZING => --move to WAITING after 32 clk's
+          state_out <= "001";
           event_error <= '0';
           if enable = '0' then
-            state     <= IDLE;
-            state_out <= "000";
+            state <= IDLE;
           else
             if counter = "11111" then
-              state     <= WAITING;
-              state_out <= "010";
+              state <= WAITING;
             else
-              state     <= INITIALIZING;
-              state_out <= "001";
+              state <= INITIALIZING;
             end if;
           end if;
         -----------------------------------------------------  
         when WAITING => --read phy_lane_up for 1ms
+          state_out <= "010";
           event_error <= '0';
           if enable = '0' then
             state <= IDLE;
-            state_out <= "000";
           else
             if phy_lane_up = '1' then
               state <= LOCKED;
-              state_out <= "111";
             else
               if timer_read = READ_TIME then
                 state <= INITIALIZING;
-                state_out <= "001";
               else
                 state <= WAITING;
-                state_out <= "010";
               end if;
             end if;
           end if;
         -----------------------------------------------------  
         when LOCKED =>
+          state_out <= "111";
           if enable = '0' then
             state <= IDLE;
-            state_out <= "000";
             event_error <= '0';
           else
             if phy_lane_up = '0' then
               state <= ERROR_WAIT;
-              state_out <= "110";
               event_error <= '1';
             else
               state <= LOCKED;
-              state_out <= "111";
               event_error <= '0';
             end if;
           end if;
         -----------------------------------------------------
         when ERROR_WAIT =>
+          state_out <= "110";
           event_error <= '0';
           if enable = '0' then
             state <= IDLE;
-            state_out <= "000";
           else
             if phy_lane_up = '1' then
+              --if timer_read = (READ_TIME/2) then
               state <= LOCKED;
-              state_out <= "111";
+              --end if;
             else
               if timer_error = ERROR_WAIT_TIME then
                 state <= INITIALIZING;
-                state_out <= "001";
               else
                 state <= ERROR_WAIT;
-                state_out <= "110";
               end if;
             end if;
           end if;
@@ -176,7 +167,7 @@ begin
       timer_read   <= 0;
       timer_error  <= 0;
       event        <= '0';
-            
+      
     elsif clk'event and clk='1' then --rising clk edge
       case state is
         when IDLE => --no counting
@@ -199,13 +190,22 @@ begin
         when WAITING => --count to 1 ms
           counter <= "00000";
           if timer_read = READ_TIME then
-            timer_read <= 0;
+            timer_read <= timer_read;
           else
             timer_read <= timer_read + 1;
           end if;
+          --if phy_lane_up = '1' then
+           -- if timer_error = (READ_TIME/2) then
+             -- timer_error <= timer_error;
+           -- else
+            --  timer_error <= timer_error + 1;
+           -- end if;
+          --else
+            --timer_error <= timer_error;
+          --end if;
           timer_error <= 0;
           event       <= '0';
-                
+          
         when LOCKED => --no counting
           counter     <= "00000";
           timer_read  <= 0;
@@ -216,8 +216,17 @@ begin
           counter    <= "00000";
           timer_read <= 0;
           event      <= '0';
+          --if phy_lane_up = '1' then
+          --  if timer_read = (READ_TIME/2) then
+            --  timer_read <= timer_read;
+           -- else
+            --  timer_read <= timer_read + 1;
+           -- end if;
+         -- else
+           -- timer_read <= timer_read;
+          --end if;
           if timer_error = ERROR_WAIT_TIME then
-            timer_error <= 0;
+            timer_error <= timer_error;
           else
             timer_error <= timer_error + 1;
           end if;
@@ -306,7 +315,7 @@ begin
       count       => count_alltime,
       at_max      => open);
   Count_error: entity work.counter
-        generic map (
+    generic map (
       roll_over   => '0',
       end_value   => x"FFFFFFFF",
       start_value => x"00000000",

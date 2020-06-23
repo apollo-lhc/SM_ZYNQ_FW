@@ -104,15 +104,15 @@ package CM_CTRL is
                                                                  PCS_RESET => '0'
                                                                 );
   type CM_CM_C2C_CNT_MON_t is record
-    C2C_INITIALIZE_ALLTIME     :std_logic_vector(31 downto 0);  -- Counter for every PHYLANEUP cycle
-    C2C_INITIALIZE_SHORTTERM   :std_logic_vector(31 downto 0);  -- Counter for PHYLANEUP cycles since lase C2C INITIALIZE
+    INIT_ALLTIME               :std_logic_vector(31 downto 0);  -- Counter for every PHYLANEUP cycle
+    INIT_SHORTTERM             :std_logic_vector(31 downto 0);  -- Counter for PHYLANEUP cycles since lase C2C INITIALIZE
     CONFIG_ERROR_COUNT         :std_logic_vector(31 downto 0);  -- Counter for CONFIG_ERROR
     LINK_ERROR_COUNT           :std_logic_vector(31 downto 0);  -- Counter for LINK_ERROR
     MB_ERROR_COUNT             :std_logic_vector(31 downto 0);  -- Counter for MB_ERROR
     PHY_HARD_ERROR_COUNT       :std_logic_vector(31 downto 0);  -- Counter for PHY_HARD_ERROR
     PHY_SOFT_ERROR_COUNT       :std_logic_vector(31 downto 0);  -- Counter for PHY_SOFT_ERROR
     PHYLANE_STATE              :std_logic_vector( 2 downto 0);  -- Current state of phy_lane_control module
-    PHYLANE_ERROR_COUNT        :std_logic_vector(31 downto 0);  -- Count for phylane in error state
+    PHY_ERRORSTATE_COUNT       :std_logic_vector(31 downto 0);  -- Count for phylane in error state
   end record CM_CM_C2C_CNT_MON_t;
 
 

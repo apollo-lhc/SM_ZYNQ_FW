@@ -36,7 +36,7 @@ entity top is
 
     I2C_SCL           : inout std_logic;
     I2C_SDA           : inout std_logic;
-    
+
     onboard_CLK_P     : in  std_logic;
     onboard_CLK_N     : in  std_logic;
 

@@ -212,9 +212,9 @@ begin
         initialize_out   => aurora_init_buf(iCM - 1),
         lock             => phylanelock(iCM - 1),
         state_out        => Mon.CM(iCM).C2C.CNT.PHYLANE_STATE,
-        count_error_wait => Mon.CM(iCM).C2C.CNT.PHYLANE_ERROR_COUNT,
-        count_alltime    => Mon.CM(iCM).C2C.CNT.C2C_INITIALIZE_ALLTIME,
-        count_shortterm  => Mon.CM(iCM).C2C.CNT.C2C_INITIALIZE_SHORTTERM);
+        count_error_wait => Mon.CM(iCM).C2C.CNT.PHY_ERRORSTATE_COUNT,
+        count_alltime    => Mon.CM(iCM).C2C.CNT.INIT_ALLTIME,
+        count_shortterm  => Mon.CM(iCM).C2C.CNT.INIT_SHORTTERM);
     CM_C2C_Ctrl.CM(iCM).aurora_pma_init_in <= (aurora_init_buf(iCM - 1) and CTRL.CM(iCM).CTRL.ENABLE_PHY_CTRL) or (CTRL.CM(iCM).C2C.INITIALIZE and (not CTRL.CM(iCM).CTRL.ENABLE_PHY_CTRL));
     
     -------------------------------------------------------------------------------
