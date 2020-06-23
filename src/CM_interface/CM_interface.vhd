@@ -34,9 +34,9 @@ entity CM_intf is
     from_CM          : in from_CM_t;
     to_CM_in         : in to_CM_t; --from SM
     to_CM_out        : out to_CM_t; --from SM, but tristated
+    clk_C2C          : in std_logic_vector(1 downto 0);
     CM_C2C_Mon       : in C2C_Monitor_t;
-    CM_C2C_Ctrl      : out C2C_Control_t
-    );
+    CM_C2C_Ctrl      : out C2C_Control_t);
 end entity CM_intf;
 
 architecture behavioral of CM_intf is
@@ -119,31 +119,58 @@ begin
   --Signals only relavant to CM1
   Mon.CM(1).MONITOR.ACTIVE         <= mon_active(0);
   Mon.CM(1).MONITOR.HISTORY_VALID  <= debug_valid;
-  Mon.CM(1).MONITOR.ERRORS         <= mon_errors(0);
+  --Mon.CM(1).MONITOR.ERRORS         <= mon_errors(0);
   Mon.CM(1).MONITOR.HISTORY        <= debug_history;
-  
-  --Monitoring
+
   CM_Monitoring_1: entity work.CM_Monitoring
     generic map (
-      BAUD_COUNT_BITS => 8,
-      INACTIVE_COUNT  => INACTIVE_COUNT,
-      BASE_ADDRESS    => PL_MEM_ADDR)
+      BAUD_COUNT_BITS                => 8,
+      INACTIVE_COUNT                 => INACTIVE_COUNT,
+      BASE_ADDRESS                   => PL_MEM_ADDR)
     port map (
-      clk            => clk_axi,
-      reset          => reset,
-      uart_rx        => CM_mon_uart,
-      baud_16x_count => CTRL.CM(1).MONITOR.COUNT_16X_BAUD,
-      readMOSI       => master_readMOSI,
-      readMISO       => master_readMISO,
-      writeMOSI      => master_writeMOSI,
-      writeMISO      => master_writeMISO,
-      debug_history  => debug_history,
-      debug_valid    => debug_valid,
-      error_count    => mon_errors(0),
-      channel_active => mon_active(0));
+      clk                            => clk_axi,
+      reset                          => reset,
+      uart_rx                        => CM_mon_uart,
+      baud_16x_count                 => CTRL.CM(1).MONITOR.COUNT_16X_BAUD,
+      readMOSI                       => master_readMOSI,
+      readMISO                       => master_readMISO,
+      writeMOSI                      => master_writeMOSI,
+      writeMISO                      => master_writeMISO,
+      debug_history                  => debug_history,
+      debug_valid                    => debug_valid,
+      uart_byte_count                => Mon.CM(1).MONITOR.UART_BYTES,
+      error_reset                    => CTRL.CM(1).MONITOR.ERRORS.RESET,
+      error_count(0)                 => Mon.CM(1).MONITOR.ERRORS.CNT_BAD_SOF,
+      error_count(1)                 => Mon.CM(1).MONITOR.ERRORS.CNT_AXI_BUSY_BYTE2,
+      error_count(2)                 => Mon.CM(1).MONITOR.ERRORS.CNT_BYTE2_NOT_DATA,
+      error_count(3)                 => Mon.CM(1).MONITOR.ERRORS.CNT_BYTE3_NOT_DATA,
+      error_count(4)                 => Mon.CM(1).MONITOR.ERRORS.CNT_BYTE4_NOT_DATA,
+      error_count(5)                 => Mon.CM(1).MONITOR.ERRORS.CNT_UNKNOWN,
+      bad_transaction(31 downto 24)  => Mon.CM(1).MONITOR.BAD_TRANS.ERROR_MASK,
+      bad_transaction(23 downto  8)  => Mon.CM(1).MONITOR.BAD_TRANS.DATA,
+      bad_transaction( 7 downto  0)  => Mon.CM(1).MONITOR.BAD_TRANS.ADDR,
+      last_transaction(31 downto 24) => Mon.CM(1).MONITOR.LAST_TRANS.ERROR_MASK,
+      last_transaction(23 downto  8) => Mon.CM(1).MONITOR.LAST_TRANS.DATA,
+      last_transaction( 7 downto  0) => Mon.CM(1).MONITOR.LAST_TRANS.ADDR,
+      channel_active                 => mon_active(0));
 
 
   GENERATE_LOOP: for iCM in 1 to 2 generate
+    -------------------------------------------------------------------------------
+    -- DC data CDC
+    -------------------------------------------------------------------------------
+    DC_data_CDC_X: entity work.DC_data_CDC
+    generic map (
+      DATA_WIDTH           => 4)
+    port map (
+      clk_in               => clk_axi,
+      clk_out              => clk_C2C(iCM - 1),
+      reset                => reset,
+      pass_in(0)           => CTRL.CM(iCM).C2C.RX.PRBS_CNT_RST,
+      pass_in(3 downto 1)  => CTRL.CM(iCM).C2C.RX.PRBS_SEL,
+      pass_out(0)          => CM_C2C_Ctrl.CM(iCM).rxprbscntreset,
+      pass_out(3 downto 1) => CM_C2C_Ctrl.CM(iCM).rxprbssel);
+
     -------------------------------------------------------------------------------
     -- CM interface
     -------------------------------------------------------------------------------
@@ -262,8 +289,8 @@ begin
     CM_C2C_Ctrl.CM(iCM).rxmonitorsel       <= CTRL.CM(iCM).C2C.RX.MON_SEL;
     CM_C2C_Ctrl.CM(iCM).rxpcsreset         <= CTRL.CM(iCM).C2C.RX.PCS_RESET;
     CM_C2C_Ctrl.CM(iCM).rxpmareset         <= CTRL.CM(iCM).C2C.RX.PMA_RESET;
-    CM_C2C_Ctrl.CM(iCM).rxprbscntreset     <= CTRL.CM(iCM).C2C.RX.PRBS_CNT_RST;
-    CM_C2C_Ctrl.CM(iCM).rxprbssel          <= CTRL.CM(iCM).C2C.RX.PRBS_SEL;
+    --CM_C2C_Ctrl.CM(iCM).rxprbscntreset     <= CTRL.CM(iCM).C2C.RX.PRBS_CNT_RST;
+    --CM_C2C_Ctrl.CM(iCM).rxprbssel          <= CTRL.CM(iCM).C2C.RX.PRBS_SEL;
     CM_C2C_Ctrl.CM(iCM).txdiffctrl         <= CTRL.CM(iCM).C2C.TX.DIFF_CTRL;
     CM_C2C_Ctrl.CM(iCM).txinhibit          <= CTRL.CM(iCM).C2C.TX.INHIBIT;
     CM_C2C_Ctrl.CM(iCM).txmaincursor       <= CTRL.CM(iCM).C2C.TX.MAIN_CURSOR;

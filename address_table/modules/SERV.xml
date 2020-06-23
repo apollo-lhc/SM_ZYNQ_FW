@@ -9,6 +9,7 @@
   </node>
   <node id="TCDS" address="0x04" permission="r">
     <node id="TTC_SOURCE" address="0x0" permission="rw" mask="0x1" description="TTC source select (0:TCDS,1:TTC_FAKE" parameters="default=0x1"/>
+    <node id="REFCLK_LOCKED" address="0x0" permission="r" mask="0x10" description="TCDS refclk locked"/>
   </node>
   <node id="CLOCKING" address="0x05" permission="r">
     <node id="LHC_LOS_BP" permission="r" mask="0x1" description="Backplane LHC clk LOS" parameters="Table=CLOCKING;Column=LOS;Row=LHC_BP;Status=2;Show=nz" />

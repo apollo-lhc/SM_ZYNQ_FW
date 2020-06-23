@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<node id="V_SLINK_1">
+  <!-- read/write registers -->
+  <node id="CMMD_REG" address="0x0" permission="rw"/>
+  <node id="FNCT_REG" address="0x1" permission="rw"/>
+  <node id="CFFS_REG" address="0x2" permission="rw"/>
+  <node id="WDAT_REG" address="0x3" permission="rw"/>
+  <!-- read only registers -->
+  <node id="CMMD_REG_r" address="0x4" permission="r"/>
+  <node id="FNCT_REG_r" address="0x5" permission="r"/>
+  <node id="CFFS_REG_r" address="0x6" permission="r"/>
+  <node id="RDAT_REG" address="0x7" permission="r"/>
+  <node id="SND_CH0_SD_STAT_REG" address="0x8" permission="r"/>
+  <node id="SND_CH1_SD_STAT_REG" address="0x9" permission="r"/>
+  <node id="SND_CH2_SD_STAT_REG" address="0x10" permission="r"/>
+  <node id="SND_CH3_SD_STAT_REG" address="0x11" permission="r"/>
+  <node id="RCV_CH0_SD_STAT_REG" address="0x12" permission="r"/>
+  <node id="RCV_CH1_SD_STAT_REG" address="0x13" permission="r"/>
+  <node id="RCV_CH2_SD_STAT_REG" address="0x14" permission="r"/>
+  <node id="RCV_CH3_SD_STAT_REG" address="0x15" permission="r"/>
+  <node id="RCV_CH0_PCKT_CNT_REG" address="0x16" permission="r"/>
+  <node id="RCV_CH1_PCKT_CNT_REG" address="0x17" permission="r"/>
+  <node id="RCV_CH2_PCKT_CNT_REG" address="0x18" permission="r"/>
+  <node id="RCV_CH3_PCKT_CNT_REG" address="0x19" permission="r"/>
+  <node id="CNT0_REG" address="0x20" permission="r"/>
+  <node id="CNT1_REG" address="0x21" permission="r"/>
+  <node id="CNT2_REG" address="0x22" permission="r"/>
+  <node id="CNT3_REG" address="0x23" permission="r"/>
+  <node id="CNT4_REG" address="0x24" permission="r"/>
+  <node id="CNT5_REG" address="0x25" permission="r"/>
+  <node id="CNT6_REG" address="0x26" permission="r"/>
+  <node id="CNT7_REG" address="0x27" permission="r"/>
+</node>
+

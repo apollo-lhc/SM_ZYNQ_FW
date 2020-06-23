@@ -47,3 +47,9 @@ rpm-build
 python2-pip
 nss
 nss-devel
+freeipmi-devel
+cmake3
+log4cplus-devel
+yaml-cpp-devel
+msgpack-devel
+cppzmq-devel

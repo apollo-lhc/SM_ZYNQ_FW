@@ -27,3 +27,8 @@ total 24
 -rw-r-----. 1 0 997 1675 Jan  1  1970 ssh_host_rsa_key
 -rw-r--r--. 1 0   0  382 Jan  1  1970 ssh_host_rsa_key.pub
 ```
+
+
+
+To copy the image to a ApolloSM, do the following in the ./image folder
+sudo rsync -P -r -l -p -o -g -W -c --numeric-ids ./ root@host:/

@@ -24,6 +24,11 @@ package SERV_CTRL is
                                                                OE => '1',
                                                                EN => '1'
                                                               );
+  type SERV_TCDS_MON_t is record
+    REFCLK_LOCKED              :std_logic;     -- TCDS refclk locked
+  end record SERV_TCDS_MON_t;
+
+
   type SERV_TCDS_CTRL_t is record
     TTC_SOURCE                 :std_logic;     -- TTC source select (0:TCDS,1:TTC_FAKE
   end record SERV_TCDS_CTRL_t;
@@ -110,6 +115,7 @@ package SERV_CTRL is
                                                             );
   type SERV_MON_t is record
     SI5344                     :SERV_SI5344_MON_t;
+    TCDS                       :SERV_TCDS_MON_t;  
     CLOCKING                   :SERV_CLOCKING_MON_t;
     FP_LEDS                    :SERV_FP_LEDS_MON_t; 
     SWITCH                     :SERV_SWITCH_MON_t;  

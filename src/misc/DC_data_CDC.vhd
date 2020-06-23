@@ -8,7 +8,7 @@ use IEEE.STD_LOGIC_1164.all;
 use ieee.numeric_std.all;
 use ieee.std_logic_misc.all;
 
-entity pass_std_logic_vector is
+entity DC_data_CDC is
   generic(
     DATA_WIDTH : integer := 32
     );
@@ -20,15 +20,22 @@ entity pass_std_logic_vector is
     pass_out : out std_logic_vector(DATA_WIDTH-1 downto 0)
     );
 
-end entity pass_std_logic_vector;
+end entity DC_data_CDC;
 
-architecture behavioral of pass_std_logic_vector is
+architecture behavioral of DC_data_CDC is
 
   signal pass_in_local    : std_logic_vector(DATA_WIDTH-1 downto 0) := (others => '0');
   signal pass_out_local_1 : std_logic_vector(DATA_WIDTH-1 downto 0) := (others => '0');
   signal pass_out_local_2 : std_logic_vector(DATA_WIDTH-1 downto 0) := (others => '0');
-  signal pass_out_local_3 : std_logic_vector(DATA_WIDTH-1 downto 0) := (others => '0');
-  
+
+  attribute ASYNC_REG : string;
+  attribute ASYNC_REG of pass_out_local_1 : signal is "yes";
+  attribute ASYNC_REG of pass_out_local_2 : signal is "yes";
+  attribute SHREG_EXTRACT : string;
+  attribute SHREG_EXTRACT of pass_out_local_1: signal is "no";
+  attribute SHREG_EXTRACT of pass_out_local_2: signal is "no";
+
+
 begin  -- architecture behavioral
 
   -- buffer the input on the input clock's domain
@@ -46,14 +53,12 @@ begin  -- architecture behavioral
     if reset = '1' then                 -- asynchronous reset (active high)
       pass_out_local_1 <= (others => '0');
       pass_out_local_2 <= (others => '0');
-      pass_out_local_3 <= (others => '0');
     elsif clk_out'event and clk_out = '1' then  -- rising clock edge
       pass_out_local_1 <= pass_in_local;
       pass_out_local_2 <= pass_out_local_1;
-      pass_out_local_3 <= pass_out_local_2;
     end if;
   end process buffer_clk_out;
 
-  pass_out <= pass_out_local_3;
+  pass_out <= pass_out_local_2;
 end architecture behavioral;
 

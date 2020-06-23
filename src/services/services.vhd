@@ -12,42 +12,42 @@ use work.SERV_Ctrl.all;
 entity services is
   
   port (
-    clk_axi         : in  std_logic;
-    reset_axi_n     : in  std_logic;
-    readMOSI        : in  AXIReadMOSI;
-    readMISO        : out AXIReadMISO := DefaultAXIReadMISO;
-    writeMOSI       : in  AXIWriteMOSI;
-    writeMISO       : out AXIWriteMISO := DefaultAXIWriteMISO;
+    clk_axi            : in  std_logic;
+    reset_axi_n        : in  std_logic;
+    readMOSI           : in  AXIReadMOSI;
+    readMISO           : out AXIReadMISO := DefaultAXIReadMISO;
+    writeMOSI          : in  AXIWriteMOSI;
+    writeMISO          : out AXIWriteMISO := DefaultAXIWriteMISO;
+                       
+    SGMII_MON          : in  SGMII_MONITOR_t;
+    SGMII_CTRL         : out SGMII_CONTROL_t;
+                       
+    SI_INT             : in  std_logic;
+    SI_LOL             : in  std_logic;
+    SI_LOS             : in  std_logic;
+    SI_OUT_EN          : out std_logic;
+    SI_ENABLE          : out std_logic;
+    SI_init_reset      : out std_logic;
+                       
+    TTC_SRC_SEL        : out std_logic;
+    TCDS_REFCLK_LOCKED :  in std_logic;
 
-    SGMII_MON       : in  SGMII_MONITOR_t;
-    SGMII_CTRL      : out SGMII_CONTROL_t;
-    
-    SI_INT          : in  std_logic;
-    SI_LOL          : in  std_logic;
-    SI_LOS          : in  std_logic;
-    SI_OUT_EN       : out std_logic;
-    SI_ENABLE       : out std_logic;
-    SI_init_reset   : out std_logic;
-    
-    TTC_SRC_SEL     : out std_logic;
-
-    LHC_CLK_CMS_LOS : in  std_logic;
-    LHC_CLK_OSC_LOS : in  std_logic;
-    LHC_SRC_SEL     : out std_logic;
-    HQ_CLK_CMS_LOS  : in  std_logic;
-    HQ_CLK_OSC_LOS  : in  std_logic;
-    HQ_SRC_SEL      : out std_logic;
-    FP_LED_RST      : out std_logic;
-    FP_LED_CLK      : out std_logic;
-    FP_LED_SDA      : out std_logic;
-    FP_switch       : in  std_logic;
-    linux_booted    : in  std_logic;
-    
-    ESM_LED_CLK     : in  std_logic;
-    ESM_LED_SDA     : in  std_logic;
-    CM1_C2C_Mon     : in  single_C2C_Monitor_t;
-    CM2_C2C_Mon     : in  single_C2C_Monitor_t
-    );
+    LHC_CLK_CMS_LOS    : in  std_logic;
+    LHC_CLK_OSC_LOS    : in  std_logic;
+    LHC_SRC_SEL        : out std_logic;
+    HQ_CLK_CMS_LOS     : in  std_logic;
+    HQ_CLK_OSC_LOS     : in  std_logic;
+    HQ_SRC_SEL         : out std_logic;
+    FP_LED_RST         : out std_logic;
+    FP_LED_CLK         : out std_logic;
+    FP_LED_SDA         : out std_logic;
+    FP_switch          : in  std_logic;
+    linux_booted       : in  std_logic;
+                       
+    ESM_LED_CLK        : in  std_logic;
+    ESM_LED_SDA        : in  std_logic;
+    CM1_C2C_Mon        : in  single_C2C_Monitor_t;
+    CM2_C2C_Mon        : in  single_C2C_Monitor_t);
 end entity services;
 
 architecture behavioral of services is
@@ -164,6 +164,7 @@ begin  -- architecture behavioral
   Mon.SI5344.INT               <= not SI_INT;
   Mon.SI5344.LOL               <= not SI_LOL;
   Mon.SI5344.LOS               <= not SI_LOS;
+  Mon.TCDS.REFCLK_LOCKED       <= TCDS_REFCLK_LOCKED;
   Mon.CLOCKING.HQ_LOS_BP       <= HQ_CLK_CMS_LOS;
   Mon.CLOCKING.HQ_LOS_OSC      <= HQ_CLK_OSC_LOS;
   Mon.CLOCKING.LHC_LOS_BP      <= LHC_CLK_CMS_LOS;

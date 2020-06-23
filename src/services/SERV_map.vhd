@@ -76,6 +76,7 @@ begin  -- architecture behavioral
           localRdData( 6)            <=  Mon.SI5344.LOS;                    --Si5344 Loss of signal
         when 4 => --0x4
           localRdData( 0)            <=  reg_data( 4)( 0);                  --TTC source select (0:TCDS,1:TTC_FAKE
+          localRdData( 4)            <=  Mon.TCDS.REFCLK_LOCKED;            --TCDS refclk locked
         when 5 => --0x5
           localRdData( 0)            <=  Mon.CLOCKING.LHC_LOS_BP;           --Backplane LHC clk LOS
           localRdData( 1)            <=  Mon.CLOCKING.LHC_LOS_OSC;          --Local Si LHC clk LOS

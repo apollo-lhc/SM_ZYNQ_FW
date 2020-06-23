@@ -10,8 +10,14 @@ set vhdl_files "\
      src/top.vhd \
      src/misc/types.vhd \
      src/misc/counter.vhd \
+     src/misc/counter_CDC.vhd \
      src/misc/asym_dualport_ram.vhd \
      src/misc/uart_rx6.vhd \
+     src/misc/DC_data_CDC.vhd \
+     src/misc/data_CDC.vhd \
+     src/misc/capture_CDC.vhd \
+     src/misc/pacd.vhd \
+     src/misc/capture_CDC.vhd \
      src/axiReg/axiRegPkg.vhd \
      src/axiReg/axiReg.vhd \
      src/axiReg/axiRegMaster.vhd \
@@ -40,14 +46,12 @@ set vhdl_files "\
      src/SM_info/FW_INFO_map.vhd \
      src/SM_info/FW_INFO_PKG.vhd \
      src/SM_info/SM_info.vhd \
-     src/misc/pass_time_domain.vhd \
-     src/misc/pacd.vhd \
-     src/misc/capture_CDC.vhd \
      src/TCDS/lhc_gt_usrclk_source.vhd \
      src/TCDS/MGBT2_common_reset.vhd \
      src/TCDS/MGBT2_common.vhd \
      src/TCDS/TCDS.vhd \
      src/TCDS/TCDS_Control.vhd \
+     src/TCDS/TCDS_Monitor.vhd \
      src/TCDS/TCDS_map.vhd \
      src/TCDS/TCDS_PKG.vhd \
      src/plXVC/plXVC_map.vhd \
