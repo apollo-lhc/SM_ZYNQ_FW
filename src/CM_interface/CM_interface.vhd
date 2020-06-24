@@ -216,16 +216,16 @@ begin
         count_alltime    => Mon.CM(iCM).C2C.CNT.INIT_ALLTIME,
         count_shortterm  => Mon.CM(iCM).C2C.CNT.INIT_SHORTTERM);
     CM_C2C_Ctrl.CM(iCM).aurora_pma_init_in <= (aurora_init_buf(iCM - 1) and CTRL.CM(iCM).CTRL.ENABLE_PHY_CTRL) or (CTRL.CM(iCM).C2C.INITIALIZE and (not CTRL.CM(iCM).CTRL.ENABLE_PHY_CTRL));
-
+    
     --Chipscope for probing
     ChipScope_X: entity work.chipscope
       port map (
-        clk    => clk_axi, --maybe C2C clk
-        probe0 => CM_C2C_Mon.CM(iCM).phy_lane_up(0),
-        probe1 => aurora_init_buf(iCM - 1),
-        probe2 => phycontrol_en(iCM - 1),
-        probe3 => '0',
-        probe4 => Mon.CM(iCM).C2C.CNT.PHYLANE_STATE);
+        clk       => clk_axi, --maybe C2C clk
+        probe0(0) => CM_C2C_Mon.CM(iCM).phy_lane_up(0),
+        probe1(0) => aurora_init_buf(iCM - 1),
+        probe2(0) => phycontrol_en(iCM - 1),
+        probe3(0) => '0',
+        probe4    => Mon.CM(iCM).C2C.CNT.PHYLANE_STATE);
     
     -------------------------------------------------------------------------------
     --Power-up sequences
