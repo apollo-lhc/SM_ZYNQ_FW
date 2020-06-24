@@ -89,7 +89,7 @@
 	  <node id="CNT_BYTE4_NOT_DATA"  address="0x3"       mask="0x0000FFFF" permission="r"  description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=CM;Column=_5;Row=_4;Status=1;Show=nz;Format=u"/>
 	  <node id="CNT_UNKNOWN"         address="0x3"       mask="0xFFFF0000" permission="r"  description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=CM;Column=_5;Row=_4;Status=1;Show=nz;Format=u"/>
 	</node>
-	<node id="UART_BYTES" address="0x8" mask="0xFFFFFFFF" permission="r" description="Count of UART bytes from CM MCU" parameters="Table=CM;Column=Bytes;ROW=_4;Status=3;Format=u"/>
+	<node id="UART_BYTES" address="0x8" mask="0xFFFFFFFF" permission="r" description="Count of UART bytes from CM MCU" parameters="Table=CM;Column=Bytes;Row=_4;Status=3;Format=u"/>
 
 
       </node>
