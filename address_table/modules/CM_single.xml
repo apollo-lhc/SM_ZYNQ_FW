@@ -71,7 +71,7 @@
       <node id="MB_ERROR_COUNT"       address="0x4" permission="r"  description="Counter for MB_ERROR"                     parameters="Table=CM;Column=MB_ERROR_COUNT;Row=_2;Status=1;Show=nz;Format=u"/>
       <node id="PHY_HARD_ERROR_COUNT" address="0x5" permission="r"  description="Counter for PHY_HARD_ERROR"               parameters="Table=CM;Column=PHY_HARD_ERR_COUNT;Row=_2;Status=1;Show=nz;Format=u"/>
       <node id="PHY_SOFT_ERROR_COUNT" address="0x6" permission="r"  description="Counter for PHY_SOFT_ERROR"               parameters="Table=CM;Column=PHY_SOFT_ERR_COUNT;Row=_2;Status=1;Show=nz;Format=u"/>
-      <node id="PHYLANE_STATE"        address="0x7" permission="r"  description="Current state of phy_lane_control module" parameters="Table=CM;Column=PHYLANE_STATE;Row=_2;Status=1;Format=u" mask="0x7"/>
+      <node id="PHYLANE_STATE"        address="0x7" permission="r"  description="Current state of phy_lane_control module" parameters="Table=CM;Column=PHYLANE_STATE;Row=_2;Status=1;Format=t_0_IDLE_1_INITIALIZING_2_WAITING_7_LOCKED_6_errorWAITING" mask="0x7"/>
       <node id="RESET_COUNTERS"       address="0x8" permission="rw" description="Reset counters in Monitor" mask="0x1"/>
       <node id="PHY_ERRORSTATE_COUNT" address="0x9" permission="r"  description="Count for phylane in error state"         parameters="Table=CM;Column=PHYLANE_ERROR_COUNT;Row=_2;Status=1;Show=nz;Format=u"/>
     </node>
