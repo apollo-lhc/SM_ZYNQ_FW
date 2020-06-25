@@ -1,7 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-
 --use work.types.all;
 
 Library UNISIM;
@@ -44,19 +43,23 @@ architecture behavioral of CM_phy_lane_control is
   signal reset_c     : std_logic;
   
 begin
------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 --  
---                                                            +-----------+
---                                                          |           |
---                                                          |  LOCKED   |
---                                    +-------------------->+  111      |
---                                    |    phylaneup = 1    +-------+---+
---                                    |                             |
---  ALL STATES                        |                             |
---       +                            |                             |phylaneup = 0
---       | enable = 0                 |                             |
---       v                            |      timer = 1ms            v
---   +---+----+             +---------+-+   phylaneup = 0   +-------+--------+
+--                                                                   timer /= 10ms
+--                                                                  +------------+
+--                                                                  |            |
+--                                                                  |            |
+--                            +-----------+  phylaneup = 1 +--------+-----+      |
+--                            |           +<---------------+              |      |
+--                            |  LOCKED   |                |  ERROR_WAIT  +<-----+
+--                            |  111      +--------------->+     110      |
+--                            +--+--------+ phylaneup = 0  +--------+-----+
+--                               ^                                  |
+--  ALL STATES                   |                                  |phylaneup = 0
+--       +                 phylaneup = 1                            |timer = 10ms
+--       | enable = 0            |                                  |
+--       v                       |           timer = 10ms           v
+--   +---+----+             +----+------+   phylaneup = 0   +-------+--------+
 --   |        |             |           +------------------>+                |
 --   |  IDLE  +------------>+   WAIT    |                   |  INITIALIZING  +-------+
 --   |  000   | enable = 1  |   010     +<------------------+  001           |       |
@@ -64,10 +67,10 @@ begin
 --                            ^        |                                ^            |
 --                            |        |                                |            |
 --                            +--------+                                +------------+
---                           Timer /= 1ms                                 COUNTER /= 32
---                         
------------------------------------------------------------------------------------------
-  
+--                            Timer /= 10ms                                COUNTER /= 32
+--
+------------------------------------------------------------------------------------------
+
 --process for managing state
   STATE_MACHINE: process (clk, reset) is
   begin
@@ -139,9 +142,7 @@ begin
             state <= IDLE;
           else
             if phy_lane_up = '1' then
-              --if timer_read = (READ_TIME/2) then
               state <= LOCKED;
-              --end if;
             else
               if timer_error = ERROR_WAIT_TIME then
                 state <= INITIALIZING;
@@ -194,15 +195,6 @@ begin
           else
             timer_read <= timer_read + 1;
           end if;
-          --if phy_lane_up = '1' then
-           -- if timer_error = (READ_TIME/2) then
-             -- timer_error <= timer_error;
-           -- else
-            --  timer_error <= timer_error + 1;
-           -- end if;
-          --else
-            --timer_error <= timer_error;
-          --end if;
           timer_error <= 0;
           event       <= '0';
           
@@ -216,15 +208,6 @@ begin
           counter    <= "00000";
           timer_read <= 0;
           event      <= '0';
-          --if phy_lane_up = '1' then
-          --  if timer_read = (READ_TIME/2) then
-            --  timer_read <= timer_read;
-           -- else
-            --  timer_read <= timer_read + 1;
-           -- end if;
-         -- else
-           -- timer_read <= timer_read;
-          --end if;
           if timer_error = ERROR_WAIT_TIME then
             timer_error <= timer_error;
           else
