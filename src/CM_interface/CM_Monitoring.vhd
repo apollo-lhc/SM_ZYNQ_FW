@@ -87,9 +87,19 @@ architecture behavioral of CM_Monitoring is
                    SM_WAIT_FOR_AXI_READ,
                    SM_ERROR);
   signal state : state_t;
+  signal state_slv : std_logic_vector(2 downto 0);
   
 begin  -- architecture behavioral
 
+  state_slv <= "000" when state = SM_RESET else
+               "001" when state = SM_WAIT_FOR_SOF else
+               "010" when state = SM_WAIT_FOR_BYTE2 else
+               "011" when state = SM_WAIT_FOR_BYTE3 else
+               "100" when state = SM_WAIT_FOR_BYTE4 else
+               "101" when state = SM_WAIT_FOR_AXI_READ else
+               "110" when state = SM_ERROR else
+               "111" ;
+  
   -------------------------------------------------------------------------------
   --AXI-Lite master
   -------------------------------------------------------------------------------
@@ -428,4 +438,24 @@ begin  -- architecture behavioral
       event       => '1',
       count       => open,
       at_max      => channel_inactive);
+
+
+  uart_monitor_ila_1: entity work.uart_monitor_ila
+    port map (
+      clk    => clk,
+      probe0(0) => uart_rx,
+      probe1    => uart_data,
+      probe2(0) => en_16_x_baud,
+      probe2(1) => uart_rd_en,
+      probe2(2) => uart_data_present,
+      probe2(3) => uart_half_full,
+      probe2(4) => uart_full,
+      probe2(5) => uart_reset,
+      probe3    => uart_history,      
+      probe4( 7 downto  0) => sensor_number,      
+      probe4(23 downto  8) => sensor_value,
+      probe5 => state_slv,      
+      probe6 => error_pulse
+      );
+  
 end architecture behavioral;
