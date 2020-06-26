@@ -207,9 +207,13 @@ begin  -- architecture behavioral
           localRdData(31 downto 16)  <=  Mon.CM1.MONITOR.ERRORS.CNT_BYTE3_NOT_DATA;      --Monitoring errors. Count of invalid byte types in parsing.
         when 28 => --0x1c
           localRdData(15 downto  0)  <=  Mon.CM1.MONITOR.ERRORS.CNT_BYTE4_NOT_DATA;      --Monitoring errors. Count of invalid byte types in parsing.
-          localRdData(31 downto 16)  <=  Mon.CM1.MONITOR.ERRORS.CNT_UNKNOWN;             --Monitoring errors. Count of invalid byte types in parsing.
+          localRdData(31 downto 16)  <=  Mon.CM1.MONITOR.ERRORS.CNT_TIMEOUT;             --Monitoring errors. Count of invalid byte types in parsing.
         when 29 => --0x1d
+          localRdData(15 downto  0)  <=  Mon.CM1.MONITOR.ERRORS.CNT_UNKNOWN;             --Monitoring errors. Count of invalid byte types in parsing.
+        when 30 => --0x1e
           localRdData(31 downto  0)  <=  Mon.CM1.MONITOR.UART_BYTES;                     --Count of UART bytes from CM MCU
+        when 31 => --0x1f
+          localRdData(31 downto  0)  <=  reg_data(31)(31 downto  0);                     --Count to wait for in state machine before timing out (50Mhz clk)
 
 
         when others =>
@@ -254,6 +258,7 @@ begin  -- architecture behavioral
   Ctrl.CM1.C2C.TX.PRBS_SEL           <=  reg_data(20)(26 downto 24);     
   Ctrl.CM1.C2C.TX.PRE_CURSOR         <=  reg_data(20)(31 downto 27);     
   Ctrl.CM1.MONITOR.COUNT_16X_BAUD    <=  reg_data(21)( 7 downto  0);     
+  Ctrl.CM1.MONITOR.SM_TIMEOUT        <=  reg_data(31)(31 downto  0);     
   Ctrl.CM2.CTRL.ENABLE_UC            <=  reg_data( 1)( 0);               
   Ctrl.CM2.CTRL.ENABLE_PWR           <=  reg_data( 1)( 1);               
   Ctrl.CM2.CTRL.OVERRIDE_PWR_GOOD    <=  reg_data( 1)( 2);               
@@ -322,6 +327,7 @@ begin  -- architecture behavioral
       reg_data(20)(26 downto 24)  <= DEFAULT_CM_CTRL_t.CM1.C2C.TX.PRBS_SEL;
       reg_data(20)(31 downto 27)  <= DEFAULT_CM_CTRL_t.CM1.C2C.TX.PRE_CURSOR;
       reg_data(21)( 7 downto  0)  <= DEFAULT_CM_CTRL_t.CM1.MONITOR.COUNT_16X_BAUD;
+      reg_data(31)(31 downto  0)  <= DEFAULT_CM_CTRL_t.CM1.MONITOR.SM_TIMEOUT;
       reg_data( 1)( 0)  <= DEFAULT_CM_CTRL_t.CM2.CTRL.ENABLE_UC;
       reg_data( 1)( 1)  <= DEFAULT_CM_CTRL_t.CM2.CTRL.ENABLE_PWR;
       reg_data( 1)( 2)  <= DEFAULT_CM_CTRL_t.CM2.CTRL.OVERRIDE_PWR_GOOD;
@@ -435,6 +441,8 @@ begin  -- architecture behavioral
           reg_data(21)( 7 downto  0)     <=  localWrData( 7 downto  0);      --Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
         when 25 => --0x19
           Ctrl.CM1.MONITOR.ERRORS.RESET  <=  localWrData( 0);               
+        when 31 => --0x1f
+          reg_data(31)(31 downto  0)     <=  localWrData(31 downto  0);      --Count to wait for in state machine before timing out (50Mhz clk)
 
           when others => null;
         end case;
