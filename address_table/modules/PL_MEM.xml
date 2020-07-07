@@ -134,7 +134,9 @@
     <node id="WORD_15"   address="0x0000000F" permission="rw"/>    
   </node>
   <node id="NETWORK" address="0x00000800">
-    <node id="INOCTET_RATE"  address="0x00000000" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=Network;Status=1" description="Rate of InOctets at Bytes/sec"/>
-    <node id="OUTOCTET_RATE" address="0x00000001" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=Network;Status=1" description="Rate of OutOctets at Bytes/sec"/>
+    <node id="INOCTET_RATE"  address="0x00000000" permission="rw" parameters="Table=CM;Row=_3;Column=Network;Row=_2;Status=1;Show=nz;Format=u" description="Rate of InOctets at Bytes/sec"/>
+    <!-- <node id="INOCTET_RATE"  address="0x00000000" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=Network;Status=1" description="Rate of InOctets at Bytes/sec"/> -->
+    <!-- <node id="OUTOCTET_RATE" address="0x00000001" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=Network;Status=1" description="Rate of OutOctets at Bytes/sec"/> -->
+    <node id="OUTOCTET_RATE" address="0x00000001" permission="rw" parameters="Table=CM;Row=_3;Column=Network;Row=_2;Status=1;Show=nz;Format=u" description="Rate of OutOctets at Bytes/sec"/>
   </node>
 </node>
