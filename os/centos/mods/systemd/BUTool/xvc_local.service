@@ -1,0 +1,14 @@
+[Unit]
+Description=XVC server for zynq JTAG chain 
+After=systemd-udevd.service
+
+[Service]
+Type=forking
+PIDFile=/var/run/xvc_server.2544.pid
+Restart=always
+RestartSec=1
+User=root
+ExecStart=/opt/BUTool/bin/xvc_server -p 2544 -v XVC_LOCAL
+
+[Install]
+WantedBy=basic.target

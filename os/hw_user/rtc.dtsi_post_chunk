@@ -1,0 +1,19 @@
+  &i2c0 {
+    status = "okay";
+    rtc@6f {
+      status = "okay";
+      compatible = "xti,isl12022";
+      reg = < 0x0000006f >;
+    };
+    rtc-eeprom@57 {
+      status = "okay";
+      compatible = "xti,24c01";
+      reg = < 0x00000057 >;
+    };
+
+    secure-eeprom@64 {
+      status = "okay";
+      compatible = "atmel,24c16";
+      reg = < 0x00000064 >;
+    };		     
+  };

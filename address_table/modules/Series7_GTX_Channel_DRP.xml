@@ -1,0 +1,3 @@
+<node id="SERIES7_GTX_Channel_DRP">
+  <node id="PRBS_ERR_CNT" address="0x570" mask="0xFFFF" permission="r" description="PRBS error count"/>
+</node>

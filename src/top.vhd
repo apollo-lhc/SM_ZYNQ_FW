@@ -34,6 +34,9 @@ entity top is
     FIXED_IO_ps_porb  : inout STD_LOGIC;
     FIXED_IO_ps_srstb : inout STD_LOGIC;
 
+    I2C_SCL           : inout std_logic;
+    I2C_SDA           : inout std_logic;
+    
     onboard_CLK_P     : in  std_logic;
     onboard_CLK_N     : in  std_logic;
 
@@ -106,8 +109,9 @@ entity top is
     CM2_tdo          : in    STD_LOGIC;
     CM2_tms          : out   STD_LOGIC;
 
-
-
+    -------------------------------------------------------------------------------------------
+    -- plXVC
+    -------------------------------------------------------------------------------------------
 
     -------------------------------------------------------------------------------------------
     -- MGBT 1
@@ -131,25 +135,25 @@ entity top is
 --    -------------------------------------------------------------------------------------------
     refclk_125Mhz_P   : in    std_logic; 
     refclk_125Mhz_N   : in    std_logic; 
---    refclk_TCDS_P     : in    std_logic; 
---    refclk_TCDS_N     : in    std_logic; 
+    refclk_TCDS_P     : in    std_logic; 
+    refclk_TCDS_N     : in    std_logic; 
 --                              
     sgmii_tx_P        : out   std_logic; 
     sgmii_tx_N        : out   std_logic; 
     sgmii_rx_P        : in    std_logic; 
     sgmii_rx_N        : in    std_logic;
 --                              
---    tts_P             : out   std_logic; 
---    tts_N             : out   std_logic; 
---    ttc_P             : in    std_logic; 
---    ttc_N             : in    std_logic; 
+    tts_P             : out   std_logic; 
+    tts_N             : out   std_logic; 
+    ttc_P             : in    std_logic; 
+    ttc_N             : in    std_logic; 
 --                              
---    fake_ttc_P        : out   std_logic; 
---    fake_ttc_N        : out   std_logic; 
---    m1_tts_P          : in    std_logic; 
---    m1_tts_N          : in    std_logic;                       
---    m2_tts_P          : in    std_logic; 
---    m2_tts_N          : in    std_logic;
+    fake_ttc_P        : out   std_logic; 
+    fake_ttc_N        : out   std_logic; 
+    m1_tts_P          : in    std_logic; 
+    m1_tts_N          : in    std_logic;                       
+    m2_tts_P          : in    std_logic; 
+    m2_tts_N          : in    std_logic;
     IPMC_SDA : inout STD_LOGIC;
     IPMC_SCL : in    STD_LOGIC;
     SI_scl : inout STD_LOGIC;
@@ -159,97 +163,33 @@ end entity top;
 
 architecture structure of top is
 
-  component SGMII_INTF is
-    port (
-      gtrefclk_bufg          : IN  STD_LOGIC;
-      gtrefclk               : IN  STD_LOGIC;
-      txn                    : OUT STD_LOGIC;
-      txp                    : OUT STD_LOGIC;
-      rxn                    : IN  STD_LOGIC;
-      rxp                    : IN  STD_LOGIC;
-      independent_clock_bufg : IN  STD_LOGIC;
-      txoutclk               : OUT STD_LOGIC;
-      rxoutclk               : OUT STD_LOGIC;
-      resetdone              : OUT STD_LOGIC;
-      cplllock               : OUT STD_LOGIC;
-      mmcm_reset             : OUT STD_LOGIC;
-      userclk                : IN  STD_LOGIC;
-      userclk2               : IN  STD_LOGIC;
-      pma_reset              : IN  STD_LOGIC;
-      mmcm_locked            : IN  STD_LOGIC;
-      rxuserclk              : IN  STD_LOGIC;
-      rxuserclk2             : IN  STD_LOGIC;
-      sgmii_clk_r            : OUT STD_LOGIC;
-      sgmii_clk_f            : OUT STD_LOGIC;
-      gmii_txclk             : OUT STD_LOGIC;
-      gmii_rxclk             : OUT STD_LOGIC;
-      gmii_txd               : IN  STD_LOGIC_VECTOR(7 DOWNTO 0);
-      gmii_tx_en             : IN  STD_LOGIC;
-      gmii_tx_er             : IN  STD_LOGIC;
-      gmii_rxd               : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-      gmii_rx_dv             : OUT STD_LOGIC;
-      gmii_rx_er             : OUT STD_LOGIC;
-      gmii_isolate           : OUT STD_LOGIC;
-      mdc                    : IN  STD_LOGIC;
-      mdio_i                 : IN  STD_LOGIC;
-      mdio_o                 : OUT STD_LOGIC;
-      mdio_t                 : OUT STD_LOGIC;
-      phyaddr                : IN  STD_LOGIC_VECTOR(4 DOWNTO 0);
-      configuration_vector   : IN  STD_LOGIC_VECTOR(4 DOWNTO 0);
-      configuration_valid    : IN  STD_LOGIC;
-      an_interrupt           : OUT STD_LOGIC;
-      an_adv_config_vector   : IN  STD_LOGIC_VECTOR(15 DOWNTO 0);
-      an_adv_config_val      : IN  STD_LOGIC;
-      an_restart_config      : IN  STD_LOGIC;
-      status_vector          : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
-      reset                  : IN  STD_LOGIC;
-      signal_detect          : IN  STD_LOGIC;
-      gt0_qplloutclk_in      : IN  STD_LOGIC;
-      gt0_qplloutrefclk_in   : IN  STD_LOGIC);
-  end component SGMII_INTF;
-
   signal pl_clk : std_logic;
   signal axi_reset_n : std_logic;
   signal axi_reset : std_logic;
 
   signal pl_reset_n : std_logic;
   
-  --SGMII interface
-  signal clk_SGMII_tx          :  std_logic;
-  signal clk_SGMII_rx          :  std_logic;
-  signal reset_MMCM            :  std_logic;
-  signal reset_SGMII_MMCM      :  std_logic;
-  signal reset_pma_SGMII       :  std_logic;
-  signal locked_sgmii_mmcm     :  std_logic;
-  signal refclk_125Mhz_IBUFG   :  std_logic;
-  signal clk_125Mhz            :  std_logic;
-  signal clk_user_SGMII        :  std_logic;
-  signal clk_user2_SGMII       :  std_logic;
-  signal clk_rxuser_SGMII      :  std_logic;
-  signal clk_rxuser2_SGMII     :  std_logic;
+
+------- SGMII
+  signal ENET1_EXT_INTIN_0     : STD_LOGIC;
+  signal GMII_ETHERNET_col     : STD_LOGIC;
+  signal GMII_ETHERNET_crs     : STD_LOGIC;
+  signal GMII_ETHERNET_rx_clk  : STD_LOGIC;
+  signal GMII_ETHERNET_rx_dv   : STD_LOGIC;
+  signal GMII_ETHERNET_rx_er   : STD_LOGIC;
+  signal GMII_ETHERNET_rxd     : STD_LOGIC_VECTOR ( 7 downto 0 );
+  signal GMII_ETHERNET_tx_clk  : STD_LOGIC;
+  signal GMII_ETHERNET_tx_en   : STD_LOGIC_VECTOR ( 0 to 0 );
+  signal GMII_ETHERNET_tx_er   : STD_LOGIC_VECTOR ( 0 to 0 );
+  signal GMII_ETHERNET_txd     : STD_LOGIC_VECTOR ( 7 downto 0 );
+  signal MDIO_ETHERNET_mdc     : std_logic;
+  signal MDIO_ETHERNET_mdio_i  : std_logic;
+  signal MDIO_ETHERNET_mdio_o  : std_logic;
+  signal QPLL_CLK              : std_logic;
+  signal QPLL_REF_CLK          : std_logic;
+
   
-  signal ENET1_EXT_INTIN_0     :  STD_LOGIC;
-  signal GMII_ETHERNET_col     :  STD_LOGIC;
-  signal GMII_ETHERNET_crs     :  STD_LOGIC;
-  signal GMII_ETHERNET_rx_clk  :  STD_LOGIC;
-  signal GMII_ETHERNET_rx_dv   :  STD_LOGIC;
-  signal GMII_ETHERNET_rx_er   :  STD_LOGIC;
-  signal GMII_ETHERNET_rxd     :  STD_LOGIC_VECTOR ( 7 downto 0 );
-  signal GMII_ETHERNET_tx_clk  :  STD_LOGIC;
-  signal GMII_ETHERNET_tx_en   :  STD_LOGIC_VECTOR ( 0 to 0 );
-  signal GMII_ETHERNET_tx_er   :  STD_LOGIC_VECTOR ( 0 to 0 );
-  signal GMII_ETHERNET_txd     :  STD_LOGIC_VECTOR ( 7 downto 0 );
-  signal MDIO_ETHERNET_mdc     :  std_logic;
-  signal MDIO_ETHERNET_mdio_i  :  std_logic;
-  signal MDIO_ETHERNET_mdio_o  :  std_logic;
-
-
-
 ------- TCDS
-  signal reset_MGBT2 : std_logic;
-  signal clk_gt_qpllout : std_logic;
-  signal refclk_gt_qpllout : std_logic;
-
   signal refclk_TCDS : std_logic;
   signal ttc_data : std_logic_vector(35 downto 0); 
   signal tts_data : std_logic_vector(35 downto 0); 
@@ -293,7 +233,7 @@ architecture structure of top is
   
 -- AXI BUS
   signal AXI_clk : std_logic;
-  constant PL_AXI_SLAVE_COUNT : integer := 4;
+  constant PL_AXI_SLAVE_COUNT : integer := 7;
   signal AXI_BUS_RMOSI :  AXIReadMOSI_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIReadMOSI);
   signal AXI_BUS_RMISO :  AXIReadMISO_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIReadMISO);
   signal AXI_BUS_WMOSI : AXIWriteMOSI_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIWriteMOSI);
@@ -332,23 +272,30 @@ architecture structure of top is
 
   signal SI_OE_normal : std_logic;
   signal SI_EN_normal : std_logic;
-  signal Si_handoff_to_PS : std_logic;
   
   signal IPMC_SDA_o : std_logic;
   signal IPMC_SDA_t : std_logic;
   signal IPMC_SDA_i : std_logic;
 
-  signal  stupid_reset_test : std_logic;
+  signal  SI_init_reset : std_logic;
 
 
-  signal XVC0_tck          : STD_LOGIC;
-  signal XVC0_tdi          : STD_LOGIC;
-  signal XVC0_tdo          : STD_LOGIC;
-  signal XVC0_tms          : STD_LOGIC;
-  signal XVC1_tck          : STD_LOGIC;
-  signal XVC1_tdi          : STD_LOGIC;
-  signal XVC1_tdo          : STD_LOGIC;
-  signal XVC1_tms          : STD_LOGIC;
+
+  --For plXVC
+  constant XVC_COUNT    : integer := 2;
+  signal plXVC_TMS      : std_logic_vector((XVC_COUNT -1) downto 0);
+  signal plXVC_TDI      : std_logic_vector((XVC_COUNT -1) downto 0);
+  signal plXVC_TDO      : std_logic_vector((XVC_COUNT -1) downto 0);
+  signal plXVC_TCK      : std_logic_vector((XVC_COUNT -1) downto 0);
+  
+  --signal XVC0_tck          : STD_LOGIC;
+  --signal XVC0_tdi          : STD_LOGIC;
+  --signal XVC0_tdo          : STD_LOGIC;
+  --signal XVC0_tms          : STD_LOGIC;
+  --signal XVC1_tck          : STD_LOGIC;
+  --signal XVC1_tdi          : STD_LOGIC;
+  --signal XVC1_tdo          : STD_LOGIC;
+  --signal XVC1_tms          : STD_LOGIC;
 
 
 
@@ -363,7 +310,12 @@ architecture structure of top is
   signal C2C1_phy_gt_refclk1_out : std_logic;
 
   signal linux_booted : std_logic;
-  
+
+  signal clk_TCDS : std_logic;
+  signal clk_TCDS_reset_n : std_logic;
+  signal clk_TCDS_locked : std_logic;
+
+  signal clk_C2C1_PHY : std_logic;
 begin  -- architecture structure
 
   pl_reset_n <= axi_reset_n ;
@@ -411,6 +363,8 @@ begin  -- architecture structure
       ENET1_MDIO_MDC_0          => MDIO_ETHERNET_mdc     ,
       ENET1_MDIO_I_0            => MDIO_ETHERNET_mdio_i  ,
       ENET1_MDIO_O_0            => MDIO_ETHERNET_mdio_o  ,
+      IIC_0_0_scl_io            => I2C_SCL,
+      IIC_0_0_sda_io            => I2C_SDA,
       SI_scl_i                  => SCL_i_phy,--SCL_i_normal,
       SI_scl_o                  => SCL_o_phy,--SCL_o_normal,
       SI_scl_t                  => SCL_t_phy,--SCL_t_normal,
@@ -438,8 +392,8 @@ begin  -- architecture structure
       AXIM_PL_rresp             => AXI_MSTR_RMISO.response,
       AXIM_PL_rvalid            => AXI_MSTR_RMISO.data_valid,
       AXIM_PL_rready            => AXI_MSTR_RMOSI.ready_for_data,
-      PL_CLK                    => pl_clk,
-      PL_RESET_N                => pl_reset_n,
+--      PL_CLK                    => pl_clk,
+--      PL_RESET_N                => pl_reset_n,
       SERV_araddr               => AXI_BUS_RMOSI(0).address,
       SERV_arprot               => AXI_BUS_RMOSI(0).protection_type,
       SERV_arready              => AXI_BUS_RMISO(0).ready_for_address,
@@ -520,15 +474,74 @@ begin  -- architecture structure
       SM_INFO_wstrb           => AXI_BUS_WMOSI(3).data_write_strobe,
       SM_INFO_wvalid          => AXI_BUS_WMOSI(3).data_valid,
 
+      TCDS_DRP_araddr          => AXI_BUS_RMOSI(4).address,
+      TCDS_DRP_arprot          => AXI_BUS_RMOSI(4).protection_type,
+      TCDS_DRP_arready         => AXI_BUS_RMISO(4).ready_for_address,
+      TCDS_DRP_arvalid         => AXI_BUS_RMOSI(4).address_valid,
+      TCDS_DRP_awaddr          => AXI_BUS_WMOSI(4).address,
+      TCDS_DRP_awprot          => AXI_BUS_WMOSI(4).protection_type,
+      TCDS_DRP_awready         => AXI_BUS_WMISO(4).ready_for_address,
+      TCDS_DRP_awvalid         => AXI_BUS_WMOSI(4).address_valid,
+      TCDS_DRP_bready          => AXI_BUS_WMOSI(4).ready_for_response,
+      TCDS_DRP_bresp           => AXI_BUS_WMISO(4).response,
+      TCDS_DRP_bvalid          => AXI_BUS_WMISO(4).response_valid,
+      TCDS_DRP_rdata           => AXI_BUS_RMISO(4).data,
+      TCDS_DRP_rready          => AXI_BUS_RMOSI(4).ready_for_data,
+      TCDS_DRP_rresp           => AXI_BUS_RMISO(4).response,
+      TCDS_DRP_rvalid          => AXI_BUS_RMISO(4).data_valid,
+      TCDS_DRP_wdata           => AXI_BUS_WMOSI(4).data,
+      TCDS_DRP_wready          => AXI_BUS_WMISO(4).ready_for_data,
+      TCDS_DRP_wstrb           => AXI_BUS_WMOSI(4).data_write_strobe,
+      TCDS_DRP_wvalid          => AXI_BUS_WMOSI(4).data_valid,
 
-      tap_tck_0                 => XVC0_tck,
-      tap_tdi_0                 => XVC0_tdi,
-      tap_tdo_0                 => XVC0_tdo,
-      tap_tms_0                 => XVC0_tms,
-      tap_tck_1                 => XVC1_tck,
-      tap_tdi_1                 => XVC1_tdi,
-      tap_tdo_1                 => XVC1_tdo,
-      tap_tms_1                 => XVC1_tms,
+      TCDS_araddr              => AXI_BUS_RMOSI(5).address,
+      TCDS_arprot              => AXI_BUS_RMOSI(5).protection_type,
+      TCDS_arready             => AXI_BUS_RMISO(5).ready_for_address,
+      TCDS_arvalid             => AXI_BUS_RMOSI(5).address_valid,
+      TCDS_awaddr              => AXI_BUS_WMOSI(5).address,
+      TCDS_awprot              => AXI_BUS_WMOSI(5).protection_type,
+      TCDS_awready             => AXI_BUS_WMISO(5).ready_for_address,
+      TCDS_awvalid             => AXI_BUS_WMOSI(5).address_valid,
+      TCDS_bready              => AXI_BUS_WMOSI(5).ready_for_response,
+      TCDS_bresp               => AXI_BUS_WMISO(5).response,
+      TCDS_bvalid              => AXI_BUS_WMISO(5).response_valid,
+      TCDS_rdata               => AXI_BUS_RMISO(5).data,
+      TCDS_rready              => AXI_BUS_RMOSI(5).ready_for_data,
+      TCDS_rresp               => AXI_BUS_RMISO(5).response,
+      TCDS_rvalid              => AXI_BUS_RMISO(5).data_valid,
+      TCDS_wdata               => AXI_BUS_WMOSI(5).data,
+      TCDS_wready              => AXI_BUS_WMISO(5).ready_for_data,
+      TCDS_wstrb               => AXI_BUS_WMOSI(5).data_write_strobe,
+      TCDS_wvalid              => AXI_BUS_WMOSI(5).data_valid,
+
+      PLXVC_araddr               => AXI_BUS_RMOSI(6).address,
+      PLXVC_arprot               => AXI_BUS_RMOSI(6).protection_type,
+      PLXVC_arready              => AXI_BUS_RMISO(6).ready_for_address,
+      PLXVC_arvalid              => AXI_BUS_RMOSI(6).address_valid,
+      PLXVC_awaddr               => AXI_BUS_WMOSI(6).address,
+      PLXVC_awprot               => AXI_BUS_WMOSI(6).protection_type,
+      PLXVC_awready              => AXI_BUS_WMISO(6).ready_for_address,
+      PLXVC_awvalid              => AXI_BUS_WMOSI(6).address_valid,
+      PLXVC_bready               => AXI_BUS_WMOSI(6).ready_for_response,
+      PLXVC_bresp                => AXI_BUS_WMISO(6).response,
+      PLXVC_bvalid               => AXI_BUS_WMISO(6).response_valid,
+      PLXVC_rdata                => AXI_BUS_RMISO(6).data,
+      PLXVC_rready               => AXI_BUS_RMOSI(6).ready_for_data,
+      PLXVC_rresp                => AXI_BUS_RMISO(6).response,
+      PLXVC_rvalid               => AXI_BUS_RMISO(6).data_valid,
+      PLXVC_wdata                => AXI_BUS_WMOSI(6).data,
+      PLXVC_wready               => AXI_BUS_WMISO(6).ready_for_data,
+      PLXVC_wstrb                => AXI_BUS_WMOSI(6).data_write_strobe,
+      PLXVC_wvalid               => AXI_BUS_WMOSI(6).data_valid,
+
+      --tap_tck_0                 => XVC1_tck,
+      --tap_tdi_0                 => XVC1_tdi,
+      --tap_tdo_0                 => XVC1_tdo,
+      --tap_tms_0                 => XVC1_tms,
+      --tap_tck_1                 => XVC1_tck,
+      --tap_tdi_1                 => XVC1_tdi,
+      --tap_tdo_1                 => XVC1_tdo,
+      --tap_tms_1                 => XVC1_tms,
 
       init_clk        =>  AXI_C2C_aurora_init_clk,
       C2C1_phy_Rx_rxn =>  AXI_C2C_CM1_Rx_N(0 to 0),
@@ -651,35 +664,22 @@ begin  -- architecture structure
       BRAM_PORTB_0_dout => open,
       BRAM_PORTB_0_en   => '0',
       BRAM_PORTB_0_rst  => '0',
-      BRAM_PORTB_0_we   => x"0"
+      BRAM_PORTB_0_we   => x"0",
+
+      C2C1_PHY_CLK      => clk_C2C1_PHY,
       
+      TCDS_CLK          => clk_TCDS,
+      TCDS_reset_n      => clk_TCDS_locked--clk_TCDS_reset_n
       );
 
 
-  SGMII_MON.mmcm_reset <= reset_SGMII_MMCM;
-  SGMII_MON.mmcm_locked <= locked_SGMII_MMCM;
- SGMII_INTF_clocking_1 : entity work.SGMII_INTF_clocking
-  port map(
-     gtrefclk_p                 => refclk_125Mhz_P,
-     gtrefclk_n                 => refclk_125Mhz_N,
-     txoutclk                   => clk_SGMII_tx,
-     rxoutclk                   => clk_SGMII_rx,
-     mmcm_reset                 => reset_SGMII_MMCM,
-     gtrefclk                   => refclk_125Mhz_IBUFG,
-     gtrefclk_bufg              => clk_125Mhz, --refclk_125Mhz via BUFG
-     mmcm_locked                => locked_SGMII_MMCM,
-     userclk                    => clk_user_SGMII,
-     userclk2                   => clk_user2_SGMII,
-     rxuserclk                  => clk_rxuser_SGMII,
-     rxuserclk2                 => clk_rxuser2_SGMII
-  );
 
 
-  pass_std_logic_vector_1: entity work.pass_std_logic_vector
+  DC_data_CDC_1: entity work.DC_data_CDC
     generic map (
       DATA_WIDTH => 22)
     port map (
-      clk_in   => clk_user2_SGMII,--clk_SGMII_tx,
+      clk_in   => GMII_ETHERNET_tx_clk,--clk_user2_SGMII,--clk_SGMII_tx,
       clk_out  => axi_clk,
       reset    => '0',
       pass_in(0)  => SGMII_MON.reset_done,   
@@ -697,126 +697,85 @@ begin  -- architecture structure
       pass_out(20 downto 5)  => SGMII_MON_CDC.status_vector,
       pass_out(21)  => SGMII_MON_CDC.reset              
 );
+
+
+--  SGMII_MON_CDC <= SGMII_MON;
+  SGMII_1: entity work.SGMII
+    port map (
+      sys_clk               => axi_clk,
+      refclk_125Mhz_P       => refclk_125Mhz_P,
+      refclk_125Mhz_N       => refclk_125Mhz_N,
+      sgmii_tx_P            => sgmii_tx_P,
+      sgmii_tx_N            => sgmii_tx_N,
+      sgmii_rx_P            => sgmii_rx_P,
+      sgmii_rx_N            => sgmii_rx_N,
+      QPLL_CLK              => QPLL_CLK,              
+      QPLL_REF_CLK          => QPLL_REF_CLK,         
+      ENET1_EXT_INTIN_0     => ENET1_EXT_INTIN_0,
+      GMII_ETHERNET_col     => GMII_ETHERNET_col,
+      GMII_ETHERNET_crs     => GMII_ETHERNET_crs,
+      GMII_ETHERNET_rx_clk  => GMII_ETHERNET_rx_clk,
+      GMII_ETHERNET_rx_dv   => GMII_ETHERNET_rx_dv,
+      GMII_ETHERNET_rx_er   => GMII_ETHERNET_rx_er,
+      GMII_ETHERNET_rxd     => GMII_ETHERNET_rxd,
+      GMII_ETHERNET_tx_clk  => GMII_ETHERNET_tx_clk,
+      GMII_ETHERNET_tx_en   => GMII_ETHERNET_tx_en,
+      GMII_ETHERNET_tx_er   => GMII_ETHERNET_tx_er,
+      GMII_ETHERNET_txd     => GMII_ETHERNET_txd,
+      MDIO_ETHERNET_mdc     => MDIO_ETHERNET_mdc,
+      MDIO_ETHERNET_mdio_i  => MDIO_ETHERNET_mdio_i,
+      MDIO_ETHERNET_mdio_o  => MDIO_ETHERNET_mdio_o,  
+      SGMII_MON             => SGMII_MON,
+      SGMII_CTRL            => SGMII_CTRL);
+
+
+  axi_reset <= not axi_reset_n;
+
+ -- DC_data_CDC_2: entity work.DC_data_CDC
+ --   generic map (
+ --     DATA_WIDTH => 1)
+ --   port map (
+ --     clk_in   => axi_clk,
+ --     clk_out  => clk_TCDS,
+ --     reset    =>  clk_TCDS_locked,
+ --     pass_in(0)  => axi_reset_n,
+ --     pass_out(0) => clk_TCDS_reset_n);
   
-  SGMII_MON.reset <= SGMII_CTRL.reset;
-  SGMII_MON.pma_reset <= reset_pma_SGMII;
-  core_resets_i : entity work.SGMII_INTF_resets
-  port map (
-     reset                     => SGMII_CTRL.reset, 
-     independent_clock_bufg    => axi_clk,
-     pma_reset                 => reset_pma_SGMII
-  );
- 
- SGMII_INTF_1: entity work.SGMII_INTF
-   port map (
-     gtrefclk               => refclk_125Mhz_IBUFG,
-     gtrefclk_bufg          => clk_125Mhz,
-     txp                    => sgmii_tx_P,
-     txn                    => sgmii_tx_N,
-     rxp                    => sgmii_rx_P,
-     rxn                    => sgmii_rx_N,
-     resetdone              => SGMII_MON.reset_done,--open, --monitor?
-     cplllock               => SGMII_MON.cpll_lock,--open, --monitor?
-     mmcm_reset             => reset_SGMII_MMCM,
-     txoutclk               => clk_SGMII_tx,
-     rxoutclk               => clk_SGMII_rx,
-     userclk                => clk_user_SGMII,
-     userclk2               => clk_user2_SGMII,
-     rxuserclk              => clk_rxuser_SGMII,
-     rxuserclk2             => clk_rxuser2_SGMII,
-     pma_reset              => reset_pma_SGMII,
-     mmcm_locked            => locked_SGMII_MMCM,--reset_SGMII_MMCM,
-     independent_clock_bufg => axi_clk,
-     sgmii_clk_r            => open,   -- from example
-     sgmii_clk_f            => open,   -- from example
-     gmii_txclk             => GMII_ETHERNET_tx_clk,
-     gmii_rxclk             => GMII_ETHERNET_rx_clk,
-     gmii_txd               => GMII_ETHERNET_txd,
-     gmii_tx_en             => GMII_ETHERNET_tx_en(0),
-     gmii_tx_er             => GMII_ETHERNET_tx_er(0),
-     gmii_rxd               => GMII_ETHERNET_rxd,
-     gmii_rx_dv             => GMII_ETHERNET_rx_dv,
-     gmii_rx_er             => GMII_ETHERNET_rx_er,
-     gmii_isolate           => open,
-     mdc                    => MDIO_ETHERNET_mdc,
-     mdio_i                 => MDIO_ETHERNET_mdio_o, --swap for zynq
-     mdio_o                 => MDIO_ETHERNET_mdio_i, --swap for zynq
-     mdio_t                 => open,
-     phyaddr                => "01001", -- from example
-     configuration_vector   => "00000", -- from example
-     configuration_valid    => '0',     -- from example
-     an_interrupt           => open,    -- from example
-     an_adv_config_vector   => x"D801", -- from example
-     an_adv_config_val      => '0',     -- from example
-     an_restart_config      => '0',     -- from example
-     status_vector          => SGMII_MON.status_vector,--open,
-     reset                  => '0',     -- from example
-     signal_detect          => '1',     -- from example
-     gt0_qplloutclk_in      => clk_gt_qpllout,
-     gt0_qplloutrefclk_in   => refclk_gt_qpllout);
- 
-
-
--- TCDS_1: entity work.TCDS   
---   port map ( 
---     sysclk => pl_clk,  
---     GT0_QPLLOUTCLK_IN    => clk_gt_qpllout,
---     GT0_QPLLOUTREFCLK_IN => refclk_gt_qpllout,
-----     refclk => refclk_TCDS,
---     refclk => refclk_125Mhz_IBUFG, 
---     reset  => reset_MGBT2, 
---     tx_P(0)=> tts_P,
---     tx_P(1)=> fake_ttc_P,  
---     tx_P(2)=> open, 
---     tx_N(0)=> tts_N,
---     tx_N(1)=> fake_ttc_N,  
---     tx_N(2)=> open, 
---     rx_P(0)=> ttc_P,
---     rx_P(1)=> m1_tts_P,    
---     rx_P(2)=> m2_tts_P,    
---     rx_N(0)=> ttc_N,
---     rx_N(1)=> m1_tts_N,    
---     rx_N(2)=> m2_tts_N,    
---     clk_txusr     => open,--clk_txusr,   
---     clk_rxusr     => open,--clk_rxusr,   
---     ttc_data      => ttc_data,    
---     ttc_dv => ttc_dv,      
---     tts_data      => tts_data,    
---     tts_dv => tts_dv,      
---     fake_ttc_data => fake_ttc_data,      
---     fake_ttc_dv   => fake_ttc_dv, 
---     m1_tts_data   => m1_tts_data, 
---     m1_tts_dv     => m1_tts_dv,   
---     m2_tts_data   => m2_tts_data, 
---     m2_tts_dv     => m2_tts_dv);
---
--- tts_data <= m1_tts_data or m2_tts_data;
--- tts_dv <= m1_tts_dv and m2_tts_dv; 
--- 
--- fake_ttc_data <= ttc_data; 
--- fake_ttc_dv <= ttc_dv; 
-
-
- 
--- MGBT2_common_reset_1: entity work.MGBT2_common_reset 
---   generic map (
---     STABLE_CLOCK_PERIOD => 16) 
---   port map ( 
---     STABLE_CLOCK => pl_clk, 
---     SOFT_RESET => '0', 
---     COMMON_RESET => reset_MGBT2);
--- MGBT2_common_1: entity work.MGBT2_common 
---   port map ( 
---     QPLLREFCLKSEL_IN => "001",
---     GTREFCLK1_IN => '0', 
---     GTREFCLK0_IN => refclk_125Mhz_IBUFG, 
---     QPLLLOCK_OUT => open,
---     QPLLLOCKDETCLK_IN=> pl_clk, 
---     QPLLOUTCLK_OUT   => clk_gt_qpllout, 
---     QPLLOUTREFCLK_OUT=> refclk_gt_qpllout, 
---     QPLLREFCLKLOST_OUT => open,
---     QPLLRESET_IN => reset_MGBT2);
-
+    
+  TCDS_2: entity work.TCDS
+    port map (
+      clk_axi            => pl_clk,--axi_clk,--clk_TCDS,
+      reset_axi_n        => pl_reset_n,--axi_reset_n,--pl_reset_n,--clk_TCDS_reset_n,--pl_reset_n,
+      clk_axi_DRP        => pl_clk,--axi_clk,
+      reset_axi_DRP_n    => pl_reset_n,--axi_reset_n,--pl_reset_n,
+      readMOSI           => AXI_BUS_RMOSI(5),
+      readMISO           => AXI_BUS_RMISO(5),
+      writeMOSI          => AXI_BUS_WMOSI(5),
+      writeMISO          => AXI_BUS_WMISO(5),
+      DRP_readMOSI       => AXI_BUS_RMOSI(4),
+      DRP_readMISO       => AXI_BUS_RMISO(4),
+      DRP_writeMOSI      => AXI_BUS_WMOSI(4),
+      DRP_writeMISO      => AXI_BUS_WMISO(4),
+      --sysclk        => pl_clk,
+      refclk_p      => refclk_TCDS_P,
+      refclk_n      => refclk_TCDS_N,
+      QPLL_CLK        => QPLL_CLK,    
+      QPLL_REF_CLK    => QPLL_REF_CLK,        
+--      reset         => axi_reset,
+      clk_TCDS    => clk_TCDS,
+      clk_TCDS_reset_n => clk_TCDS_locked,--open,--clk_TCDS_reset_n,
+      tx_P(0)     => tts_P,
+      tx_P(1)     => fake_ttc_P,  
+      tx_P(2)     => open, 
+      tx_N(0)     => tts_N,
+      tx_N(1)     => fake_ttc_N,  
+      tx_N(2)     => open, 
+      rx_P(0)     => ttc_P,
+      rx_P(1)     => m1_tts_P,    
+      rx_P(2)     => m2_tts_P,    
+      rx_N(0)     => ttc_N,
+      rx_N(1)     => m1_tts_N,    
+      rx_N(2)     => m2_tts_N);
 
 
 
@@ -837,12 +796,11 @@ begin  -- architecture structure
     port map (
       clk_200Mhz => clk_200Mhz,
       clk_50Mhz  => AXI_C2C_aurora_init_clk,
-      reset      =>  stupid_reset_test,--'0',
+      reset      =>  SI_init_reset,--'0',
       locked     => clk_200Mhz_locked,
       clk_in1_n     => onboard_clk_n,
       clk_in1_p     => onboard_clk_p);
   reset_200Mhz <= not clk_200Mhz_locked ;
-  Si_handoff_to_PS <= '0';
 
   SI_OUT_DIS <= not SI_OE_normal;
   SI_ENABLE  <= SI_EN_normal;
@@ -862,9 +820,9 @@ begin  -- architecture structure
       SI_LOS          => SI_LOS,
       SI_OUT_EN       => SI_OE_normal,
       SI_ENABLE       => SI_EN_normal,
-      SI_Handoff      => Si_handoff_to_PS,
-      SI_init_reset   => stupid_reset_test,
+      SI_init_reset   => SI_init_reset,
       TTC_SRC_SEL     => TTC_SRC_SEL,
+      TCDS_REFCLK_LOCKED => clk_TCDS_locked,
       LHC_CLK_CMS_LOS => LHC_CLK_CMS_LOS,
       LHC_CLK_OSC_LOS => LHC_CLK_OSC_LOS,
       LHC_SRC_SEL     => LHC_SRC_SEL,
@@ -912,9 +870,9 @@ begin  -- architecture structure
       O  => IPMC_SDA_i);
 
 
-  XVC0_TDO <= CM1_TDO;
-  XVC1_TDO <= CM2_TDO;
-  CM_interface_1: entity work.CM_interface
+  plXVC_TDO(0) <= CM1_TDO;
+  plXVC_TDO(1) <= CM2_TDO;
+  CM_interface_1: entity work.CM_intf
     port map (
       clk_axi              => axi_clk,
       reset_axi_n          => pl_reset_n,
@@ -942,13 +900,13 @@ begin  -- architecture structure
       from_CM2.GPIO        => CM2_GPIO,
       from_CM2.UART_Rx     => CM2_UART_rx,
       to_CM1_in.UART_Tx    => CM1_UART_Tx_internal,
-      to_CM1_in.TMS        => XVC0_TMS,
-      to_CM1_in.TDI        => XVC0_TDI,
-      to_CM1_in.TCK        => XVC0_TCK,
+      to_CM1_in.TMS        => plXVC_TMS(0),
+      to_CM1_in.TDI        => plXVC_TDI(0),
+      to_CM1_in.TCK        => plXVC_TCK(0),
       to_CM2_in.UART_Tx    => '0',--CM2_UART_Tx_internal,
-      to_CM2_in.TMS        => XVC1_TMS,
-      to_CM2_in.TDI        => XVC1_TDI,
-      to_CM2_in.TCK        => XVC1_TCK,
+      to_CM2_in.TMS        => plXVC_TMS(1),
+      to_CM2_in.TDI        => plXVC_TDI(1),
+      to_CM2_in.TCK        => plXVC_TCK(1),
       to_CM1_out.UART_Tx   => CM1_UART_Tx,
       to_CM1_out.TMS       => CM1_TMS,
       to_CM1_out.TDI       => CM1_TDI,
@@ -957,27 +915,28 @@ begin  -- architecture structure
       to_CM2_out.TMS       => CM2_TMS,
       to_CM2_out.TDI       => CM2_TDI,
       to_CM2_out.TCK       => CM2_TCK,
+      clk_C2C1             => clk_C2C1_PHY,
       CM1_C2C_Mon          => CM1_C2C_Mon,
-      CM2_C2C_Mon          => CM2_C2C_Mon,
       CM1_C2C_Ctrl         => CM1_C2C_Ctrl,
+      clk_C2C2             => clk_C2C1_PHY,
+      CM2_C2C_Mon          => CM2_C2C_Mon,
       CM2_C2C_Ctrl         => CM2_C2C_Ctrl);
 
-
-
-  
-
-
-  
-
---  c2c_ibert_1: entity work.c2c_ibert
---    port map (
---      TXN_O(0 to 1)       => AXI_C2C_Tx_N(0 to 1),
---      TXP_O(0 to 1)       => AXI_C2C_Tx_P(0 to 1),
---      RXOUTCLK_O  => open,
---      RXN_I       => AXI_C2C_Rx_N(0 to 1),
---      RXP_I       => AXI_C2C_Rx_P(0 to 1),
---      GTREFCLK0_I => open,
---      GTREFCLK1_I(0) => C2C1_phy_gt_refclk1_out,
---      SYSCLK_I    => C2C1_phy_gt_refclk1_out);
+  plXVC_1: entity work.plXVC_intf
+    generic map (
+      --TCK_RATIO         => 1,
+      COUNT             => XVC_COUNT,
+      IRQ_LENGTH        => 1)           
+      port map (
+        clk_axi         => axi_clk,
+        reset_axi_n     => pl_reset_n,
+        readMOSI        => AXI_BUS_RMOSI(6),
+        readMISO        => AXI_BUS_RMISO(6),
+        writeMOSI       => AXI_BUS_WMOSI(6),
+        writeMISO       => AXI_BUS_WMISO(6),
+        TMS             => plXVC_TMS,
+        TDI             => plXVC_TDI,
+        TDO             => plXVC_TDO,
+        TCK             => plXVC_TCK);
   
 end architecture structure;

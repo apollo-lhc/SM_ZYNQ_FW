@@ -1,0 +1,30 @@
+#!/bin/bash
+# THIS FILE IS ADDED FOR COMPATIBILITY PURPOSES
+#
+# It is highly advisable to create own systemd services or udev rules
+# to run scripts during boot instead of using this file.
+#
+# In contrast to previous versions due to parallel execution during boot
+# this script will NOT be run after all other services.
+#
+# Please note that you must run 'chmod +x /etc/rc.d/rc.local' to ensure
+# that this script will be executed during boot.
+
+mkdir -p /fw
+mount /dev/mmcblk0p1 /fw
+
+ethtool -s eth0 speed 10 duplex full autoneg off
+
+if [ -f "/fw/mac.dat" ]; then
+    ifconfig eth0 down
+    cat /fw/mac.dat | xargs ifconfig eth0 hw ether 
+    ifconfig eth0 up
+fi
+dhclient eth0
+
+
+/opt/BUTool/bin/findUIO IPBUS_KINTEX | grep "is at" | awk '{print "ln -s "$4" /dev/uio"$1}' | bash
+/opt/BUTool/bin/findUIO IPBUS_VIRTEX | grep "is at" | awk '{print "ln -s "$4" /dev/uio"$1}' | bash
+
+
+touch /var/lock/subsys/local

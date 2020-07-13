@@ -16,6 +16,7 @@ entity counter is
     roll_over   : std_logic        := '1';
     end_value   : std_logic_vector(31 downto  0) := x"FFFFFFFF";
     start_value : std_logic_vector(31 downto  0) := x"00000000";
+    A_RST_CNT   : std_logic_vector(31 downto  0) := x"00000000";
     DATA_WIDTH  : integer          := 32);
   port (
     clk         : in  std_logic;
@@ -30,18 +31,19 @@ entity counter is
 end entity counter;
 
 architecture behavioral of counter is
-
-  constant max_count : unsigned(DATA_WIDTH-1 downto 0) := unsigned(end_value(DATA_WIDTH-1 downto 0));
-  constant min_count : unsigned(DATA_WIDTH-1 downto 0) := unsigned(start_value(DATA_WIDTH-1 downto 0));
-  signal local_count : unsigned(DATA_WIDTH-1 downto 0) := min_count;
+  
+  constant max_count    : unsigned(DATA_WIDTH-1 downto 0) := unsigned(end_value(DATA_WIDTH-1 downto 0));
+  constant min_count    : unsigned(DATA_WIDTH-1 downto 0) := unsigned(start_value(DATA_WIDTH-1 downto 0));
+  constant areset_count : unsigned(DATA_WIDTH-1 downto 0) := unsigned(A_RST_CNT(DATA_WIDTH-1 downto 0));
+  signal local_count    : unsigned(DATA_WIDTH-1 downto 0) := min_count;
 
 begin  -- architecture behavioral
 
   event_counter : process (clk, reset_async)
   begin  -- process malformed_counter
     if reset_async = '1' then           -- asynchronous reset (active high)
-      local_count <= min_count;
-      count       <= std_logic_vector(min_count);
+      local_count <= areset_count;
+      count       <= std_logic_vector(areset_count);
     elsif clk'event and clk = '1' then  -- rising clock edge
       if reset_sync = '1' then
         -- synchronous reset

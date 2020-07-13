@@ -1,15 +1,16 @@
-<node>
+<node id="CM">
   <node id="CM1">                                                                                                     
     <node id="CTRL" address="0x00">                                                                               
-      <node id="ENABLE_UC" mask="0x1" permission="rw" description="Tell CM uC to power-up" parameters="Table=CM;Column=UC;Row=CM1_REQ;Status=2"/>                      
-      <node id="ENABLE_PWR" mask="0x2" permission="rw" description="Tell CM uC to power-up the rest of the CM" parameters="Table=CM;Column=PWR;Row=CM1_REQ;Status=2"/>  
-      <node id="OVERRIDE_PWR_GOOD" mask="0x4" permission="rw" description="Ignore power good from CM" parameters="Table=CM;Column=_4;Row=CM1_REQ;Status=2"/>               
-      <node id="PWR_GOOD" mask="0x8" permission="r" description="CM power is good" parameters="Table=CM;Column=_4;Row=_2;Status=1"/>
-      <node id="STATE" mask="0xF0" permission="r" description="CM power up state"  parameters="Table=CM;Column=_4;Row=_2;Status=2;Format=t_0_Unknown_1_Reset_2_PowerUpWait_3_Running_4_PowerDown_5_ErrorWait_6_ErrorPowerOff"/>
+      <node id="ENABLE_UC"         mask="0x1"   permission="rw" description="Tell CM uC to power-up" parameters="Table=CM;Column=UC;Row=CM1_REQ;Status=2"/>                      
+      <node id="ENABLE_PWR"        mask="0x2"   permission="rw" description="Tell CM uC to power-up the rest of the CM" parameters="Table=CM;Column=PWR;Row=CM1_REQ;Status=2"/>  
+      <node id="OVERRIDE_PWR_GOOD" mask="0x4"   permission="rw" description="Ignore power good from CM" parameters="Table=CM;Column=_4;Row=CM1_REQ;Status=2"/>               
+      <node id="PWR_GOOD"          mask="0x8"   permission="r"  description="CM power is good" parameters="Table=CM;Column=_4;Row=_2;Status=1"/>
+      <node id="STATE"             mask="0xF0"  permission="r"  description="CM power up state"  parameters="Table=CM;Column=_4;Row=_2;Status=2;Format=t_0_Unknown_1_Reset_2_PowerUpWait_3_Running_4_PowerDown_5_ErrorWait_6_ErrorPowerOff"/>
       <node id="ERROR_STATE_RESET" mask="0x100" permission="rw" description="CM power is good" parameters="Table=CM;Column=_4;Row=_2;Status=1;show=nz"/>
-      <node id="PWR_ENABLED" mask="0x200" permission="r" description="power is enabled" parameters="Table=CM;Column=PWR;Row=_2;Status=2"/>                         
-      <node id="IOS_ENABLED" mask="0x400" permission="r" description="IOs to CM are enabled" parameters="Table=CM;Column=_4;Row=_2;Status=1"/>       
-    </node>                                                                                                           
+      <node id="PWR_ENABLED"       mask="0x200" permission="r"  description="power is enabled" parameters="Table=CM;Column=PWR;Row=_2;Status=2"/>                         
+      <node id="IOS_ENABLED"       mask="0x400" permission="r"  description="IOs to CM are enabled" parameters="Table=CM;Column=_4;Row=_2;Status=1"/>       
+    </node>    
+
     <node id="C2C" address="0x12">
 	<node id="CONFIG_ERROR" mask="0x1" permission="r" description="C2C config error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
 	<node id="LINK_ERROR" mask="0x2" permission="r" description="C2C link error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
@@ -22,7 +23,7 @@
 	<node id="PHY_MMCM_LOL" mask="0x400" permission="r" description="Aurora phy mmcm LOL"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
 	<node id="PHY_LANE_UP" mask="0x3000" permission="r" description="Aurora phy lanes up"  parameters="Table=C2C;Column=_4;Row=_2;Status=1"/>		
 	<node id="PHY_HARD_ERR" mask="0x10000" permission="r" description="Aurora phy hard error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
-	<node id="PHY_HARD_ERR" mask="0x20000" permission="r" description="Aurora phy soft error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
+	<node id="PHY_SOFT_ERR" mask="0x20000" permission="r" description="Aurora phy soft error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
 	<node id="CPLL_LOCK" mask="0x100000" permission="r" description="DEBUG cplllock" />
 	<node id="EYESCAN_DATA_ERROR" mask="0x200000" permission="r" description="DEBUG eyescan data error" />
 	<node id="EYESCAN_RESET" mask="0x400000" permission="rw" description="DEBUG eyescan reset" />
@@ -52,7 +53,7 @@
 	<node id="TX" address="0x2">
 	  <node id="BUF_STATUS" mask="0x00000003" permission="r" description="DEBUG tx buf status" />
 	  <node id="RESET_DONE" mask="0x00000004" permission="r" description="DEBUG tx reset done" />
-	  <node id="DIFF_CTRL" mask="0x00000071" permission="rw" description="DEBUG tx diff control" />
+	  <node id="DIFF_CTRL" mask="0x00000078" permission="rw" description="DEBUG tx diff control" />
 	  <node id="INHIBIT" mask="0x00000080" permission="rw" description="DEBUG tx inhibit" />
 	  <node id="MAIN_CURSOR" mask="0x00007F00" permission="rw" description="DEBUG tx main cursor" />
 	  <node id="PCS_RESET" mask="0x00008000" permission="rw" description="DEBUG tx pcs reset" />
@@ -65,10 +66,34 @@
 	</node>
       </node>
       <node id="MONITOR" address="0x15">
-	<node id="COUNT_16X_BAUD" mask="0x000000FF" permission="rw" description="Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27" />
-	<node id="ACTIVE" mask="0x00000100" permission="r" description="Monitoring active. Is zero when no update in the last second." parameters="Table=CM;Column=MON_STATE;Row=_2;Status=1;Show=z;Format=t_0_INACTIVE_1_ACTIVE" />
-	<node id="ERRORS" mask="0xFFFF0000" permission="r" description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=CM;Column=MON_ERRORS;Row=_2;Status=1;Show=nz;Format=u"/>
+	<node id="COUNT_16X_BAUD"                mask="0x000000FF" permission="rw" description="Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27" parameters="Table=CM;Column=MON_STATE;Row=_2;Status=4;default=0x1B" />
+	<node id="ACTIVE"                        mask="0x00000100" permission="r"  description="Monitoring active. Is zero when no update in the last second." parameters="Table=CM;Column=MON_STATE;Row=_2;Status=1;Show=z;Format=t_0_INACTIVE_1_ACTIVE" />
+	<node id="HISTORY_VALID"                 mask="0x0000F000" permission="r"  description="bytes valid in debug history"/>
+	<node id="HISTORY"        address="0x01" mask="0xFFFFFFFF" permission="r"  description="4 bytes of uart history"/>
+	<node id="BAD_TRANS" address="0x2">
+	  <node id="ADDR"       mask="0x000000FF" permission="r" description="Sensor addr bits"  parameters="Table=CM;Column=_5;Row=_4;Status=2"/>
+	  <node id="DATA"       mask="0x00FFFF00" permission="r" description="Sensor data bits"  parameters="Table=CM;Column=_5;Row=_4;Status=2"/>
+	  <node id="ERROR_MASK" mask="0xFF000000" permission="r" description="Sensor error bits" parameters="Table=CM;Column=_5;Row=_4;Status=2;Format=t_0_OK_1_BadSOF_2_AXIBusyByte2_4_Byte2NotData_8_Byte3NotData_16_Byte4NotData_32_UNKNOWN"/>
+	</node>
+	<node id="LAST_TRANS" address="0x3">
+	  <node id="ADDR"       mask="0x000000FF" permission="r" description="Sensor addr bits"  parameters="Table=CM;Column=_5;Row=_4;Status=2"/>
+	  <node id="DATA"       mask="0x00FFFF00" permission="r" description="Sensor data bits"  parameters="Table=CM;Column=_5;Row=_4;Status=2"/>
+	  <node id="ERROR_MASK" mask="0xFF000000" permission="r" description="Sensor error bits" parameters="Table=CM;Column=_5;Row=_4;Status=2;Format=t_0_OK_1_BadSOF_2_AXIBusyByte2_4_Byte2NotData_8_Byte3NotData_16_Byte4NotData_32_UNKNOWN"/>
+	</node>
+	<node id="ERRORS" address="0x4">
+	  <node id="RESET"               address="0x0"       mask="0x1"        permission="w"  description="Reset monitoring error counters"/>
+	  <node id="CNT_BAD_SOF"         address="0x1"       mask="0x0000FFFF" permission="r"  description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=CM;Column=_5;Row=_4;Status=1;Show=nz;Format=u"/>
+	  <node id="CNT_AXI_BUSY_BYTE2"  address="0x1"       mask="0xFFFF0000" permission="r"  description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=CM;Column=_5;Row=_4;Status=1;Show=nz;Format=u"/>
+	  <node id="CNT_BYTE2_NOT_DATA"  address="0x2"       mask="0x0000FFFF" permission="r"  description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=CM;Column=_5;Row=_4;Status=1;Show=nz;Format=u"/>
+	  <node id="CNT_BYTE3_NOT_DATA"  address="0x2"       mask="0xFFFF0000" permission="r"  description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=CM;Column=_5;Row=_4;Status=1;Show=nz;Format=u"/>
+	  <node id="CNT_BYTE4_NOT_DATA"  address="0x3"       mask="0x0000FFFF" permission="r"  description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=CM;Column=_5;Row=_4;Status=1;Show=nz;Format=u"/>
+	  <node id="CNT_UNKNOWN"         address="0x3"       mask="0xFFFF0000" permission="r"  description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=CM;Column=_5;Row=_4;Status=1;Show=nz;Format=u"/>
+	</node>
+	<node id="UART_BYTES" address="0x8" mask="0xFFFFFFFF" permission="r" description="Count of UART bytes from CM MCU" parameters="Table=CM;Column=Bytes;Row=_4;Status=3;Format=u"/>
+
+
       </node>
+      
 
     
     
@@ -96,7 +121,7 @@
 	<node id="PHY_MMCM_LOL" mask="0x400" permission="r" description="Aurora phy mmcm LOL"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
 	<node id="PHY_LANE_UP" mask="0x3000" permission="r" description="Aurora phy lanes up"  parameters="Table=C2C;Column=_4;Row=_2;Status=1"/>		
 	<node id="PHY_HARD_ERR" mask="0x10000" permission="r" description="Aurora phy hard error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
-	<node id="PHY_HARD_ERR" mask="0x20000" permission="r" description="Aurora phy soft error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
+	<node id="PHY_SOFT_ERR" mask="0x20000" permission="r" description="Aurora phy soft error"  parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
 	<node id="CPLL_LOCK" mask="0x100000" permission="r" description="DEBUG cplllock" />
 	<node id="EYESCAN_DATA_ERROR" mask="0x200000" permission="r" description="DEBUG eyescan data error" />
 	<node id="EYESCAN_RESET" mask="0x400000" permission="rw" description="DEBUG eyescan reset" />
@@ -126,7 +151,7 @@
 	<node id="TX" address="0x2">
 	  <node id="BUF_STATUS" mask="0x00000003" permission="r" description="DEBUG tx buf status" />
 	  <node id="RESET_DONE" mask="0x00000004" permission="r" description="DEBUG tx reset done" />
-	  <node id="DIFF_CTRL" mask="0x00000071" permission="rw" description="DEBUG tx diff control" />
+	  <node id="DIFF_CTRL" mask="0x00000078" permission="rw" description="DEBUG tx diff control" />
 	  <node id="INHIBIT" mask="0x00000080" permission="rw" description="DEBUG tx inhibit" />
 	  <node id="MAIN_CURSOR" mask="0x00007F00" permission="rw" description="DEBUG tx main cursor" />
 	  <node id="PCS_RESET" mask="0x00008000" permission="rw" description="DEBUG tx pcs reset" />

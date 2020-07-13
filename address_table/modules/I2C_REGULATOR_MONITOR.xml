@@ -1,0 +1,7 @@
+<node id="MON_REG">
+  <node id="TEMP1" address="0x00" mask="0x0000FFFF" permission="r" parameters="Table=CM_MON;Row=_3;Column=_4;Format=fp16;Status=2"/>
+  <node id="TEMP3" address="0x00" mask="0xFFFF0000" permission="r" parameters="Table=CM_MON;Row=_3;Column=_4;Format=fp16;Status=2"/>
+  <node id="V_IN"  address="0x01" mask="0x0000FFFF" permission="r" parameters="Table=CM_MON;Row=_3;Column=_4;Format=fp16;Status=2"/>
+  <node id="V_OUT" address="0x01" mask="0xFFFF0000" permission="r" parameters="Table=CM_MON;Row=_3;Column=_4;Format=fp16;Status=2"/>
+  <node id="I_OUT" address="0x02" mask="0x0000FFFF" permission="r" parameters="Table=CM_MON;Row=_3;Column=_4;Format=fp16;Status=2"/>
+</node>

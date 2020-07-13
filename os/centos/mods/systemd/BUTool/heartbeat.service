@@ -1,0 +1,14 @@
+[Unit]
+Description=Service to tell the PL that the PS is still up and running.
+After=systemd-udevd.service
+
+[Service]
+Type=forking
+PIDFile=/var/run/heartbeat.pid
+Restart=always
+RestartSec=1
+User=root
+ExecStart=/opt/BUTool/bin/heartbeat
+
+[Install]
+WantedBy=basic.target

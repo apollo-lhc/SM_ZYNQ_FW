@@ -45,6 +45,9 @@ set_property IOSTANDARD LVCMOS33 [get_ports {FIXED_IO_mio[7]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {FIXED_IO_mio[0]}]
 
 
+set_property -dict {IOSTANDARD LVCMOS33 PACKAGE_PIN W13} [get_ports I2C_SCL]
+set_property -dict {IOSTANDARD LVCMOS33 PACKAGE_PIN Y13} [get_ports I2C_SDA]
+
 # -------------------------------------------------------------------------------------------------
 # bank 12 & 13
 # -------------------------------------------------------------------------------------------------
@@ -122,26 +125,26 @@ set_property -dict {PACKAGE_PIN C4  IOSTANDARD LVCMOS18} [get_ports {SI_ENABLE }
 # -------------------------------------------------------------------------------------------------
 set_property -dict {PACKAGE_PIN W6 }  [get_ports refclk_125Mhz_P]
 set_property -dict {PACKAGE_PIN W5 }  [get_ports refclk_125Mhz_N]
-#set_property -dict {PACKAGE_PIN AA6}  [get_ports refclk_TCDS_P]
-#set_property -dict {PACKAGE_PIN AA5}  [get_ports refclk_TCDS_N]
+set_property -dict {PACKAGE_PIN AA6}  [get_ports refclk_TCDS_P]
+set_property -dict {PACKAGE_PIN AA5}  [get_ports refclk_TCDS_N]
 #				   
 set_property -dict {PACKAGE_PIN AF8}  [get_ports sgmii_tx_P]
 set_property -dict {PACKAGE_PIN AF7}  [get_ports sgmii_tx_N]
 set_property -dict {PACKAGE_PIN AD8}  [get_ports sgmii_rx_P]
 set_property -dict {PACKAGE_PIN AD7}  [get_ports sgmii_rx_N]
 #				   
-#set_property -dict {PACKAGE_PIN AF4}  [get_ports tts_P]
-#set_property -dict {PACKAGE_PIN AF3}  [get_ports tts_N]
-#set_property -dict {PACKAGE_PIN AE6}  [get_ports ttc_P]
-#set_property -dict {PACKAGE_PIN AE5}  [get_ports ttc_N]
-#				   
-#set_property -dict {PACKAGE_PIN AE2}  [get_ports fake_ttc_P]
-#set_property -dict {PACKAGE_PIN AE1}  [get_ports fake_ttc_N]
-#set_property -dict {PACKAGE_PIN AC6}  [get_ports m1_tts_P]
-#set_property -dict {PACKAGE_PIN AC5}  [get_ports m1_tts_N]
-#				   
-#set_property -dict {PACKAGE_PIN AD4}  [get_ports m2_tts_P]
-#set_property -dict {PACKAGE_PIN AD3}  [get_ports m2_tts_N]
+set_property -dict {PACKAGE_PIN AF4}  [get_ports tts_P]
+set_property -dict {PACKAGE_PIN AF3}  [get_ports tts_N]
+set_property -dict {PACKAGE_PIN AE6}  [get_ports ttc_P]
+set_property -dict {PACKAGE_PIN AE5}  [get_ports ttc_N]
+				   
+set_property -dict {PACKAGE_PIN AE2}  [get_ports fake_ttc_P]
+set_property -dict {PACKAGE_PIN AE1}  [get_ports fake_ttc_N]
+set_property -dict {PACKAGE_PIN AC6}  [get_ports m1_tts_P]
+set_property -dict {PACKAGE_PIN AC5}  [get_ports m1_tts_N]
+				   
+set_property -dict {PACKAGE_PIN AD4}  [get_ports m2_tts_P]
+set_property -dict {PACKAGE_PIN AD3}  [get_ports m2_tts_N]
 
 
 
@@ -177,12 +180,30 @@ set_property -dict {PACKAGE_PIN Y3}  [get_ports AXI_C2C_CM2_Rx_N[1] ]
 
 
 
-set_clock_groups -asynchronous \
-		 -group [get_clocks clk_fpga_0      -include_generated_clocks] \
-	         -group [get_clocks onboard_CLK_P   -include_generated_clocks] \
+set_clock_groups -asynchronous												                                    \
+		 -group [get_clocks clk_fpga_0      -include_generated_clocks]						                                    \
+		 		    		    													    \
+	         -group [get_clocks onboard_CLK_P   -include_generated_clocks] 										    \
 		 -group [get_clocks SGMII_INTF_1/U0/transceiver_inst/gtwizard_inst/U0/gtwizard_i/gt0_GTWIZARD_i/gtxe2_i/TXOUTCLK -include_generated_clocks] \
 		 -group [get_clocks SGMII_INTF_1/U0/transceiver_inst/gtwizard_inst/U0/gtwizard_i/gt0_GTWIZARD_i/gtxe2_i/RXOUTCLK -include_generated_clocks] \
+		 		    												 			    \
+		 -group [get_clocks TCDS_2/LHC_2/U0/LHC_i/gt0_LHC_i/gtxe2_i/RXOUTCLKFABRIC -include_generated_clocks] 					    \
+		 -group [get_clocks TCDS_2/LHC_2/U0/LHC_i/gt0_LHC_i/gtxe2_i/TXOUTCLKFABRIC -include_generated_clocks] 					    \
+		 -group [get_clocks TCDS_2/LHC_2/U0/LHC_i/gt0_LHC_i/gtxe2_i/TXOUTCLK -include_generated_clocks] 					    \
+		 		    						     									    \
+		 -group [get_clocks TCDS_2/LHC_2/U0/LHC_i/gt1_LHC_i/gtxe2_i/RXOUTCLKFABRIC -include_generated_clocks] 					    \
+		 -group [get_clocks TCDS_2/LHC_2/U0/LHC_i/gt1_LHC_i/gtxe2_i/TXOUTCLKFABRIC -include_generated_clocks] 					    \
+		 -group [get_clocks TCDS_2/LHC_2/U0/LHC_i/gt1_LHC_i/gtxe2_i/TXOUTCLK -include_generated_clocks] 					    \
+		 		    						     									    \
+		 -group [get_clocks TCDS_2/LHC_2/U0/LHC_i/gt2_LHC_i/gtxe2_i/RXOUTCLKFABRIC -include_generated_clocks] 					    \
+		 -group [get_clocks TCDS_2/LHC_2/U0/LHC_i/gt2_LHC_i/gtxe2_i/TXOUTCLKFABRIC -include_generated_clocks] 					    \
+		 -group [get_clocks TCDS_2/LHC_2/U0/LHC_i/gt2_LHC_i/gtxe2_i/TXOUTCLK -include_generated_clocks] 					    \
+		 		    												 			    \
 		 -group [get_clocks zynq_bd_wrapper_1/zynq_bd_i/C2C1_PHY/inst/zynq_bd_C2C1_PHY_0_core_i/zynq_bd_C2C1_PHY_0_wrapper_i/zynq_bd_C2C1_PHY_0_multi_gt_i/zynq_bd_C2C1_PHY_0_gtx_inst/gtxe2_i/RXOUTCLK -include_generated_clocks] \
 		 -group [get_clocks zynq_bd_wrapper_1/zynq_bd_i/C2C1_PHY/inst/zynq_bd_C2C1_PHY_0_core_i/zynq_bd_C2C1_PHY_0_wrapper_i/zynq_bd_C2C1_PHY_0_multi_gt_i/zynq_bd_C2C1_PHY_0_gtx_inst/gtxe2_i/TXOUTCLK -include_generated_clocks] \
+		 		    																									   \
+		 -group [get_clocks zynq_bd_wrapper_1/zynq_bd_i/C2C2_PHY/inst/zynq_bd_C2C2_PHY_0_core_i/zynq_bd_C2C2_PHY_0_wrapper_i/zynq_bd_C2C2_PHY_0_multi_gt_i/zynq_bd_C2C2_PHY_0_gtx_inst/gtxe2_i/RXOUTCLK -include_generated_clocks] \
+		 -group [get_clocks zynq_bd_wrapper_1/zynq_bd_i/C2C2_PHY/inst/zynq_bd_C2C2_PHY_0_core_i/zynq_bd_C2C2_PHY_0_wrapper_i/zynq_bd_C2C2_PHY_0_multi_gt_i/zynq_bd_C2C2_PHY_0_gtx_inst/gtxe2_i/TXOUTCLK -include_generated_clocks] \
+		 		    																									   \
 		 -group [get_clocks zynq_bd_wrapper_1/zynq_bd_i/XVC_LOCAL/U0/bs_switch/inst/BSCAN_SWITCH.N_EXT_BSCAN.bscan_inst/SERIES7_BSCAN.bscan_inst/TCK -include_generated_clocks] 
  

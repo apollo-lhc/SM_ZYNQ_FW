@@ -1,0 +1,39 @@
+# This config  file lists the ssensors to be monitored by this server
+# NOTE: In each process, only one shelf can have its sensors monitored
+# SENSOR Format:
+# sensor=type arguments
+# types: IpmiTemperature, IpmiFanspeed, Apollo, ApolloMonitor
+
+
+
+## IpmiTemperature:
+# sensor=IpmiTemperature NAME SENSOR_ID SHELF_MGR_IP DEVICE_IPMB_ADDR
+## ex. SCHROFF crate:
+# sensor=IpmiTemperature Left 7 192.168.10.172 0x5a
+
+## IpmiFanspeed:
+# sensor=IpmiFanspeed NAME SENSOR_ID SHELF_MGR_IP DEVICE_IPMB_ADDR
+## ex. SCHROFF crate:
+# sensor=IpmiFanspeed SCHROFF-Fan5 14 192.168.10.172 0x5a
+
+## Apollo:
+# sensor=Apollo APOLLO_ID 0 SHELF_MGR_IP DEVICE_IPMB_ADDR
+## ex. SCHROFF crate:
+# sensor=Apollo 2 0 192.168.10.172 0x8c
+
+#graphite server ip and port
+graphite_server=192.168.10.20
+graphite_port=2003
+
+##ApolloMonitor (on zynq)
+#sensor=ApolloMonitor connections_file_path base_name_for_whisper_file STATUS_DISPLAY_TABLE_NAME STATUS_DISPLAY_LEVEL
+# ex Apollo06 -> path/graphite/whisper/Apollo06/CM_FF_MON/K07__12_TX_GTY/TEMP_C.wsp 
+#sensor=ApolloMonitor /opt/address_tables/connections.xml Apollo06 CM_FF_MON 3
+#sensor=ApolloMonitor /opt/address_tables/connections.xml Apollo06 CM_MON 3
+#sensor=ApolloMonitor /opt/address_tables/connections.xml Apollo06 C2C 1
+#sensor=ApolloMonitor /opt/address_tables/connections.xml Apollo06 ZYNQ_OS 1
+
+
+
+
+

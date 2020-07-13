@@ -1,9 +1,11 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use ieee.std_logic_misc.all;
 
 use work.types.all;
 use work.axiRegPkg.all;
+
 
 Library UNISIM;
 use UNISIM.vcomponents.all;
@@ -23,15 +25,29 @@ entity CM_Monitoring is
     readMISO        : in  AXIreadMISO;
     writeMOSI       : out AXIwriteMOSI;
     writeMISO       : in  AXIwriteMISO;
-    error_count     : out slv_16_t;
+    uart_byte_count : out slv_32_t;
+    debug_history   : out slv_32_t;
+    debug_valid     : out slv_4_t;
+    error_reset     : in  std_logic;
+    error_count     : out slv16_array_t(5 downto 0);
+    bad_transaction : out slv_32_t;
+    last_transaction: out slv_32_t;
     channel_active  : out std_logic);
 
 end entity CM_Monitoring;
 
 architecture behavioral of CM_Monitoring is
 
-  signal channel_inactive : std_logic; 
-  signal error_pulse : std_logic;
+  signal channel_inactive : std_logic;
+  constant ERROR_BAD_SOF : integer := 0;
+  constant ERROR_AXI_BUSY_BYTE2 : integer := 1;
+  constant ERROR_BYTE2_NOT_DATA : integer := 2;
+  constant ERROR_BYTE3_NOT_DATA : integer := 3;
+  constant ERROR_BYTE4_NOT_DATA : integer := 4;
+  constant ERROR_UNKNOWN        : integer := 5;
+  signal error_pulse : std_logic_vector(ERROR_UNKNOWN downto 0);  
+  signal uart_history : slv_32_t;
+  signal uart_history_valid : slv_4_t;
   
   signal en_16_x_baud : std_logic;
   signal baud_counter : unsigned(BAUD_COUNT_BITS-1 downto 0);
@@ -129,7 +145,9 @@ begin  -- architecture behavioral
   begin  -- process Mon_SM_proc
     if reset = '1' then                 -- asynchronous reset (active high)
       state <= SM_RESET;
+      error_pulse     <= (others => '0');      
     elsif clk'event and clk = '1' then  -- rising clock edge
+      error_pulse <= (others => '0');
       case state is
         when SM_RESET =>
           state <= SM_WAIT_FOR_SOF;
@@ -140,19 +158,27 @@ begin  -- architecture behavioral
               --This was a start of frame word
               state <= SM_WAIT_FOR_BYTE2;
             else
+              error_pulse(ERROR_BAD_SOF) <= '1';
             --This was not a start of frame word, do nothing other than eat
-            --it. 
+            --it. (we'll skip the restart)
             end if;            
           end if;
         when SM_WAIT_FOR_BYTE2 =>
           if uart_data_present = '1' then
-            if busy = '1' then
-              state <= SM_ERROR;
-            elsif uart_data(7 downto 6) = BS_DATA then
+            --check if the data is valid
+            if uart_data(7 downto 6) = BS_DATA then
               state <= SM_WAIT_FOR_BYTE3;
             else
+              error_pulse(ERROR_BYTE2_NOT_DATA) <= '1';
               state <= SM_ERROR;
             end if;
+            
+            --also check if the AXI master is busy
+            if busy = '1' then
+              state <= SM_ERROR;
+              error_pulse(ERROR_AXI_BUSY_BYTE2) <= '1';            
+            end if;
+            
           end if;
         when SM_WAIT_FOR_BYTE3 =>
           if uart_data_present = '1' then
@@ -160,6 +186,7 @@ begin  -- architecture behavioral
               state <= SM_WAIT_FOR_BYTE4;
             else
               state <= SM_ERROR;
+              error_pulse(ERROR_BYTE3_NOT_DATA) <= '1';
             end if;
           end if;
         when SM_WAIT_FOR_BYTE4 =>
@@ -168,15 +195,17 @@ begin  -- architecture behavioral
               state <= SM_WAIT_FOR_AXI_READ;
             else
               state <= SM_ERROR;
+              error_pulse(ERROR_BYTE4_NOT_DATA) <= '1';
             end if;
           end if;
         when SM_WAIT_FOR_AXI_READ =>
           if axi_read_finished = '1' then
             state <= SM_WAIT_FOR_SOF;
           end if;
-        when SM_ERROR =>
+        when SM_ERROR =>          
           state <= SM_RESET;
         when others =>
+          error_pulse(ERROR_UNKNOWN) <= '1';
           state <=SM_ERROR;
       end case;
     end if;
@@ -223,7 +252,6 @@ begin  -- architecture behavioral
     if reset = '1' then                 -- asynchronous reset (active high)
 
     elsif clk'event and clk = '1' then  -- rising clock edge
-      error_pulse     <= '0';      
       axi_rd_en       <= '0';
       axi_wr_en       <= '0';
       uart_reset      <= '0';
@@ -235,6 +263,9 @@ begin  -- architecture behavioral
           if uart_data_present = '1' then
             --start building the sensor_number ID
             sensor_number(7 downto 2) <= uart_data(5 downto 0);
+          else
+            sensor_number <= (others => '0');
+            sensor_value  <= (others => '0');
           end if;
         when SM_WAIT_FOR_BYTE2 =>
           if uart_data_present = '1' then            
@@ -266,9 +297,14 @@ begin  -- architecture behavioral
               axi_wr_data <= sensor_value & axi_rd_data(15 downto  0);
             end if;
             axi_wr_en <= '1';
+
+            --latch this transaction
+            last_transaction(31 downto 24) <= "00"&error_pulse;
+            last_transaction(23 downto  8) <= sensor_value;
+            last_transaction( 7 downto  0) <= sensor_number;
           end if;
-        when SM_ERROR =>
-          error_pulse <= '1';
+        when SM_ERROR => NULL;
+          --error_pulse <= '1';
         when others => null;
       end case;
     end if;
@@ -313,22 +349,70 @@ begin  -- architecture behavioral
       clk                 => clk);
 
 
+  debug_history <= uart_history;
+  debug_valid   <= uart_history_valid;
+  debugging: process (clk, reset) is
+  begin  -- process debugging
+    if reset = '1' then                 -- asynchronous reset (active high)
+      uart_history <= x"00000000";
+      uart_history_valid <= x"0";
+    elsif clk'event and clk = '1' then  -- rising clock edge
+      if uart_rd_en = '1' then
+        uart_history       <= uart_history      (uart_history'left       - 8 downto 0) & uart_data;
+        uart_history_valid <= uart_history_valid(uart_history_valid'left - 1 downto 0) & '1';
+      end if;
+    end if;
+  end process debugging;
 
-  counter_1: entity work.counter
+
+  last_transaction_capture: process (clk, reset) is
+  begin  -- process last_transaction_capture
+    if reset = '0' then                 -- asynchronous reset (active low)
+      bad_transaction <= (others => '0');
+    elsif clk'event and clk = '1' then  -- rising clock edge
+      if or_reduce(error_pulse) = '1' then
+        --latch this transaction
+        bad_transaction(31 downto 24) <= "00"&error_pulse;
+        bad_transaction(23 downto  8) <= sensor_value;
+        bad_transaction( 7 downto  0) <= sensor_number;
+      end if;
+    end if;
+  end process last_transaction_capture;
+
+  
+  error_counting: for iErr in 0 to ERROR_UNKNOWN generate   
+    counter_1: entity work.counter
+      generic map (
+        roll_over   => '0',
+        end_value   => x"0000FFFF",
+        start_value => x"00000000",
+        DATA_WIDTH  => 16)
+      port map (
+        clk         => clk,
+        reset_async => reset,
+        reset_sync  => error_reset,
+        enable      => '1',
+        event       => error_pulse(iErr),
+        count       => error_count(iErr),
+        at_max      => open);
+  end generate error_counting;
+
+  byte_counter_1: entity work.counter
     generic map (
-      roll_over   => '0',
-      end_value   => x"0000FFFF",
+      roll_over   => '1',
+      end_value   => x"FFFFFFFF",
       start_value => x"00000000",
-      DATA_WIDTH  => 16)
+      DATA_WIDTH  => 32)
     port map (
       clk         => clk,
       reset_async => reset,
       reset_sync  => '0',
       enable      => '1',
-      event       => error_pulse,
-      count       => error_count,
+      event       => uart_rd_en,
+      count       => uart_byte_count,
       at_max      => open);
 
+  
   channel_active <= not channel_inactive;
   counter_2: entity work.counter
     generic map (

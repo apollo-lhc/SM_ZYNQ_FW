@@ -35,3 +35,6 @@ Organization:
   OS:
     ./os/hw contains device-tree elements and the xilinx hwdef files needed to build the PS system
     ./os/zynq_os_mods contains recipes for mods/patches for/of the petalinux system.
+
+Dependencies:
+	generation of xml regmaps requires the Jinja2 library for python

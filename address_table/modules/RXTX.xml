@@ -1,0 +1,39 @@
+<node id="RXTX">
+  <node id="CLOCKING"           address="0x000">
+    <node id="FB_CLK_LOST"      address="0x000" mask="0x00000010" permission="r"/>
+    <node id="CLK_LOCKED"       address="0x000" mask="0x00000020" permission="r"/>
+    <node id="RESET"            address="0x001" mask="0x00000001" permission="rw"/>
+  </node>
+  <node id="TEST"               address="0x002" mask="0xFFFFFFFF" permission="rw" parameters="default=0xdeadbeef"/>
+  <node id="TEST2"              address="0x003" mask="0xFFFFFFFF" permission="r"/>
+  <node id="LOOPBACK"           address="0x008" mask="0x00000007" permission="rw"/>
+  <node id="DMONITOR"           address="0x009" mask="0x000000FF" permission="r"/>
+  <node id="RX"                 address="0x010">    
+    <node id="COUNTER_ENABLE"   address="0x000" mask="0x00000001" permission="rw" parameters="default=1"/>
+    <node id="RESET_DONE"       address="0x000" mask="0x00000002" permission="r"/>
+    <node id="MONITOR"          address="0x000" mask="0x0007F000" permission="r"/>
+    <node id="PRBS_SEL"         address="0x001" mask="0x00000007" permission="rw"/>
+    <node id="PRBS_RESET"       address="0x001" mask="0x00000008" permission="w"/>
+    <node id="USER_READY"       address="0x001" mask="0x00000010" permission="rw"/>
+    <node id="DFELPM_RESET"     address="0x001" mask="0x00000020" permission="rw"/>
+    <node id="MONITOR_SEL"      address="0x001" mask="0x00000300" permission="rw"/>
+    <node id="RESET"            address="0x002" mask="0x00000001" permission="rw"/>
+    <node id="PMA_RESET"        address="0x002" mask="0x00000002" permission="rw"/>
+    <node id="PRBS_ERR_COUNT"   address="0x003" mask="0xFFFFFFFF" permission="r"/>
+    <node id="BAD_CHAR_COUNT"   address="0x004" mask="0xFFFFFFFF" permission="r"/>
+    <node id="DISP_ERR_COUNT"   address="0x005" mask="0xFFFFFFFF" permission="r"/>
+  </node>
+  <node id="TX"                 address="0x020">
+    <node id="RESET_DONE"       address="0x000" mask="0x00000002" permission="r"/>
+    <node id="PRBS_SEL"         address="0x001" mask="0x00000007" permission="rw"/>
+    <node id="PRBS_FORCE_ERROR" address="0x001" mask="0x00000008" permission="w"/> 
+    <node id="INHIBIT"          address="0x001" mask="0x00000010" permission="rw"/>
+    <node id="USER_READY"       address="0x001" mask="0x00000020" permission="rw"/>
+    <node id="RESET"            address="0x002" mask="0x00000040" permission="rw"/>
+  </node>
+  <node id="EYESCAN"            address="0x030">
+    <node id="DATA_ERROR"       address="0x000" mask="0x00000001" permission="r"/>
+    <node id="RESET"            address="0x001" mask="0x00000001" permission="rw"/>
+    <node id="TRIGGER"          address="0x001" mask="0x00000010" permission="w"/>
+  </node>
+</node>

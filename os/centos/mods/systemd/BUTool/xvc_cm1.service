@@ -1,0 +1,14 @@
+[Unit]
+Description=XVC server for CM JTAG chain 1
+After=systemd-udevd.service
+
+[Service]
+Type=forking
+PIDFile=/var/run/xvc_server.2542.pid
+Restart=always
+RestartSec=1
+User=root
+ExecStart=/opt/BUTool/bin/xvc_server -p 2542 -v PLXVC.XVC_1
+
+[Install]
+WantedBy=basic.target

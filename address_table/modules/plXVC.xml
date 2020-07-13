@@ -1,0 +1,4 @@
+<node id="PLXVC">
+  <node id="XVC_1" address="0x0" fwinfo="type=array" module="file://plXVC_single.xml"/>
+  <node id="XVC_2" address="0x6" fwinfo="type=array" module="file://plXVC_single.xml"/>
+</node>

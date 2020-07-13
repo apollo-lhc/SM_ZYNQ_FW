@@ -1,0 +1,8 @@
+<node id="TCDS">
+  <node id="LINK0" address="0x00000000" module="file://RXTX.xml"/>
+  <node id="LINK1" address="0x00000100" module="file://RXTX.xml"/>
+  <node id="LINK2" address="0x00000200" module="file://RXTX.xml"/>
+  <node id="CTRL0" address="0x00001000" module="file://TCDS_CONTROL.xml"/>
+  <node id="CTRL1" address="0x00001100" module="file://TCDS_CONTROL.xml"/>
+  <node id="CTRL2" address="0x00001200" module="file://TCDS_CONTROL.xml"/>
+</node>

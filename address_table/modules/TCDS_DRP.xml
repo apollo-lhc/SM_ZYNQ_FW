@@ -1,0 +1,5 @@
+<node id="TCDS_DRP">
+  <node id="DRP_0"  module="file://DRP_7_GTX.xml" address="0x00000000"/>
+  <node id="DRP_1"  module="file://DRP_7_GTX.xml" address="0x00000200"/>
+  <node id="DRP_2"  module="file://DRP_7_GTX.xml" address="0x00000400"/>
+</node>

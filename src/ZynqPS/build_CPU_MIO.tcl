@@ -37,3 +37,9 @@ make_bd_pins_external                                        [get_bd_pins proces
 make_bd_pins_external                                        [get_bd_pins processing_system7_0/ENET1_MDIO_O]
 make_bd_intf_pins_external                                   [get_bd_intf_pins processing_system7_0/GMII_ETHERNET_1]
 make_bd_pins_external                                        [get_bd_pins processing_system7_0/ENET1_EXT_INTIN]
+
+#i2c (iic) for RTC
+set_property CONFIG.PCW_QSPI_GRP_SINGLE_SS_ENABLE {1}        [get_bd_cells processing_system7_0]
+set_property CONFIG.PCW_I2C0_PERIPHERAL_ENABLE {1}           [get_bd_cells processing_system7_0]
+set_property CONFIG.PCW_I2C0_I2C0_IO {EMIO}                  [get_bd_cells processing_system7_0]
+make_bd_intf_pins_external  [get_bd_intf_pins processing_system7_0/IIC_0]
