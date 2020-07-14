@@ -99,7 +99,30 @@ begin  -- architecture behavioral
         when 375 =>
           master_address <= x"00000008";
           master_rd_en   <= '1';
-          
+
+        when 400 =>
+          master_address <= x"00000000";
+          master_wr_data  <= x"badc0ffe";
+          master_wr_en   <= '1';
+          master_address <= x"00000008";
+          master_rd_en   <= '1';
+
+        when 450 =>
+          master_address <= x"00000000";
+          master_wr_data  <= x"badc0ffe";
+          master_wr_en   <= '1';
+        when 451 =>
+          master_address <= x"00000008";
+          master_rd_en   <= '1';
+
+        when 500 =>
+          master_address <= x"00000000";
+          master_wr_data  <= x"badc0ffe";
+          master_wr_en   <= '1';
+        when 502 =>
+          master_address <= x"00000008";
+          master_rd_en   <= '1';
+
         when others => null;
       end case;
 

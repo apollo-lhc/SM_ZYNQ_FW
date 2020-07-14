@@ -57,65 +57,13 @@ ${HOME_PATH}/cms ${HOME_PATH}/atlas ${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_
 	sudo cp ${MODS_PATH}/set_permissions.sh ${TMP_PATH}
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/set_permissions.sh
 
-${OPT_PATH}/cactus: | ${OPT_PATH} ${TMP_PATH}
-	cd ${TMP_PATH} && \
-		git clone --branch v2.7.4 https://github.com/ipbus/ipbus-software.git
-	cp ${MODS_PATH}/build_ipbus.sh ${TMP_PATH}/ipbus-software/
-	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/ipbus-software/build_ipbus.sh
-	cd ${TMP_PATH} && \
-	git clone /home/dan/work/Apollo/uhal/UIOuHAL/
-	cp ${MODS_PATH}/build_uiouhal.sh ${TMP_PATH}/UIOuHAL
-	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/UIOuHAL/build_uiouhal.sh
+include mk/uHAL.mk
 
+include mk/BUTool.mk
 
-${OPT_PATH}/BUTool: ${OPT_PATH}/cactus | ${OPT_PATH} ${TMP_PATH} 
-	cd ${TMP_PATH} && \
-		git clone https://github.com/apollo-lhc/ApolloTool.git
-	cd ${TMP_PATH}/ApolloTool && \
-		make init
-	cp ${MODS_PATH}/build_BUTool.sh ${TMP_PATH}/ApolloTool/
-	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/ApolloTool/build_BUTool.sh
-	sudo install -d -m 755 ${OPT_PATH}/address_tables
-	(cd mods && find address_tables/ -type f -exec sudo install -Dm 666 "{}" "${OPT_PATH}/{}" \;)
-	sudo install -d -m 755 ${OPT_PATH}/BUTool/systemd
-	sudo install    -m 664 ${MODS_PATH}/systemd/BUTool/* ${OPT_PATH}/BUTool/systemd/
-	sudo ln -s /opt/BUTool/systemd/smboot.service      ${ETC_PATH}/systemd/system/smboot.service
-	sudo ln -s /opt/BUTool/systemd/heartbeat.service   ${ETC_PATH}/systemd/system/heartbeat.service
-	sudo ln -s /opt/BUTool/systemd/ps_monitor.service  ${ETC_PATH}/systemd/system/ps_monitor.service
-	sudo ln -s /opt/BUTool/systemd/htmlStatus.service  ${ETC_PATH}/systemd/system/htmlStatus.service
-	sudo ln -s /opt/BUTool/systemd/xvc_cm1.service     ${ETC_PATH}/systemd/system/xvc_cm1.service
-	sudo ln -s /opt/BUTool/systemd/xvc_cm2.service     ${ETC_PATH}/systemd/system/xvc_cm2.service
-	sudo ln -s /opt/BUTool/systemd/xvc_local.service   ${ETC_PATH}/systemd/system/xvc_local.service
-	sudo ln -s /etc/systemd/system/smboot.service      ${ETC_PATH}/systemd/system/basic.target.wants/smboot.service
-	sudo ln -s /etc/systemd/system/heartbeat.service   ${ETC_PATH}/systemd/system/basic.target.wants/heartbeat.service
-	sudo ln -s /etc/systemd/system/ps_monitor.service  ${ETC_PATH}/systemd/system/basic.target.wants/ps_monitor.service
-	sudo ln -s /etc/systemd/system/htmlStatus.service  ${ETC_PATH}/systemd/system/basic.target.wants/htmlStatus.service
-	sudo ln -s /etc/systemd/system/xvc_cm1.service     ${ETC_PATH}/systemd/system/basic.target.wants/xvc_cm1.service
-	sudo ln -s /etc/systemd/system/xvc_cm2.service     ${ETC_PATH}/systemd/system/basic.target.wants/xvc_cm2.service
-	sudo ln -s /etc/systemd/system/xvc_local.service   ${ETC_PATH}/systemd/system/basic.target.wants/xvc_local.service
-	sudo install -m 777 ${MODS_PATH}/rc.local ${ETC_PATH}/rc.d/rc.local
-	sudo rm ${ETC_PATH}/systemd/system/multi-user.target.wants/auditd.service
-	sudo install -m 664 ${MODS_PATH}/htmlStatus ${ETC_PATH}/htmlStatus
-	sudo install -m 664 ${MODS_PATH}/SM_boot ${ETC_PATH}/SM_boot
+include mk/Monitoring.mk
 
-${OPT_PATH}/Graphite_Monitor: ${OPT_PATH}/BUTool | ${OPT_PATH} ${TMP_PATH} 
-	cd ${TMP_PATH} && \
-		git clone https://github.com/apollo-lhc/Grafana-Monitor.git -b develop Graphite
-	cp ${MODS_PATH}/build_Graphite.sh ${TMP_PATH}/Graphite/
-	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/Graphite/build_Graphite.sh
-	sudo install -d -m 755 ${OPT_PATH}/Graphite/systemd
-	sudo install    -m 664 ${MODS_PATH}/systemd/Graphite/*       ${OPT_PATH}/Graphite/systemd/
-	sudo ln -s /opt/Graphite/systemd/graphite_monitor.service    ${ETC_PATH}/systemd/system/graphite_monitor.service
-	sudo ln -s /etc/systemd/system/graphite_monitor.service      ${ETC_PATH}/systemd/system/basic.target.wants/graphite_monitor.service
-
-${OPT_PATH}/mcu_tools: | ${OPT_PATH} ${TEMP_PATH}
-	cd ${OPT_PATH} && \
-		git clone https://github.com/apollo-lhc/mcu_tools.git
-	#check out the correct tag of the uc tools
-	cd ${OPT_PATH}/mcu_tools && \
-		git checkout v0.2
-	cp ${MODS_PATH}/build_mcu_tools.sh ${TMP_PATH}/
-	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/build_mcu_tools.sh
+include mk/CM_MCU.mk
 
 
 finalize_image: ${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_PATH}/passwd ${ETC_PATH}/shadow  ${OPT_PATH}/BUTool ${HOME_PATH}/cms ${HOME_PATH}/atlas ${OPT_PATH}/mcu_tools ${OPT_PATH}/Graphite_Monitor
@@ -135,13 +83,6 @@ finalize_image: ${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_PATH}/passwd ${ETC_P
 	sudo install -g ${ATLAS_UID} -o ${ATLAS_GID} -m 700 -d ${HOME_PATH}/cms/.screen
 	sudo sed -i -e "s/server.use-ipv6 = \"enable\"/server.use-ipv6 = \"disable\"/g" ${ETC_PATH}/lighttpd/lighttpd.conf 
 
-clean_ipbus:
-	sudo rm -rf ${TMP_PATH}/ipbus-software
-	sudo rm -rf ${OPT_PATH}/cactus
-
-clean_BUTool:
-	sudo rm -rf ${TMP_PATH}/ApolloTool
-	sudo rm -rf ${OPT_PATH}/BUTool
 
 shell:
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash
