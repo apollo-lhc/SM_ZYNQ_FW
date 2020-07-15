@@ -66,10 +66,7 @@ set xci_files "\
     	      cores/onboard_CLK/onboard_CLK.xci \
               cores/LHC/LHC.xci \
               cores/TCDS_DRP_BRIDGE/TCDS_DRP_BRIDGE.xci \
-              cores/uart_monitor_ila/uart_monitor_ila.xci \
     	      "
-#	      cores/ila_i2c_debug/ila_i2c_debug.xci \
-#	      cores/c2c_ibert/c2c_ibert.xci \
 
 #DRP ip
 set ip_repo_path ../bd/IP
