@@ -183,6 +183,7 @@ package CM_CTRL is
     CNT_BYTE2_NOT_DATA         :std_logic_vector(15 downto 0);  -- Monitoring errors. Count of invalid byte types in parsing.
     CNT_BYTE3_NOT_DATA         :std_logic_vector(15 downto 0);  -- Monitoring errors. Count of invalid byte types in parsing.
     CNT_BYTE4_NOT_DATA         :std_logic_vector(15 downto 0);  -- Monitoring errors. Count of invalid byte types in parsing.
+    CNT_TIMEOUT                :std_logic_vector(15 downto 0);  -- Monitoring errors. Count of invalid byte types in parsing.
     CNT_UNKNOWN                :std_logic_vector(15 downto 0);  -- Monitoring errors. Count of invalid byte types in parsing.
   end record CM_CM_MONITOR_ERRORS_MON_t;
 
@@ -209,12 +210,14 @@ package CM_CTRL is
   type CM_CM_MONITOR_CTRL_t is record
     COUNT_16X_BAUD             :std_logic_vector( 7 downto 0);  -- Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
     ERRORS                     :CM_CM_MONITOR_ERRORS_CTRL_t;  
+    SM_TIMEOUT                 :std_logic_vector(31 downto 0);  -- Count to wait for in state machine before timing out (50Mhz clk)
   end record CM_CM_MONITOR_CTRL_t;
 
 
   constant DEFAULT_CM_CM_MONITOR_CTRL_t : CM_CM_MONITOR_CTRL_t := (
                                                                    ERRORS => DEFAULT_CM_CM_MONITOR_ERRORS_CTRL_t,
-                                                                   COUNT_16X_BAUD => x"1b"
+                                                                   COUNT_16X_BAUD => x"1b",
+                                                                   SM_TIMEOUT => x"0001fca0"
                                                                   );
   type CM_CM_MON_t is record
     CTRL                       :CM_CM_CTRL_MON_t;
