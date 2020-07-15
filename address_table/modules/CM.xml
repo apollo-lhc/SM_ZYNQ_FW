@@ -87,10 +87,11 @@
 	  <node id="CNT_BYTE2_NOT_DATA"  address="0x2"       mask="0x0000FFFF" permission="r"  description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=CM;Column=_5;Row=_4;Status=1;Show=nz;Format=u"/>
 	  <node id="CNT_BYTE3_NOT_DATA"  address="0x2"       mask="0xFFFF0000" permission="r"  description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=CM;Column=_5;Row=_4;Status=1;Show=nz;Format=u"/>
 	  <node id="CNT_BYTE4_NOT_DATA"  address="0x3"       mask="0x0000FFFF" permission="r"  description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=CM;Column=_5;Row=_4;Status=1;Show=nz;Format=u"/>
-	  <node id="CNT_UNKNOWN"         address="0x3"       mask="0xFFFF0000" permission="r"  description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=CM;Column=_5;Row=_4;Status=1;Show=nz;Format=u"/>
+	  <node id="CNT_TIMEOUT"         address="0x3"       mask="0xFFFF0000" permission="r"  description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=CM;Column=_5;Row=_4;Status=1;Show=nz;Format=u"/>
+	  <node id="CNT_UNKNOWN"         address="0x4"       mask="0x0000FFFF" permission="r"  description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=CM;Column=_5;Row=_4;Status=1;Show=nz;Format=u"/>
 	</node>
-	<node id="UART_BYTES" address="0x8" mask="0xFFFFFFFF" permission="r" description="Count of UART bytes from CM MCU" parameters="Table=CM;Column=Bytes;Row=_4;Status=3;Format=u"/>
-
+	<node id="UART_BYTES" address="0x9" mask="0xFFFFFFFF" permission="r" description="Count of UART bytes from CM MCU" parameters="Table=CM;Column=Bytes;Row=_4;Status=3;Format=u"/>
+	<node id="SM_TIMEOUT" address="0xA" mask="0xFFFFFFFF" permission="rw" description="Count to wait for in state machine before timing out (50Mhz clk)" parameters="default=0x1FCA0" />
 
       </node>
       

@@ -17,22 +17,23 @@ entity CM_Monitoring is
     INACTIVE_COUNT  : slv_32_t := x"03FFFFFF";
     BASE_ADDRESS    : unsigned(31 downto 0) := x"00000000");
   port (
-    clk             : in  std_logic;
-    reset           : in  std_logic;
-    uart_rx         : in  std_logic;
-    baud_16x_count  : in std_logic_vector(BAUD_COUNT_BITS-1 downto 0);
-    readMOSI        : out AXIreadMOSI;
-    readMISO        : in  AXIreadMISO;
-    writeMOSI       : out AXIwriteMOSI;
-    writeMISO       : in  AXIwriteMISO;
-    uart_byte_count : out slv_32_t;
-    debug_history   : out slv_32_t;
-    debug_valid     : out slv_4_t;
-    error_reset     : in  std_logic;
-    error_count     : out slv16_array_t(5 downto 0);
-    bad_transaction : out slv_32_t;
-    last_transaction: out slv_32_t;
-    channel_active  : out std_logic);
+    clk              : in  std_logic;
+    reset            : in  std_logic;
+    uart_rx          : in  std_logic;
+    baud_16x_count   : in  std_logic_vector(BAUD_COUNT_BITS-1 downto 0);
+    sm_timeout_value : in  slv_32_t;
+    readMOSI         : out AXIreadMOSI;
+    readMISO         : in  AXIreadMISO;
+    writeMOSI        : out AXIwriteMOSI;
+    writeMISO        : in  AXIwriteMISO;
+    uart_byte_count  : out slv_32_t;
+    debug_history    : out slv_32_t;
+    debug_valid      : out slv_4_t;
+    error_reset      : in  std_logic;
+    error_count      : out slv16_array_t(6 downto 0);
+    bad_transaction  : out slv_32_t;
+    last_transaction : out slv_32_t;
+    channel_active   : out std_logic);
 
 end entity CM_Monitoring;
 
@@ -44,10 +45,15 @@ architecture behavioral of CM_Monitoring is
   constant ERROR_BYTE2_NOT_DATA : integer := 2;
   constant ERROR_BYTE3_NOT_DATA : integer := 3;
   constant ERROR_BYTE4_NOT_DATA : integer := 4;
-  constant ERROR_UNKNOWN        : integer := 5;
+  constant ERROR_TIMEOUT        : integer := 5;
+  constant ERROR_UNKNOWN        : integer := 6;
   signal error_pulse : std_logic_vector(ERROR_UNKNOWN downto 0);  
   signal uart_history : slv_32_t;
   signal uart_history_valid : slv_4_t;
+
+  signal sm_timeout_counter : unsigned(sm_timeout_value'left downto 0);
+  signal sm_timeout_end_count : unsigned(sm_timeout_value'left downto 0);
+
   
   signal en_16_x_baud : std_logic;
   signal baud_counter : unsigned(BAUD_COUNT_BITS-1 downto 0);
@@ -87,9 +93,19 @@ architecture behavioral of CM_Monitoring is
                    SM_WAIT_FOR_AXI_READ,
                    SM_ERROR);
   signal state : state_t;
+  signal state_slv : std_logic_vector(2 downto 0);
   
 begin  -- architecture behavioral
 
+  state_slv <= "000" when state = SM_RESET else
+               "001" when state = SM_WAIT_FOR_SOF else
+               "010" when state = SM_WAIT_FOR_BYTE2 else
+               "011" when state = SM_WAIT_FOR_BYTE3 else
+               "100" when state = SM_WAIT_FOR_BYTE4 else
+               "101" when state = SM_WAIT_FOR_AXI_READ else
+               "110" when state = SM_ERROR else
+               "111" ;
+  
   -------------------------------------------------------------------------------
   --AXI-Lite master
   -------------------------------------------------------------------------------
@@ -113,34 +129,39 @@ begin  -- architecture behavioral
   -------------------------------------------------------------------------------
   -- Monitor state machine
   -------------------------------------------------------------------------------
-  --                                                       Start
-  --+----------+    +----------+            +----------+ AXI Read   +----------+
-  --|          |    |  WAIT    |            |  WAIT    |            |  WAIT    |
-  --|  RESET  ----->+   FOR    +----------->+   FOR    +----------->+   FOR    |
-  --|          |    |   SOF    | DP = '1'   |  BYTE 2  | DP = '1'   |  BYTE 3  |
-  --+----+-----+    +-+------+-+ TYPE 0b10  +----+-----+ TYPE 0b00  +-+--+-----+
-  --     ^            ^      |                   |                    |  |
-  --     |            |      |                   |  DP = '1'          |  |
-  --     |            +------+                   |  Type != 0b00      |  |
-  --     |            ^                          +<----------+--------+  | DP = '1'
-  --     |            ^                          |           ^           v TYPE 0b00
-  --     |            |                     -----v-----+     |      +----+-----+
-  --     |            |                     |          |     |      |  WAIT    |
-  --     +----------------------------------+  ERROR   |     +------+   FOR    |
-  --                  |                     |          |            |  BYTE 4  |
-  --                  |                     +----------+            +----+-----+
-  --                  |                                                  |
-  --                  |                                                  | DP = '1'
-  --                  |                                                  v TYPE 0b00
-  --                  |                                             +----+-----+
-  --                  |                                             |  WAIT    +-------+
-  --                  +---------------------------------------------+ FOR AXI  |       |
-  --                                                                |  READ    +<------+
-  --                                                                +----------+  AXI READ
-  --                                                                              Finished
-  --                                                                               = 0
-  --
-  -------------------------------------------------------------------------------
+  --                                             +----------------------------------------------------+
+  --                                             |                  Start                             |
+  -- -----------+    +----------+                |     +----------+ AXI Read   +----------+           |
+  -- |          |    |  WAIT    |                |     |  WAIT    |            |  WAIT    |           |
+  -- |  RESET   +--->+   FOR    +--------------------->+   FOR    +----------->+   FOR    |           |
+  -- |          |    |   SOF    | DP = '1'       |     |  BYTE 2  | DP = '1'   |  BYTE 3  |           |
+  -- -----+-----+    +-+------+-+ TYPE 0b10      |     +----+-----+ TYPE 0b00  +-+--+-----+           |
+  --      ^            ^      |                  |          |                    |  |                 |
+  --      |            |      |                  |          |  DP = '1'          |  |                 |
+  --      |            +------+                  |          |  Type != 0b00      |  |                 |
+  --      |            ^                         |          +<-------------------+  | DP = '1'        |
+  --      |            |                         |          |                       v TYPE 0b00       |
+  --      |            |    +----------+         |          |                  +----+-----+           |
+  --      |            |    |          |         |          |                  |  WAIT    |           |
+  --      +-----------------+  ERROR   +<-------------------v------------------+   FOR    |           |
+  --                   |    |          |         |                             |  BYTE 4  |           |
+  --                   |    +----+-----+         |                             +----+-----+           |
+  --                   |         ^               |                                  |                 |
+  --                   |         |               |                                  | DP = '1'        |
+  --                   |         |               |                                  v TYPE 0b00       |
+  --                   |         |               |                             +----+-----+           |
+  --                   |         |               |                             |  WAIT    +-------+   |
+  --                   +-------------------------------------------------------+ FOR AXI  |       |   |
+  --                             |               |                             |  READ    +<------+   |
+  --                             |               |                             +----------+  AXI READ |
+  --                             |               |                                           Finished |
+  --                             |               |                                            = 0     |
+  --                             |               +----------------------------------------------------+
+  --                             |               |                                                    |
+  --                             +---------------+   Timeout in any of these states                   |
+  --                                             |                                                    |
+  --                                             +----------------------------------------------------+
+
   Mon_SM: process (clk, reset) is
   begin  -- process Mon_SM_proc
     if reset = '1' then                 -- asynchronous reset (active high)
@@ -163,7 +184,7 @@ begin  -- architecture behavioral
             --it. (we'll skip the restart)
             end if;            
           end if;
-        when SM_WAIT_FOR_BYTE2 =>
+        when SM_WAIT_FOR_BYTE2 =>          
           if uart_data_present = '1' then
             --check if the data is valid
             if uart_data(7 downto 6) = BS_DATA then
@@ -178,7 +199,7 @@ begin  -- architecture behavioral
               state <= SM_ERROR;
               error_pulse(ERROR_AXI_BUSY_BYTE2) <= '1';            
             end if;
-            
+
           end if;
         when SM_WAIT_FOR_BYTE3 =>
           if uart_data_present = '1' then
@@ -208,9 +229,23 @@ begin  -- architecture behavioral
           error_pulse(ERROR_UNKNOWN) <= '1';
           state <=SM_ERROR;
       end case;
+
+      -- Monitor the states so we don't get stuck in the middle of a word
+      case state is
+        when SM_RESET | SM_WAIT_FOR_SOF | SM_ERROR =>
+          sm_timeout_counter <= (others => '0');
+        when others =>
+          if sm_timeout_counter /= sm_timeout_end_count then
+            sm_timeout_counter <= sm_timeout_counter + 1;
+          else
+            state <= SM_ERROR;
+            error_pulse(ERROR_TIMEOUT) <= '1';                        
+          end if;
+      end case;
     end if;
   end process Mon_SM;
-
+  sm_timeout_end_count <= unsigned(sm_timeout_value);
+  
   -------------------------------------------------------------------------------
   -- State machine operations
   -------------------------------------------------------------------------------
@@ -299,7 +334,7 @@ begin  -- architecture behavioral
             axi_wr_en <= '1';
 
             --latch this transaction
-            last_transaction(31 downto 24) <= "00"&error_pulse;
+            last_transaction(31 downto 24) <= "0"&error_pulse;
             last_transaction(23 downto  8) <= sensor_value;
             last_transaction( 7 downto  0) <= sensor_number;
           end if;
@@ -310,6 +345,8 @@ begin  -- architecture behavioral
     end if;
   end process Mon_SM_proc;
 
+
+  
   -------------------------------------------------------------------------------
   -- UART Rx
   -------------------------------------------------------------------------------  
@@ -372,7 +409,7 @@ begin  -- architecture behavioral
     elsif clk'event and clk = '1' then  -- rising clock edge
       if or_reduce(error_pulse) = '1' then
         --latch this transaction
-        bad_transaction(31 downto 24) <= "00"&error_pulse;
+        bad_transaction(31 downto 24) <= "0"&error_pulse;
         bad_transaction(23 downto  8) <= sensor_value;
         bad_transaction( 7 downto  0) <= sensor_number;
       end if;
@@ -428,4 +465,7 @@ begin  -- architecture behavioral
       event       => '1',
       count       => open,
       at_max      => channel_inactive);
+
+
+  
 end architecture behavioral;
