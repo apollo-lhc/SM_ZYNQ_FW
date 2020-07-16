@@ -5,7 +5,8 @@ use work.types.all;
 
 package CM_package is
 
-  type C2C_Monitor_t is record    
+  --Array C2C_Monitor_t
+  type single_C2C_Monitor_t is record    
     axi_c2c_config_error_out    : STD_LOGIC;
     axi_c2c_link_error_out      : STD_LOGIC;
     axi_c2c_link_status_out     : STD_LOGIC;
@@ -28,10 +29,14 @@ package CM_package is
     rxresetdone      : STD_LOGIC;
     txbufstatus      : STD_LOGIC_VECTOR ( 1 downto 0 );
     txresetdone      : STD_LOGIC;
-
+  end record single_C2C_Monitor_t;
+  type C2C_Monitor_t_ARRAY is array (1 to 2) of single_C2C_Monitor_t;
+  type C2C_Monitor_t is record
+    CM : C2C_Monitor_t_ARRAY;
   end record C2C_Monitor_t;
-
-  type C2C_Control_t is record
+  
+  --Array C2C_Control_t
+  type single_C2C_Control_t is record
     aurora_pma_init_in : std_logic;
     --debug
     eyescanreset     : STD_LOGIC;
@@ -60,8 +65,8 @@ package CM_package is
     txprbsforceerr   : STD_LOGIC;
     txprbssel        : STD_LOGIC_VECTOR ( 2 downto 0 );
     txprecursor      : STD_LOGIC_VECTOR ( 4 downto 0 );
-  end record C2C_Control_t;
-  constant DEFAULT_C2C_Control_t : C2C_Control_t := (
+  end record single_C2C_Control_t;
+  constant DEFAULT_single_C2C_Control_t : single_C2C_Control_t := (
     aurora_pma_init_in => '0',
     eyescanreset     => '0',
     eyescantrigger   => '0',
@@ -90,20 +95,33 @@ package CM_package is
     txprbssel        => "000",
     txprecursor      => "000"
 );
+  type C2C_Control_t_ARRAY is array (1 to 2) of single_C2C_Control_t;
+  type C2C_Control_t is record
+    CM : C2C_Control_t_ARRAY;
+  end record C2C_Control_t;
+  constant DEFAULT_C2C_Control_t : C2C_Control_t := (CM => (others => DEFAULT_single_C2C_Control_t));
   
-  
-  type to_CM_t is record
+  --Array to_CM_t
+  type single_to_CM_t is record
     UART_Tx : std_logic;
     TMS     : std_logic;
     TDI     : std_logic;
     TCK     : std_logic;
+  end record single_to_CM_t;
+  type to_CM_t_ARRAY is array (1 to 2) of single_to_CM_t;
+  type to_CM_t is record
+    CM : to_CM_t_ARRAY;
   end record to_CM_t;
-
-  type from_CM_t is record
+    
+  --Array from_CM_t
+  type single_from_CM_t is record
     PWR_good : std_logic;
     UART_Rx  : std_logic;
     TDO      : std_logic;
     GPIO     : slv_2_t;
+  end record single_from_CM_t;
+  type from_CM_t_ARRAY is array (1 to 2) of single_from_CM_t;
+  type from_CM_t is record
+    CM : from_CM_t_ARRAY;
   end record from_CM_t;
-
 end package CM_package;

@@ -36,6 +36,7 @@ set vhdl_files "\
      src/CM_interface/CM_Monitoring.vhd \
      src/CM_interface/CM_pwr.vhd \
      src/CM_interface/CM_package.vhd \
+     src/CM_interface/CM_phy_lane_control.vhd \
      src/front_panel/Button_Debouncer.vhd \
      src/front_panel/Button_Decoder.vhd \
      src/front_panel/FrontPanel_UI.vhd \

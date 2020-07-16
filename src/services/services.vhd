@@ -46,9 +46,8 @@ entity services is
                        
     ESM_LED_CLK        : in  std_logic;
     ESM_LED_SDA        : in  std_logic;
-    CM1_C2C_Mon        : in  C2C_Monitor_t;
-    CM2_C2C_Mon        : in  C2C_Monitor_t
-    );
+    CM1_C2C_Mon        : in  single_C2C_Monitor_t;
+    CM2_C2C_Mon        : in  single_C2C_Monitor_t);
 end entity services;
 
 architecture behavioral of services is

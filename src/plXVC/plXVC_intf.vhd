@@ -85,7 +85,4 @@ begin
     mon.XVC(I).TDO_VECTOR <= MON_TDO_VECTOR(I);
     
   end generate GENERATE_JTAG;
-
-
-
 end architecture behavioral;

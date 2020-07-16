@@ -96,4 +96,9 @@ tb_TCDS : $(TB_TCDS_VDBS)
 test_TCDS : $(TB_TCDS_VDBS)
 	$(MAKE) tb_TCDS USE_GUI="-onfinish quit -t ./quit.tcl"
 
+TB_PHY_LANE_CONTROL_VDBS=$(call build_vdb_list, src/misc/types.vhd src/misc/counter.vhd src/CM_interface/CM_phy_lane_control.vhd)
+tb_phy_lane_control : $(TB_PHY_LANE_CONTROL_VDBS)
+	$(TB_RULE)
+test_phy_lane_control : $(TB_PHY_LANE_CONTROL_VDBS)
+	$(MAKE) tb_phy_lane_control USE_GUI="-onfinish quit -t ./quit.tcl"
 
