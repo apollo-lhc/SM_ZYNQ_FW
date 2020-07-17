@@ -21,6 +21,8 @@ architecture behavioral of tb_phy_lane_control is
   signal reset_counter    : std_logic;
   signal enable           : std_logic;
   signal phy_lane_up      : std_logic;
+  signal phy_lane_stable  : std_logic_vector(31 downto 0);
+  signal max_error_state  : std_logic_vector(31 downto 0);
   signal initialize_out   : std_logic;
   signal lock             : std_logic;
   signal state_out        : std_logic_vector(2 downto 0);
@@ -95,6 +97,8 @@ begin  -- architecture behavioral
       reset_counter    => reset_counter,
       enable           => enable,
       phy_lane_up      => phy_lane_up,
+      phy_lane_stable  => phy_lane_stable,
+      max_error_state  => max_error_state,
       initialize_out   => initialize_out,
       lock             => lock,
       state_out        => state_out,

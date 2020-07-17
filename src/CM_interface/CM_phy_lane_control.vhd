@@ -9,7 +9,8 @@ use UNISIM.vcomponents.all;
 entity CM_phy_lane_control is
   generic (
     CLKFREQ          : integer := 50000000;  --Frequency of clk (hz)
-    DATA_WIDTH       : integer := 32;        --Data width for error counter
+    DATA_WIDTH       : integer := 32;        --Data width for error counter,
+                                             --this might be required to be 32
     ERROR_WAIT_TIME  : integer := 50000000); --Wait time for error checking state
   port (
     clk              : in  std_logic;
@@ -17,6 +18,8 @@ entity CM_phy_lane_control is
     reset_counter    : in  std_logic;
     enable           : in  std_logic;
     phy_lane_up      : in  std_logic;
+    phy_lane_stable  : in  std_logic_vector(31 downto 0);
+    max_error_state  : in  std_logic_vector(DATA_WIDTH-1 downto 0);
     initialize_out   : out std_logic;
     lock             : out std_logic;
     state_out        : out std_logic_vector(2 downto 0);
@@ -27,20 +30,22 @@ end entity CM_phy_lane_control;
 architecture behavioral of CM_phy_lane_control is
 
   --- *** TIMING *** ---
-  constant READ_TIME   : integer := CLKFREQ/100; --10ms
-  signal   counter     : unsigned(4 downto 0);
-  signal   timer_read  : integer range 0 to READ_TIME;
-  signal   timer_error : integer range 0 to ERROR_WAIT_TIME;
-
+  constant READ_TIME        : integer := CLKFREQ/100; --10ms
+  signal   timer_read       : integer range 0 to READ_TIME;
+  signal   timer_error      : integer range 0 to ERROR_WAIT_TIME;
+  signal   counter          : unsigned(4 downto 0);
+  signal   phy_up_cnt       : unsigned(19 downto 0);
+  signal   reset_error_wait : std_logic;
   
   --- *** STATE_MACINE *** ---
   type state_t is (IDLE, WAITING, INITIALIZING, READING, LOCKED, ERROR_WAIT);
   signal state     : state_t;
   
   --- *** COUNTER *** ---
-  signal event       : std_logic;
-  signal event_error : std_logic;
-  signal reset_c     : std_logic;
+  signal event                   : std_logic;
+  signal event_error             : std_logic;
+  signal reset_c                 : std_logic;
+  signal count_error_wait_buffer : std_logic_vector(DATA_WIDTH-1 downto 0);
   
 begin
 ------------------------------------------------------------------------------------------
@@ -109,7 +114,7 @@ begin
           if enable = '0' then
             state <= IDLE;
           else
-            if phy_lane_up = '1' then
+            if std_logic_vector(phy_up_cnt) = phy_lane_stable(19 downto 0) then
               state <= LOCKED;
             else
               if timer_read = READ_TIME then
@@ -127,8 +132,13 @@ begin
             event_error <= '0';
           else
             if phy_lane_up = '0' then
-              state <= ERROR_WAIT;
-              event_error <= '1';
+              if count_error_wait_buffer = max_error_state then
+                state <= INITIALIZING;
+                event_error <= '0';
+              else
+                state <= ERROR_WAIT;
+                event_error <= '1';
+              end if;
             else
               state <= LOCKED;
               event_error <= '0';
@@ -141,7 +151,7 @@ begin
           if enable = '0' then
             state <= IDLE;
           else
-            if phy_lane_up = '1' then
+            if std_logic_vector(phy_up_cnt) = phy_lane_stable(19 downto 0) then
               state <= LOCKED;
             else
               if timer_error = ERROR_WAIT_TIME then
@@ -176,6 +186,7 @@ begin
           timer_read  <= 0;
           timer_error <= 0;
           event       <= '0';
+          phy_up_cnt  <= (others => '0');
           
         when INITIALIZING => --count 32 clk's
           if counter = "11111" then
@@ -187,6 +198,7 @@ begin
           end if;
           timer_read  <= 0;
           timer_error <= 0;
+          phy_up_cnt  <= (others => '0');
           
         when WAITING => --count to 1 ms
           counter <= "00000";
@@ -197,13 +209,19 @@ begin
           end if;
           timer_error <= 0;
           event       <= '0';
-          
+          if phy_lane_up = '1' then
+            phy_up_cnt <= phy_up_cnt + 1;
+          else
+            phy_up_cnt <= (others => '0');
+          end if;
+                    
         when LOCKED => --no counting
           counter     <= "00000";
           timer_read  <= 0;
           event       <= '0';
           timer_error <= 0;
-
+          phy_up_cnt  <= (others => '0');
+          
         when ERROR_WAIT =>
           counter    <= "00000";
           timer_read <= 0;
@@ -213,12 +231,18 @@ begin
           else
             timer_error <= timer_error + 1;
           end if;
+          if phy_lane_up = '1' then
+            phy_up_cnt <= phy_up_cnt + 1;
+          else
+            phy_up_cnt <= (others => '0');
+          end if;
           
         when others => --reset 
           counter     <= "00000";
           timer_read  <= 0;
           timer_error <= 0;
           event       <= '0';
+          phy_up_cnt  <= (others => '0');
       end case;
     end if;
   end process TIMING;
@@ -227,41 +251,48 @@ begin
   CONTROL: process (reset, clk) is
   begin
     if reset = '1' then --async reset
-      initialize_out <= '0';
-      lock           <= '0';
-      reset_c        <= '1';
+      initialize_out   <= '0';
+      lock             <= '0';
+      reset_c          <= '1';
+      reset_error_wait <= '1';
       
     elsif clk'event and clk='1' then --rising clk edge
       case state is
         when IDLE => --initialize is passed through
-          initialize_out <= '0';
-          lock           <= '0';
-          reset_c        <= '1';
+          initialize_out   <= '0';
+          lock             <= '0';
+          reset_c          <= '1';
+          reset_error_wait <= '1';
           
         when INITIALIZING => --force initialize
-          initialize_out <= '1';
-          lock           <='0';
-          reset_c        <= '0';
+          initialize_out   <= '1';
+          lock             <= '0';
+          reset_c          <= '0';
+          reset_error_wait <= '1';
           
         when WAITING => --hold at 0
-          initialize_out <= '0';
-          lock           <= '0';
-          reset_c        <= '0';
+          initialize_out   <= '0';
+          lock             <= '0';
+          reset_c          <= '0';
+          reset_error_wait <= '1';
           
         when LOCKED => --set locked, hold initialize low
-          initialize_out <= '0';
-          lock           <= '1';
-          reset_c        <= '1';
+          initialize_out   <= '0';
+          lock             <= '1';
+          reset_c          <= '1';
+          reset_error_wait <= '0';
 
         when ERROR_WAIT =>
-          initialize_out <= '0';
-          lock           <= '1';
-          reset_c        <= '1';
+          initialize_out   <= '0';
+          lock             <= '1';
+          reset_c          <= '1';
+          reset_error_wait <= '0';
           
         when others => --reset
-          initialize_out <= '0';
-          lock           <= '0';
-          reset_c        <= '0';
+          initialize_out   <= '0';
+          lock             <= '0';
+          reset_c          <= '0';
+          reset_error_wait <= '1';
       end case;
     end if;
   end process CONTROL;
@@ -307,9 +338,10 @@ begin
     port map (
       clk         => clk,
       reset_async => reset_counter,
-      reset_sync  => '0',
+      reset_sync  => reset_error_wait,
       enable      => enable,
       event       => event_error,
-      count       => count_error_wait,
+      count       => count_error_wait_buffer,
       at_max      => open);
+  count_error_wait <= count_error_wait_buffer;
 end architecture behavioral;
