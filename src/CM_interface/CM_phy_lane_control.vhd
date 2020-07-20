@@ -19,7 +19,7 @@ entity CM_phy_lane_control is
     enable           : in  std_logic;
     phy_lane_up      : in  std_logic;
     phy_lane_stable  : in  std_logic_vector(31 downto 0);
-    max_error_state  : in  std_logic_vector(DATA_WIDTH-1 downto 0);
+    READ_TIME        : in  std_logic_vector(23 downto 0);
     initialize_out   : out std_logic;
     lock             : out std_logic;
     state_out        : out std_logic_vector(2 downto 0);
@@ -30,8 +30,7 @@ end entity CM_phy_lane_control;
 architecture behavioral of CM_phy_lane_control is
 
   --- *** TIMING *** ---
-  constant READ_TIME        : integer := CLKFREQ/100; --10ms
-  signal   timer_read       : integer range 0 to READ_TIME;
+  signal   timer_read       : unsigned(23 downto 0);
   signal   timer_error      : integer range 0 to ERROR_WAIT_TIME;
   signal   counter          : unsigned(4 downto 0);
   signal   phy_up_cnt       : unsigned(19 downto 0);
@@ -117,7 +116,7 @@ begin
             if std_logic_vector(phy_up_cnt) = phy_lane_stable(19 downto 0) then
               state <= LOCKED;
             else
-              if timer_read = READ_TIME then
+              if std_logic_vector(timer_read) = READ_TIME then
                 state <= INITIALIZING;
               else
                 state <= WAITING;
@@ -132,13 +131,8 @@ begin
             event_error <= '0';
           else
             if phy_lane_up = '0' then
-              if count_error_wait_buffer = max_error_state then
-                state <= INITIALIZING;
-                event_error <= '0';
-              else
-                state <= ERROR_WAIT;
-                event_error <= '1';
-              end if;
+              state <= ERROR_WAIT;
+              event_error <= '1';
             else
               state <= LOCKED;
               event_error <= '0';
@@ -175,7 +169,7 @@ begin
   begin
     if reset = '1' then --async reset
       counter      <= "00000";
-      timer_read   <= 0;
+      timer_read   <= (others => '0');
       timer_error  <= 0;
       event        <= '0';
       
@@ -183,7 +177,7 @@ begin
       case state is
         when IDLE => --no counting
           counter     <= "00000";
-          timer_read  <= 0;
+          timer_read  <= (others => '0');
           timer_error <= 0;
           event       <= '0';
           phy_up_cnt  <= (others => '0');
@@ -196,13 +190,13 @@ begin
             counter <= counter + 1;
             event   <= '0';
           end if;
-          timer_read  <= 0;
+          timer_read  <= (others => '0');
           timer_error <= 0;
           phy_up_cnt  <= (others => '0');
           
         when WAITING => --count to 1 ms
           counter <= "00000";
-          if timer_read = READ_TIME then
+          if std_logic_vector(timer_read) = READ_TIME then
             timer_read <= timer_read;
           else
             timer_read <= timer_read + 1;
@@ -217,14 +211,14 @@ begin
                     
         when LOCKED => --no counting
           counter     <= "00000";
-          timer_read  <= 0;
+          timer_read  <= (others => '0');
           event       <= '0';
           timer_error <= 0;
           phy_up_cnt  <= (others => '0');
           
         when ERROR_WAIT =>
           counter    <= "00000";
-          timer_read <= 0;
+          timer_read <= (others => '0');
           event      <= '0';
           if timer_error = ERROR_WAIT_TIME then
             timer_error <= timer_error;
@@ -239,7 +233,7 @@ begin
           
         when others => --reset 
           counter     <= "00000";
-          timer_read  <= 0;
+          timer_read  <= (others => '0');
           timer_error <= 0;
           event       <= '0';
           phy_up_cnt  <= (others => '0');
@@ -341,7 +335,6 @@ begin
       reset_sync  => reset_error_wait,
       enable      => enable,
       event       => event_error,
-      count       => count_error_wait_buffer,
+      count       => count_error_wait,
       at_max      => open);
-  count_error_wait <= count_error_wait_buffer;
 end architecture behavioral;

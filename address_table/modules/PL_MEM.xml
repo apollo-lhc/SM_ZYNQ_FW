@@ -89,8 +89,8 @@
   </node>
   <node id="NETWORK" address="0x00000061">
     <node id="ETH0" address="0x00000000">
-      <node id="RX" address="0x00000000" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=_4;Status=1;Format=m_1_1_1000_1_0_1;" description="Rate of ETH0_RX at kB/sec"/>
-      <node id="TX" address="0x00000001" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=_4;Status=1;Format=m_1_1_1000_1_0_1;" description="Rate of ETH0_TX at kB/sec"/>
+      <node id="RX" address="0x00000000" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=_4;Status=1;Format=m_1_1_1000_1_0_1;Format=d;" description="Rate of ETH0_RX at kB/sec"/>
+      <node id="TX" address="0x00000001" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=_4;Status=1;Format=m_1_1_1000_1_0_1;Format=d;" description="Rate of ETH0_TX at kB/sec"/>
     </node>
   </node>
   <node id="USERS_INFO" address="0x000007E0">
