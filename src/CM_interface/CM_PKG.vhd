@@ -19,15 +19,19 @@ package CM_CTRL is
     OVERRIDE_PWR_GOOD          :std_logic;     -- Ignore power good from CM
     ERROR_STATE_RESET          :std_logic;     -- CM power is good
     ENABLE_PHY_CTRL            :std_logic;     -- phy_lane_control is enabled
+    PHY_LANE_STABLE            :std_logic_vector(31 downto 0);  -- Contious phy_lane_up signals required to lock phylane control
+    PHY_READ_TIME              :std_logic_vector(23 downto 0);  -- Time spent waiting for phylane to stabilize
   end record CM_CM_CTRL_CTRL_t;
 
 
   constant DEFAULT_CM_CM_CTRL_CTRL_t : CM_CM_CTRL_CTRL_t := (
                                                              ENABLE_PHY_CTRL => '1',
-                                                             OVERRIDE_PWR_GOOD => '0',
-                                                             ERROR_STATE_RESET => '0',
+                                                             PHY_READ_TIME => x"4c4b40",
+                                                             PHY_LANE_STABLE => x"000000ff",
                                                              ENABLE_UC => '0',
-                                                             ENABLE_PWR => '0'
+                                                             OVERRIDE_PWR_GOOD => '0',
+                                                             ENABLE_PWR => '0',
+                                                             ERROR_STATE_RESET => '0'
                                                             );
   type CM_CM_C2C_RX_MON_t is record
     BUF_STATUS                 :std_logic_vector( 2 downto 0);  -- DEBUG rx buf status
