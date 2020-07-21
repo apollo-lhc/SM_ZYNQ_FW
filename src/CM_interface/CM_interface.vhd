@@ -211,6 +211,8 @@ begin
         reset_counter    => CTRL.CM(iCM).C2C.CNT.RESET_COUNTERS,
         enable           => phycontrol_en(iCM - 1),
         phy_lane_up      => CM_C2C_Mon.CM(iCM).phy_lane_up(0),
+        phy_lane_stable  => CTRL.CM(iCM).CTRL.PHY_LANE_STABLE,
+        READ_TIME        => CTRL.CM(iCM).CTRL.PHY_READ_TIME,
         initialize_out   => aurora_init_buf(iCM - 1),
         lock             => phylanelock(iCM - 1),
         state_out        => Mon.CM(iCM).C2C.CNT.PHYLANE_STATE,

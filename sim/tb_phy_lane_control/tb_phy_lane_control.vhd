@@ -21,6 +21,8 @@ architecture behavioral of tb_phy_lane_control is
   signal reset_counter    : std_logic;
   signal enable           : std_logic;
   signal phy_lane_up      : std_logic;
+  signal phy_lane_stable  : std_logic_vector(31 downto 0);
+  signal READ_TIME        : std_logic_vector(23 downto 0);
   signal initialize_out   : std_logic;
   signal lock             : std_logic;
   signal state_out        : std_logic_vector(2 downto 0);
@@ -39,44 +41,47 @@ begin  -- architecture behavioral
       enable <= '0';
       phy_lane_up <= '0';
       initialize_test <= '0';
-                  
+      reset_counter <= '0';
+      phy_lane_stable <= x"0000_0001";
+      READ_TIME <= x"4C_4B40"; --100ms
+      
     elsif clk'event and clk = '1' then  -- rising clock edge
       counter <= counter + 1;
             
       case counter is
-        when 10 =>
-          initialize_test <= '1';
-        when 15 =>
-          initialize_test <= '0';
-        when 20 =>
-          initialize_test <= '1';
-        when 25 =>
-          enable <= '1';
-        when 70 =>
-          phy_lane_up <= '1';
-        when 100 =>
-          enable <= '0';
-          phy_lane_up <= '0';
-        when 110 =>
-          initialize_test <= '0';
-        when 120 =>
-          enable <= '1';
-          phy_lane_up <='1';
-        when 125 =>
-          phy_lane_up <= '0';
-        when 130 =>
-          phy_lane_up <= '1';
-        when 135 =>
-          phy_lane_up <= '0';
-        when 140 =>
-          enable <= '0';
-        when 150 =>
-          enable <= '1';
-          phy_lane_up <= '1';
-        when 155 =>
-          phy_lane_up <= '0';
-        when 300 =>
-          phy_lane_up <= 'X';
+        --when 10 =>
+        --  initialize_test <= '1';
+        --when 15 =>
+        --  initialize_test <= '0';
+        --when 20 =>
+        --  initialize_test <= '1';
+        --when 25 =>
+        --  enable <= '1';
+        --when 70 =>
+        --  phy_lane_up <= '1';
+        --when 100 =>
+        --  enable <= '0';
+        --  phy_lane_up <= '0';
+        --when 110 =>
+        --  initialize_test <= '0';
+        --when 120 =>
+        --  enable <= '1';
+        --  phy_lane_up <='1';
+        --when 125 =>
+        --  phy_lane_up <= '0';
+        --when 130 =>
+        --  phy_lane_up <= '1';
+        --when 135 =>
+        --  phy_lane_up <= '0';
+        --when 140 =>
+        --  enable <= '0';
+        --when 150 =>
+        --  enable <= '1';
+        --  phy_lane_up <= '1';
+        --when 155 =>
+        --  phy_lane_up <= '0';
+        --when 300 =>
+        --  phy_lane_up <= 'X';
           
         when others => null;
       end case;
@@ -86,7 +91,7 @@ begin  -- architecture behavioral
   --Module under testing
   phy_lane_1: entity work.CM_phy_lane_control
     generic map (
-      CLKFREQ          => 10, --WAITING should last 10 clk cycles
+      CLKFREQ          => 1000, --WAITING should last 10 clk cycles
       DATA_WIDTH       => 32,
       ERROR_WAIT_TIME  => 10) --error wait last 10 clks    
     port map (
@@ -95,6 +100,8 @@ begin  -- architecture behavioral
       reset_counter    => reset_counter,
       enable           => enable,
       phy_lane_up      => phy_lane_up,
+      phy_lane_stable  => phy_lane_stable,
+      READ_TIME        => READ_TIME,
       initialize_out   => initialize_out,
       lock             => lock,
       state_out        => state_out,
