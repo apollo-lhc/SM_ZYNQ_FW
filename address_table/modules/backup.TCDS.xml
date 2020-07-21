@@ -1,0 +1,8 @@
+<node id="TCDS">
+  <node id="LINK_0" address="0x00000000" fwinfo="type=array" module="file://RXTX.xml"/>
+  <node id="LINK_1" address="0x00000100" fwinfo="type=array" module="file://RXTX.xml"/>
+  <node id="LINK_2" address="0x00000200" fwinfo="type=array" module="file://RXTX.xml"/>
+  <node id="CTRL_0" address="0x00001000" fwinfo="type=array" module="file://TCDS_CONTROL.xml"/>
+  <node id="CTRL_1" address="0x00001100" fwinfo="type=array" module="file://TCDS_CONTROL.xml"/>
+  <node id="CTRL_2" address="0x00001200" fwinfo="type=array" module="file://TCDS_CONTROL.xml"/>
+</node>

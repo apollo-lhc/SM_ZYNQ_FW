@@ -36,7 +36,7 @@ entity top is
 
     I2C_SCL           : inout std_logic;
     I2C_SDA           : inout std_logic;
-    
+
     onboard_CLK_P     : in  std_logic;
     onboard_CLK_N     : in  std_logic;
 
@@ -61,7 +61,6 @@ entity top is
                       
     ESM_LED_CLK       : in std_logic;
     ESM_LED_SDA       : in std_logic;
-
 
     -----------------------------------------------------------------------------
     -- CM interface
@@ -95,8 +94,6 @@ entity top is
     CM2_UART_RX   : in  std_logic;         
     ESM_UART_RX   : in  STD_LOGIC;
     ESM_UART_TX   : out STD_LOGIC;
-
-
     
     -------------------------------------
     --XVC
@@ -128,8 +125,7 @@ entity top is
 
     refclk_C2C_P      : in    std_logic_vector(0 downto 0);
     refclk_C2C_N      : in    std_logic_vector(0 downto 0);
-
-    
+   
 --    -------------------------------------------------------------------------------------------
 --    -- MGBT 2
 --    -------------------------------------------------------------------------------------------
@@ -169,7 +165,6 @@ architecture structure of top is
 
   signal pl_reset_n : std_logic;
   
-
 ------- SGMII
   signal ENET1_EXT_INTIN_0     : STD_LOGIC;
   signal GMII_ETHERNET_col     : STD_LOGIC;
@@ -202,7 +197,6 @@ architecture structure of top is
   signal m1_tts_dv : std_logic;
   signal m2_tts_dv : std_logic;
 
-
   -- AXI C2C
   signal AXI_C2CM1_RX_data              : STD_LOGIC_VECTOR(63 downto 0 ); -- (127 downto 0 );
   signal AXI_C2CM1_RX_dv                : STD_LOGIC;                          
@@ -224,13 +218,11 @@ architecture structure of top is
   signal AXI_C2C_WriteMOSI : AXIWriteMOSI_array_t(1 downto 0);
   signal AXI_C2C_WriteMISO : AXIWriteMISO_array_t(1 downto 0);
   
-
   signal C2C_gt_qpllclk_quad4 : std_logic;
   signal C2C_gt_qpllrefclk_quad4 : std_logic;
 
   signal AXI_C2C_powerdown : std_logic_vector(1 downto 0);
-  
-  
+    
 -- AXI BUS
   signal AXI_clk : std_logic;
   constant PL_AXI_SLAVE_COUNT : integer := 7;
@@ -244,12 +236,10 @@ architecture structure of top is
   signal AXI_MSTR_WMOSI : AXIWriteMOSI;
   signal AXI_MSTR_WMISO : AXIWriteMISO;
   
-
   --Monitoring
   signal SGMII_MON : SGMII_MONITOR_t;
   signal SGMII_MON_CDC : SGMII_MONITOR_t;
   signal SGMII_CTRL : SGMII_CONTROL_t;
-
   
   signal onbloard_clk_n : std_logic;
   signal onbloard_clk_p : std_logic;
@@ -279,34 +269,19 @@ architecture structure of top is
 
   signal  SI_init_reset : std_logic;
 
-
-
   --For plXVC
   constant XVC_COUNT    : integer := 2;
   signal plXVC_TMS      : std_logic_vector((XVC_COUNT -1) downto 0);
   signal plXVC_TDI      : std_logic_vector((XVC_COUNT -1) downto 0);
   signal plXVC_TDO      : std_logic_vector((XVC_COUNT -1) downto 0);
   signal plXVC_TCK      : std_logic_vector((XVC_COUNT -1) downto 0);
-  
-  --signal XVC0_tck          : STD_LOGIC;
-  --signal XVC0_tdi          : STD_LOGIC;
-  --signal XVC0_tdo          : STD_LOGIC;
-  --signal XVC0_tms          : STD_LOGIC;
-  --signal XVC1_tck          : STD_LOGIC;
-  --signal XVC1_tdi          : STD_LOGIC;
-  --signal XVC1_tdo          : STD_LOGIC;
-  --signal XVC1_tms          : STD_LOGIC;
-
-
 
   signal CM1_UART_Tx_internal : std_logic;
   signal CM2_UART_Tx_internal : std_logic;
-  signal CM1_C2C_Mon : C2C_Monitor_t;
-  signal CM2_C2C_Mon : C2C_Monitor_t;
+  signal CM_C2C_Mon     : C2C_Monitor_t;
   
   signal CM_enable_IOs   : std_logic_vector(1 downto 0);
-  signal CM1_C2C_Ctrl : C2C_Control_t;
-  signal CM2_C2C_Ctrl : C2C_Control_t;
+  signal CM_C2C_Ctrl : C2C_Control_t;
   signal C2C1_phy_gt_refclk1_out : std_logic;
 
   signal linux_booted : std_logic;
@@ -321,9 +296,9 @@ begin  -- architecture structure
   pl_reset_n <= axi_reset_n ;
   pl_clk <= axi_clk;
   AXI_C2C_powerdown(0) <= not CM_enable_IOs(0);
-  AXI_C2C_powerdown(1) <= not CM_enable_IOs(0); -- since we have one CM
-  CM2_C2C_Mon.phy_mmcm_not_locked_out  <= '0';
-  CM2_C2C_Mon.cplllock <= '0';
+  AXI_C2C_powerdown(1) <= not CM_enable_IOs(0); --CM_enable_IOs(1) when (CM_COUNT = 1) else (not CM_enable_IOs(0)); --case for having only 1 CM
+  CM_C2C_Mon.CM(2).phy_mmcm_not_locked_out  <= '0';
+  CM_C2C_Mon.CM(2).cplllock <= '0';
   zynq_bd_wrapper_1: entity work.zynq_bd_wrapper
     port map (
       AXI_RST_N(0)         => axi_reset_n,
@@ -534,15 +509,6 @@ begin  -- architecture structure
       PLXVC_wstrb                => AXI_BUS_WMOSI(6).data_write_strobe,
       PLXVC_wvalid               => AXI_BUS_WMOSI(6).data_valid,
 
-      --tap_tck_0                 => XVC1_tck,
-      --tap_tdi_0                 => XVC1_tdi,
-      --tap_tdo_0                 => XVC1_tdo,
-      --tap_tms_0                 => XVC1_tms,
-      --tap_tck_1                 => XVC1_tck,
-      --tap_tdi_1                 => XVC1_tdi,
-      --tap_tdo_1                 => XVC1_tdo,
-      --tap_tms_1                 => XVC1_tms,
-
       init_clk        =>  AXI_C2C_aurora_init_clk,
       C2C1_phy_Rx_rxn =>  AXI_C2C_CM1_Rx_N(0 to 0),
       C2C1_phy_Rx_rxp =>  AXI_C2C_CM1_Rx_P(0 to 0),
@@ -551,107 +517,107 @@ begin  -- architecture structure
       C2C1_phy_refclk_clk_n => refclk_C2C_N(0),
       C2C1_phy_refclk_clk_p => refclk_C2C_P(0),
       C2C1_phy_power_down   => AXI_C2C_powerdown(0),
-      C2C1_aurora_do_cc                 => CM1_C2C_Mon.aurora_do_cc                ,
-      C2C1_aurora_pma_init_in           => CM1_C2C_Ctrl.aurora_pma_init_in,
-      C2C1_axi_c2c_config_error_out     => CM1_C2C_Mon.axi_c2c_config_error_out    ,
-      C2C1_axi_c2c_link_error_out       => CM1_C2C_Mon.axi_c2c_link_error_out      ,
-      C2C1_axi_c2c_link_status_out      => CM1_C2C_Mon.axi_c2c_link_status_out     ,
-      C2C1_axi_c2c_multi_bit_error_out  => CM1_C2C_Mon.axi_c2c_multi_bit_error_out ,
-      C2C1_phy_gt_pll_lock              => CM1_C2C_Mon.phy_gt_pll_lock             ,
-      C2C1_phy_hard_err                 => CM1_C2C_Mon.phy_hard_err                ,
-      C2C1_phy_lane_up                  => CM1_C2C_Mon.phy_lane_up                 ,
-      C2C1_phy_link_reset_out           => CM1_C2C_Mon.phy_link_reset_out          ,
+      C2C1_aurora_do_cc                 => CM_C2C_Mon.CM(1).aurora_do_cc                ,
+      C2C1_aurora_pma_init_in           => CM_C2C_Ctrl.CM(1).aurora_pma_init_in,
+      C2C1_axi_c2c_config_error_out     => CM_C2C_Mon.CM(1).axi_c2c_config_error_out    ,
+      C2C1_axi_c2c_link_error_out       => CM_C2C_Mon.CM(1).axi_c2c_link_error_out      ,
+      C2C1_axi_c2c_link_status_out      => CM_C2C_Mon.CM(1).axi_c2c_link_status_out     ,
+      C2C1_axi_c2c_multi_bit_error_out  => CM_C2C_Mon.CM(1).axi_c2c_multi_bit_error_out ,
+      C2C1_phy_gt_pll_lock              => CM_C2C_Mon.CM(1).phy_gt_pll_lock             ,
+      C2C1_phy_hard_err                 => CM_C2C_Mon.CM(1).phy_hard_err                ,
+      C2C1_phy_lane_up                  => CM_C2C_Mon.CM(1).phy_lane_up                 ,
+      C2C1_phy_link_reset_out           => CM_C2C_Mon.CM(1).phy_link_reset_out          ,
       C2C1_phy_gt_refclk1_out           => C2C1_phy_gt_refclk1_out          ,
-      C2C1_phy_mmcm_not_locked_out      => CM1_C2C_Mon.phy_mmcm_not_locked_out     ,
-      C2C1_phy_soft_err                 => CM1_C2C_Mon.phy_soft_err                ,
-      C2C1_PHY_DEBUG_cplllock         => CM1_C2C_Mon.cplllock,
-      C2C1_PHY_DEBUG_dmonitorout      => CM1_C2C_Mon.dmonitorout,
-      C2C1_PHY_DEBUG_eyescandataerror => CM1_C2C_Mon.eyescandataerror,
-      C2C1_PHY_DEBUG_eyescanreset     => CM1_C2C_Ctrl.eyescanreset,
-      C2C1_PHY_DEBUG_eyescantrigger   => CM1_C2C_Ctrl.eyescantrigger,
-      C2C1_PHY_DEBUG_rxbufreset       => CM1_C2C_Ctrl.rxbufreset,
-      C2C1_PHY_DEBUG_rxbufstatus      => CM1_C2C_Mon.rxbufstatus,
-      C2C1_PHY_DEBUG_rxcdrhold        => CM1_C2C_Ctrl.rxcdrhold,
-      C2C1_PHY_DEBUG_rxdfeagchold     => CM1_C2C_Ctrl.rxdfeagchold,
-      C2C1_PHY_DEBUG_rxdfeagcovrden   => CM1_C2C_Ctrl.rxdfeagcovrden,
-      C2C1_PHY_DEBUG_rxdfelfhold      => CM1_C2C_Ctrl.rxdfelfhold,
-      C2C1_PHY_DEBUG_rxdfelpmreset    => CM1_C2C_Ctrl.rxdfelpmreset,
-      C2C1_PHY_DEBUG_rxlpmen          => CM1_C2C_Ctrl.rxlpmen,
-      C2C1_PHY_DEBUG_rxlpmhfovrden    => CM1_C2C_Ctrl.rxlpmhfovrden,
-      C2C1_PHY_DEBUG_rxlpmlfklovrden  => CM1_C2C_Ctrl.rxlpmlfklovrden,
-      C2C1_PHY_DEBUG_rxmonitorout     => CM1_C2C_Mon.rxmonitorout,
-      C2C1_PHY_DEBUG_rxmonitorsel     => CM1_C2C_Ctrl.rxmonitorsel,
-      C2C1_PHY_DEBUG_rxpcsreset       => CM1_C2C_Ctrl.rxpcsreset,    
-      C2C1_PHY_DEBUG_rxpmareset       => CM1_C2C_Ctrl.rxpmareset,    
-      C2C1_PHY_DEBUG_rxprbscntreset   => CM1_C2C_Ctrl.rxprbscntreset,
-      C2C1_PHY_DEBUG_rxprbserr        => CM1_C2C_Mon.rxprbserr,
-      C2C1_PHY_DEBUG_rxprbssel        => CM1_C2C_Ctrl.rxprbssel,
-      C2C1_PHY_DEBUG_rxresetdone      => CM1_C2C_Mon.rxresetdone,
-      C2C1_PHY_DEBUG_txbufstatus      => CM1_C2C_Mon.txbufstatus,
-      C2C1_PHY_DEBUG_txdiffctrl       => CM1_C2C_Ctrl.txdiffctrl,      
-      C2C1_PHY_DEBUG_txinhibit        => CM1_C2C_Ctrl.txinhibit,       
-      C2C1_PHY_DEBUG_txmaincursor     => CM1_C2C_Ctrl.txmaincursor,    
-      C2C1_PHY_DEBUG_txpcsreset       => CM1_C2C_Ctrl.txpcsreset,      
-      C2C1_PHY_DEBUG_txpmareset       => CM1_C2C_Ctrl.txpmareset,      
-      C2C1_PHY_DEBUG_txpolarity       => CM1_C2C_Ctrl.txpolarity,      
-      C2C1_PHY_DEBUG_txpostcursor     => CM1_C2C_Ctrl.txpostcursor,    
-      C2C1_PHY_DEBUG_txprbsforceerr   => CM1_C2C_Ctrl.txprbsforceerr,  
-      C2C1_PHY_DEBUG_txprbssel        => CM1_C2C_Ctrl.txprbssel,       
-      C2C1_PHY_DEBUG_txprecursor      => CM1_C2C_Ctrl.txprecursor,     
-      C2C1_PHY_DEBUG_txresetdone      => CM1_C2C_Mon.txresetdone,
+      C2C1_phy_mmcm_not_locked_out      => CM_C2C_Mon.CM(1).phy_mmcm_not_locked_out     ,
+      C2C1_phy_soft_err                 => CM_C2C_Mon.CM(1).phy_soft_err                ,
+      C2C1_PHY_DEBUG_cplllock         => CM_C2C_Mon.CM(1).cplllock,
+      C2C1_PHY_DEBUG_dmonitorout      => CM_C2C_Mon.CM(1).dmonitorout,
+      C2C1_PHY_DEBUG_eyescandataerror => CM_C2C_Mon.CM(1).eyescandataerror,
+      C2C1_PHY_DEBUG_eyescanreset     => CM_C2C_Ctrl.CM(1).eyescanreset,
+      C2C1_PHY_DEBUG_eyescantrigger   => CM_C2C_Ctrl.CM(1).eyescantrigger,
+      C2C1_PHY_DEBUG_rxbufreset       => CM_C2C_Ctrl.CM(1).rxbufreset,
+      C2C1_PHY_DEBUG_rxbufstatus      => CM_C2C_Mon.CM(1).rxbufstatus,
+      C2C1_PHY_DEBUG_rxcdrhold        => CM_C2C_Ctrl.CM(1).rxcdrhold,
+      C2C1_PHY_DEBUG_rxdfeagchold     => CM_C2C_Ctrl.CM(1).rxdfeagchold,
+      C2C1_PHY_DEBUG_rxdfeagcovrden   => CM_C2C_Ctrl.CM(1).rxdfeagcovrden,
+      C2C1_PHY_DEBUG_rxdfelfhold      => CM_C2C_Ctrl.CM(1).rxdfelfhold,
+      C2C1_PHY_DEBUG_rxdfelpmreset    => CM_C2C_Ctrl.CM(1).rxdfelpmreset,
+      C2C1_PHY_DEBUG_rxlpmen          => CM_C2C_Ctrl.CM(1).rxlpmen,
+      C2C1_PHY_DEBUG_rxlpmhfovrden    => CM_C2C_Ctrl.CM(1).rxlpmhfovrden,
+      C2C1_PHY_DEBUG_rxlpmlfklovrden  => CM_C2C_Ctrl.CM(1).rxlpmlfklovrden,
+      C2C1_PHY_DEBUG_rxmonitorout     => CM_C2C_Mon.CM(1).rxmonitorout,
+      C2C1_PHY_DEBUG_rxmonitorsel     => CM_C2C_Ctrl.CM(1).rxmonitorsel,
+      C2C1_PHY_DEBUG_rxpcsreset       => CM_C2C_Ctrl.CM(1).rxpcsreset,    
+      C2C1_PHY_DEBUG_rxpmareset       => CM_C2C_Ctrl.CM(1).rxpmareset,    
+      C2C1_PHY_DEBUG_rxprbscntreset   => CM_C2C_Ctrl.CM(1).rxprbscntreset,
+      C2C1_PHY_DEBUG_rxprbserr        => CM_C2C_Mon.CM(1).rxprbserr,
+      C2C1_PHY_DEBUG_rxprbssel        => CM_C2C_Ctrl.CM(1).rxprbssel,
+      C2C1_PHY_DEBUG_rxresetdone      => CM_C2C_Mon.CM(1).rxresetdone,
+      C2C1_PHY_DEBUG_txbufstatus      => CM_C2C_Mon.CM(1).txbufstatus,
+      C2C1_PHY_DEBUG_txdiffctrl       => CM_C2C_Ctrl.CM(1).txdiffctrl,      
+      C2C1_PHY_DEBUG_txinhibit        => CM_C2C_Ctrl.CM(1).txinhibit,       
+      C2C1_PHY_DEBUG_txmaincursor     => CM_C2C_Ctrl.CM(1).txmaincursor,    
+      C2C1_PHY_DEBUG_txpcsreset       => CM_C2C_Ctrl.CM(1).txpcsreset,      
+      C2C1_PHY_DEBUG_txpmareset       => CM_C2C_Ctrl.CM(1).txpmareset,      
+      C2C1_PHY_DEBUG_txpolarity       => CM_C2C_Ctrl.CM(1).txpolarity,      
+      C2C1_PHY_DEBUG_txpostcursor     => CM_C2C_Ctrl.CM(1).txpostcursor,    
+      C2C1_PHY_DEBUG_txprbsforceerr   => CM_C2C_Ctrl.CM(1).txprbsforceerr,  
+      C2C1_PHY_DEBUG_txprbssel        => CM_C2C_Ctrl.CM(1).txprbssel,       
+      C2C1_PHY_DEBUG_txprecursor      => CM_C2C_Ctrl.CM(1).txprecursor,     
+      C2C1_PHY_DEBUG_txresetdone      => CM_C2C_Mon.CM(1).txresetdone,
 
       C2C2_phy_Rx_rxn =>  AXI_C2C_CM2_Rx_N(0 to 0),
       C2C2_phy_Rx_rxp =>  AXI_C2C_CM2_Rx_P(0 to 0),
       C2C2_phy_Tx_txn =>  AXI_C2C_CM2_Tx_N(0 to 0),
       C2C2_phy_Tx_txp =>  AXI_C2C_CM2_Tx_P(0 to 0),
       C2C2_phy_power_down   => AXI_C2C_powerdown(1),
-      C2C2_aurora_do_cc                 => CM2_C2C_Mon.aurora_do_cc                ,
-      C2C2_aurora_pma_init_in           => CM2_C2C_Ctrl.aurora_pma_init_in,
-      C2C2_axi_c2c_config_error_out     => CM2_C2C_Mon.axi_c2c_config_error_out    ,
-      C2C2_axi_c2c_link_error_out       => CM2_C2C_Mon.axi_c2c_link_error_out      ,
-      C2C2_axi_c2c_link_status_out      => CM2_C2C_Mon.axi_c2c_link_status_out     ,
-      C2C2_axi_c2c_multi_bit_error_out  => CM2_C2C_Mon.axi_c2c_multi_bit_error_out ,
-      C2C2_phy_gt_pll_lock              => CM2_C2C_Mon.phy_gt_pll_lock             ,
-      C2C2_phy_hard_err                 => CM2_C2C_Mon.phy_hard_err                ,
-      C2C2_phy_lane_up                  => CM2_C2C_Mon.phy_lane_up                 ,
-      C2C2_phy_link_reset_out           => CM2_C2C_Mon.phy_link_reset_out          ,
+      C2C2_aurora_do_cc                 => CM_C2C_Mon.CM(2).aurora_do_cc                ,
+      C2C2_aurora_pma_init_in           => CM_C2C_Ctrl.CM(2).aurora_pma_init_in,
+      C2C2_axi_c2c_config_error_out     => CM_C2C_Mon.CM(2).axi_c2c_config_error_out    ,
+      C2C2_axi_c2c_link_error_out       => CM_C2C_Mon.CM(2).axi_c2c_link_error_out      ,
+      C2C2_axi_c2c_link_status_out      => CM_C2C_Mon.CM(2).axi_c2c_link_status_out     ,
+      C2C2_axi_c2c_multi_bit_error_out  => CM_C2C_Mon.CM(2).axi_c2c_multi_bit_error_out ,
+      C2C2_phy_gt_pll_lock              => CM_C2C_Mon.CM(2).phy_gt_pll_lock             ,
+      C2C2_phy_hard_err                 => CM_C2C_Mon.CM(2).phy_hard_err                ,
+      C2C2_phy_lane_up                  => CM_C2C_Mon.CM(2).phy_lane_up                 ,
+      C2C2_phy_link_reset_out           => CM_C2C_Mon.CM(2).phy_link_reset_out          ,
 --      C2C2_phy_mmcm_not_locked_out      => CM2_C2C_Mon.phy_mmcm_not_locked_out     ,
-      C2C2_phy_soft_err                 => CM2_C2C_Mon.phy_soft_err                ,
+      C2C2_phy_soft_err                 => CM_C2C_Mon.CM(2).phy_soft_err                ,
 --      C2C2_PHY_DEBUG_cplllock         => CM2_C2C_Mon.cplllock,
-      C2C2_PHY_DEBUG_dmonitorout      => CM2_C2C_Mon.dmonitorout,
-      C2C2_PHY_DEBUG_eyescandataerror => CM2_C2C_Mon.eyescandataerror,
-      C2C2_PHY_DEBUG_eyescanreset     => CM2_C2C_Ctrl.eyescanreset,
-      C2C2_PHY_DEBUG_eyescantrigger   => CM2_C2C_Ctrl.eyescantrigger,
-      C2C2_PHY_DEBUG_rxbufreset       => CM2_C2C_Ctrl.rxbufreset,
-      C2C2_PHY_DEBUG_rxbufstatus      => CM2_C2C_Mon.rxbufstatus,
-      C2C2_PHY_DEBUG_rxcdrhold        => CM2_C2C_Ctrl.rxcdrhold,
-      C2C2_PHY_DEBUG_rxdfeagchold     => CM2_C2C_Ctrl.rxdfeagchold,
-      C2C2_PHY_DEBUG_rxdfeagcovrden   => CM2_C2C_Ctrl.rxdfeagcovrden,
-      C2C2_PHY_DEBUG_rxdfelfhold      => CM2_C2C_Ctrl.rxdfelfhold,
-      C2C2_PHY_DEBUG_rxdfelpmreset    => CM2_C2C_Ctrl.rxdfelpmreset,
-      C2C2_PHY_DEBUG_rxlpmen          => CM2_C2C_Ctrl.rxlpmen,
-      C2C2_PHY_DEBUG_rxlpmhfovrden    => CM2_C2C_Ctrl.rxlpmhfovrden,
-      C2C2_PHY_DEBUG_rxlpmlfklovrden  => CM2_C2C_Ctrl.rxlpmlfklovrden,
-      C2C2_PHY_DEBUG_rxmonitorout     => CM2_C2C_Mon.rxmonitorout,
-      C2C2_PHY_DEBUG_rxmonitorsel     => CM2_C2C_Ctrl.rxmonitorsel,
-      C2C2_PHY_DEBUG_rxpcsreset       => CM2_C2C_Ctrl.rxpcsreset,    
-      C2C2_PHY_DEBUG_rxpmareset       => CM2_C2C_Ctrl.rxpmareset,    
-      C2C2_PHY_DEBUG_rxprbscntreset   => CM2_C2C_Ctrl.rxprbscntreset,
-      C2C2_PHY_DEBUG_rxprbserr        => CM2_C2C_Mon.rxprbserr,
-      C2C2_PHY_DEBUG_rxprbssel        => CM2_C2C_Ctrl.rxprbssel,
-      C2C2_PHY_DEBUG_rxresetdone      => CM2_C2C_Mon.rxresetdone,
-      C2C2_PHY_DEBUG_txbufstatus      => CM2_C2C_Mon.txbufstatus,
-      C2C2_PHY_DEBUG_txdiffctrl       => CM2_C2C_Ctrl.txdiffctrl,      
-      C2C2_PHY_DEBUG_txinhibit        => CM2_C2C_Ctrl.txinhibit,       
-      C2C2_PHY_DEBUG_txmaincursor     => CM2_C2C_Ctrl.txmaincursor,    
-      C2C2_PHY_DEBUG_txpcsreset       => CM2_C2C_Ctrl.txpcsreset,      
-      C2C2_PHY_DEBUG_txpmareset       => CM2_C2C_Ctrl.txpmareset,      
-      C2C2_PHY_DEBUG_txpolarity       => CM2_C2C_Ctrl.txpolarity,      
-      C2C2_PHY_DEBUG_txpostcursor     => CM2_C2C_Ctrl.txpostcursor,    
-      C2C2_PHY_DEBUG_txprbsforceerr   => CM2_C2C_Ctrl.txprbsforceerr,  
-      C2C2_PHY_DEBUG_txprbssel        => CM2_C2C_Ctrl.txprbssel,       
-      C2C2_PHY_DEBUG_txprecursor      => CM2_C2C_Ctrl.txprecursor,     
-      C2C2_PHY_DEBUG_txresetdone      => CM2_C2C_Mon.txresetdone,
+      C2C2_PHY_DEBUG_dmonitorout      => CM_C2C_Mon.CM(2).dmonitorout,
+      C2C2_PHY_DEBUG_eyescandataerror => CM_C2C_Mon.CM(2).eyescandataerror,
+      C2C2_PHY_DEBUG_eyescanreset     => CM_C2C_Ctrl.CM(2).eyescanreset,
+      C2C2_PHY_DEBUG_eyescantrigger   => CM_C2C_Ctrl.CM(2).eyescantrigger,
+      C2C2_PHY_DEBUG_rxbufreset       => CM_C2C_Ctrl.CM(2).rxbufreset,
+      C2C2_PHY_DEBUG_rxbufstatus      => CM_C2C_Mon.CM(2).rxbufstatus,
+      C2C2_PHY_DEBUG_rxcdrhold        => CM_C2C_Ctrl.CM(2).rxcdrhold,
+      C2C2_PHY_DEBUG_rxdfeagchold     => CM_C2C_Ctrl.CM(2).rxdfeagchold,
+      C2C2_PHY_DEBUG_rxdfeagcovrden   => CM_C2C_Ctrl.CM(2).rxdfeagcovrden,
+      C2C2_PHY_DEBUG_rxdfelfhold      => CM_C2C_Ctrl.CM(2).rxdfelfhold,
+      C2C2_PHY_DEBUG_rxdfelpmreset    => CM_C2C_Ctrl.CM(2).rxdfelpmreset,
+      C2C2_PHY_DEBUG_rxlpmen          => CM_C2C_Ctrl.CM(2).rxlpmen,
+      C2C2_PHY_DEBUG_rxlpmhfovrden    => CM_C2C_Ctrl.CM(2).rxlpmhfovrden,
+      C2C2_PHY_DEBUG_rxlpmlfklovrden  => CM_C2C_Ctrl.CM(2).rxlpmlfklovrden,
+      C2C2_PHY_DEBUG_rxmonitorout     => CM_C2C_Mon.CM(2).rxmonitorout,
+      C2C2_PHY_DEBUG_rxmonitorsel     => CM_C2C_Ctrl.CM(2).rxmonitorsel,
+      C2C2_PHY_DEBUG_rxpcsreset       => CM_C2C_Ctrl.CM(2).rxpcsreset,    
+      C2C2_PHY_DEBUG_rxpmareset       => CM_C2C_Ctrl.CM(2).rxpmareset,    
+      C2C2_PHY_DEBUG_rxprbscntreset   => CM_C2C_Ctrl.CM(2).rxprbscntreset,
+      C2C2_PHY_DEBUG_rxprbserr        => CM_C2C_Mon.CM(2).rxprbserr,
+      C2C2_PHY_DEBUG_rxprbssel        => CM_C2C_Ctrl.CM(2).rxprbssel,
+      C2C2_PHY_DEBUG_rxresetdone      => CM_C2C_Mon.CM(2).rxresetdone,
+      C2C2_PHY_DEBUG_txbufstatus      => CM_C2C_Mon.CM(2).txbufstatus,
+      C2C2_PHY_DEBUG_txdiffctrl       => CM_C2C_Ctrl.CM(2).txdiffctrl,      
+      C2C2_PHY_DEBUG_txinhibit        => CM_C2C_Ctrl.CM(2).txinhibit,       
+      C2C2_PHY_DEBUG_txmaincursor     => CM_C2C_Ctrl.CM(2).txmaincursor,    
+      C2C2_PHY_DEBUG_txpcsreset       => CM_C2C_Ctrl.CM(2).txpcsreset,      
+      C2C2_PHY_DEBUG_txpmareset       => CM_C2C_Ctrl.CM(2).txpmareset,      
+      C2C2_PHY_DEBUG_txpolarity       => CM_C2C_Ctrl.CM(2).txpolarity,      
+      C2C2_PHY_DEBUG_txpostcursor     => CM_C2C_Ctrl.CM(2).txpostcursor,    
+      C2C2_PHY_DEBUG_txprbsforceerr   => CM_C2C_Ctrl.CM(2).txprbsforceerr,  
+      C2C2_PHY_DEBUG_txprbssel        => CM_C2C_Ctrl.CM(2).txprbssel,       
+      C2C2_PHY_DEBUG_txprecursor      => CM_C2C_Ctrl.CM(2).txprecursor,     
+      C2C2_PHY_DEBUG_txresetdone      => CM_C2C_Mon.CM(2).txresetdone,
       CM1_UART_rxd => CM1_UART_rx,
       CM1_UART_txd => CM1_UART_Tx_internal,
       CM2_UART_rxd => CM2_UART_rx,
@@ -671,9 +637,6 @@ begin  -- architecture structure
       TCDS_CLK          => clk_TCDS,
       TCDS_reset_n      => clk_TCDS_locked--clk_TCDS_reset_n
       );
-
-
-
 
   DC_data_CDC_1: entity work.DC_data_CDC
     generic map (
@@ -695,8 +658,7 @@ begin  -- architecture structure
       pass_out(3)  => SGMII_MON_CDC.pma_reset,    
       pass_out(4)  => SGMII_MON_CDC.mmcm_locked,  
       pass_out(20 downto 5)  => SGMII_MON_CDC.status_vector,
-      pass_out(21)  => SGMII_MON_CDC.reset              
-);
+      pass_out(21)  => SGMII_MON_CDC.reset);
 
 
 --  SGMII_MON_CDC <= SGMII_MON;
@@ -777,8 +739,6 @@ begin  -- architecture structure
       rx_N(1)     => m1_tts_N,    
       rx_N(2)     => m2_tts_N);
 
-
-
   SI_i2c_SDA : IOBUF
     port map (
       IO => SI_sda,
@@ -798,8 +758,8 @@ begin  -- architecture structure
       clk_50Mhz  => AXI_C2C_aurora_init_clk,
       reset      =>  SI_init_reset,--'0',
       locked     => clk_200Mhz_locked,
-      clk_in1_n     => onboard_clk_n,
-      clk_in1_p     => onboard_clk_p);
+      clk_in1_n  => onboard_clk_n,
+      clk_in1_p  => onboard_clk_p);
   reset_200Mhz <= not clk_200Mhz_locked ;
 
   SI_OUT_DIS <= not SI_OE_normal;
@@ -836,9 +796,8 @@ begin  -- architecture structure
       linux_booted    => linux_booted,
       ESM_LED_CLK     => ESM_LED_CLK,
       ESM_LED_SDA     => ESM_LED_SDA,
-      CM1_C2C_Mon     => CM1_C2C_Mon,
-      CM2_C2C_Mon     => CM2_C2C_Mon
-      );
+      CM1_C2C_Mon     => CM_C2C_Mon.CM(1),
+      CM2_C2C_Mon     => CM_C2C_Mon.CM(2));
 
   SM_info_1: entity work.SM_info
     port map (
@@ -851,17 +810,17 @@ begin  -- architecture structure
   
   IPMC_i2c_slave_1: entity work.IPMC_i2c_slave
     port map (
-      clk_axi     => axi_clk,
-      reset_axi_n => pl_reset_n,
-      readMOSI        => AXI_BUS_RMOSI(1),
-      readMISO        => AXI_BUS_RMISO(1),
-      writeMOSI       => AXI_BUS_WMOSI(1),
-      writeMISO       => AXI_BUS_WMISO(1),
-      linux_booted    => linux_booted,
-      SDA_o       => IPMC_SDA_o,
-      SDA_t       => IPMC_SDA_t,
-      SDA_i       => IPMC_SDA_i,
-      SCL         => IPMC_SCL);
+      clk_axi      => axi_clk,
+      reset_axi_n  => pl_reset_n,
+      readMOSI     => AXI_BUS_RMOSI(1),
+      readMISO     => AXI_BUS_RMISO(1),
+      writeMOSI    => AXI_BUS_WMOSI(1),
+      writeMISO    => AXI_BUS_WMISO(1),
+      linux_booted => linux_booted,
+      SDA_o        => IPMC_SDA_o,
+      SDA_t        => IPMC_SDA_t,
+      SDA_i        => IPMC_SDA_i,
+      SCL          => IPMC_SCL);
   IPMC_i2c_SDA : IOBUF
     port map (
       IO => IPMC_SDA,
@@ -869,10 +828,12 @@ begin  -- architecture structure
       T  => IPMC_SDA_t,
       O  => IPMC_SDA_i);
 
-
-  plXVC_TDO(0) <= CM1_TDO;
-  plXVC_TDO(1) <= CM2_TDO;
   CM_interface_1: entity work.CM_intf
+    generic map (
+      CM_COUNT             => 1,
+      COUNTER_COUNT        => 5,
+      CLKFREQ              => 50000000,
+      ERROR_WAIT_TIME      => 50000000)
     port map (
       clk_axi              => axi_clk,
       reset_axi_n          => pl_reset_n,
@@ -885,58 +846,56 @@ begin  -- architecture structure
       master_writeMOSI     => AXI_MSTR_WMOSI,
       master_writeMISO     => AXI_MSTR_WMISO,
       CM_mon_uart          => CM1_GPIO(0),
-      enableCM1            => CM1_enable,
-      enableCM2            => CM2_enable,
-      enableCM1_PWR        => CM1_PWR_enable,
-      enableCM2_PWR        => CM2_PWR_enable,
-      enableCM1_IOs        => CM_enable_IOs(0),
-      enableCM2_IOs        => CM_enable_IOs(1),
-      from_CM1.PWR_good    => CM1_PWR_good,
-      from_CM1.TDO         => '0',
-      from_CM1.GPIO        => CM1_GPIO,
-      from_CM1.UART_Rx     => '0',--CM1_UART_rx,     
-      from_CM2.PWR_good    => CM2_PWR_good,
-      from_CM2.TDO         => '0',
-      from_CM2.GPIO        => CM2_GPIO,
-      from_CM2.UART_Rx     => CM2_UART_rx,
-      to_CM1_in.UART_Tx    => CM1_UART_Tx_internal,
-      to_CM1_in.TMS        => plXVC_TMS(0),
-      to_CM1_in.TDI        => plXVC_TDI(0),
-      to_CM1_in.TCK        => plXVC_TCK(0),
-      to_CM2_in.UART_Tx    => '0',--CM2_UART_Tx_internal,
-      to_CM2_in.TMS        => plXVC_TMS(1),
-      to_CM2_in.TDI        => plXVC_TDI(1),
-      to_CM2_in.TCK        => plXVC_TCK(1),
-      to_CM1_out.UART_Tx   => CM1_UART_Tx,
-      to_CM1_out.TMS       => CM1_TMS,
-      to_CM1_out.TDI       => CM1_TDI,
-      to_CM1_out.TCK       => CM1_TCK,
-      to_CM2_out.UART_Tx   => CM2_UART_Tx,
-      to_CM2_out.TMS       => CM2_TMS,
-      to_CM2_out.TDI       => CM2_TDI,
-      to_CM2_out.TCK       => CM2_TCK,
-      clk_C2C1             => clk_C2C1_PHY,
-      CM1_C2C_Mon          => CM1_C2C_Mon,
-      CM1_C2C_Ctrl         => CM1_C2C_Ctrl,
-      clk_C2C2             => clk_C2C1_PHY,
-      CM2_C2C_Mon          => CM2_C2C_Mon,
-      CM2_C2C_Ctrl         => CM2_C2C_Ctrl);
-
+      enableCM(0)            => CM1_enable,
+      enableCM(1)            => CM2_enable,
+      enableCM_PWR(0)        => CM1_PWR_enable,
+      enableCM_PWR(1)        => CM2_PWR_enable,
+      enableCM_IOs           => CM_enable_IOs,
+      from_CM.CM(1).PWR_good    => CM1_PWR_good,
+      from_CM.CM(1).TDO         => '0',
+      from_CM.CM(1).GPIO        => CM1_GPIO,
+      from_CM.CM(1).UART_Rx     => '0',--CM1_UART_rx,     
+      from_CM.CM(2).PWR_good    => CM2_PWR_good,
+      from_CM.CM(2).TDO         => '0',
+      from_CM.CM(2).GPIO        => CM2_GPIO,
+      from_CM.CM(2).UART_Rx     => CM2_UART_rx,
+      to_CM_in.CM(1).UART_Tx    => CM1_UART_Tx_internal,
+      to_CM_in.CM(1).TMS        => plXVC_TMS(0),
+      to_CM_in.CM(1).TDI        => plXVC_TDI(0),
+      to_CM_in.CM(1).TCK        => plXVC_TCK(0),
+      to_CM_in.CM(2).UART_Tx    => '0',--CM2_UART_Tx_internal,
+      to_CM_in.CM(2).TMS        => plXVC_TMS(1),
+      to_CM_in.CM(2).TDI        => plXVC_TDI(1),
+      to_CM_in.CM(2).TCK        => plXVC_TCK(1),
+      to_CM_out.CM(1).UART_Tx   => CM1_UART_Tx,
+      to_CM_out.CM(1).TMS       => CM1_TMS,
+      to_CM_out.CM(1).TDI       => CM1_TDI,
+      to_CM_out.CM(1).TCK       => CM1_TCK,
+      to_CM_out.CM(2).UART_Tx   => CM2_UART_Tx,
+      to_CM_out.CM(2).TMS       => CM2_TMS,
+      to_CM_out.CM(2).TDI       => CM2_TDI,
+      to_CM_out.CM(2).TCK       => CM2_TCK,
+      clk_C2C(0)                => clk_C2C1_PHY,
+      clk_C2C(1)                => clk_C2C1_PHY,
+      CM_C2C_Mon                => CM_C2C_Mon,
+      CM_C2C_Ctrl               => CM_C2C_Ctrl);
+  plXVC_TDO(0) <= CM1_TDO;
+  plXVC_TDO(1) <= CM2_TDO;
+  
   plXVC_1: entity work.plXVC_intf
     generic map (
       --TCK_RATIO         => 1,
-      COUNT             => XVC_COUNT,
-      IRQ_LENGTH        => 1)           
-      port map (
-        clk_axi         => axi_clk,
-        reset_axi_n     => pl_reset_n,
-        readMOSI        => AXI_BUS_RMOSI(6),
-        readMISO        => AXI_BUS_RMISO(6),
-        writeMOSI       => AXI_BUS_WMOSI(6),
-        writeMISO       => AXI_BUS_WMISO(6),
-        TMS             => plXVC_TMS,
-        TDI             => plXVC_TDI,
-        TDO             => plXVC_TDO,
-        TCK             => plXVC_TCK);
-  
+      COUNT           => XVC_COUNT,
+      IRQ_LENGTH      => 1)           
+    port map (
+      clk_axi         => axi_clk,
+      reset_axi_n     => pl_reset_n,
+      readMOSI        => AXI_BUS_RMOSI(6),
+      readMISO        => AXI_BUS_RMISO(6),
+      writeMOSI       => AXI_BUS_WMOSI(6),
+      writeMISO       => AXI_BUS_WMISO(6),
+      TMS             => plXVC_TMS,
+      TDI             => plXVC_TDI,
+      TDO             => plXVC_TDO,
+      TCK             => plXVC_TCK);
 end architecture structure;

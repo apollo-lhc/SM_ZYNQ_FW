@@ -1,0 +1,117 @@
+<node id="CM">                                                                                                     
+  <node id="CTRL" address="0x00">
+    <node id="ENABLE_UC"         mask="0x0001" permission="rw" description="Tell CM uC to power-up"                    parameters="Table=CM;Column=UC;Row=CM1_REQ;Status=2"/>
+    <node id="ENABLE_PWR"        mask="0x0002" permission="rw" description="Tell CM uC to power-up the rest of the CM" parameters="Table=CM;Column=PWR;Row=CM1_REQ;Status=2"/>
+    <node id="OVERRIDE_PWR_GOOD" mask="0x0004" permission="rw" description="Ignore power good from CM"                 parameters="Table=CM;Column=_4;Row=CM1_REQ;Status=2"/>
+    <node id="PWR_GOOD"          mask="0x0008" permission="r"  description="CM power is good"                          parameters="Table=CM;Column=_4;Row=_2;Status=1"/>
+    <node id="STATE"             mask="0x00F0" permission="r"  description="CM power up state"                         parameters="Table=CM;Column=_4;Row=_2;Status=2;Format=t_0_Unknown_1_Reset_2_PowerUpWait_3_Running_4_PowerDown_5_ErrorWait_6_ErrorPowerOff"/>
+    <node id="ERROR_STATE_RESET" mask="0x0100" permission="rw" description="CM power is good"                          parameters="Table=CM;Column=_4;Row=_2;Status=1;show=nz"/>
+    <node id="PWR_ENABLED"       mask="0x0200" permission="r"  description="power is enabled"                          parameters="Table=CM;Column=PWR;Row=_2;Status=2"/>
+    <node id="IOS_ENABLED"       mask="0x0400" permission="r"  description="IOs to CM are enabled"                     parameters="Table=CM;Column=_4;Row=_2;Status=1"/>
+    <node id="ENABLE_PHY_CTRL"   mask="0x0800" permission="rw" description="phy_lane_control is enabled"               parameters="Table=CM;Column=_4;Row=_2;Status=1;show=nz;default=0x1"/>
+    <node id="PHY_LANE_STABLE"   address="0x1" permission="rw" description="Contious phy_lane_up signals required to lock phylane control" parameters="default=0xFF"/>
+    <node id="PHY_READ_TIME"     address="0x2" permission="rw" mask="0xFFFFFF" description="Time spent waiting for phylane to stabilize"   parameters="default=0x4C4B40"/> <!-- 100ms default -->
+  </node>
+
+  <node id="C2C" address="0x14">
+    <node id="CONFIG_ERROR"       mask="0x00000001" permission="r"  description="C2C config error"         parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
+    <node id="LINK_ERROR"         mask="0x00000002" permission="r"  description="C2C link error"           parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
+    <node id="LINK_GOOD"          mask="0x00000004" permission="r"  description="C2C link FSM in SYNC"     parameters="Table=C2C;Column=_4;Row=_2;Status=1"/>
+    <node id="MB_ERROR"           mask="0x00000008" permission="r"  description="C2C multi-bit error"      parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
+    <node id="DO_CC"              mask="0x00000010" permission="r"  description="Aurora do CC"             parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=z"/>
+    <node id="INITIALIZE"         mask="0x00000020" permission="rw" description="C2C initialize"           parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>
+    <node id="PHY_RESET"          mask="0x00000100" permission="r"  description="Aurora phy in reset"      parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>
+    <node id="PHY_GT_PLL_LOCK"    mask="0x00000200" permission="r"  description="Aurora phy GT PLL locked" parameters="Table=C2C;Column=_4;Row=_2;Status=2"/>
+    <node id="PHY_MMCM_LOL"       mask="0x00000400" permission="r"  description="Aurora phy mmcm LOL"      parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
+    <node id="PHY_LANE_UP"        mask="0x00003000" permission="r"  description="Aurora phy lanes up"      parameters="Table=C2C;Column=_4;Row=_2;Status=1"/>
+    <node id="PHY_HARD_ERR"       mask="0x00010000" permission="r"  description="Aurora phy hard error"    parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
+    <node id="PHY_SOFT_ERR"       mask="0x00020000" permission="r"  description="Aurora phy soft error"    parameters="Table=C2C;Column=_4;Row=_2;Status=2;Show=nz"/>
+    <node id="CPLL_LOCK"          mask="0x00100000" permission="r"  description="DEBUG cplllock" />
+    <node id="EYESCAN_DATA_ERROR" mask="0x00200000" permission="r"  description="DEBUG eyescan data error" />
+    <node id="EYESCAN_RESET"      mask="0x00400000" permission="rw" description="DEBUG eyescan reset" />
+    <node id="EYESCAN_TRIGGER"    mask="0x00800000" permission="rw" description="DEBUG eyescan trigger" />
+    <node id="DMONITOR"           mask="0xFF000000" permission="r"  description="DEBUG d monitor" />
+
+    <node id="RX" address="0x1">
+      <node id="BUF_STATUS"        mask="0x00000007" permission="r"  description="DEBUG rx buf status" />
+      <node id="MONITOR"           mask="0x000003F8" permission="r"  description="DEBUG rx status" />
+      <node id="PRBS_ERR"          mask="0x00000400" permission="r"  description="DEBUG rx PRBS error" />
+      <node id="RESET_DONE"        mask="0x00000800" permission="r"  description="DEBUG rx reset done" />
+      <node id="BUF_RESET"         mask="0x00001000" permission="rw" description="DEBUG rx buf reset" />
+      <node id="CDR_HOLD"          mask="0x00002000" permission="rw" description="DEBUG rx CDR hold" />
+      <node id="DFE_AGC_HOLD"      mask="0x00004000" permission="rw" description="DEBUG rx DFE AGC HOLD" />
+      <node id="DFE_AGC_OVERRIDE"  mask="0x00008000" permission="rw" description="DEBUG rx DFE AGC OVERRIDE" />
+      <node id="DFE_LF_HOLD"       mask="0x00010000" permission="rw" description="DEBUG rx DFE LF HOLD" />
+      <node id="DFE_LPM_RESET"     mask="0x00020000" permission="rw" description="DEBUG rx DFE LPM RESET" />
+      <node id="LPM_EN"            mask="0x00040000" permission="rw" description="DEBUG rx LPM ENABLE" />
+      <node id="LPM_HF_OVERRIDE"   mask="0x00080000" permission="rw" description="DEBUG rx LPM HF OVERRIDE enable" />
+      <node id="LPM_LFKL_OVERRIDE" mask="0x00100000" permission="rw" description="DEBUG rx LPM LFKL override" />
+      <node id="MON_SEL"           mask="0x00600000" permission="rw" description="DEBUG rx monitor select" />
+      <node id="PCS_RESET"         mask="0x00800000" permission="rw" description="DEBUG rx pcs reset" />
+      <node id="PMA_RESET"         mask="0x01000000" permission="rw" description="DEBUG rx pma reset" />
+      <node id="PRBS_CNT_RST"      mask="0x02000000" permission="rw" description="DEBUG rx PRBS counter reset" />
+      <node id="PRBS_SEL"          mask="0x1C000000" permission="rw" description="DEBUG rx PRBS select" />
+    </node>
+
+    <node id="TX" address="0x2">
+      <node id="BUF_STATUS"     mask="0x00000003" permission="r"  description="DEBUG tx buf status" />
+      <node id="RESET_DONE"     mask="0x00000004" permission="r"  description="DEBUG tx reset done" />
+      <node id="DIFF_CTRL"      mask="0x00000078" permission="rw" description="DEBUG tx diff control" />
+      <node id="INHIBIT"        mask="0x00000080" permission="rw" description="DEBUG tx inhibit" />
+      <node id="MAIN_CURSOR"    mask="0x00007F00" permission="rw" description="DEBUG tx main cursor" />
+      <node id="PCS_RESET"      mask="0x00008000" permission="rw" description="DEBUG tx pcs reset" />
+      <node id="PMA_RESET"      mask="0x00010000" permission="rw" description="DEBUG tx pma reset" />
+      <node id="POLARITY"       mask="0x00020000" permission="rw" description="DEBUG tx polarity" />
+      <node id="POST_CURSOR"    mask="0x007C0000" permission="rw" description="DEBUG post cursor" />
+      <node id="PRBS_FORCE_ERR" mask="0x00800000" permission="rw" description="DEBUG force PRBS error" />
+      <node id="PRBS_SEL"       mask="0x07000000" permission="rw" description="DEBUG PRBS select" />
+      <node id="PRE_CURSOR"     mask="0xF8000000" permission="rw" description="DEBUG pre cursor" />
+    </node>
+
+    <node id="CNT" address="0x3">
+      <node id="INIT_ALLTIME"         address="0x0" permission="r"  description="Counter for every PHYLANEUP cycle" parameters="Table=CM;Column=PHYLANE_SINGLEBIT_ERROR;Row=_2;Status=1;Show=nz;Format=u"/>
+      <node id="INIT_SHORTTERM"       address="0x1" permission="r"  description="Counter for PHYLANEUP cycles since lase C2C INITIALIZE" parameters="Table=CM;Column=PHYLANE_MULTIBIT_ERROR;Row=_2;Status=1;Show=nz;Format=u"/>
+      <node id="CONFIG_ERROR_COUNT"   address="0x2" permission="r"  description="Counter for CONFIG_ERROR"                 parameters="Table=CM;Column=CONFIG_ERROR_COUNT;Row=_2;Status=1;Show=nz;Format=u"/>
+      <node id="LINK_ERROR_COUNT"     address="0x3" permission="r"  description="Counter for LINK_ERROR"                   parameters="Table=CM;Column=LINK_ERROR_COUNT;Row=_2;Status=1;Show=nz;Format=u"/>
+      <node id="MB_ERROR_COUNT"       address="0x4" permission="r"  description="Counter for MB_ERROR"                     parameters="Table=CM;Column=MB_ERROR_COUNT;Row=_2;Status=1;Show=nz;Format=u"/>
+      <node id="PHY_HARD_ERROR_COUNT" address="0x5" permission="r"  description="Counter for PHY_HARD_ERROR"               parameters="Table=CM;Column=PHY_HARD_ERR_COUNT;Row=_2;Status=1;Show=nz;Format=u"/>
+      <node id="PHY_SOFT_ERROR_COUNT" address="0x6" permission="r"  description="Counter for PHY_SOFT_ERROR"               parameters="Table=CM;Column=PHY_SOFT_ERR_COUNT;Row=_2;Status=1;Show=nz;Format=u"/>
+      <node id="PHYLANE_STATE"        address="0x7" permission="r"  description="Current state of phy_lane_control module" parameters="Table=CM;Column=PHYLANE_STATE;Row=_2;Status=1;Format=t_0_IDLE_1_INITIALIZING_2_WAITING_7_LOCKED_6_errorWAITING" mask="0x7"/>
+      <node id="RESET_COUNTERS"       address="0x8" permission="w" description="Reset counters in Monitor" mask="0x1"/>
+      <node id="PHY_ERRORSTATE_COUNT" address="0x9" permission="r"  description="Count for phylane in error state"         parameters="Table=CM;Column=PHYLANE_ERROR_COUNT;Row=_2;Status=1;Show=nz;Format=u"/>
+    </node>
+  </node>
+  
+  <node id="MONITOR" address="0x21">
+    <node id="COUNT_16X_BAUD"                mask="0x000000FF" permission="rw" description="Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27" parameters="Table=CM;Column=MON_STATE;Row=_2;Status=4;default=0x1B" />
+    <node id="ACTIVE"                        mask="0x00000100" permission="r"  description="Monitoring active. Is zero when no update in the last second." parameters="Table=CM;Column=MON_STATE;Row=_2;Status=1;Show=z;Format=t_0_INACTIVE_1_ACTIVE" />
+    <node id="HISTORY_VALID"                 mask="0x0000F000" permission="r"  description="bytes valid in debug history"/>
+    <node id="HISTORY"        address="0x01" mask="0xFFFFFFFF" permission="r"  description="4 bytes of uart history"/>
+    
+    <node id="BAD_TRANS" address="0x2">
+      <node id="ADDR"       mask="0x000000FF" permission="r" description="Sensor addr bits"  parameters="Table=CM;Column=_5;Row=_4;Status=2"/>
+      <node id="DATA"       mask="0x00FFFF00" permission="r" description="Sensor data bits"  parameters="Table=CM;Column=_5;Row=_4;Status=2"/>
+      <node id="ERROR_MASK" mask="0xFF000000" permission="r" description="Sensor error bits" parameters="Table=CM;Column=_5;Row=_4;Status=2;Format=t_0_OK_1_BadSOF_2_AXIBusyByte2_4_Byte2NotData_8_Byte3NotData_16_Byte4NotData_32_UNKNOWN"/>
+    </node>
+
+    <node id="LAST_TRANS" address="0x3">
+      <node id="ADDR"       mask="0x000000FF" permission="r" description="Sensor addr bits"  parameters="Table=CM;Column=_5;Row=_4;Status=2"/>
+      <node id="DATA"       mask="0x00FFFF00" permission="r" description="Sensor data bits"  parameters="Table=CM;Column=_5;Row=_4;Status=2"/>
+      <node id="ERROR_MASK" mask="0xFF000000" permission="r" description="Sensor error bits" parameters="Table=CM;Column=_5;Row=_4;Status=2;Format=t_0_OK_1_BadSOF_2_AXIBusyByte2_4_Byte2NotData_8_Byte3NotData_16_Byte4NotData_32_UNKNOWN"/>
+    </node>
+    
+    <node id="ERRORS" address="0x4">
+      <node id="RESET"              address="0x0" mask="0x00000001" permission="rw" description="Reset monitoring error counters"/>
+      <node id="CNT_BAD_SOF"        address="0x1" mask="0x0000FFFF" permission="r"  description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=CM;Column=_5;Row=_4;Status=1;Show=nz;Format=u"/>
+      <node id="CNT_AXI_BUSY_BYTE2" address="0x1" mask="0xFFFF0000" permission="r"  description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=CM;Column=_5;Row=_4;Status=1;Show=nz;Format=u"/>
+      <node id="CNT_BYTE2_NOT_DATA" address="0x2" mask="0x0000FFFF" permission="r"  description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=CM;Column=_5;Row=_4;Status=1;Show=nz;Format=u"/>
+      <node id="CNT_BYTE3_NOT_DATA" address="0x2" mask="0xFFFF0000" permission="r"  description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=CM;Column=_5;Row=_4;Status=1;Show=nz;Format=u"/>
+      <node id="CNT_BYTE4_NOT_DATA" address="0x3" mask="0x0000FFFF" permission="r"  description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=CM;Column=_5;Row=_4;Status=1;Show=nz;Format=u"/>
+      <node id="CNT_TIMEOUT"        address="0x3" mask="0xFFFF0000" permission="r"  description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=CM;Column=_5;Row=_4;Status=1;Show=nz;Format=u"/>
+      <node id="CNT_UNKNOWN"        address="0x4" mask="0x0000FFFF" permission="r"  description="Monitoring errors. Count of invalid byte types in parsing." parameters="Table=CM;Column=_5;Row=_4;Status=1;Show=nz;Format=u"/>
+    </node>
+
+    <node id="UART_BYTES" address="0x9" mask="0xFFFFFFFF" permission="r" description="Count of UART bytes from CM MCU" parameters="Table=CM;Column=Bytes;Row=_4;Status=3;Format=u"/>
+    <node id="SM_TIMEOUT" address="0xA" mask="0xFFFFFFFF" permission="rw" description="Count to wait for in state machine before timing out (50Mhz clk)" parameters="default=0x1FCA0" />
+  </node>
+</node>                                                                                                 
