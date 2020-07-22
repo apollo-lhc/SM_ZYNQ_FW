@@ -20,7 +20,6 @@ def GetReleaseFiles(host, project,repo, release):
 
 
 
-
 CMFile=open("CM.yaml")
 
 remotes=yaml.load(CMFile)
