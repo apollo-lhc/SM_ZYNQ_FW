@@ -2,7 +2,7 @@ SLAVE:
   - SLAVE:
     NAME: PL_MEM
     TCL_CALL: "[AXI_IP_BRAM PL_MEM ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} ${AXI_MASTER_CLK_FREQ} 0x40000000 8K]"
-    XML: "address_tables/modules/PL_MEM.xml"
+    XML: "address_table/modules/PL_MEM.xml"
     UHAL_BASE: 0x15000000
     
   - SLAVE:
@@ -13,7 +13,7 @@ SLAVE:
   - SLAVE:
     NAME: SERV
     TCL_CALL: "[AXI_PL_DEV_CONNECT SERV      ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} ${AXI_MASTER_CLK_FREQ} 0x43C20000 8K]"
-    XML: "address_tables/modules/SERV.xml"
+    XML: "address_table/modules/SERV.xml"
     UHAL_BASE: 0x04000000
     HDL: "src/services"
     
@@ -23,15 +23,15 @@ SLAVE:
     SLAVE:
       - SLAVE:
         NAME: _AXI_FW
-        XML: "address_tables/modules/C2C1_AXI_FW.xml"
+        XML: "address_table/modules/C2C1_AXI_FW.xml"
         UHAL_BASE: 0x0D000000
       - SLAVE:
         NAME: _AXILITE_FW
-        XML: "address_tables/modules/C2C1_AXILITE_FW.xml"
+        XML: "address_table/modules/C2C1_AXILITE_FW.xml"
         UHAL_BASE: 0x0E000000
       - SLAVE:
         NAME: _PHY
-        XML: "address_tables/modules/DRP_7_GTX.xml"
+        XML: "address_table/modules/DRP_7_GTX.xml"
         UHAL_BASE: 0x19000000
     
   - SLAVE:
@@ -40,55 +40,55 @@ SLAVE:
     SLAVE:
       - SLAVE:
         NAME: _AXI_FW
-        XML: "address_tables/modules/C2C2_AXI_FW.xml"
+        XML: "address_table/modules/C2C2_AXI_FW.xml"
         UHAL_BASE: 0x13000000
       - SLAVE:
         NAME: _AXILITE_FW
-        XML: "address_tables/modules/C2C2_AXILITE_FW.xml"
+        XML: "address_table/modules/C2C2_AXILITE_FW.xml"
         UHAL_BASE: 0x14000000
       - SLAVE:
         NAME: _PHY
-        XML: "address_tables/modules/DRP_7_GTX.xml"
+        XML: "address_table/modules/DRP_7_GTX.xml"
         UHAL_BASE: 0x1B000000
     
                   
   - SLAVE:
     NAME: PLXVC
     TCL_CALL: "[AXI_PL_DEV_CONNECT PLXVC     ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} ${AXI_MASTER_CLK_FREQ} 0x40010000 64K]"
-    XML: "address_tables/modules/plXVC.xml"
+    XML: "address_table/modules/plXVC.xml"
     UHAL_BASE: 0x06000000
     HDL: "src/plXVC"
     
   - SLAVE:
     NAME: XVC_LOCAL
     TCL_CALL: "[AXI_IP_LOCAL_XVC XVC_LOCAL   ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} ${AXI_MASTER_CLK_FREQ} 0x40030000 64K]"
-    XML: "address_tables/modules/XVC.xml"
+    XML: "address_table/modules/XVC.xml"
     UHAL_BASE: 0x08000000    
 
   - SLAVE:
     NAME: SLAVE_I2C
     TCL_CALL: "[AXI_PL_DEV_CONNECT SLAVE_I2C ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} ${AXI_MASTER_CLK_FREQ} 0x40008000 8K]"
-    XML: "address_tables/modules/SLAVE_I2C.xml"
+    XML: "address_table/modules/SLAVE_I2C.xml"
     UHAL_BASE: 0x05000000    
 
   - SLAVE:
     NAME: CM
     TCL_CALL: "[AXI_PL_DEV_CONNECT CM        ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} ${AXI_MASTER_CLK_FREQ} 0x4000A000 8K]"
-    XML: "address_tables/modules/CM.xml"
+    XML: "address_table/modules/CM.xml"
     UHAL_BASE: 0x03000000    
-    HDL: "CM_interface"
+    HDL: "src/CM_interface"
 
   - SLAVE:
     NAME: SM_INFO
     TCL_CALL: "[AXI_PL_DEV_CONNECT SM_INFO   ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} ${AXI_MASTER_CLK_FREQ} 0x4000C000 8K]"
-    XML: "address_tables/modules/FW_INFO.xml"
+    XML: "address_table/modules/FW_INFO.xml"
     UHAL_BASE: 0x0A000000    
     HDL: "src/SM_info"
 
   - SLAVE:
     NAME: MONITOR
     TCL_CALL: "[AXI_IP_XADC MONITOR          ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} ${AXI_MASTER_CLK_FREQ} 0x40040000 64K]"
-    XML: "address_tables/modules/MONITOR.xml"
+    XML: "address_table/modules/MONITOR.xml"
     UHAL_BASE: 0x0B000000    
 
   - SLAVE:
@@ -106,13 +106,13 @@ SLAVE:
   - SLAVE:
     NAME: TCDS
     TCL_CALL: "[AXI_PL_DEV_CONNECT TCDS     ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} ${AXI_MASTER_CLK_FREQ} 0x40002000 8K]"
-    XML: "address_tables/modules/TCDS.xml"
+    XML: "address_table/modules/TCDS.xml"
     UHAL_BASE: 0x17000000
     
   - SLAVE:
     NAME: TCDS_DRP
     TCL_CALL: "[AXI_PL_DEV_CONNECT TCDS_DRP ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} ${AXI_MASTER_CLK_FREQ} 0x4000E000 8K]"
-    XML: "address_tables/modules/TCDS_DRP.xml"
+    XML: "address_table/modules/TCDS_DRP.xml"
     UHAL_BASE: 0x18000000
     
     

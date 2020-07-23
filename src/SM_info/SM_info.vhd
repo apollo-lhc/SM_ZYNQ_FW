@@ -8,7 +8,7 @@ use work.types.all;
 use work.FW_TIMESTAMP.all;
 use work.FW_VERSION.all;
 use work.FW_FPGA.all;
-use work.FW_INFO_Ctrl.all;
+use work.SM_INFO_Ctrl.all;
 
 
 Library UNISIM;
@@ -28,7 +28,7 @@ entity SM_info is
 end entity SM_info;
 
 architecture behavioral of SM_info is
-  signal Mon              :  FW_INFO_Mon_t;
+  signal Mon              :  SM_INFO_Mon_t;
 
 begin  -- architecture behavioral
 
@@ -36,7 +36,7 @@ begin  -- architecture behavioral
   -- AXI 
   -------------------------------------------------------------------------------
   -------------------------------------------------------------------------------
-  FW_INFO_interface_1: entity work.FW_INFO_interface
+  SM_INFO_interface_1: entity work.SM_INFO_interface
     port map (
       clk_axi         => clk_axi,
       reset_axi_n     => reset_axi_n,

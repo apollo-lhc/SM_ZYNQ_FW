@@ -1,6 +1,56 @@
 #!/bin/env python
 
+import sys
+import os
 import yaml
+import uhal
+#from regmap_helper/tree import * # import node,arraynode,tree
+#from tree import * # import node,arraynode,tree
+#import regmap_helper/node
+sys.path.append("./regmap_helper")
+from tree import *
+
+
+
+def GenerateHDL(name,XMLFile,HDLPath):
+  print "Generate HDL for",name,"from",XMLFile
+  #get working directory
+  wd=os.getcwd()
+
+  #move into the output HDL directory
+  os.chdir(wd+"/"+HDLPath)
+
+  #make a symlink to the XML file
+  fullXMLFile=wd+"/"+XMLFile
+
+  #generate a fake top address table
+  slaveAddress="0x"+hex(0x00000000)[2:]
+  topXMLFile="top.xml"
+
+  outXMLFile=open(topXMLFile,'w')
+  outXMLFile.write("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n")
+  outXMLFile.write("<node id=\"TOP\">\n")
+  outXMLFile.write("  <node id=\"" +name+ "\"        module=\"file://" +fullXMLFile+ "\"        address=\"" +slaveAddress+ "\"/>\n")
+  outXMLFile.write("</node>\n")
+  outXMLFile.close()
+  
+
+  #generate the HDL
+  try:
+    device = uhal.getDevice("dummy","ipbusudp-1.3://localhost:12345","file://" + topXMLFile)
+  except Exception:
+    raise Exception("File '%s' does not exist or has incorrect format" % topXMLFile)
+  for i in device.getNodes():
+    if i.count('.') == 0:
+      mytree = tree(device.getNode(i), log)
+      mytree.generatePkg()
+      mytree.generateRegMap(regMapTemplate=wd+"/regmap_helper/template_map.vhd")
+  
+  #cleanup
+  os.remove(topXMLFile)
+  os.chdir(wd)           #go back to original path
+
+
 
 def LoadSlave(slave,tclFile,slaveYAMLFile,parentName):
   
@@ -13,7 +63,7 @@ def LoadSlave(slave,tclFile,slaveYAMLFile,parentName):
   if 'HDL' in slave:
     if 'XML' not in slave:
       raise RuntimeError(slave['NAME']+" has HDL tag, but no XML tag\n")
-    print "Use ",slave['XML']," to build ",slave['HDL']," map and PKG files"
+    GenerateHDL(slave['NAME'],slave['XML'],slave['HDL'])
 
   #generate yaml for the kernel and centos build
   if 'UHAL_BASE' in slave:
@@ -31,6 +81,19 @@ def LoadSlave(slave,tclFile,slaveYAMLFile,parentName):
         LoadSlave(subSlave,tclFile,slaveYAMLFile,parentName+slave['NAME'])
 
 
+
+
+
+
+# configure logger
+global log
+log = logging.getLogger("main")
+formatter = logging.Formatter('%(name)s %(levelname)s: %(message)s')
+handler = logging.StreamHandler(sys.stdout)
+handler.setFormatter(formatter)
+log.addHandler(handler)
+log.setLevel(logging.WARNING)
+uhal.setLogLevelTo(uhal.LogLevel.WARNING)
 
 tclFile=open("src/ZynqPS/AddSlaves.tcl","w")
 tclFile.write("#================================================================================\n")
