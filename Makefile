@@ -58,10 +58,10 @@ clean_bd:
 clean_bit:
 	@echo "Cleaning up bit files"
 	@rm -rf $(BIT)
-clean_os:
-	@echo "Clean OS hw files"
-	@rm -f os/hw/*
-clean: clean_bd clean_ip clean_bit clean_os
+clean_kernel:
+	@echo "Clean hw files"
+	@rm -f kernel/hw/*
+clean: clean_bd clean_ip clean_bit clean_kernel
 	@rm -rf ./proj/*
 	@echo "Cleaning up"
 
@@ -108,7 +108,7 @@ interactive :
 	vivado -mode tcl
 $(BIT)	:
 	source $(VIVADO_SHELL) &&\
-	mkdir -p os/hw &&\
+	mkdir -p kernel/hw &&\
 	mkdir -p proj &&\
 	mkdir -p bit &&\
 	cd proj &&\
