@@ -85,6 +85,8 @@
     <node id="FPGA_TEMP_2"     address="0x40" mask="0xFFFF0000" permission="r" parameters="Table=CM_MON;Row=_3;Column=Temp_C;Format=fp16;Status=2"/>    
     <node id="MAP_FPGA_TEMP_1" address="0x40" mask="0x0000FFFF" permission="r" parameters="Table=CM_TEMPS;Row=ROW_3;Column=COL_2;Format=fp16;Status=1"/>    
     <node id="MAP_FPGA_TEMP_2" address="0x40" mask="0xFFFF0000" permission="r" parameters="Table=CM_TEMPS;Row=ROW_B;Column=COL_2;Format=fp16;Status=1"/>    
+    <node id="KVCCINT2_1"      address="0x50" module="file://I2C_REGULATOR_MONITOR.xml"/>       
+    <node id="KVCCINT2_2"      address="0x54" module="file://I2C_REGULATOR_MONITOR.xml"/>
     <node id="MCU_UPTIME"      address="0x60" mask="0xFFFFFFFF" permission="r" parameters="Table=CM_MON;Row=_3;Column=Minutes;Format=u;Status=1"/>    
   </node>
   <node id="NETWORK" address="0x00000061">
