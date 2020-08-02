@@ -1,0 +1,4 @@
+<node id="KINTEX_SYS_MGMT">
+  <node id="GLOBAL_CNT_LO"        address="0x000" permission="r" mask="0xFFFFFFFF" />
+  <node id="GLOBAL_CNT_HI"        address="0x001" permission="r" mask="0xFFFFFFFF" />
+</node>
