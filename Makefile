@@ -60,6 +60,10 @@ endif
 #################################################################################
 # Clean
 #################################################################################
+clean_remote:
+	@echo "Cleaning up remote files"
+	@rm os/*_slaves.yaml
+	@rm kernel/*_slaves.yaml
 clean_ip:
 	@echo "Cleaning up ip dcps"
 	@find ./cores -type f -name '*.dcp' -delete
