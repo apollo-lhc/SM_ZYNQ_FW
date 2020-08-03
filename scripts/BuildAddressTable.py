@@ -1,12 +1,25 @@
 #!/bin/env python
 import argparse
-
+import os
 
 import yaml
 import xml.etree.ElementTree as ET
 
 from xml.etree import ElementTree
 from xml.dom import minidom
+
+def AddAddressTableNode(slave,xmlTop):
+    child = ET.SubElement(xmlTop,"node")
+    child.set("id",slave['NAME'])
+    child.set("address","0x"+hex(slave['UHAL_BASE'])[2:].zfill(8))
+    if "XML" in slave:
+        child.set("module",slave['XML'])
+    if 'XML_MODE' in slave:
+        child.set("mode",slave['XML_MODE'])
+    if 'XML_SIZE' in slave:
+        child.set("size",slave['XML_SIZE'])                
+
+def CopyModuleFile(
 
 def BuildAddressTable(fileName,top):
     ATFile=open(fileName,"w")
@@ -95,38 +108,39 @@ def BuildAddressTable(fileName,top):
 def main():
 
   parser = argparse.ArgumentParser(description="Build address table.")
-  parser.add_argument("--localSlavesYAML","-s"      ,help="YAML file storing the slave info for generation",required=True)
-  parser.add_argument("--remoteSlavesYAML","-r"      ,help="YAML file storing remote locations of slave info for generation",required=False,action='append')
+  parser.add_argument("--localSlavesYAML","-l"      ,help="YAML file storing the slave info for generation",required=True)
+  parser.add_argument("--remoteSlavesYAML","-r"     ,help="YAML file storing remote locations of slave info for generation",required=False,action='append')
+  parser.add_argument("--output_dir","-o"           ,help="Output directory",required=True)
+
   args=parser.parse_args()
 
-
+  #address table top node
   top = ET.Element("node",{"id":"top"})
 
+  #local slaves
   slavesFile=open(args.localSlavesYAML)
   slaves=yaml.load(slavesFile)
   for slave in slaves['SLAVE']:
-      ET.SubElement(top,"node",
-                    {"id":slave['NAME'],
-                     "module":slave['XML'],
-                     "address":"0x"+hex(slave['UHAL_BASE'])[2:].zfill(8)})
-      
+    if "XML" in slave:
+        newPath=os.path.dirname(os.path.abspath(slave['XML']))
+        slave['XML'].replace("modules","/modules"
+
+    AddAddressTableNode(slave,top)
+
+  #remote slaves
   for CM in args.remoteSlavesYAML:
         slavesFile=open(CM)
         slaves=yaml.load(slavesFile)
-        for slave in slaves['SLAVE']:
-            child = ET.SubElement(top,"node")
-            child.set("id",slave['NAME'])
-            child.set("address","0x"+hex(slave['UHAL_BASE'])[2:].zfill(8))
+        for slave in slaves['SLAVE']:        
             if "XML" in slave:
-                child.set("module",slave['XML'])
-            if 'XML_MODE' in slave:
-                child.set("mode",slave['XML_MODE'])
-            if 'XML_SIZE' in slave:
-                child.set("size",slave['XML_SIZE'])                
+                newPath=os.path.basename(CM)
+                slave['XML'].replace("modules","/modules"
+
+            AddAddressTableNode(slave,top)
 
 
-
-  BuildAddressTable("os/address_apollo.xml",top)
+  #generate the final address table file
+  BuildAddressTable(args.output_dir+"address_apollo.xml",top)
 
 
 if __name__ == "__main__":
