@@ -1,12 +1,6 @@
-Virtex:
-  host: github.com
-  project: apollo-lhc
-  repo: CM_Virtex_FW
-  release: v1.0
-
 Kintex:
   host: github.com
   project: apollo-lhc
   repo: CM_Kintex_FW
-  release: v1.0
+  release: v1.1
 
