@@ -1,12 +1,29 @@
 #!/bin/env python
 import argparse
 import os
+import shutil
 
 import yaml
 import xml.etree.ElementTree as ET
 
 from xml.etree import ElementTree
 from xml.dom import minidom
+
+def RecreateDir(dir):
+  try:
+    os.mkdir(dir)
+  except OSError:
+    #remote files in this folder
+    for filename in os.listdir(dir):
+      file_path = os.path.join(dir, filename)
+      try:
+        if os.path.isfile(file_path) or os.path.islink(file_path):
+          os.unlink(file_path)
+        elif os.path.isdir(file_path):
+          shutil.rmtree(file_path)
+      except Exception as e:
+        print('Failed to delete %s. Reason: %s' % (file_path, e))
+
 
 def AddAddressTableNode(slave,xmlTop):
     child = ET.SubElement(xmlTop,"node")
@@ -19,7 +36,7 @@ def AddAddressTableNode(slave,xmlTop):
     if 'XML_SIZE' in slave:
         child.set("size",slave['XML_SIZE'])                
 
-def CopyModuleFile(
+#def CopyModuleFile(
 
 def BuildAddressTable(fileName,top):
     ATFile=open(fileName,"w")
@@ -81,7 +98,7 @@ def BuildAddressTable(fileName,top):
         
         #print the module if it exists
         if(child.get('module')):
-            ATFile.write((" module=\""+child.get('module')+"\"").ljust(moduleLen))
+            ATFile.write((" module=\"file://"+child.get('module')+"\"").ljust(moduleLen))
         else:
             ATFile.write(" ".ljust(moduleLen))
         ATFile.write(" ")      
@@ -104,44 +121,58 @@ def BuildAddressTable(fileName,top):
     ATFile.write("<node/>\n")
     
 
+    
+def main(localSlavesYAML,remoteSlavesYAML,outputDir ):
+    #address table top node
+    top = ET.Element("node",{"id":"top"})
 
-def main():
+    #local slaves
+    RecreateDir(outputDir+"address_table/modules")
+    slavesFile=open(localSlavesYAML)
+    slaves=yaml.load(slavesFile)
+    for slave in slaves['SLAVE']:
+        if "XML" in slave:
+          #make symbolic links for the local slaves (if they don't already exist)
+          try:
+            os.symlink(os.path.abspath(slave['XML']),outputDir+slave['XML'])
+          except OSError:
+            pass
+        AddAddressTableNode(slave,top)
 
-  parser = argparse.ArgumentParser(description="Build address table.")
-  parser.add_argument("--localSlavesYAML","-l"      ,help="YAML file storing the slave info for generation",required=True)
-  parser.add_argument("--remoteSlavesYAML","-r"     ,help="YAML file storing remote locations of slave info for generation",required=False,action='append')
-  parser.add_argument("--output_dir","-o"           ,help="Output directory",required=True)
-
-  args=parser.parse_args()
-
-  #address table top node
-  top = ET.Element("node",{"id":"top"})
-
-  #local slaves
-  slavesFile=open(args.localSlavesYAML)
-  slaves=yaml.load(slavesFile)
-  for slave in slaves['SLAVE']:
-    if "XML" in slave:
-        newPath=os.path.dirname(os.path.abspath(slave['XML']))
-        slave['XML'].replace("modules","/modules"
-
-    AddAddressTableNode(slave,top)
-
-  #remote slaves
-  for CM in args.remoteSlavesYAML:
+    #remote slaves
+    for CM in remoteSlavesYAML:
         slavesFile=open(CM)
         slaves=yaml.load(slavesFile)
+        
+        nameCM=os.path.basename(CM)[0:os.path.basename(CM).find("_")]
+
         for slave in slaves['SLAVE']:        
             if "XML" in slave:
-                newPath=os.path.basename(CM)
-                slave['XML'].replace("modules","/modules"
-
+                slave['XML'] = slave['XML'].replace("modules",nameCM+"_modules")
             AddAddressTableNode(slave,top)
 
 
-  #generate the final address table file
-  BuildAddressTable(args.output_dir+"address_apollo.xml",top)
+    #generate the final address table file
+    BuildAddressTable(outputDir+"address_table/address_apollo.xml",top)
+
+    #generate a connections file
+    connFile=open(outputDir+"address_table/connections.xml","w")
+    connFile.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+    connFile.write('\n')
+    connFile.write('<connections>\n')
+    connFile.write('  <!-- be sure to use the same file in both "uri" and "address_table" -->\n')
+    connFile.write('  <connection id="test.0"        uri="uioaxi-1.0:///opt/address_tables/address_apollo.xml"                     address_table="file:///opt/address_tables/address_apollo.xml" />\n')
+    connFile.write('</connections>\n')
+    connFile.close()
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Build address table.")
+    parser.add_argument("--localSlavesYAML","-l"      ,help="YAML file storing the slave info for generation",required=True)
+    parser.add_argument("--remoteSlavesYAML","-r"     ,help="YAML file storing remote locations of slave info for generation",required=False,action='append')
+    parser.add_argument("--outputDir","-o"           ,help="Output directory",default="os/")
+    args=parser.parse_args()
+    
+    main(args.localSlavesYAML,
+         args.remoteSlavesYAML,
+         args.outputDir)

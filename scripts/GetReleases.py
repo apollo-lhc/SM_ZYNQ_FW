@@ -7,7 +7,7 @@ import requests #interact with github.com
 import json # parse github return
 
 import os #for mkdir
-
+import shutil
 
 token=""
 
@@ -18,19 +18,19 @@ def RecreateDir(dir):
   except OSError:
     #remote files in this folder
     for filename in os.listdir(dir):
-    file_path = os.path.join(dir, filename)
-    try:
+      file_path = os.path.join(dir, filename)
+      try:
         if os.path.isfile(file_path) or os.path.islink(file_path):
-            os.unlink(file_path)
+          os.unlink(file_path)
         elif os.path.isdir(file_path):
-            shutil.rmtree(file_path)
-    except Exception as e:
+          shutil.rmtree(file_path)
+      except Exception as e:
         print('Failed to delete %s. Reason: %s' % (file_path, e))
 
 def GetReleaseFiles(name,host, project,repo, release):
   global token
   GIT_API_URL="https://api."+host+"/repos/"+project+"/"+repo+"/releases"
-  response=requests.get(GIT_API_URL)
+  response=requests.get(GIT_API_URL,headers = {"Authorization": "token "+token})
   ReleaseJSON=json.loads(response.text)
   foundDTISSlaveFile = False
   foundTableSlaveFile = False
@@ -46,7 +46,6 @@ def GetReleaseFiles(name,host, project,repo, release):
   for remoteRelease in ReleaseJSON:
     if remoteRelease["name"] == release:
       for asset in remoteRelease["assets"]:
-
 
         #========================================================================
         # kernel path (dtsi related files)
@@ -77,6 +76,7 @@ def GetReleaseFiles(name,host, project,repo, release):
             filename="os/"+name+"_slaves.yaml"
           else:
             filename=addressTableDir+asset["name"].replace("address_table.modules.","")
+          print "Downloading",asset["name"],"to",filename
           outFile = open(filename,'wb')
           outFile.write(assetData.content)
           outFile.close()

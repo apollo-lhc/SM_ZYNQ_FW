@@ -49,12 +49,19 @@ all:
 # preBuild 
 #################################################################################
 SLAVE_DEF_FILE=src/slaves.yaml
-ADDSLAVE_TCL_PATH=src/c2cSlave/
+ADDSLAVE_TCL_PATH=src/ZynqPS/
 ADDRESS_TABLE_CREATION_PATH=os/
 SLAVE_DTSI_PATH=kernel/
 
 ifneq ("$(wildcard mk/preBuild.mk)","")
   include mk/preBuild.mk
+endif
+
+#################################################################################
+# address tables
+#################################################################################
+ifneq ("$(wildcard mk/addrTable.mk)","")
+  include mk/addrTable.mk
 endif
 
 #################################################################################
@@ -111,16 +118,6 @@ NOTIFY_DAN_GOOD:
 NOTIFY_DAN_BAD:
 	${SLACK_MESG} "FAILED to build FW!"
 
-#################################################################################
-# prebuild 
-#################################################################################
-prebuild: $(SLAVE_DEF_FILE)
-	./scripts/preBuild.py   -s $(SLAVE_DEF_FILE) \
-				-t $(ADDSLAVE_TCL_PATH) \
-				-a $(ADDRESS_TABLE_CREATION_PATH) \
-				-d $(SLAVE_DTSI_PATH)
-
-$(ADDSLAVE_TCL_PATH)/AddSlaves.tcl $(ADDRESS_TABLE_CREATION_PATH)/slaves.yaml $(SLAVE_DTSI_PATH)/slaves.yaml: prebuild
 
 
 #################################################################################
