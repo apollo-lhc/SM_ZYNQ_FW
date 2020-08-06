@@ -1,45 +1,52 @@
-AXI_SLAVES:
-  - SLAVE:
-      NAME: PL_MEM
-      UHAL_BASE: '0x15000000'
-      XML: address_table/modules/PL_MEM.xml
-  - SLAVE:
-      NAME: SERV
-      UHAL_BASE: '0x04000000'
-      XML: address_table/modules/SERV.xml
-  - SLAVE:
-      NAME: PLXVC
-      UHAL_BASE: '0x06000000'
-      XML: address_table/modules/plXVC.xml
-  - SLAVE:
-      NAME: XVC_LOCAL
-      UHAL_BASE: '0x08000000'
-      XML: address_table/modules/XVC.xml
-  - SLAVE:
-      NAME: SLAVE_I2C
-      UHAL_BASE: '0x05000000'
-      XML: address_table/modules/SLAVE_I2C.xml
-  - SLAVE:
-      NAME: CM
-      UHAL_BASE: '0x03000000'
-      XML: address_table/modules/CM.xml
-  - SLAVE:
-      NAME: SM_INFO
-      UHAL_BASE: '0x0a000000'
-      XML: address_table/modules/FW_INFO.xml
-  - SLAVE:
-      NAME: MONITOR
-      UHAL_BASE: '0x0b000000'
-      XML: address_table/modules/MONITOR.xml
-  - SLAVE:
-      NAME: TCDS
-      UHAL_BASE: '0x17000000'
-      XML: address_table/modules/TCDS.xml
-  - SLAVE:
-      NAME: TCDS_DRP
-      UHAL_BASE: '0x18000000'
-      XML: address_table/modules/TCDS_DRP.xml
-  - SLAVE:
-      NAME: AXI_MON
-      UHAL_BASE: '0x19000000'
-      XML: address_table/modules/AXI_MONITOR.xml
+UHAL_MODULES:
+  AXI_MON:
+    UHAL_BASE: '0x19000000'
+    XML: address_table/modules/AXI_MONITOR.xml
+  C2C1_AXILITE_FW:
+    UHAL_BASE: '0x0e000000'
+    XML: address_table/modules/C2C1_AXILITE_FW.xml
+  C2C1_AXI_FW:
+    UHAL_BASE: '0x0d000000'
+    XML: address_table/modules/C2C1_AXI_FW.xml
+  C2C1_PHY:
+    UHAL_BASE: '0x19000000'
+    XML: address_table/modules/DRP_7_GTX.xml
+  C2C2_AXILITE_FW:
+    UHAL_BASE: '0x14000000'
+    XML: address_table/modules/C2C2_AXILITE_FW.xml
+  C2C2_AXI_FW:
+    UHAL_BASE: '0x13000000'
+    XML: address_table/modules/C2C2_AXI_FW.xml
+  C2C2_PHY:
+    UHAL_BASE: '0x1b000000'
+    XML: address_table/modules/DRP_7_GTX.xml
+  CM:
+    UHAL_BASE: '0x03000000'
+    XML: address_table/modules/CM.xml
+  MONITOR:
+    UHAL_BASE: '0x0b000000'
+    XML: address_table/modules/MONITOR.xml
+  PLXVC:
+    UHAL_BASE: '0x06000000'
+    XML: address_table/modules/plXVC.xml
+  PL_MEM:
+    UHAL_BASE: '0x15000000'
+    XML: address_table/modules/PL_MEM.xml
+  SERV:
+    UHAL_BASE: '0x04000000'
+    XML: address_table/modules/SERV.xml
+  SLAVE_I2C:
+    UHAL_BASE: '0x05000000'
+    XML: address_table/modules/SLAVE_I2C.xml
+  SM_INFO:
+    UHAL_BASE: '0x0a000000'
+    XML: address_table/modules/FW_INFO.xml
+  TCDS:
+    UHAL_BASE: '0x17000000'
+    XML: address_table/modules/TCDS.xml
+  TCDS_DRP:
+    UHAL_BASE: '0x18000000'
+    XML: address_table/modules/TCDS_DRP.xml
+  XVC_LOCAL:
+    UHAL_BASE: '0x08000000'
+    XML: address_table/modules/XVC.xml
