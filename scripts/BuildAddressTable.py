@@ -26,12 +26,11 @@ def RecreateDir(dir):
 
 
 def AddAddressTableNode(name,slave,xmlTop):
-  print slave
   child = ET.SubElement(xmlTop,"node")
   child.set("id",name)
   child.set("address",slave['UHAL_BASE'])
   if "XML" in slave:
-    child.set("module",slave['XML'])
+    child.set("module",slave['XML'][0])
   if 'XML_MODE' in slave:
     child.set("mode",slave['XML_MODE'])
   if 'XML_SIZE' in slave:
@@ -119,7 +118,7 @@ def BuildAddressTable(fileName,top):
   
   
         ATFile.write("/>\n")
-    ATFile.write("<node/>\n")
+    ATFile.write("</node>\n")
     
 
     
@@ -132,25 +131,28 @@ def main(localSlavesYAML,remoteSlavesYAML,outputDir ):
     slavesFile=open(localSlavesYAML)
     slaves=yaml.load(slavesFile)
     for slave in slaves['UHAL_MODULES']:
-        if "XML" in slave:
-          #make symbolic links for the local slaves (if they don't already exist)
+        if "XML" in slaves['UHAL_MODULES'][slave]:
+          #copy XML files
           try:
-            os.symlink(os.path.abspath(slave['XML']),outputDir+slave['XML'])
+            for xmlFile in slaves['UHAL_MODULES'][slave]['XML']:
+              shutil.copyfile(os.path.abspath(xmlFile),outputDir+xmlFile)
           except OSError:
             pass
         AddAddressTableNode(slave,slaves['UHAL_MODULES'][slave],top)
 
     #remote slaves
-    for CM in remoteSlavesYAML:
+    if type(remoteSlavesYAML) == type(list()):
+      for CM in remoteSlavesYAML:
         slavesFile=open(CM)
         slaves=yaml.load(slavesFile)
         
         nameCM=os.path.basename(CM)[0:os.path.basename(CM).find("_")]
 
         for slave in slaves['UHAL_MODULES']:        
-            if "XML" in slave:
-                slave['XML'] = slave['XML'].replace("modules",nameCM+"_modules")
-            AddAddressTableNode(slave,slaves['UHAL_MODULES'][slave],top)
+            if "XML" in slaves['UHAL_MODULES'][slave]:
+              for iFile in range(0,len(slaves['UHAL_MODULES'][slave]["XML"])):
+                slaves['UHAL_MODULES'][slave]['XML'][iFile] = slaves['UHAL_MODULES'][slave]['XML'][iFile].replace("modules",nameCM+"_modules")
+              AddAddressTableNode(slave,slaves['UHAL_MODULES'][slave],top)
 
 
     #generate the final address table file
