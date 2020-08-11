@@ -121,7 +121,6 @@ def BuildAddressTable(fileName,top):
     ATFile.write("</node>\n")
     
 
-    
 def main(localSlavesYAML,remoteSlavesYAML,outputDir ):
     #address table top node
     top = ET.Element("node",{"id":"top"})
@@ -131,13 +130,20 @@ def main(localSlavesYAML,remoteSlavesYAML,outputDir ):
     slavesFile=open(localSlavesYAML)
     slaves=yaml.load(slavesFile)
     for slave in slaves['UHAL_MODULES']:
-        if "XML" in slaves['UHAL_MODULES'][slave]:
+      if "XML" in slaves['UHAL_MODULES'][slave]:
+        for iFile in range(0,len(slaves['UHAL_MODULES'][slave]["XML"])):
           #copy XML files
+          xmlFile=slaves['UHAL_MODULES'][slave]["XML"][iFile]
           try:
-            for xmlFile in slaves['UHAL_MODULES'][slave]['XML']:
-              shutil.copyfile(os.path.abspath(xmlFile),outputDir+xmlFile)
+            shutil.copyfile(os.path.abspath(xmlFile),outputDir+xmlFile)
           except OSError:
             pass
+          if iFile == 0:
+            relPath=slaves['UHAL_MODULES'][slave]['XML'][iFile]
+            relPath=relPath[relPath.find("module"):]
+            slaves['UHAL_MODULES'][slave]['XML'][iFile] = relPath
+
+        
         AddAddressTableNode(slave,slaves['UHAL_MODULES'][slave],top)
 
     #remote slaves
@@ -151,7 +157,10 @@ def main(localSlavesYAML,remoteSlavesYAML,outputDir ):
         for slave in slaves['UHAL_MODULES']:        
             if "XML" in slaves['UHAL_MODULES'][slave]:
               for iFile in range(0,len(slaves['UHAL_MODULES'][slave]["XML"])):
-                slaves['UHAL_MODULES'][slave]['XML'][iFile] = slaves['UHAL_MODULES'][slave]['XML'][iFile].replace("modules",nameCM+"_modules")
+                #change the file path to be relative on the apollo
+                relPath=slaves['UHAL_MODULES'][slave]['XML'][iFile]
+                relPath=nameCM+"_"+relPath[relPath.find("module"):]
+                slaves['UHAL_MODULES'][slave]['XML'][iFile] = relPath
               AddAddressTableNode(slave,slaves['UHAL_MODULES'][slave],top)
 
 
@@ -164,7 +173,7 @@ def main(localSlavesYAML,remoteSlavesYAML,outputDir ):
     connFile.write('\n')
     connFile.write('<connections>\n')
     connFile.write('  <!-- be sure to use the same file in both "uri" and "address_table" -->\n')
-    connFile.write('  <connection id="test.0"        uri="uioaxi-1.0:///opt/address_tables/address_apollo.xml"                     address_table="file:///opt/address_tables/address_apollo.xml" />\n')
+    connFile.write('  <connection id="test.0"        uri="uioaxi-1.0:///opt/address_table/address_apollo.xml"                     address_table="file:///opt/address_table/address_apollo.xml" />\n')
     connFile.write('</connections>\n')
     connFile.close()
 
