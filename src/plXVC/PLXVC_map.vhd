@@ -5,8 +5,8 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.AXIRegPkg.all;
 use work.types.all;
-use work.plXVC_Ctrl.all;
-entity plXVC_interface is
+use work.PLXVC_Ctrl.all;
+entity PLXVC_interface is
   port (
     clk_axi          : in  std_logic;
     reset_axi_n      : in  std_logic;
@@ -14,11 +14,11 @@ entity plXVC_interface is
     slave_readMISO   : out AXIReadMISO  := DefaultAXIReadMISO;
     slave_writeMOSI  : in  AXIWriteMOSI;
     slave_writeMISO  : out AXIWriteMISO := DefaultAXIWriteMISO;
-    Mon              : in  plXVC_Mon_t;
-    Ctrl             : out plXVC_Ctrl_t
+    Mon              : in  PLXVC_Mon_t;
+    Ctrl             : out PLXVC_Ctrl_t
     );
-end entity plXVC_interface;
-architecture behavioral of plXVC_interface is
+end entity PLXVC_interface;
+architecture behavioral of PLXVC_interface is
   signal localAddress       : slv_32_t;
   signal localRdData        : slv_32_t;
   signal localRdData_latch  : slv_32_t;
@@ -116,14 +116,14 @@ begin  -- architecture behavioral
   reg_writes: process (clk_axi, reset_axi_n) is
   begin  -- process reg_writes
     if reset_axi_n = '0' then                 -- asynchronous reset (active low)
-      reg_data( 0)(31 downto  0)  <= DEFAULT_plXVC_CTRL_t.XVC(1).LENGTH;
-      reg_data( 1)(31 downto  0)  <= DEFAULT_plXVC_CTRL_t.XVC(1).TMS_VECTOR;
-      reg_data( 2)(31 downto  0)  <= DEFAULT_plXVC_CTRL_t.XVC(1).TDI_VECTOR;
-      reg_data( 5)(31 downto  0)  <= DEFAULT_plXVC_CTRL_t.XVC(1).LOCK;
-      reg_data( 6)(31 downto  0)  <= DEFAULT_plXVC_CTRL_t.XVC(2).LENGTH;
-      reg_data( 7)(31 downto  0)  <= DEFAULT_plXVC_CTRL_t.XVC(2).TMS_VECTOR;
-      reg_data( 8)(31 downto  0)  <= DEFAULT_plXVC_CTRL_t.XVC(2).TDI_VECTOR;
-      reg_data(11)(31 downto  0)  <= DEFAULT_plXVC_CTRL_t.XVC(2).LOCK;
+      reg_data( 0)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(1).LENGTH;
+      reg_data( 1)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(1).TMS_VECTOR;
+      reg_data( 2)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(1).TDI_VECTOR;
+      reg_data( 5)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(1).LOCK;
+      reg_data( 6)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).LENGTH;
+      reg_data( 7)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).TMS_VECTOR;
+      reg_data( 8)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).TDI_VECTOR;
+      reg_data(11)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).LOCK;
 
     elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
       Ctrl.XVC(1).GO <= '0';

@@ -8,8 +8,10 @@ ${OPT_PATH}/BUTool: ${OPT_PATH}/cactus | ${OPT_PATH} ${TMP_PATH}
 		make init
 	cp ${MODS_PATH}/build_BUTool.sh ${TMP_PATH}/ApolloTool/
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/ApolloTool/build_BUTool.sh
-	sudo install -d -m 755 ${OPT_PATH}/address_tables
-	(cd mods && find address_tables/ -type f -exec sudo install -Dm 666 "{}" "${OPT_PATH}/{}" \;)
+#	sudo install -d -m 755 ${OPT_PATH}/address_table
+#	(cd mods && find address_tables/ -type f -exec sudo install -Dm 666 "{}" "${OPT_PATH}/{}" \;)
+	(find address_table/ -xtype f -exec sudo install -Dm 666 "{}" "${OPT_PATH}/{}" \;)
+	sudo ln -s /opt/address_table ${OPT_PATH}/address_tables
 	sudo install -d -m 755 ${OPT_PATH}/BUTool/systemd
 	sudo install    -m 664 ${MODS_PATH}/systemd/BUTool/* ${OPT_PATH}/BUTool/systemd/
 	sudo ln -s /opt/BUTool/systemd/smboot.service      ${ETC_PATH}/systemd/system/smboot.service
