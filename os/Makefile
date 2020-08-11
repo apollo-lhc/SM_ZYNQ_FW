@@ -99,5 +99,5 @@ list:
 
 tarball:
 	cd ${INSTALL_PATH} && \
-	sudo tar --numeric-owner -p -zcf ../$(shell date +%F)-SD_p2.tar.gz ./
+	sudo tar --numeric-owner -p -zcf ../SD_p2.tar.gz ./
 
