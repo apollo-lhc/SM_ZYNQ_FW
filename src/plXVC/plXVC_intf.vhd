@@ -30,12 +30,12 @@ end entity plXVC_intf;
 architecture behavioral of plXVC_intf is
 
   -- *** Monitor record *** --
-  signal Mon            : plXVC_Mon_t;
+  signal Mon            : PLXVC_Mon_t;
   signal Mon_BUSY       : std_logic_vector((COUNT - 1) downto 0);
   signal Mon_TDO_VECTOR : slv32_array_t(1 to COUNT); --Array of 32bit vectors
 
   -- *** Control record *** --
-  signal Ctrl   : plXVC_Ctrl_t;
+  signal Ctrl   : PLXVC_Ctrl_t;
 
   -- *** For reset *** ---
   signal reset  : std_logic;
@@ -43,7 +43,7 @@ architecture behavioral of plXVC_intf is
 begin
 
 --Instansiate plXVC_interface Module
-  plXVC_interface_1: entity work.plXVC_interface
+  PLXVC_interface_1: entity work.PLXVC_interface
     port map (
       clk_axi             => clk_axi,     --AXI_clk in
       reset_axi_n         => reset_axi_n, --AXI_reset in

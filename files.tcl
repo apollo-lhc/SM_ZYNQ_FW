@@ -43,8 +43,8 @@ set vhdl_files "\
      src/front_panel/LED_Encoder.vhd \
      src/front_panel/SR_Out.vhd \
      src/front_panel/LED_Paterns.vhd \
-     src/SM_info/FW_INFO_map.vhd \
-     src/SM_info/FW_INFO_PKG.vhd \
+     src/SM_info/SM_INFO_map.vhd \
+     src/SM_info/SM_INFO_PKG.vhd \
      src/SM_info/SM_info.vhd \
      src/TCDS/lhc_gt_usrclk_source.vhd \
      src/TCDS/MGBT2_common_reset.vhd \
@@ -54,8 +54,8 @@ set vhdl_files "\
      src/TCDS/TCDS_Monitor.vhd \
      src/TCDS/TCDS_map.vhd \
      src/TCDS/TCDS_PKG.vhd \
-     src/plXVC/plXVC_map.vhd \
-     src/plXVC/plXVC_PKG.vhd \
+     src/plXVC/PLXVC_map.vhd \
+     src/plXVC/PLXVC_PKG.vhd \
      src/plXVC/plXVC_intf.vhd \
      src/plXVC/virtualJTAG.vhd \
      "

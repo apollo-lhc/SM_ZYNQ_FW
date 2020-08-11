@@ -13,6 +13,7 @@ VIVADO_FLAGS=-notrace -mode batch
 VIVADO_SHELL?="/opt/Xilinx/Vivado/"$(VIVADO_VERSION)"/settings64.sh"
 
 
+
 #################################################################################
 # TCL scripts
 #################################################################################
@@ -44,10 +45,32 @@ BIT=./bit/top.bit
 all:
 	$(MAKE) bit || $(MAKE) NOTIFY_DAN_BAD
 
+#################################################################################
+# preBuild 
+#################################################################################
+SLAVE_DEF_FILE=src/slaves.yaml
+ADDSLAVE_TCL_PATH=src/ZynqPS/
+ADDRESS_TABLE_CREATION_PATH=os/
+SLAVE_DTSI_PATH=kernel/
+
+ifneq ("$(wildcard mk/preBuild.mk)","")
+  include mk/preBuild.mk
+endif
+
+#################################################################################
+# address tables
+#################################################################################
+ifneq ("$(wildcard mk/addrTable.mk)","")
+  include mk/addrTable.mk
+endif
 
 #################################################################################
 # Clean
 #################################################################################
+clean_remote:
+	@echo "Cleaning up remote files"
+	@rm os/*_slaves.yaml
+	@rm kernel/*_slaves.yaml
 clean_ip:
 	@echo "Cleaning up ip dcps"
 	@find ./cores -type f -name '*.dcp' -delete
@@ -57,11 +80,11 @@ clean_bd:
 	@rm -rf ./bd/c2cSlave
 clean_bit:
 	@echo "Cleaning up bit files"
-	@rm -rf $(BIT)
-clean_os:
-	@echo "Clean OS hw files"
-	@rm -f os/hw/*
-clean: clean_bd clean_ip clean_bit clean_os
+	@rm -rf bit/*
+clean_kernel:
+	@echo "Clean hw files"
+	@rm -f kernel/hw/*
+clean: clean_bd clean_ip clean_bit clean_kernel
 	@rm -rf ./proj/*
 	@echo "Cleaning up"
 
@@ -95,6 +118,8 @@ NOTIFY_DAN_GOOD:
 NOTIFY_DAN_BAD:
 	${SLACK_MESG} "FAILED to build FW!"
 
+
+
 #################################################################################
 # FPGA building
 #################################################################################
@@ -108,7 +133,7 @@ interactive :
 	vivado -mode tcl
 $(BIT)	:
 	source $(VIVADO_SHELL) &&\
-	mkdir -p os/hw &&\
+	mkdir -p kernel/hw &&\
 	mkdir -p proj &&\
 	mkdir -p bit &&\
 	cd proj &&\

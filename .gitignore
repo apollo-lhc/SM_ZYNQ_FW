@@ -16,18 +16,18 @@ cores/*/*
 #anything sub directories in the bd directory
 bd/*/*
 
+
 #################################################################################
 ## Output files
 #################################################################################
 bit
-os/hw
-os/*
-!os/centos
-!os/*.dtsi_post_chunk
-!os/*.dtsi_chunk
-os/zynq_os
-!os/zynq_os_mods
-!os/extra_files
+kernel/hw
+kernel/*
+!kernel/*.dtsi_post_chunk
+!kernel/*.dtsi_chunk
+kernel/zynq_os
+!kernel/zynq_os_mods
+!kernel/extra_files
 
 #################################################################################
 ## Sim files
@@ -51,7 +51,8 @@ doc/*.pdf
 #################################################################################
 ## CentOS
 #################################################################################
-os/centos/centos_root.tar.gz
-os/centos/image/
-os/centos/secure
-os/centos/qemu-arm-static
+!os
+os/*.tar.gz
+os/image/
+os/secure
+os/qemu-arm-static

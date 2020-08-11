@@ -1,5 +1,5 @@
 UHAL_TAG=v2.7.4
-UIO_UHAL_TAG=v1.0
+UIO_UHAL_TAG=v1.0.1
 ${OPT_PATH}/cactus: | ${OPT_PATH} ${TMP_PATH}
 	cd ${TMP_PATH} && \
 		git clone --branch ${UHAL_TAG} https://github.com/ipbus/ipbus-software.git
