@@ -109,11 +109,11 @@ def main(kernel_path,image_path):
         print "========================================"
         filePath=kernel_path+"/zynq_os/images/linux/"
 
-        uploadFile=BOOT.BIN
+        uploadFile="BOOT.BIN"
         print "  Uploading: " + filePath+uploadFile + " to  "+uploadFile+"\n" 
         releaseFile(ReleaseJSON,filePath+uploadFile,uploadFile)
 
-        uploadFile=image.ub
+        uploadFile="image.ub"
         print "  Uploading: " + filePath+uploadFile + " to  "+uploadFile+"\n" 
         releaseFile(ReleaseJSON,filePath+uploadFile,uploadFile)
         
@@ -126,7 +126,7 @@ def main(kernel_path,image_path):
         print "Processing os image"
         print "========================================"
 
-        filePath=kernel_path
+        filePath=image_path
 
         uploadFile="SD_p2.tar.gz"
         print "  Uploading: " + filePath+uploadFile + " to  "+uploadFile+"\n" 
@@ -149,7 +149,8 @@ def main(kernel_path,image_path):
             print "  Uploading: " + (bitFiles[file]).ljust(printPadding) + " to  "+file
             releaseFile(ReleaseJSON,bitFiles[file],file)
             
-            
+                        
+
     
     except Exception as e:
         requests.delete(ReleaseJSON["url"],headers={"Authorization": "token "+token})

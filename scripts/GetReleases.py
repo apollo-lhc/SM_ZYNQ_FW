@@ -81,6 +81,17 @@ def GetReleaseFiles(name,host, project,repo, release):
           outFile.write(assetData.content)
           outFile.close()
 
+        #========================================================================
+        # svf files
+        #========================================================================
+        if asset["name"].find("svf") != -1:
+          assetData = requests.get(asset["url"],headers = {"Authorization": "token "+token,"Accept": "application/octet-stream"})                    
+          filename="bit/top_"+name+".svf"
+          print "Downloading",asset["name"],"to",filename
+          outFile = open(filename,'wb')
+          outFile.write(assetData.content)
+          outFile.close()
+
 
 
 def main(CMFilename):

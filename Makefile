@@ -80,7 +80,7 @@ clean_bd:
 	@rm -rf ./bd/c2cSlave
 clean_bit:
 	@echo "Cleaning up bit files"
-	@rm -rf $(BIT)
+	@rm -rf bit/*
 clean_kernel:
 	@echo "Clean hw files"
 	@rm -f kernel/hw/*
