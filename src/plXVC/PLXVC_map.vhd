@@ -28,8 +28,8 @@ architecture behavioral of PLXVC_interface is
   signal localRdAck         : std_logic;
 
 
-  signal reg_data :  slv32_array_t(integer range 0 to 11);
-  constant Default_reg_data : slv32_array_t(integer range 0 to 11) := (others => x"00000000");
+  signal reg_data :  slv32_array_t(integer range 0 to 13);
+  constant Default_reg_data : slv32_array_t(integer range 0 to 13) := (others => x"00000000");
 begin  -- architecture behavioral
 
   -------------------------------------------------------------------------------
@@ -80,8 +80,10 @@ begin  -- architecture behavioral
         when 5 => --0x5
           localRdData(31 downto  0)  <=  reg_data( 5)(31 downto  0);      --Lock cable from access
         when 6 => --0x6
+          localRdData(31 downto  0)  <=  reg_data( 6)(31 downto  0);      --IP of remote connection
           localRdData(31 downto  0)  <=  reg_data( 6)(31 downto  0);      --Length of shift operation in bits
         when 7 => --0x7
+          localRdData(15 downto  0)  <=  reg_data( 7)(15 downto  0);      --port of remote connection
           localRdData(31 downto  0)  <=  reg_data( 7)(31 downto  0);      --Test Mode Select (TMS) Bit Vector
         when 8 => --0x8
           localRdData(31 downto  0)  <=  reg_data( 8)(31 downto  0);      --Test Data In (TDI) Bit Vector
@@ -91,6 +93,10 @@ begin  -- architecture behavioral
           localRdData( 1)            <=  Mon.XVC(2).BUSY;                 --Cable is operating
         when 11 => --0xb
           localRdData(31 downto  0)  <=  reg_data(11)(31 downto  0);      --Lock cable from access
+        when 12 => --0xc
+          localRdData(31 downto  0)  <=  reg_data(12)(31 downto  0);      --IP of remote connection
+        when 13 => --0xd
+          localRdData(15 downto  0)  <=  reg_data(13)(15 downto  0);      --port of remote connection
 
 
         when others =>
@@ -103,14 +109,18 @@ begin  -- architecture behavioral
 
 
   -- Register mapping to ctrl structures
-  Ctrl.XVC(1).LENGTH      <=  reg_data( 0)(31 downto  0);     
-  Ctrl.XVC(1).TMS_VECTOR  <=  reg_data( 1)(31 downto  0);     
-  Ctrl.XVC(1).TDI_VECTOR  <=  reg_data( 2)(31 downto  0);     
-  Ctrl.XVC(1).LOCK        <=  reg_data( 5)(31 downto  0);     
-  Ctrl.XVC(2).LENGTH      <=  reg_data( 6)(31 downto  0);     
-  Ctrl.XVC(2).TMS_VECTOR  <=  reg_data( 7)(31 downto  0);     
-  Ctrl.XVC(2).TDI_VECTOR  <=  reg_data( 8)(31 downto  0);     
-  Ctrl.XVC(2).LOCK        <=  reg_data(11)(31 downto  0);     
+  Ctrl.XVC(1).LENGTH              <=  reg_data( 0)(31 downto  0);     
+  Ctrl.XVC(1).TMS_VECTOR          <=  reg_data( 1)(31 downto  0);     
+  Ctrl.XVC(1).TDI_VECTOR          <=  reg_data( 2)(31 downto  0);     
+  Ctrl.XVC(1).LOCK                <=  reg_data( 5)(31 downto  0);     
+  Ctrl.XVC(1).REMOTE.IP           <=  reg_data( 6)(31 downto  0);     
+  Ctrl.XVC(1).REMOTE.PORT_NUMBER  <=  reg_data( 7)(15 downto  0);     
+  Ctrl.XVC(2).LENGTH              <=  reg_data( 6)(31 downto  0);     
+  Ctrl.XVC(2).TMS_VECTOR          <=  reg_data( 7)(31 downto  0);     
+  Ctrl.XVC(2).TDI_VECTOR          <=  reg_data( 8)(31 downto  0);     
+  Ctrl.XVC(2).LOCK                <=  reg_data(11)(31 downto  0);     
+  Ctrl.XVC(2).REMOTE.IP           <=  reg_data(12)(31 downto  0);     
+  Ctrl.XVC(2).REMOTE.PORT_NUMBER  <=  reg_data(13)(15 downto  0);     
 
 
   reg_writes: process (clk_axi, reset_axi_n) is
@@ -120,10 +130,14 @@ begin  -- architecture behavioral
       reg_data( 1)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(1).TMS_VECTOR;
       reg_data( 2)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(1).TDI_VECTOR;
       reg_data( 5)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(1).LOCK;
+      reg_data( 6)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(1).REMOTE.IP;
+      reg_data( 7)(15 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(1).REMOTE.PORT_NUMBER;
       reg_data( 6)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).LENGTH;
       reg_data( 7)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).TMS_VECTOR;
       reg_data( 8)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).TDI_VECTOR;
       reg_data(11)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).LOCK;
+      reg_data(12)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).REMOTE.IP;
+      reg_data(13)(15 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).REMOTE.PORT_NUMBER;
 
     elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
       Ctrl.XVC(1).GO <= '0';
@@ -144,8 +158,10 @@ begin  -- architecture behavioral
         when 5 => --0x5
           reg_data( 5)(31 downto  0)  <=  localWrData(31 downto  0);      --Lock cable from access
         when 6 => --0x6
+          reg_data( 6)(31 downto  0)  <=  localWrData(31 downto  0);      --IP of remote connection
           reg_data( 6)(31 downto  0)  <=  localWrData(31 downto  0);      --Length of shift operation in bits
         when 7 => --0x7
+          reg_data( 7)(15 downto  0)  <=  localWrData(15 downto  0);      --port of remote connection
           reg_data( 7)(31 downto  0)  <=  localWrData(31 downto  0);      --Test Mode Select (TMS) Bit Vector
         when 8 => --0x8
           reg_data( 8)(31 downto  0)  <=  localWrData(31 downto  0);      --Test Data In (TDI) Bit Vector
@@ -153,6 +169,10 @@ begin  -- architecture behavioral
           Ctrl.XVC(2).GO              <=  localWrData( 0);               
         when 11 => --0xb
           reg_data(11)(31 downto  0)  <=  localWrData(31 downto  0);      --Lock cable from access
+        when 12 => --0xc
+          reg_data(12)(31 downto  0)  <=  localWrData(31 downto  0);      --IP of remote connection
+        when 13 => --0xd
+          reg_data(13)(15 downto  0)  <=  localWrData(15 downto  0);      --port of remote connection
 
           when others => null;
         end case;
