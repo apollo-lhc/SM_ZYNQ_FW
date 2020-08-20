@@ -28,8 +28,8 @@ architecture behavioral of PLXVC_interface is
   signal localRdAck         : std_logic;
 
 
-  signal reg_data :  slv32_array_t(integer range 0 to 13);
-  constant Default_reg_data : slv32_array_t(integer range 0 to 13) := (others => x"00000000");
+  signal reg_data :  slv32_array_t(integer range 0 to 23);
+  constant Default_reg_data : slv32_array_t(integer range 0 to 23) := (others => x"00000000");
 begin  -- architecture behavioral
 
   -------------------------------------------------------------------------------
@@ -65,7 +65,7 @@ begin  -- architecture behavioral
     localRdData <= x"00000000";
     if localRdReq = '1' then
       localRdAck  <= '1';
-      case to_integer(unsigned(localAddress(3 downto 0))) is
+      case to_integer(unsigned(localAddress(4 downto 0))) is
 
         when 0 => --0x0
           localRdData(31 downto  0)  <=  reg_data( 0)(31 downto  0);      --Length of shift operation in bits
@@ -81,22 +81,24 @@ begin  -- architecture behavioral
           localRdData(31 downto  0)  <=  reg_data( 5)(31 downto  0);      --Lock cable from access
         when 6 => --0x6
           localRdData(31 downto  0)  <=  reg_data( 6)(31 downto  0);      --IP of remote connection
-          localRdData(31 downto  0)  <=  reg_data( 6)(31 downto  0);      --Length of shift operation in bits
         when 7 => --0x7
           localRdData(15 downto  0)  <=  reg_data( 7)(15 downto  0);      --port of remote connection
-          localRdData(31 downto  0)  <=  reg_data( 7)(31 downto  0);      --Test Mode Select (TMS) Bit Vector
-        when 8 => --0x8
-          localRdData(31 downto  0)  <=  reg_data( 8)(31 downto  0);      --Test Data In (TDI) Bit Vector
-        when 9 => --0x9
+        when 16 => --0x10
+          localRdData(31 downto  0)  <=  reg_data(16)(31 downto  0);      --Length of shift operation in bits
+        when 17 => --0x11
+          localRdData(31 downto  0)  <=  reg_data(17)(31 downto  0);      --Test Mode Select (TMS) Bit Vector
+        when 18 => --0x12
+          localRdData(31 downto  0)  <=  reg_data(18)(31 downto  0);      --Test Data In (TDI) Bit Vector
+        when 19 => --0x13
           localRdData(31 downto  0)  <=  Mon.XVC(2).TDO_VECTOR;           --Test Data Out (TDO) Capture Vector
-        when 10 => --0xa
+        when 20 => --0x14
           localRdData( 1)            <=  Mon.XVC(2).BUSY;                 --Cable is operating
-        when 11 => --0xb
-          localRdData(31 downto  0)  <=  reg_data(11)(31 downto  0);      --Lock cable from access
-        when 12 => --0xc
-          localRdData(31 downto  0)  <=  reg_data(12)(31 downto  0);      --IP of remote connection
-        when 13 => --0xd
-          localRdData(15 downto  0)  <=  reg_data(13)(15 downto  0);      --port of remote connection
+        when 21 => --0x15
+          localRdData(31 downto  0)  <=  reg_data(21)(31 downto  0);      --Lock cable from access
+        when 22 => --0x16
+          localRdData(31 downto  0)  <=  reg_data(22)(31 downto  0);      --IP of remote connection
+        when 23 => --0x17
+          localRdData(15 downto  0)  <=  reg_data(23)(15 downto  0);      --port of remote connection
 
 
         when others =>
@@ -115,12 +117,12 @@ begin  -- architecture behavioral
   Ctrl.XVC(1).LOCK                <=  reg_data( 5)(31 downto  0);     
   Ctrl.XVC(1).REMOTE.IP           <=  reg_data( 6)(31 downto  0);     
   Ctrl.XVC(1).REMOTE.PORT_NUMBER  <=  reg_data( 7)(15 downto  0);     
-  Ctrl.XVC(2).LENGTH              <=  reg_data( 6)(31 downto  0);     
-  Ctrl.XVC(2).TMS_VECTOR          <=  reg_data( 7)(31 downto  0);     
-  Ctrl.XVC(2).TDI_VECTOR          <=  reg_data( 8)(31 downto  0);     
-  Ctrl.XVC(2).LOCK                <=  reg_data(11)(31 downto  0);     
-  Ctrl.XVC(2).REMOTE.IP           <=  reg_data(12)(31 downto  0);     
-  Ctrl.XVC(2).REMOTE.PORT_NUMBER  <=  reg_data(13)(15 downto  0);     
+  Ctrl.XVC(2).LENGTH              <=  reg_data(16)(31 downto  0);     
+  Ctrl.XVC(2).TMS_VECTOR          <=  reg_data(17)(31 downto  0);     
+  Ctrl.XVC(2).TDI_VECTOR          <=  reg_data(18)(31 downto  0);     
+  Ctrl.XVC(2).LOCK                <=  reg_data(21)(31 downto  0);     
+  Ctrl.XVC(2).REMOTE.IP           <=  reg_data(22)(31 downto  0);     
+  Ctrl.XVC(2).REMOTE.PORT_NUMBER  <=  reg_data(23)(15 downto  0);     
 
 
   reg_writes: process (clk_axi, reset_axi_n) is
@@ -132,12 +134,12 @@ begin  -- architecture behavioral
       reg_data( 5)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(1).LOCK;
       reg_data( 6)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(1).REMOTE.IP;
       reg_data( 7)(15 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(1).REMOTE.PORT_NUMBER;
-      reg_data( 6)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).LENGTH;
-      reg_data( 7)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).TMS_VECTOR;
-      reg_data( 8)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).TDI_VECTOR;
-      reg_data(11)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).LOCK;
-      reg_data(12)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).REMOTE.IP;
-      reg_data(13)(15 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).REMOTE.PORT_NUMBER;
+      reg_data(16)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).LENGTH;
+      reg_data(17)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).TMS_VECTOR;
+      reg_data(18)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).TDI_VECTOR;
+      reg_data(21)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).LOCK;
+      reg_data(22)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).REMOTE.IP;
+      reg_data(23)(15 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).REMOTE.PORT_NUMBER;
 
     elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
       Ctrl.XVC(1).GO <= '0';
@@ -146,7 +148,7 @@ begin  -- architecture behavioral
 
       
       if localWrEn = '1' then
-        case to_integer(unsigned(localAddress(3 downto 0))) is
+        case to_integer(unsigned(localAddress(4 downto 0))) is
         when 0 => --0x0
           reg_data( 0)(31 downto  0)  <=  localWrData(31 downto  0);      --Length of shift operation in bits
         when 1 => --0x1
@@ -159,20 +161,22 @@ begin  -- architecture behavioral
           reg_data( 5)(31 downto  0)  <=  localWrData(31 downto  0);      --Lock cable from access
         when 6 => --0x6
           reg_data( 6)(31 downto  0)  <=  localWrData(31 downto  0);      --IP of remote connection
-          reg_data( 6)(31 downto  0)  <=  localWrData(31 downto  0);      --Length of shift operation in bits
         when 7 => --0x7
           reg_data( 7)(15 downto  0)  <=  localWrData(15 downto  0);      --port of remote connection
-          reg_data( 7)(31 downto  0)  <=  localWrData(31 downto  0);      --Test Mode Select (TMS) Bit Vector
-        when 8 => --0x8
-          reg_data( 8)(31 downto  0)  <=  localWrData(31 downto  0);      --Test Data In (TDI) Bit Vector
-        when 10 => --0xa
+        when 16 => --0x10
+          reg_data(16)(31 downto  0)  <=  localWrData(31 downto  0);      --Length of shift operation in bits
+        when 17 => --0x11
+          reg_data(17)(31 downto  0)  <=  localWrData(31 downto  0);      --Test Mode Select (TMS) Bit Vector
+        when 18 => --0x12
+          reg_data(18)(31 downto  0)  <=  localWrData(31 downto  0);      --Test Data In (TDI) Bit Vector
+        when 20 => --0x14
           Ctrl.XVC(2).GO              <=  localWrData( 0);               
-        when 11 => --0xb
-          reg_data(11)(31 downto  0)  <=  localWrData(31 downto  0);      --Lock cable from access
-        when 12 => --0xc
-          reg_data(12)(31 downto  0)  <=  localWrData(31 downto  0);      --IP of remote connection
-        when 13 => --0xd
-          reg_data(13)(15 downto  0)  <=  localWrData(15 downto  0);      --port of remote connection
+        when 21 => --0x15
+          reg_data(21)(31 downto  0)  <=  localWrData(31 downto  0);      --Lock cable from access
+        when 22 => --0x16
+          reg_data(22)(31 downto  0)  <=  localWrData(31 downto  0);      --IP of remote connection
+        when 23 => --0x17
+          reg_data(23)(15 downto  0)  <=  localWrData(15 downto  0);      --port of remote connection
 
           when others => null;
         end case;
