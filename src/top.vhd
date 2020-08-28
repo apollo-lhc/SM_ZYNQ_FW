@@ -101,10 +101,12 @@ entity top is
     CM1_tdi          : out   STD_LOGIC;
     CM1_tdo          : in    STD_LOGIC;
     CM1_tms          : out   STD_LOGIC;
+    CM1_ps_rst       : out   STD_LOGIC;
     CM2_tck          : out   STD_LOGIC;
     CM2_tdi          : out   STD_LOGIC;
     CM2_tdo          : in    STD_LOGIC;
     CM2_tms          : out   STD_LOGIC;
+    CM2_ps_rst       : out   STD_LOGIC;
 
     -------------------------------------------------------------------------------------------
     -- plXVC
@@ -275,6 +277,7 @@ architecture structure of top is
   signal plXVC_TDI      : std_logic_vector((XVC_COUNT -1) downto 0);
   signal plXVC_TDO      : std_logic_vector((XVC_COUNT -1) downto 0);
   signal plXVC_TCK      : std_logic_vector((XVC_COUNT -1) downto 0);
+  signal plXVC_PS_RST   : std_logic_vector((XVC_COUNT -1) downto 0);
 
   signal CM1_UART_Tx_internal : std_logic;
   signal CM2_UART_Tx_internal : std_logic;
@@ -881,6 +884,9 @@ begin  -- architecture structure
       CM_C2C_Ctrl               => CM_C2C_Ctrl);
   plXVC_TDO(0) <= CM1_TDO;
   plXVC_TDO(1) <= CM2_TDO;
+  CM1_ps_rst   <= plXVC_PS_RST(0);
+  CM2_ps_rst   <= plXVC_PS_RST(1);
+
   
   plXVC_1: entity work.plXVC_intf
     generic map (
@@ -897,5 +903,6 @@ begin  -- architecture structure
       TMS             => plXVC_TMS,
       TDI             => plXVC_TDI,
       TDO             => plXVC_TDO,
-      TCK             => plXVC_TCK);
+      TCK             => plXVC_TCK,
+      PS_RST          => plXVC_PS_RST);
 end architecture structure;

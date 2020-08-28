@@ -28,6 +28,7 @@ package PLXVC_CTRL is
     GO                         :std_logic;                      -- Enable shift operation
     LOCK                       :std_logic_vector(31 downto 0);  -- Lock cable from access
     REMOTE                     :PLXVC_XVC_REMOTE_CTRL_t;      
+    PS_RST                     :std_logic;                      -- PS reset
   end record PLXVC_XVC_CTRL_t;
   type PLXVC_XVC_CTRL_t_ARRAY is array(1 to 2) of PLXVC_XVC_CTRL_t;
 
@@ -37,7 +38,8 @@ package PLXVC_CTRL is
                                                            TDI_VECTOR => (others => '0'),
                                                            LENGTH => (others => '0'),
                                                            TMS_VECTOR => (others => '0'),
-                                                           GO => '0'
+                                                           GO => '0',
+                                                           PS_RST => '1'
                                                           );
   type PLXVC_MON_t is record
     XVC                        :PLXVC_XVC_MON_t_ARRAY;
