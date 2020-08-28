@@ -29,6 +29,9 @@ To Build the centos image
    > cd os
    > sudo make clean; sudo make
 
+   Output: (follow os/README for copying instructions)
+     os/image
+   
 Organization:
   Build scripts are in ./scripts and are called by the Makefile
   
