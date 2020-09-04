@@ -28,6 +28,10 @@ kernel/*
 kernel/zynq_os
 !kernel/zynq_os_mods
 !kernel/extra_files
+/os/Kintex_slaves.yaml
+/os/Virtex_slaves.yaml
+/os/address_table/
+/os/slaves.yaml
 
 #################################################################################
 ## Sim files

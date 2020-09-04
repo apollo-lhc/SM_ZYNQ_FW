@@ -9,9 +9,11 @@ To Build FPGA FW:
   >make init
   >make prebuild
   >make
+
   Ouput:
     bit/top.bit
     kernel/hw/*.dtsi_chunk,*.dtsi_post_chunk,hwdef
+
 
 To Build zynq fsbl+kernel+fs
   First, build FPGA FW
@@ -23,6 +25,11 @@ To Build zynq fsbl+kernel+fs
     kernel/zynq_os/images/linux/BOOT.bin
     kernel/zynq_os/images/linux/image.ub
 
+  Notes: In order to do this you must have a personal github token defined as an env variable
+  export GH_TOKEN=<your token here>
+  follow this to generate a token https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
+
+
 To Build the centos image
    First, build FPGA FW and run the GetReleases script if you haven't already
    >./scripts/BuildAddressTable.py -l os/slaves.yaml -r os/Kintex_slaves.yaml -r os/Virtex_slaves.yaml
@@ -31,6 +38,7 @@ To Build the centos image
 
    Output: (follow os/README for copying instructions)
      os/image
+
    
 Organization:
   Build scripts are in ./scripts and are called by the Makefile
