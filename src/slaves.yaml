@@ -119,6 +119,7 @@ AXI_SLAVES:
     TCL_CALL: "[AXI_IP_AXI_MONITOR [list processing_system7_0/M_AXI_GP0 processing_system7_0/M_AXI_GP1] [list ${AXI_MASTER_CLK} ${AXI_MASTER_CLK}] [list ${AXI_MASTER_RSTN} ${AXI_MASTER_RSTN}] ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} AXI_MON ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} ${AXI_MASTER_CLK_FREQ} ]"
     XML:
       - "address_table/modules/AXI_MONITOR.xml"
+      - "address_table/modules/AXI_COUNTER.xml"
     UHAL_BASE: 0x1F000000
     
     

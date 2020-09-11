@@ -1,20 +1,75 @@
 <node id="KINTEX_SYS_MGMT">
-
   <node id="GLOBAL_CNT" address="0x0">
-    <node id="LO"        address="0x000" permission="r" mask="0xFFFFFFFF" />
-    <node id="HI"        address="0x001" permission="r" mask="0xFFFFFFFF" />
+    <node id="LO" address="0x0" permission="r" mask="0xFFFFFFFF" />
+    <node id="HI" address="0x1" permission="r" mask="0xFFFFFFFF" />
   </node>
 
-  <node id="???SAMPLE_INTERVAL_REGS" address="0x2">
+  <node id="???SAMPLE_INTERVAL_REGS" address="0x9">
     <node id="?" address="0x0" />
     <node id="?" address="0x1" />
     <node id="?" address="0x2" />
   </node>
 
-  <node id="INTERUPT" address="0x5">
+  <node id="INTERUPT" address="0xC">
     <node id="GLOBAL" address="0x0"/>
     <node id="ENABLE" address="0x1"/>
     <node id="STATUS" address="0x2"/>
   </node>
 
+  <node id="METRIC_SELECTOR" address="0x11">
+    <node id="R0" address="0x0"/>
+    <node id="R1" address="0x1"/>
+    <node id="R2" address="0x2"/>
+  </node>
+
+  <node id="METRIC_COUNTERS" address="0x40">
+    <node id="COUNTER_0"  address="0x00" fwinfo="type=array" module="file://AXI_COUNTER.xml"/>
+    <node id="COUNTER_1"  address="0x04" fwinfo="type=array" module="file://AXI_COUNTER.xml"/>
+    <node id="COUNTER_2"  address="0x08" fwinfo="type=array" module="file://AXI_COUNTER.xml"/>
+    <node id="COUNTER_3"  address="0x0C" fwinfo="type=array" module="file://AXI_COUNTER.xml"/>
+    <node id="COUNTER_4"  address="0x10" fwinfo="type=array" module="file://AXI_COUNTER.xml"/>
+    <node id="COUNTER_5"  address="0x14" fwinfo="type=array" module="file://AXI_COUNTER.xml"/>
+    <node id="COUNTER_6"  address="0x18" fwinfo="type=array" module="file://AXI_COUNTER.xml"/>
+    <node id="COUNTER_7"  address="0x1C" fwinfo="type=array" module="file://AXI_COUNTER.xml"/>
+    <node id="COUNTER_8"  address="0x20" fwinfo="type=array" module="file://AXI_COUNTER.xml"/>
+    <node id="COUNTER_9"  address="0x24" fwinfo="type=array" module="file://AXI_COUNTER.xml"/>
+  </node>
+
+  <node id="METRIC_COUNTERS_SAMPLED" address="0x80">
+    <node id="COUNTER_0"     address="0x00"/>
+    <node id="INCREMENTER_0" address="0x01"/>
+    <node id="COUNTER_1"     address="0x02"/>
+    <node id="INCREMENTER_1" address="0x03"/>
+    <node id="COUNTER_2"     address="0x04"/>
+    <node id="INCREMENTER_2" address="0x05"/>
+    <node id="COUNTER_2"     address="0x06"/>
+    <node id="INCREMENTER_2" address="0x07"/>
+    <node id="COUNTER_3"     address="0x08"/>
+    <node id="INCREMENTER_3" address="0x09"/>
+    <node id="COUNTER_4"     address="0x0A"/>
+    <node id="INCREMENTER_4" address="0x0B"/>
+    <node id="COUNTER_5"     address="0x0C"/>
+    <node id="INCREMENTER_5" address="0x0D"/>
+    <node id="COUNTER_6"     address="0x0E"/>
+    <node id="INCREMENTER_6" address="0x0F"/>
+    <node id="COUNTER_7"     address="0x10"/>
+    <node id="INCREMENTER_7" address="0x11"/>
+    <node id="COUNTER_8"     address="0x12"/>
+    <node id="INCREMENTER_8" address="0x13"/>
+    <node id="COUNTER_9"     address="0x14"/>
+    <node id="INCREMENTER_9" address="0x15"/>
+  </node>
+
+  <node id="CTRL" address="0xC0">
+    <node id="REGISTER" address="0x0"/>
+    <node id="ID_R1"    address="0x1"/>
+    <node id="ID_MASK1" address="0x2"/>
+    <node id="ID_R2"    address="0x2"/>
+    <node id="ID_MASK2" address="0x3"/>
+  </node>
+
+  <node id="EVENT_LOG" address="0x100">
+    <node id="ENABLE" address="0x0"/>
+    <node id="DATA"   address="0x1"/>
+  </node>
 </node>

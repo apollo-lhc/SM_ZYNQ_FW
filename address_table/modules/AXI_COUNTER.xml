@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<node id="AXI_COUNTER">
+  <node id="COUNTER"     address="0x0"/>
+  <node id="INCREMENTOR" address="0x1"/>
+  <node id="RANGE"       address="0x2"/>
+  <node id="LOG_EN"      address="0x3"/>
+</node>
