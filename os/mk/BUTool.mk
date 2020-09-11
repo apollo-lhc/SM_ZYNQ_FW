@@ -1,6 +1,5 @@
-
 #Build BUTool from ApolloTool meta repo
-APOLLO_TOOL_TAG=v1.3
+APOLLO_TOOL_TAG=v1.4
 ${OPT_PATH}/BUTool: ${OPT_PATH}/cactus | ${OPT_PATH} ${TMP_PATH} 
 	cd ${TMP_PATH} && \
 		git clone --branch ${APOLLO_TOOL_TAG} https://github.com/apollo-lhc/ApolloTool.git
@@ -30,6 +29,8 @@ ${OPT_PATH}/BUTool: ${OPT_PATH}/cactus | ${OPT_PATH} ${TMP_PATH}
 	sudo rm ${ETC_PATH}/systemd/system/multi-user.target.wants/auditd.service
 	sudo install -m 664 ${MODS_PATH}/htmlStatus ${ETC_PATH}/htmlStatus
 	sudo install -m 664 ${MODS_PATH}/SM_boot ${ETC_PATH}/SM_boot
+	sudo install -m 664 ${MODS_PATH}/BUTool ${ETC_PATH}/BUTool
+	sudo install -m 664 ${MODS_PATH}/graphite_monitor ${ETC_PATH}/graphite_monitor
 
 clean_BUTool:
 	sudo rm -rf ${TMP_PATH}/ApolloTool
