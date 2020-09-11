@@ -1,4 +1,20 @@
 <node id="KINTEX_SYS_MGMT">
-  <node id="GLOBAL_CNT_LO"        address="0x000" permission="r" mask="0xFFFFFFFF" />
-  <node id="GLOBAL_CNT_HI"        address="0x001" permission="r" mask="0xFFFFFFFF" />
+
+  <node id="GLOBAL_CNT" address="0x0">
+    <node id="LO"        address="0x000" permission="r" mask="0xFFFFFFFF" />
+    <node id="HI"        address="0x001" permission="r" mask="0xFFFFFFFF" />
+  </node>
+
+  <node id="???SAMPLE_INTERVAL_REGS" address="0x2">
+    <node id="?" address="0x0" />
+    <node id="?" address="0x1" />
+    <node id="?" address="0x2" />
+  </node>
+
+  <node id="INTERUPT" address="0x5">
+    <node id="GLOBAL" address="0x0"/>
+    <node id="ENABLE" address="0x1"/>
+    <node id="STATUS" address="0x2"/>
+  </node>
+
 </node>
