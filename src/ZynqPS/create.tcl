@@ -27,10 +27,24 @@ set PL_M_FREQ 50000000
 [AXI_PL_MASTER_PORT ${PL_M} ${PL_M_CLK} ${PL_M_RSTN} ${PL_M_FREQ}]
 
 set AXI_MASTER_CLK_FREQ 50000000
-[BUILD_AXI_INTERCONNECT ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} [list processing_system7_0/M_AXI_GP0 ${PL_M}] [list ${AXI_MASTER_CLK} ${PL_M_CLK}] [list ${AXI_MASTER_RSTN} ${PL_M_RSTN}]]
+
+#create an axi FW for the main interconnect
+set INT_AXI_FW INT_AXI_FW
+create_bd_cell -type ip -vlnv xilinx.com:ip:axi_firewall:1.0 ${INT_AXI_FW}
+#connect Zynq to this FW
+connect_bd_intf_net [get_bd_intf_pins processing_system7_0/M_AXI_GP0] [get_bd_intf_pins ${INT_AXI_FW}/S_AXI]
+
+#create the main interconnect (connected to the PL master and the Zynq(via FW))
+[BUILD_AXI_INTERCONNECT ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} [list ${INT_AXI_FW}/M_AXI ${PL_M}] [list ${AXI_MASTER_CLK} ${PL_M_CLK}] [list ${AXI_MASTER_RSTN} ${PL_M_RSTN}]]
+
+
+#build the C2C interconnect
 [BUILD_AXI_INTERCONNECT ${AXI_C2C_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} [list processing_system7_0/M_AXI_GP1] [list ${AXI_MASTER_CLK}] [list ${AXI_MASTER_RSTN}]]
 set_property CONFIG.STRATEGY {1} [get_bd_cells ${AXI_C2C_INTERCONNECT_NAME}]
 
+#tak the INT_AXI_FW to the C2C interconnect
+[AXI_CTL_DEV_CONNECT $INT_AXI_FW ${AXI_C2C_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} $AXI_MASTER_CLK_FREQ]    
+[AXI_DEV_UIO_DTSI_POST_CHUNK ${INT_AXI_FW}]
 
 
 #tcds CLOCKS
