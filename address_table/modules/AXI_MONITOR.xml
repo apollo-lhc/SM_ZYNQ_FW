@@ -26,7 +26,7 @@
     <node id="ENABLE_METRIC_COUNTER_2"              address="0x1" permission="rw" mask="0x0020"/>
     <node id="ENABLE_METRIC_COUNTER_1"              address="0x1" permission="rw" mask="0x0010"/>
     <node id="ENABLE_METRIC_COUNTER_0"              address="0x1" permission="rw" mask="0x0008"/>
-    <node id="EVENT_LOG_FIFO_OVERFLOW_ENABLE"       address="0x1" premission="rw" mask="0x0004"/>
+    <node id="EVENT_LOG_FIFO_OVERFLOW_ENABLE"       address="0x1" permission="rw" mask="0x0004"/>
     <node id="SAMPLE_COUNTER_OVERFLOW_ENABLE"       address="0x1" permission="rw" mask="0x0002"/>
     <node id="GLOBAL_CLOCK_COUNTER_OVERFLOW_ENABLE" address="0x1" permission="rw" mask="0x0001"/>
     <node id="METRIC_COUNTER_OVERFLOW_INTERUPT_9"   address="0x2" permission="rw" mask="0x1000"/>
