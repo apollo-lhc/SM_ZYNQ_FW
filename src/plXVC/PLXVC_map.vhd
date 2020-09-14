@@ -28,8 +28,8 @@ architecture behavioral of PLXVC_interface is
   signal localRdAck         : std_logic;
 
 
-  signal reg_data :  slv32_array_t(integer range 0 to 23);
-  constant Default_reg_data : slv32_array_t(integer range 0 to 23) := (others => x"00000000");
+  signal reg_data :  slv32_array_t(integer range 0 to 24);
+  constant Default_reg_data : slv32_array_t(integer range 0 to 24) := (others => x"00000000");
 begin  -- architecture behavioral
 
   -------------------------------------------------------------------------------
@@ -83,6 +83,8 @@ begin  -- architecture behavioral
           localRdData(31 downto  0)  <=  reg_data( 6)(31 downto  0);      --IP of remote connection
         when 7 => --0x7
           localRdData(15 downto  0)  <=  reg_data( 7)(15 downto  0);      --port of remote connection
+        when 8 => --0x8
+          localRdData( 0)            <=  reg_data( 8)( 0);                --PS reset
         when 16 => --0x10
           localRdData(31 downto  0)  <=  reg_data(16)(31 downto  0);      --Length of shift operation in bits
         when 17 => --0x11
@@ -99,6 +101,8 @@ begin  -- architecture behavioral
           localRdData(31 downto  0)  <=  reg_data(22)(31 downto  0);      --IP of remote connection
         when 23 => --0x17
           localRdData(15 downto  0)  <=  reg_data(23)(15 downto  0);      --port of remote connection
+        when 24 => --0x18
+          localRdData( 0)            <=  reg_data(24)( 0);                --PS reset
 
 
         when others =>
@@ -112,12 +116,14 @@ begin  -- architecture behavioral
 
   -- Register mapping to ctrl structures
   Ctrl.XVC(1).LENGTH              <=  reg_data( 0)(31 downto  0);     
+  Ctrl.XVC(1).PS_RST              <=  reg_data( 8)( 0);               
   Ctrl.XVC(1).TMS_VECTOR          <=  reg_data( 1)(31 downto  0);     
   Ctrl.XVC(1).TDI_VECTOR          <=  reg_data( 2)(31 downto  0);     
   Ctrl.XVC(1).LOCK                <=  reg_data( 5)(31 downto  0);     
   Ctrl.XVC(1).REMOTE.IP           <=  reg_data( 6)(31 downto  0);     
   Ctrl.XVC(1).REMOTE.PORT_NUMBER  <=  reg_data( 7)(15 downto  0);     
   Ctrl.XVC(2).LENGTH              <=  reg_data(16)(31 downto  0);     
+  Ctrl.XVC(2).PS_RST              <=  reg_data(24)( 0);               
   Ctrl.XVC(2).TMS_VECTOR          <=  reg_data(17)(31 downto  0);     
   Ctrl.XVC(2).TDI_VECTOR          <=  reg_data(18)(31 downto  0);     
   Ctrl.XVC(2).LOCK                <=  reg_data(21)(31 downto  0);     
@@ -129,12 +135,14 @@ begin  -- architecture behavioral
   begin  -- process reg_writes
     if reset_axi_n = '0' then                 -- asynchronous reset (active low)
       reg_data( 0)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(1).LENGTH;
+      reg_data( 8)( 0)  <= DEFAULT_PLXVC_CTRL_t.XVC(1).PS_RST;
       reg_data( 1)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(1).TMS_VECTOR;
       reg_data( 2)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(1).TDI_VECTOR;
       reg_data( 5)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(1).LOCK;
       reg_data( 6)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(1).REMOTE.IP;
       reg_data( 7)(15 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(1).REMOTE.PORT_NUMBER;
       reg_data(16)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).LENGTH;
+      reg_data(24)( 0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).PS_RST;
       reg_data(17)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).TMS_VECTOR;
       reg_data(18)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).TDI_VECTOR;
       reg_data(21)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).LOCK;
@@ -163,6 +171,8 @@ begin  -- architecture behavioral
           reg_data( 6)(31 downto  0)  <=  localWrData(31 downto  0);      --IP of remote connection
         when 7 => --0x7
           reg_data( 7)(15 downto  0)  <=  localWrData(15 downto  0);      --port of remote connection
+        when 8 => --0x8
+          reg_data( 8)( 0)            <=  localWrData( 0);                --PS reset
         when 16 => --0x10
           reg_data(16)(31 downto  0)  <=  localWrData(31 downto  0);      --Length of shift operation in bits
         when 17 => --0x11
@@ -177,6 +187,8 @@ begin  -- architecture behavioral
           reg_data(22)(31 downto  0)  <=  localWrData(31 downto  0);      --IP of remote connection
         when 23 => --0x17
           reg_data(23)(15 downto  0)  <=  localWrData(15 downto  0);      --port of remote connection
+        when 24 => --0x18
+          reg_data(24)( 0)            <=  localWrData( 0);                --PS reset
 
           when others => null;
         end case;
