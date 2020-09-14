@@ -53,3 +53,5 @@ log4cplus-devel
 yaml-cpp-devel
 msgpack-devel
 cppzmq-devel
+dosfstools
+zsh.armv7hl

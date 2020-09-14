@@ -14,7 +14,7 @@ token=""
 
 def RecreateDir(dir):
   try:
-    os.mkdir(dir)
+    os.makedirs(dir)
   except OSError:
     #remote files in this folder
     for filename in os.listdir(dir):
