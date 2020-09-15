@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<node id="AXI_COUNTER">
+  <node id="COUNTER"     address="0x0" permission="r"  mask="0xFFFFFFFF" parameters="Table=AXI_BUS_MONITOR;Row=_3;Column=Val;Status=1;Show=nzr"/>
+  <node id="INCREMENTOR" address="0x1" permission="r"  mask="0xFFFFFFFF" />
+  <node id="RANGE_HI"    address="0x2" permission="rw" mask="0xFFFF0000" />
+  <node id="RANGE_LOW"   address="0x2" permission="rw" mask="0x0000FFFF" />
+  <node id="LOG_EN"      address="0x3" permission="rw" mask="0xFFFFFFFF" />
+</node>

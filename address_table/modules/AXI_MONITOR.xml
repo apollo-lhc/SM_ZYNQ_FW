@@ -46,40 +46,60 @@
 
   <!-- These Registers are used to select the kinds of metrics computer by counters 0-9 -->
   <node id="METRIC_SELECTOR" address="0x11">
-    <node id="ID_3"       address="0x0" permission="rw" mask="0xE0000000" parameters="Format=t_0_Slot0_1_Slot1_2_Slot2_3_Slot3_4_Slot4_5_Slot5_6_Slot6_7_Slot7"/>
-    <node id="SELECTOR_3" address="0x0" permission="rw" mask="0x1F000000" parameters="Format=t_0_WriteTransactionCount_1_ReadTransactionCount_2_WriteByteCount_3_WriteByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_Max_WriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount"/>
-    <node id="ID_2"       address="0x0" permission="rw" mask="0x00E00000" parameters="Format=t_0_Slot0_1_Slot1_2_Slot2_3_Slot3_4_Slot4_5_Slot5_6_Slot6_7_Slot7"/>
-    <node id="SELECTOR_2" address="0x0" permission="rw" mask="0x001F0000"  parameters="Format=t_0_WriteTransactionCount_1_ReadTransactionCount_2_WriteByteCount_3_WriteByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_Max_WriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount"/>
-    <node id="ID_1"       address="0x0" permission="rw" mask="0x0000E000" parameters="Format=t_0_Slot0_1_Slot1_2_Slot2_3_Slot3_4_Slot4_5_Slot5_6_Slot6_7_Slot7"/>
-    <node id="SELECTOR_1" address="0x0" permission="rw" mask="0x00001F00" parameters="Format=t_0_WriteTransactionCount_1_ReadTransactionCount_2_WriteByteCount_3_WriteByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_Max_WriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount"/>
-    <node id="ID_0"       address="0x0" permission="rw" mask="0x000000E0" parameters="Format=t_0_Slot0_1_Slot1_2_Slot2_3_Slot3_4_Slot4_5_Slot5_6_Slot6_7_Slot7"/>
-    <node id="SELECTOR_0" address="0x0" permission="rw" mask="0x0000001F" parameters="Format=t_0_WriteTransactionCount_1_ReadTransactionCount_2_WriteByteCount_3_WriteByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_Max_WriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount"/>
-    <node id="ID_7"       address="0x1" permission="rw" mask="0xE0000000" parameters="Format=t_0_Slot0_1_Slot1_2_Slot2_3_Slot3_4_Slot4_5_Slot5_6_Slot6_7_Slot7"/>
-    <node id="SELECTOR_7" address="0x1" permission="rw" mask="0x1F000000" parameters="Format=t_0_WriteTransactionCount_1_ReadTransactionCount_2_WriteByteCount_3_WriteByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_Max_WriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount"/>
-    <node id="ID_6"       address="0x1" permission="rw" mask="0x00E00000" parameters="Format=t_0_Slot0_1_Slot1_2_Slot2_3_Slot3_4_Slot4_5_Slot5_6_Slot6_7_Slot7"/>
-    <node id="SELECTOR_6" address="0x1" permission="rw" mask="0x001F0000"  parameters="Format=t_0_WriteTransactionCount_1_ReadTransactionCount_2_WriteByteCount_3_WriteByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_Max_WriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount"/>
-    <node id="ID_5"       address="0x1" permission="rw" mask="0x0000E000" parameters="Format=t_0_Slot0_1_Slot1_2_Slot2_3_Slot3_4_Slot4_5_Slot5_6_Slot6_7_Slot7"/>
-    <node id="SELECTOR_5" address="0x1" permission="rw" mask="0x00001F00"  parameters="Format=t_0_WriteTransactionCount_1_ReadTransactionCount_2_WriteByteCount_3_WriteByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_Max_WriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount"/>
-    <node id="ID_4"       address="0x1" permission="rw" mask="0x000000E0" parameters="Format=t_0_Slot0_1_Slot1_2_Slot2_3_Slot3_4_Slot4_5_Slot5_6_Slot6_7_Slot7"/>
-    <node id="SELECTOR_4" address="0x1" permission="rw" mask="0x0000001F"  parameters="Format=t_0_WriteTransactionCount_1_ReadTransactionCount_2_WriteByteCount_3_WriteByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_Max_WriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount"/>
-    <node id="ID_9"       address="0x2" permission="rw" mask="0x0000E000" parameters="Format=t_0_Slot0_1_Slot1_2_Slot2_3_Slot3_4_Slot4_5_Slot5_6_Slot6_7_Slot7"/>
-    <node id="SELECTOR_9" address="0x2" permission="rw" mask="0x00001F00"  parameters="Format=t_0_WriteTransactionCount_1_ReadTransactionCount_2_WriteByteCount_3_WriteByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_Max_WriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount"/>
-    <node id="ID_8"       address="0x2" permission="rw" mask="0x000000E0" parameters="Format=t_0_Slot0_1_Slot1_2_Slot2_3_Slot3_4_Slot4_5_Slot5_6_Slot6_7_Slot7"/>
-    <node id="SELECTOR_8" address="0x2" permission="rw" mask="0x0000001F"  parameters="Format=t_0_WriteTransactionCount_1_ReadTransactionCount_2_WriteByteCount_3_WriteByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_Max_WriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount"/>
+    <node id="3">
+      <node id="BUS"   address="0x0" permission="rw" mask="0xE0000000" parameters="Format=t_0_LOCAL_1_C2C_2_SLOT2_3_SLOT3_4_SLOT4_5_SLOT5_6_SLOT6_7_SLOT7;Table=AXI_BUS_MONITOR;Row=_3;Column=_4;Status=1"/>
+      <node id="TYPE" address="0x0" permission="rw" mask="0x1F000000" parameters="Format=t_0_WriteCount_1_ReadCount_2_WriteByteCount_3_ReadByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_MaxWriteLatency_14_MinReadLatOBency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount;Table=AXI_BUS_MONITOR;Row=_3;Column=_4;Status=1"/>
+    </node>
+    <node id="2">
+      <node id="BUS"   address="0x0" permission="rw" mask="0x00E00000" parameters="Format=t_0_LOCAL_1_C2C_2_SLOT2_3_SLOT3_4_SLOT4_5_SLOT5_6_SLOT6_7_SLOT7;Table=AXI_BUS_MONITOR;Row=_3;Column=_4;Status=1"/>
+      <node id="TYPE" address="0x0" permission="rw" mask="0x001F0000" parameters="Format=t_0_WriteCount_1_ReadCount_2_WriteByteCount_3_ReadByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_MaxWriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount;Table=AXI_BUS_MONITOR;Row=_3;Column=_4;Status=1"/>
+    </node>
+    <node id="1">
+      <node id="BUS"   address="0x0" permission="rw" mask="0x0000E000" parameters="Format=t_0_LOCAL_1_C2C_2_SLOT2_3_SLOT3_4_SLOT4_5_SLOT5_6_SLOT6_7_SLOT7;Table=AXI_BUS_MONITOR;Row=_3;Column=_4;Status=1"/>
+      <node id="TYPE" address="0x0" permission="rw" mask="0x00001F00" parameters="Format=t_0_WriteCount_1_ReadCount_2_WriteByteCount_3_ReadByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_MaxWriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount;Table=AXI_BUS_MONITOR;Row=_3;Column=_4;Status=1"/>
+    </node>
+    <node id="0">
+      <node id="BUS"   address="0x0" permission="rw" mask="0x000000E0" parameters="Format=t_0_LOCAL_1_C2C_2_SLOT2_3_SLOT3_4_SLOT4_5_SLOT5_6_SLOT6_7_SLOT7;Table=AXI_BUS_MONITOR;Row=_3;Column=_4;Status=1"/>
+      <node id="TYPE" address="0x0" permission="rw" mask="0x0000001F" parameters="Format=t_0_WriteCount_1_ReadCount_2_WriteByteCount_3_ReadByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_MaxWriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount;Table=AXI_BUS_MONITOR;Row=_3;Column=_4;Status=1"/>
+    </node>
+    <node id="7">
+      <node id="BUS"   address="0x1" permission="rw" mask="0xE0000000" parameters="Format=t_0_LOCAL_1_C2C_2_SLOT2_3_SLOT3_4_SLOT4_5_SLOT5_6_SLOT6_7_SLOT7;Table=AXI_BUS_MONITOR;Row=_3;Column=_4;Status=1"/>
+      <node id="TYPE" address="0x1" permission="rw" mask="0x1F000000" parameters="Format=t_0_WriteCount_1_ReadCount_2_WriteByteCount_3_ReadByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_MaxWriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount;Table=AXI_BUS_MONITOR;Row=_3;Column=_4;Status=1"/>
+    </node>
+    <node id="6">
+      <node id="BUS"   address="0x1" permission="rw" mask="0x00E00000" parameters="Format=t_0_LOCAL_1_C2C_2_SLOT2_3_SLOT3_4_SLOT4_5_SLOT5_6_SLOT6_7_SLOT7;Table=AXI_BUS_MONITOR;Row=_3;Column=_4;Status=1"/>
+      <node id="TYPE" address="0x1" permission="rw" mask="0x001F0000" parameters="Format=t_0_WriteCount_1_ReadCount_2_WriteByteCount_3_ReadByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_MaxWriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount;Table=AXI_BUS_MONITOR;Row=_3;Column=_4;Status=1"/>
+    </node>
+    <node id="5">
+      <node id="BUS"   address="0x1" permission="rw" mask="0x0000E000" parameters="Format=t_0_LOCAL_1_C2C_2_SLOT2_3_SLOT3_4_SLOT4_5_SLOT5_6_SLOT6_7_SLOT7;Table=AXI_BUS_MONITOR;Row=_3;Column=_4;Status=1"/>
+      <node id="TYPE" address="0x1" permission="rw" mask="0x00001F00" parameters="Format=t_0_WriteCount_1_ReadCount_2_WriteByteCount_3_ReadByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_MaxWriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount;Table=AXI_BUS_MONITOR;Row=_3;Column=_4;Status=1"/>
+    </node>
+    <node id="4">
+      <node id="BUS"   address="0x1" permission="rw" mask="0x000000E0" parameters="Format=t_0_LOCAL_1_C2C_2_SLOT2_3_SLOT3_4_SLOT4_5_SLOT5_6_SLOT6_7_SLOT7;Table=AXI_BUS_MONITOR;Row=_3;Column=_4;Status=1"/>
+      <node id="TYPE" address="0x1" permission="rw" mask="0x0000001F" parameters="Format=t_0_WriteCount_1_ReadCount_2_WriteByteCount_3_ReadByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_MaxWriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount;Table=AXI_BUS_MONITOR;Row=_3;Column=_4;Status=1"/>
+    </node>
+    <node id="9">
+      <node id="BUS"   address="0x2" permission="rw" mask="0x0000E000" parameters="Format=t_0_LOCAL_1_C2C_2_SLOT2_3_SLOT3_4_SLOT4_5_SLOT5_6_SLOT6_7_SLOT7;Table=AXI_BUS_MONITOR;Row=_3;Column=_4;Status=1"/>
+      <node id="TYPE" address="0x2" permission="rw" mask="0x00001F00" parameters="Format=t_0_WriteCount_1_ReadCount_2_WriteByteCount_3_ReadByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_MaxWriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount;Table=AXI_BUS_MONITOR;Row=_3;Column=_4;Status=1"/>
+    </node>
+    <node id="8">
+      <node id="BUS"   address="0x2" permission="rw" mask="0x000000E0" parameters="Format=t_0_LOCAL_1_C2C_2_SLOT2_3_SLOT3_4_SLOT4_5_SLOT5_6_SLOT6_7_SLOT7;Table=AXI_BUS_MONITOR;Row=_3;Column=_4;Status=1"/>
+      <node id="TYPE" address="0x2" permission="rw" mask="0x0000001F" parameters="Format=t_0_WriteCount_1_ReadCount_2_WriteByteCount_3_ReadByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_MaxWriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount;Table=AXI_BUS_MONITOR;Row=_3;Column=_4;Status=1"/>
+    </node>
   </node>
 
   <!-- These contain the accumulated value of the events that are chosen -->
   <node id="METRIC_COUNTERS" address="0x40">
-    <node id="COUNTER_0"  address="0x00" fwinfo="type=array" module="file://AXI_COUNTER.xml"/>
-    <node id="COUNTER_1"  address="0x04" fwinfo="type=array" module="file://AXI_COUNTER.xml"/>
-    <node id="COUNTER_2"  address="0x08" fwinfo="type=array" module="file://AXI_COUNTER.xml"/>
-    <node id="COUNTER_3"  address="0x0C" fwinfo="type=array" module="file://AXI_COUNTER.xml"/>
-    <node id="COUNTER_4"  address="0x10" fwinfo="type=array" module="file://AXI_COUNTER.xml"/>
-    <node id="COUNTER_5"  address="0x14" fwinfo="type=array" module="file://AXI_COUNTER.xml"/>
-    <node id="COUNTER_6"  address="0x18" fwinfo="type=array" module="file://AXI_COUNTER.xml"/>
-    <node id="COUNTER_7"  address="0x1C" fwinfo="type=array" module="file://AXI_COUNTER.xml"/>
-    <node id="COUNTER_8"  address="0x20" fwinfo="type=array" module="file://AXI_COUNTER.xml"/>
-    <node id="COUNTER_9"  address="0x24" fwinfo="type=array" module="file://AXI_COUNTER.xml"/>
+    <node id="0"  address="0x00"  module="file://AXI_MONITOR_COUNTER.xml"/>
+    <node id="1"  address="0x04"  module="file://AXI_MONITOR_COUNTER.xml"/>
+    <node id="2"  address="0x08"  module="file://AXI_MONITOR_COUNTER.xml"/>
+    <node id="3"  address="0x0C"  module="file://AXI_MONITOR_COUNTER.xml"/>
+    <node id="4"  address="0x10"  module="file://AXI_MONITOR_COUNTER.xml"/>
+    <node id="5"  address="0x14"  module="file://AXI_MONITOR_COUNTER.xml"/>
+    <node id="6"  address="0x18"  module="file://AXI_MONITOR_COUNTER.xml"/>
+    <node id="7"  address="0x1C"  module="file://AXI_MONITOR_COUNTER.xml"/>
+    <node id="8"  address="0x20"  module="file://AXI_MONITOR_COUNTER.xml"/>
+    <node id="9"  address="0x24"  module="file://AXI_MONITOR_COUNTER.xml"/>
   </node>
 
   <node id="SAMPLED_METRIC_COUNTERS" address="0x80">
