@@ -82,7 +82,7 @@ finalize_image: ${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_PATH}/passwd ${ETC_P
 	sudo install -g ${ATLAS_UID} -o ${ATLAS_GID} -m 774 ${MODS_PATH}/.bash_profile ${HOME_PATH}/atlas
 	sudo install -g ${ATLAS_UID} -o ${ATLAS_GID} -m 700 -d ${HOME_PATH}/cms/.screen
 	sudo sed -i -e "s/server.use-ipv6 = \"enable\"/server.use-ipv6 = \"disable\"/g" ${ETC_PATH}/lighttpd/lighttpd.conf 
-
+	sudo ln -s /usr/lib/systemd/system/ntpd.service      ${ETC_PATH}/systemd/system/multi-user.target.wants/ntpd.service
 
 shell:
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash
