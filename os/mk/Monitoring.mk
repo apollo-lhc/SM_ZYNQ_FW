@@ -1,4 +1,4 @@
-MONITORING_TAG=v1.1.3
+MONITORING_TAG=v1.1.4
 ${OPT_PATH}/Graphite_Monitor: ${OPT_PATH}/BUTool | ${OPT_PATH} ${TMP_PATH} 
 	cd ${TMP_PATH} && \
 		git clone --branch ${MONITORING_TAG} https://github.com/apollo-lhc/Grafana-Monitor.git Graphite
