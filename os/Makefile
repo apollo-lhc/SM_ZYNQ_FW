@@ -17,6 +17,8 @@ CMS_GID=1000
 ATLAS_UID=1001
 ATLAS_GID=1001
 
+TARBALL_NAME=SD_p2.tar.gz
+
 .PHONEY: clean finalize_image all shell
 
 all: finalize_image
@@ -88,6 +90,7 @@ shell:
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash
 clean:
 	sudo rm -rf ${INSTALL_PATH}
+	rm ${TARBALL_NAME}
 
 
 #################################################################################
@@ -99,5 +102,5 @@ list:
 
 tarball:
 	cd ${INSTALL_PATH} && \
-	sudo tar --numeric-owner -p -zcf ../SD_p2.tar.gz ./
+	sudo tar --numeric-owner -p -zcf ../${TARBALL_NAME} ./
 
