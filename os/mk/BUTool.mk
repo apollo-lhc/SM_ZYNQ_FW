@@ -1,12 +1,12 @@
 #Build BUTool from ApolloTool meta repo
-APOLLO_TOOL_TAG=v1.4
+APOLLO_TOOL_TAG=v1.6
 ${OPT_PATH}/BUTool: ${OPT_PATH}/cactus | ${OPT_PATH} ${TMP_PATH} 
 	cd ${TMP_PATH} && \
 		git clone --branch ${APOLLO_TOOL_TAG} https://github.com/apollo-lhc/ApolloTool.git
 	cd ${TMP_PATH}/ApolloTool && \
 		make init
-	cd ${TMP_PATH}/ApolloTool/plugins/ApolloSM_plugin && \
-		git checkout 7e46e4a53202165cac66b4c7559b4db4c6e6c1a0
+#	cd ${TMP_PATH}/ApolloTool/plugins/ApolloSM_plugin && \
+#		git checkout eb22412028cb6d3decd52e220a35088f6bdd19f5
 	cp ${MODS_PATH}/build_BUTool.sh ${TMP_PATH}/ApolloTool/
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/ApolloTool/build_BUTool.sh
 	(find address_table/ -xtype f -exec sudo install -Dm 666 "{}" "${OPT_PATH}/{}" \;)
