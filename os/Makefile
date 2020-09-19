@@ -17,6 +17,8 @@ CMS_GID=1000
 ATLAS_UID=1001
 ATLAS_GID=1001
 
+TARBALL_NAME=SD_p2.tar.gz
+
 .PHONEY: clean finalize_image all shell
 
 all: finalize_image
@@ -82,12 +84,13 @@ finalize_image: ${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_PATH}/passwd ${ETC_P
 	sudo install -g ${ATLAS_UID} -o ${ATLAS_GID} -m 774 ${MODS_PATH}/.bash_profile ${HOME_PATH}/atlas
 	sudo install -g ${ATLAS_UID} -o ${ATLAS_GID} -m 700 -d ${HOME_PATH}/cms/.screen
 	sudo sed -i -e "s/server.use-ipv6 = \"enable\"/server.use-ipv6 = \"disable\"/g" ${ETC_PATH}/lighttpd/lighttpd.conf 
-
+	sudo ln -s /usr/lib/systemd/system/ntpd.service      ${ETC_PATH}/systemd/system/multi-user.target.wants/ntpd.service
 
 shell:
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash
 clean:
 	sudo rm -rf ${INSTALL_PATH}
+	rm ${TARBALL_NAME}
 
 
 #################################################################################
@@ -99,5 +102,5 @@ list:
 
 tarball:
 	cd ${INSTALL_PATH} && \
-	sudo tar --numeric-owner -p -zcf ../SD_p2.tar.gz ./
+	sudo tar --numeric-owner -p -zcf ../${TARBALL_NAME} ./
 

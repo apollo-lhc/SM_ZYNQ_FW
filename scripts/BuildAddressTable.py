@@ -9,6 +9,9 @@ import xml.etree.ElementTree as ET
 from xml.etree import ElementTree
 from xml.dom import minidom
 
+import uhal
+
+
 def RecreateDir(dir):
   try:
     os.mkdir(dir)
@@ -167,6 +170,7 @@ def main(localSlavesYAML,remoteSlavesYAML,outputDir ):
     #generate the final address table file
     BuildAddressTable(outputDir+"address_table/address_apollo.xml",top)
 
+
     #generate a connections file
     connFile=open(outputDir+"address_table/connections.xml","w")
     connFile.write('<?xml version="1.0" encoding="UTF-8"?>\n')
@@ -176,6 +180,20 @@ def main(localSlavesYAML,remoteSlavesYAML,outputDir ):
     connFile.write('  <connection id="test.0"        uri="uioaxi-1.0:///opt/address_table/address_apollo.xml"                     address_table="file:///opt/address_table/address_apollo.xml" />\n')
     connFile.write('</connections>\n')
     connFile.close()
+
+    #check files
+    uhal.setLogLevelTo(uhal.LogLevel.WARNING)
+    try:
+        device = uhal.getDevice("dummy","ipbusudp-1.3://localhost:12345","file://" + 
+                                outputDir+ "address_table/address_apollo.xml")        
+    except Exception:
+        raise Exception("File '%s' does not exist or has incorrect format" % outputDir+ "address_table/address_apollo.xml")
+        
+
+    
+
+
+
 
 
 if __name__ == "__main__":

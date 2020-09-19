@@ -9,9 +9,9 @@
 	  <node id="SHUTDOWN"      permission="rw" mask="0x00000020" description="1 when petalinux shuts down"/>
 	</node>
 	<node id="INFO" address="0x1">
-	  <node id="SN"            permission="r"  mask="0x00000FFF" description="Service module serial number"/>
-	  <node id="SLOT"          permission="r"  mask="0x0000F000" description="Shelf physical slot number"/>
-	  <node id="SHELF"         permission="r"  mask="0x00FF0000" description="Shelf ID"/>
+	  <node id="SN"            permission="r"  mask="0x000000FF" description="Service module serial number" parameters="Table=IPMC;Row=_5;Column=ID;Status=1"/>
+	  <node id="SLOT"          permission="r"  mask="0x0000FF00" description="Shelf physical slot IPMB addr"  parameters="Table=IPMC;Row=_5;Column=Addr;Status=1"/>
+	  <node id="RN"         permission="r"  mask="0xFF000000" description="Revision Number"  parameters="Table=IPMC;Row=_5;Column=ID;Status=1"/>
 	</node>	
 	<node id="ETH0_MAC" address="0x5">
 	  <node id="BYTE_0" address="0x0"        permission="r" mask="0x000000FF" description="eth0 mac adder byte 1"/>
@@ -177,7 +177,7 @@
 	<node id="BYTE_4"      address="0x1"        permission="r" mask="0x000000FF" description="IPMC mac adder byte 5"/>
 	<node id="BYTE_5"      address="0x1"        permission="r" mask="0x0000FF00" description="IPMC mac adder byte 6"/>
     </node>
-    <node id="IPMC_IP" address="0x2">
+    <node id="IPMC_IP" address="0x2" parameters="Table=IPMC;Row=ETH;Column=IP;Status=1;Format=IP;Show=nz">
 	<node id="BYTE_0"      address="0x0"        permission="r" mask="0x000000FF" description="IPMC IP adder byte 1"/>
 	<node id="BYTE_1"      address="0x0"        permission="r" mask="0x0000FF00" description="IPMC IP adder byte 2"/>
 	<node id="BYTE_2"      address="0x0"        permission="r" mask="0x00FF0000" description="IPMC IP adder byte 3"/>

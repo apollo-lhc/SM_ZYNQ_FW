@@ -1,0 +1,5 @@
+#For BUTool.cxx
+DEFAULT_ARGS=ApolloSM /opt/address_table/connections.xml
+lib=/opt/BUTool/lib/libBUTool_ApolloSMDevice.so
+lib=/opt/BUTool/lib/libBUTool_GenericIPBusDevice.so
+#ApolloSM=/opt/address_table/connections.xml

@@ -24,7 +24,8 @@ entity plXVC_intf is
     TMS         : out std_logic_vector((COUNT - 1) downto 0);
     TDI         : out std_logic_vector((COUNT - 1) downto 0);
     TDO         : in  std_logic_vector((COUNT - 1) downto 0);
-    TCK         : out std_logic_vector((COUNT - 1) downto 0));
+    TCK         : out std_logic_vector((COUNT - 1) downto 0);
+    PS_RST      : out std_logic_vector((COUNT - 1) downto 0));
 end entity plXVC_intf;
 
 architecture behavioral of plXVC_intf is
@@ -79,7 +80,7 @@ begin
         TCK       => TCK(I - 1),
         busy      => MON_BUSY(I - 1),
         interupt => open);
-
+    PS_RST(I-1) <= 'Z' when Ctrl.XVC(I).PS_RST = '1' else '0';
     --Assign monitor signals
     Mon.XVC(I).BUSY <= MON_BUSY(I - 1);
     mon.XVC(I).TDO_VECTOR <= MON_TDO_VECTOR(I);

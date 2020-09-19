@@ -28,10 +28,14 @@ graphite_port=2003
 ##ApolloMonitor (on zynq)
 #sensor=ApolloMonitor connections_file_path base_name_for_whisper_file STATUS_DISPLAY_TABLE_NAME STATUS_DISPLAY_LEVEL
 # ex Apollo06 -> path/graphite/whisper/Apollo06/CM_FF_MON/K07__12_TX_GTY/TEMP_C.wsp 
-#sensor=ApolloMonitor /opt/address_tables/connections.xml Apollo06 CM_FF_MON 3
-#sensor=ApolloMonitor /opt/address_tables/connections.xml Apollo06 CM_MON 3
-#sensor=ApolloMonitor /opt/address_tables/connections.xml Apollo06 C2C 1
-#sensor=ApolloMonitor /opt/address_tables/connections.xml Apollo06 ZYNQ_OS 1
+# Special tags can be used to get information from the blade. 
+# $SN => SM serial number
+# $RN => SM rev number
+# $IPMC_IP => IPMC IP stored as A-B-C-D (instead of A.B.C.D due to grafite naming)
+sensor=ApolloMonitor /opt/address_tables/connections.xml Apollo$SN CM_FF_MON 3
+sensor=ApolloMonitor /opt/address_tables/connections.xml Apollo$SN CM_MON 3
+sensor=ApolloMonitor /opt/address_tables/connections.xml Apollo$SN C2C 1
+sensor=ApolloMonitor /opt/address_tables/connections.xml Apollo$SN ZYNQ_OS 1
 
 
 
