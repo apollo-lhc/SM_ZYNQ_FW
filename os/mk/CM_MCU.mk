@@ -1,4 +1,4 @@
-CM_MCU_TAG=v0.4
+CM_MCU_TAG=v0.5
 
 ${OPT_PATH}/mcu_tools: | ${OPT_PATH} ${TEMP_PATH}
 	cd ${OPT_PATH} && \
