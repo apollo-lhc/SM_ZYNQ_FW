@@ -34,7 +34,7 @@ ${QEMU_PATH}/${QEMU} ${INSTALL_PATH}/${QEMU_PATH}/${QEMU}: | ${INSTALL_PATH}
 	sudo mkdir -p ${QEMU_PATH}
 	sudo cp -a ${QEMU} ${INSTALL_PATH}/${QEMU_PATH}
 	sudo cp -a ${QEMU} ${QEMU_PATH}
-	rm ${QEMU}
+	rm -f ${QEMU}
 
 ${ETC_PATH} ${TMP_PATH}: ${QEMU_PATH}/${QEMU} ${INSTALL_PATH}/${QEMU_PATH}/${QEMU} centos-rootfs/extra_rpms.txt
 	cd centos-rootfs && \
@@ -90,7 +90,7 @@ shell:
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash
 clean:
 	sudo rm -rf ${INSTALL_PATH}
-	rm ${TARBALL_NAME}
+	rm -f ${TARBALL_NAME}
 
 
 #################################################################################
