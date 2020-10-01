@@ -17,7 +17,7 @@ To Build FPGA FW:
 
 To Build zynq fsbl+kernel+fs
   First, build FPGA FW
-  >./scripts/GetReleases.py
+  >make pull_cm
   >cd kernel
   >make
 
@@ -32,7 +32,7 @@ To Build zynq fsbl+kernel+fs
 
 To Build the centos image
    First, build FPGA FW and run the GetReleases script if you haven't already
-   >LD_LIBRARY_PATH+=/opt/cactus/lib ./scripts/BuildAddressTable.py -l os/slaves.yaml -r os/Kintex_slaves.yaml -r os/Virtex_slaves.yaml
+   > make address_table
    > cd os
    > sudo make clean; sudo make
 
