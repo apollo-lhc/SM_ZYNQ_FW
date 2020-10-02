@@ -1,4 +1,5 @@
-source ${apollo_root_path}/scripts/settings.tcl
+source ${apollo_root_path}/scripts/settings_${build_name}.tcl
+#source ${apollo_root_path}/scripts/settings.tcl
 
 #################################################################################
 # STEP#2: run synthesis, report utilization and timing estimates, write checkpoint design

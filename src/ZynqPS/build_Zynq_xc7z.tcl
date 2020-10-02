@@ -3,15 +3,15 @@ create_bd_design -dir ./ "zynq_bd"
 
 
 #helpers for building AXI things
-source ../bd/axi_helpers.tcl
-source ../bd/Xilinx_AXI_slaves.tcl
+source ${apollo_root_path}/bd/axi_helpers.tcl
+source ${apollo_root_path}/bd/Xilinx_AXI_slaves.tcl
 
 #================================================================================
 #  Create and configure the basic zynq processing system.
 #  build_CPU contains CPU parameters includeing the MIO and peripheral configs
 #================================================================================
 puts "Building CPU"
-source ../src/ZynqPS/build_CPU.tcl
+source ${apollo_root_path}/src/ZynqPS/xc7z/build_CPU.tcl
 
 #================================================================================
 #  Create an AXI interconnect
@@ -67,7 +67,7 @@ set_property CONFIG.FREQ_HZ ${AXI_MASTER_CLK_FREQ} [get_bd_ports ${INIT_CLK}]
 #================================================================================
 #  Configure and add AXI slaves
 #================================================================================
-source ../src/ZynqPS/AddSlaves.tcl
+source ${apollo_root_path}/src/ZynqPS/AddSlaves.tcl
 
 
 #========================================
@@ -76,7 +76,7 @@ source ../src/ZynqPS/AddSlaves.tcl
 set_property CONFIG.STRATEGY {1} [get_bd_cells ${AXI_C2C_INTERCONNECT_NAME}]
 validate_bd_design
 
-write_bd_layout -force -format pdf -orientation portrait ../doc/zynq_bd.pdf
+write_bd_layout -force -format pdf -orientation portrait ${apollo_root_path}/doc/zynq_bd.pdf
 
 make_wrapper -files [get_files zynq_bd.bd] -top -import -force
 save_bd_design

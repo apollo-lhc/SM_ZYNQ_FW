@@ -2,7 +2,8 @@
 # collect files
 # run synthesis
 
-source ${apollo_root_path}/scripts/settings.tcl
+#source ${apollo_root_path}/scripts/settings.tcl
+source ${apollo_root_path}/scripts/settings_${build_name}.tcl
 source ${apollo_root_path}/scripts/FW_info.tcl
 
 #################################################################################
@@ -20,6 +21,10 @@ if {[file isfile $projectDir/$top.xpr]} {
 create_project -force -part $FPGA_part $top $projectDir
 set_property target_language VHDL [current_project]
 
+#DRP ip
+set ip_repo_path ../bd/IP
+set_property  ip_repo_paths ${ip_repo_path}  [current_project]
+update_ip_catalog
 
 #################################################################################
 # STEP#1: setup design sources and constraints
@@ -28,9 +33,6 @@ set_property target_language VHDL [current_project]
 #build the build timestamp file
 [build_fw_version ${apollo_root_path}/src $FPGA_part]
 
-
-#load list of vhd, xdc, and xci files
-source ${apollo_root_path}/files.tcl
 
 #Add vhdl files
 set timestamp_file ${apollo_root_path}/src/fw_version.vhd

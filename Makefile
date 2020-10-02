@@ -39,14 +39,14 @@ ADDRESS_TABLE = os/address_table/address_apollo.xml
 # Short build names
 #################################################################################
 
-BIT=${MAKE_PATH}/bit/top.bit
+BIT_BASE=${MAKE_PATH}/bit/top_
 
 .SECONDARY:
 
 .PHONY: clean list bit NOTIFY_DAN_BAD NOTIFY_DAN_GOOD init
 
 all:
-	$(MAKE) bit || $(MAKE) NOTIFY_DAN_BAD
+	$(MAKE) xc7z035 || $(MAKE) NOTIFY_DAN_BAD
 
 #################################################################################
 # preBuild 
@@ -134,21 +134,24 @@ NOTIFY_DAN_BAD:
 #################################################################################
 # FPGA building
 #################################################################################
-bit	:
-	time $(MAKE) $(BIT) || $(MAKE) NOTIFY_DAN_BAD
+xc7z035	: 
+	time $(MAKE) $(BIT_BASE)$@.bit || $(MAKE) NOTIFY_DAN_BAD
+
+xc7z045	:
+	time $(MAKE) $(BIT_BASE)$@.bit || $(MAKE) NOTIFY_DAN_BAD
 
 interactive : 
 	source $(VIVADO_SHELL) &&\
 	mkdir -p ${MAKE_PATH}/proj &&\
 	cd proj &&\
 	vivado -mode tcl
-$(BIT)	:
+$(BIT_BASE)%.bit	:
 	source $(VIVADO_SHELL) &&\
 	mkdir -p ${MAKE_PATH}/kernel/hw &&\
 	mkdir -p ${MAKE_PATH}/proj &&\
 	mkdir -p ${MAKE_PATH}/bit &&\
 	cd proj &&\
-	vivado $(VIVADO_FLAGS) -source $(SETUP_BUILD_TCL) $(OUTPUT_MARKUP)
+	vivado $(VIVADO_FLAGS) -source $(SETUP_BUILD_TCL) -tclargs ${MAKE_PATH} $(subst .bit,,$(subst ${BIT_BASE},,$@)) $(OUTPUT_MARKUP)
 	$(MAKE) NOTIFY_DAN_GOOD
 
 all-the-things: clean clean_ip clean_bd clean_kernel clean_bit clean_remote clean_CM clean_prebuild
