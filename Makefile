@@ -99,6 +99,7 @@ clean: clean_bd clean_ip clean_bit clean_kernel
 	@rm -rf ${MAKE_PATH}/proj/*
 	@echo "Cleaning up"
 
+clean_everything: clean clean_remote clean_CM clean_prebuild
 
 #################################################################################
 # Open vivado
@@ -134,10 +135,10 @@ NOTIFY_DAN_BAD:
 #################################################################################
 # FPGA building
 #################################################################################
-xc7z035	: 
+rev1_xc7z035	: 
 	time $(MAKE) $(BIT_BASE)$@.bit || $(MAKE) NOTIFY_DAN_BAD
 
-xc7z045	:
+rev1_xc7z045	:
 	time $(MAKE) $(BIT_BASE)$@.bit || $(MAKE) NOTIFY_DAN_BAD
 
 interactive : 

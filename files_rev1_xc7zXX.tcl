@@ -3,11 +3,11 @@ set bd_path proj/
 set bd_name zynq_bd
 
 set bd_files "\
-    src/ZynqPS/create.tcl \
+    src/ZynqPS/build_Zynq_rev1_xc7z.tcl \
     "
 
 set vhdl_files "\
-     src/top.vhd \
+     src/top_rev1_xc7z.vhd \
      src/misc/types.vhd \
      src/misc/counter.vhd \
      src/misc/counter_CDC.vhd \
@@ -60,7 +60,7 @@ set vhdl_files "\
      src/plXVC/virtualJTAG.vhd \
      "
 
-set xdc_files src/top.xdc
+set xdc_files src/top_rev1_xc7z.xdc
 
 set xci_files "\
     	      cores/SGMII_INTF/SGMII_INTF.xci \
@@ -69,7 +69,3 @@ set xci_files "\
               cores/TCDS_DRP_BRIDGE/TCDS_DRP_BRIDGE.xci \
     	      "
 
-#DRP ip
-set ip_repo_path ../bd/IP
-set_property  ip_repo_paths ${ip_repo_path}  [current_project]
-update_ip_catalog
