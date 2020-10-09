@@ -140,6 +140,3 @@ clean:
 	@rm -rf zynq_os
 	@rm -f  make_log.txt
 
-make tarball:
-	cd $(ZYNQ_OS_PROJECT_PATH)/images/linux/ && \
-	tar -zcf ../../..//$(shell date +%F)-SD_p1.tar.gz BOOT.BIN image.ub

@@ -1,12 +1,4 @@
-#################################################################################
-# make stuff
-#################################################################################
-SHELL=/bin/bash -o pipefail
-OUTPUT_MARKUP= 2>&1 | tee ../make_log.txt | ccze -A
-SLACK_MESG ?= echo
-#add path so build can be more generic
-MAKE_PATH := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
-
+include mk/helpers.mk
 
 #################################################################################
 # VIVADO stuff
@@ -122,15 +114,6 @@ open_hw :
 	cd ${MAKE_PATH}/proj &&\
 	vivado -source ../$(HW_TCL)
 
-#################################################################################
-# Slack notifications
-#################################################################################
-NOTIFY_DAN_GOOD:
-	${SLACK_MESG} "FINISHED building FW!"
-NOTIFY_DAN_BAD:
-	${SLACK_MESG} "FAILED to build FW!"
-
-
 
 #################################################################################
 # FPGA building
@@ -146,7 +129,7 @@ interactive :
 	mkdir -p ${MAKE_PATH}/proj &&\
 	cd proj &&\
 	vivado -mode tcl
-$(BIT_BASE)%.bit	:
+$(BIT_BASE)%.bit	: $(ADDSLAVE_TCL_PATH)/AddSlaves.tcl $(ADDRESS_TABLE_CREATION_PATH)/slaves.yaml $(SLAVE_DTSI_PATH)/slaves.yaml
 	source $(VIVADO_SHELL) &&\
 	mkdir -p ${MAKE_PATH}/kernel/hw &&\
 	mkdir -p ${MAKE_PATH}/proj &&\
@@ -172,24 +155,6 @@ ifneq ("$(wildcard ${MAKE_PATH}/sim/sim.mk)","")
 include ${MAKE_PATH}/sim/sim.mk
 endif
 
-
-
-################################################################################# 
-# Generate MAP and PKG files from address table 
-################################################################################# 
-#XML2VHD_PATH=regmap_helper
-#ifneq ("$(wildcard $(XML2VHD_PATH)/xml_regmap.mk)","") 
-#	include $(XML2VHD_PATH)/xml_regmap.mk
-#endif
-
-#################################################################################
-# Help 
-#################################################################################
-
-#list magic: https://stackoverflow.com/questions/4219255/how-do-you-get-the-list-of-targets-in-a-makefile
-list:
-#	@$(MAKE) -pRrq -f $(MAKEFILE_LIST) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | column
-	@$(MAKE) -pRrq -f $(MAKEFILE_LIST) | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | column
 
 init:
 	git submodule update --init --recursive 
