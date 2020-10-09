@@ -11,7 +11,7 @@ source ${apollo_root_path}/bd/Xilinx_AXI_slaves.tcl
 #  build_CPU contains CPU parameters includeing the MIO and peripheral configs
 #================================================================================
 puts "Building CPU"
-source ${apollo_root_path}/src/ZynqPS/xc7z/build_CPU.tcl
+source ${apollo_root_path}/src/ZynqPS/xc7z/build_CPU_rev1.tcl
 
 #================================================================================
 #  Create an AXI interconnect
