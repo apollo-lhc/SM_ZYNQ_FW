@@ -49,7 +49,7 @@ set_property -dict {PACKAGE_PIN AC19 IOSTANDARD LVCMOS33}               [get_por
 set_property -dict {PACKAGE_PIN AA10 IOSTANDARD LVCMOS33 PULLDOWN TRUE} [get_ports {CM2_PWR_good}]
 set_property -dict {PACKAGE_PIN AE23 IOSTANDARD LVCMOS33}               [get_ports {CM2_MON_RX}]
 set_property -dict {PACKAGE_PIN AF24 IOSTANDARD LVCMOS33}               [get_ports {CM2_UART_TX}]
-set_property -dict {PACKAGE_PIN AF25 IOSTANDARD LVCMOS33}               [get_ports {CM2_UART_RX}]							                
+set_property -dict {PACKAGE_PIN AF25 IOSTANDARD LVCMOS33}               [get_ports {CM2_UART_RX}]
 set_property -dict {PACKAGE_PIN AF23 IOSTANDARD LVCMOS33}               [get_ports {CM2_GPIO[0]}]
 set_property -dict {PACKAGE_PIN AC23 IOSTANDARD LVCMOS33}               [get_ports {CM2_GPIO[1]}]
 set_property -dict {PACKAGE_PIN AC24 IOSTANDARD LVCMOS33}               [get_ports {CM2_GPIO[2]}]
@@ -120,14 +120,14 @@ set_property -dict {PACKAGE_PIN C9   IOSTANDARD LVCMOS18}               [get_por
 set_property -dict {PACKAGE_PIN B9   IOSTANDARD LVCMOS18}               [get_ports {SI_OUT_DIS}]
 set_property -dict {PACKAGE_PIN C4   IOSTANDARD LVCMOS18}               [get_ports {SI_ENABLE}]
 set_property -dict {PACKAGE_PIN C3   IOSTANDARD LVCMOS18}               [get_ports {SI_LOL}]
-set_property -dict {PACKAGE_PIN C2   IOSTANDARD LVCMOS18}               [get_ports {SI_LOL_XAXB}]
+set_property -dict {PACKAGE_PIN C2   IOSTANDARD LVCMOS18}               [get_ports {SI_LOS_XAXB}]
 
-set_property -dict {PACKAGE_PIN A4   IOSTANDARD LVCMOS18}               [get_ports {IPMC_IO[0]}]
-set_property -dict {PACKAGE_PIN A3   IOSTANDARD LVCMOS18}               [get_ports {IPMC_IO[1]}]
-set_property -dict {PACKAGE_PIN B5   IOSTANDARD LVCMOS18}               [get_ports {IPMC_IO[2]}]
-set_property -dict {PACKAGE_PIN B4   IOSTANDARD LVCMOS18}               [get_ports {IPMC_IO[3]}]
-set_property -dict {PACKAGE_PIN B6   IOSTANDARD LVCMOS18}               [get_ports {IPMC_IO[4]}]
-set_property -dict {PACKAGE_PIN A5   IOSTANDARD LVCMOS18}               [get_ports {IPMC_IO[5]}]
+set_property -dict {PACKAGE_PIN A4   IOSTANDARD LVCMOS18}               [get_ports {IPMC_IN[0]}]
+set_property -dict {PACKAGE_PIN A3   IOSTANDARD LVCMOS18}               [get_ports {IPMC_IN[1]}]
+set_property -dict {PACKAGE_PIN B5   IOSTANDARD LVCMOS18}               [get_ports {IPMC_IN[2]}]
+set_property -dict {PACKAGE_PIN B4   IOSTANDARD LVCMOS18}               [get_ports {IPMC_IN[3]}]
+set_property -dict {PACKAGE_PIN B6   IOSTANDARD LVCMOS18}               [get_ports {IPMC_OUT[4]}]
+set_property -dict {PACKAGE_PIN A5   IOSTANDARD LVCMOS18}               [get_ports {IPMC_OUT[5]}]
 
 set_property -dict {PACKAGE_PIN E1   IOSTANDARD LVCMOS18}               [get_ports {GPIO[0]}]
 set_property -dict {PACKAGE_PIN F4   IOSTANDARD LVCMOS18}               [get_ports {GPIO[1]}]
@@ -138,12 +138,12 @@ set_property -dict {PACKAGE_PIN A8   IOSTANDARD LVCMOS18}               [get_por
 set_property -dict {PACKAGE_PIN F3   IOSTANDARD LVCMOS18}               [get_ports {GPIO[6]}]
 set_property -dict {PACKAGE_PIN A9   IOSTANDARD LVCMOS18}               [get_ports {GPIO[7]}]
 
-set_property -dict {PACKAGE_PIN G2   IOSTANDARD LVCMOS18}               [get_ports {FP_1V8_GPIO[0]}]
-set_property -dict {PACKAGE_PIN F2   IOSTANDARD LVCMOS18}               [get_ports {FP_1V8_GPIO[1]}]
-set_property -dict {PACKAGE_PIN D1   IOSTANDARD LVCMOS18}               [get_ports {FP_1V8_GPIO[2]}]
-set_property -dict {PACKAGE_PIN C1   IOSTANDARD LVCMOS18}               [get_ports {FP_1V8_GPIO[3]}]
-set_property -dict {PACKAGE_PIN D4   IOSTANDARD LVCMOS18}               [get_ports {FP_1V8_GPIO[4]}]
-set_property -dict {PACKAGE_PIN D3   IOSTANDARD LVCMOS18}               [get_ports {FP_1V8_GPIO[5]}]
+set_property -dict {PACKAGE_PIN G2   IOSTANDARD LVCMOS18 PULLDOWN TRUE} [get_ports {FP_1V8_GPIO[0]}]
+set_property -dict {PACKAGE_PIN F2   IOSTANDARD LVCMOS18 PULLDOWN TRUE} [get_ports {FP_1V8_GPIO[1]}]
+set_property -dict {PACKAGE_PIN D1   IOSTANDARD LVCMOS18 PULLDOWN TRUE} [get_ports {FP_1V8_GPIO[2]}]
+set_property -dict {PACKAGE_PIN C1   IOSTANDARD LVCMOS18 PULLDOWN TRUE} [get_ports {FP_1V8_GPIO[3]}]
+set_property -dict {PACKAGE_PIN D4   IOSTANDARD LVCMOS18 PULLDOWN TRUE} [get_ports {FP_1V8_GPIO[4]}]
+set_property -dict {PACKAGE_PIN D3   IOSTANDARD LVCMOS18 PULLDOWN TRUE} [get_ports {FP_1V8_GPIO[5]}]
 
 
 
@@ -161,14 +161,14 @@ set_property -dict {PACKAGE_PIN D3   IOSTANDARD LVCMOS18}               [get_por
 set_property -dict {PACKAGE_PIN R6  }  [get_ports refclk_SSD_P]
 set_property -dict {PACKAGE_PIN R5  }  [get_ports refclk_SSD_N]
 
-set_property -dict {PACKAGE_PIN U6  }  [get_ports refclk_C2C1_P]
-set_property -dict {PACKAGE_PIN U5  }  [get_ports refclk_C2C1_N]
+set_property -dict {PACKAGE_PIN U6  }  [get_ports refclk_C2C1_P[0]]
+set_property -dict {PACKAGE_PIN U5  }  [get_ports refclk_C2C1_N[0]]
 
 set_property -dict {PACKAGE_PIN W6  }  [get_ports refclk_CMS_P]
 set_property -dict {PACKAGE_PIN W5  }  [get_ports refclk_CMS_N]
 
-set_property -dict {PACKAGE_PIN AA6 }  [get_ports refclk_C2C2_P]
-set_property -dict {PACKAGE_PIN AA5 }  [get_ports refclk_C2C2_N]
+set_property -dict {PACKAGE_PIN AA6 }  [get_ports refclk_C2C2_P[0]]
+set_property -dict {PACKAGE_PIN AA5 }  [get_ports refclk_C2C2_N[0]]
 
 
 # -------------------------------------------------------------------------------------------------

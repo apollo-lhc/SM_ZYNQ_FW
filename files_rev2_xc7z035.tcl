@@ -43,6 +43,14 @@ set vhdl_files "\
      src/SM_info/SM_INFO_map.vhd \
      src/SM_info/SM_INFO_PKG.vhd \
      src/SM_info/SM_info.vhd \
+     src/TCDS/lhc_gt_usrclk_source.vhd \
+     src/TCDS/MGBT2_common_reset.vhd \
+     src/TCDS/MGBT2_common.vhd \
+     src/TCDS/TCDS.vhd \
+     src/TCDS/TCDS_Control.vhd \
+     src/TCDS/TCDS_Monitor.vhd \
+     src/TCDS/TCDS_map.vhd \
+     src/TCDS/TCDS_PKG.vhd \
      src/plXVC/PLXVC_map.vhd \
      src/plXVC/PLXVC_PKG.vhd \
      src/plXVC/plXVC_intf.vhd \
@@ -53,5 +61,7 @@ set xdc_files src/top_rev2_xc7z035.xdc
 
 set xci_files "\
     	      cores/onboard_CLK/onboard_CLK.xci \
+              cores/LHC/LHC.xci \
+              cores/TCDS_DRP_BRIDGE/TCDS_DRP_BRIDGE.xci \
               "
 

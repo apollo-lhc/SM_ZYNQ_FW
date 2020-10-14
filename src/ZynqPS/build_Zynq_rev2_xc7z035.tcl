@@ -39,20 +39,20 @@ connect_bd_intf_net [get_bd_intf_pins processing_system7_0/M_AXI_GP0] [get_bd_in
 
 
 #build the C2C interconnect
-#[BUILD_AXI_INTERCONNECT ${AXI_C2C_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} [list processing_system7_0/M_AXI_GP1] [list ${AXI_MASTER_CLK}] [list ${AXI_MASTER_RSTN}]]
-#set_property CONFIG.STRATEGY {1} [get_bd_cells ${AXI_C2C_INTERCONNECT_NAME}]
+[BUILD_AXI_INTERCONNECT ${AXI_C2C_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} [list processing_system7_0/M_AXI_GP1] [list ${AXI_MASTER_CLK}] [list ${AXI_MASTER_RSTN}]]
+set_property CONFIG.STRATEGY {1} [get_bd_cells ${AXI_C2C_INTERCONNECT_NAME}]
 
 #tak the INT_AXI_FW to the C2C interconnect
-#[AXI_CTL_DEV_CONNECT $INT_AXI_FW ${AXI_C2C_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} $AXI_MASTER_CLK_FREQ]    
-#[AXI_DEV_UIO_DTSI_POST_CHUNK ${INT_AXI_FW}]
+[AXI_CTL_DEV_CONNECT $INT_AXI_FW ${AXI_C2C_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} $AXI_MASTER_CLK_FREQ]    
+[AXI_DEV_UIO_DTSI_POST_CHUNK ${INT_AXI_FW}]
 
 
 #tcds CLOCKS
-#set TCDS_CLK TCDS_CLK
-#set TCDS_RSTN TCDS_reset_n
-#create_bd_port -dir I -type clk ${TCDS_CLK}
-#set_property CONFIG.FREQ_HZ 160308000 [get_bd_ports ${TCDS_CLK}]
-#create_bd_port -dir I -type reset ${TCDS_RSTN}
+set TCDS_CLK TCDS_CLK
+set TCDS_RSTN TCDS_reset_n
+create_bd_port -dir I -type clk ${TCDS_CLK}
+set_property CONFIG.FREQ_HZ 160308000 [get_bd_ports ${TCDS_CLK}]
+create_bd_port -dir I -type reset ${TCDS_RSTN}
 
 #add interrupts
 set IRQ_ORR interrupt_or_reduce

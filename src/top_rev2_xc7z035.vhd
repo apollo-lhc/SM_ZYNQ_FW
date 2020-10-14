@@ -4,6 +4,7 @@ use ieee.numeric_std.all;
 
 use work.types.all;
 use work.AXIRegPKG.all;
+use work.SGMII_MONITOR.all;
 use work.CM_package.all;
 
 Library UNISIM;
@@ -33,33 +34,80 @@ entity top is
     FIXED_IO_ps_porb  : inout STD_LOGIC;
     FIXED_IO_ps_srstb : inout STD_LOGIC;
 
+
+    -------------------------------------
+    -- Onboard Enclustra
     I2C_SCL           : inout std_logic;
     I2C_SDA           : inout std_logic;
 
     onboard_CLK_P     : in  std_logic;
     onboard_CLK_N     : in  std_logic;
 
-    SI_INT            : in  std_logic;
-    SI_LOL            : in  std_logic;
-    SI_LOS            : in  std_logic;
-    SI_OUT_DIS        : out std_logic;
-    SI_ENABLE         : out std_logic;
-                      
-    TTC_SRC_SEL       : out std_logic;
-                      
-    LHC_CLK_CMS_LOS   : in  std_logic;
+    -------------------------------------
+    -- Misc SM
+    EEPROM_WE_N       : out   std_logic;
+    FP_LED_RST        : out   std_logic;
+    FP_LED_CLK        : out   std_logic;
+    FP_LED_SDA        : out   std_logic;
+    FP_Button         : in    std_logic;
+    FP_1V8_GPIO       : out   std_logic_vector(5 downto 0);
+    
+    SATA_DETECT_N     : in    std_logic;
+--         UART_Rx_Zynq  : in    std_logic; -- not used
+--         UART_Tx_Zynq  : out   std_logic; -- not used
+
+    CPLD_TCK          : out   std_logic;
+    CPLD_TDI          : out   std_logic;
+    CPLD_TDO          : in    std_logic;
+    CPLD_TMS          : out   std_logic;
+
+
+    -------------------------------------
+    -- Clocking/timing
+    LHC_CLK_BP_LOS    : in  std_logic;
     LHC_CLK_OSC_LOS   : in  std_logic;
     LHC_SRC_SEL       : out std_logic;
-    HQ_CLK_CMS_LOS    : in  std_logic;
+
+    HQ_CLK_BP_LOS     : in  std_logic;
     HQ_CLK_OSC_LOS    : in  std_logic;
     HQ_SRC_SEL        : out std_logic;
-    FP_LED_RST        : out std_logic;
-    FP_LED_CLK        : out std_logic;
-    FP_LED_SDA        : out std_logic;
-    FP_switch         : in  std_logic;
-                      
+
+--    CLK_LHC_P         : in std_logic;
+--    CLK_LHC_N         : in std_logic;
+--    CLK_HQ_P          : in std_logic;
+--    CLK_HQ_N          : in std_logic;
+
+--    CLK_TTC_P         : in  std_logic;
+--    CLK_TTC_N         : in  std_logic;
+
+--    TTC_P             : in  std_logic;
+--    TTC_N             : in  std_logic;
+--    TTS_P             : out std_logic;
+--    TTS_N             : out std_logic;
+    CM_TTC_SEL        : out std_logic_vector(1 downto 0);    
+
+    SI_INT            : in    std_logic;
+    SI_LOL            : in    std_logic;
+    SI_LOS_XAXB       : in    std_logic;
+    SI_OUT_DIS        : out   std_logic;
+    SI_ENABLE         : out   std_logic;
+    SI_scl            : inout STD_LOGIC;
+    SI_sda            : inout STD_LOGIC;
+    
+    -------------------------------------
+    -- ESM
+    ESM_UART_RX       : in  STD_LOGIC;
+    ESM_UART_TX       : out STD_LOGIC;
     ESM_LED_CLK       : in std_logic;
     ESM_LED_SDA       : in std_logic;
+
+    -------------------------------------
+    -- GPIOs CPLD
+--    ZYNQ_CPLD_GPIO    : in std_logic_vector(3 downto 0);
+
+    -------------------------------------
+    -- GPIOs Zynq
+    GPIO              : out std_logic_vector(7 downto 0);
 
     -----------------------------------------------------------------------------
     -- CM interface
@@ -67,94 +115,123 @@ entity top is
 
     -------------------------------------
     --Enable
-    CM1_enable : out std_logic;         
-    CM2_enable : out std_logic;
+    CM1_EN : out std_logic;         
+    CM2_EN : out std_logic;
 
     -------------------------------------
     --PWR Enable
-    CM1_PWR_enable : out std_logic;         
-    CM2_PWR_enable : out std_logic;
+    CM1_PWR_EN : out std_logic;         
+    CM2_PWR_EN : out std_logic;
 
     -------------------------------------
     --CM power good
-    CM1_PWR_good : in std_logic;         
-    CM2_PWR_good : in std_logic;
+    CM1_PWR_GOOD : in std_logic;         
+    CM2_PWR_GOOD : in std_logic;
 
     -------------------------------------
-    --GPIO
-    CM1_GPIO   : in std_logic_vector(1 downto 0);         
-    CM2_GPIO   : in std_logic_vector(1 downto 0);
+    --CM Mon Rx
+    CM1_MON_RX : in std_logic;         
+--    CM2_MON_RX : in std_logic;
 
     -------------------------------------
-    --UART
+    --CM UART
     CM1_UART_TX   : out std_logic;
     CM1_UART_RX   : in  std_logic;         
     CM2_UART_TX   : out std_logic;
     CM2_UART_RX   : in  std_logic;         
-    ESM_UART_RX   : in  STD_LOGIC;
-    ESM_UART_TX   : out STD_LOGIC;
     
     -------------------------------------
-    --XVC
-    CM1_tck          : out   STD_LOGIC;
-    CM1_tdi          : out   STD_LOGIC;
-    CM1_tdo          : in    STD_LOGIC;
-    CM1_tms          : out   STD_LOGIC;
-    CM1_ps_rst       : out   STD_LOGIC;
-    CM2_tck          : out   STD_LOGIC;
-    CM2_tdi          : out   STD_LOGIC;
-    CM2_tdo          : in    STD_LOGIC;
-    CM2_tms          : out   STD_LOGIC;
-    CM2_ps_rst       : out   STD_LOGIC;
+    --CM GPIO
+    CM1_GPIO         : in std_logic_vector(2 downto 0);         
+    CM2_GPIO         : in std_logic_vector(2 downto 0);
 
-    -------------------------------------------------------------------------------------------
-    -- plXVC
-    -------------------------------------------------------------------------------------------
 
-    -------------------------------------------------------------------------------------------
-    -- MGBT 1
-    -------------------------------------------------------------------------------------------
---    AXI_C2C_CM1_Rx_P      : in    std_logic_vector(0 to 0);
---    AXI_C2C_CM1_Rx_N      : in    std_logic_vector(0 to 0);
---    AXI_C2C_CM1_Tx_P      : out   std_logic_vector(0 to 0);
---    AXI_C2C_CM1_Tx_N      : out   std_logic_vector(0 to 0);
---
---    AXI_C2C_CM2_Rx_P      : in    std_logic_vector(0 to 0);
---    AXI_C2C_CM2_Rx_N      : in    std_logic_vector(0 to 0);
---    AXI_C2C_CM2_Tx_P      : out   std_logic_vector(0 to 0);
---    AXI_C2C_CM2_Tx_N      : out   std_logic_vector(0 to 0);
+    -------------------------------------
+    --CM XVC
+    CM1_TCK          : out   STD_LOGIC;
+    CM1_TDI          : out   STD_LOGIC;
+    CM1_TDO          : in    STD_LOGIC;
+    CM1_TMS          : out   STD_LOGIC;
+    CM1_PS_RST       : out   STD_LOGIC;
+    CM2_TCK          : out   STD_LOGIC;
+    CM2_TDI          : out   STD_LOGIC;
+    CM2_TDO          : in    STD_LOGIC;
+    CM2_TMS          : out   STD_LOGIC;
+    CM2_PS_RST       : out   STD_LOGIC;
 
---    refclk_C2C_P      : in    std_logic_vector(0 downto 0);
---    refclk_C2C_N      : in    std_logic_vector(0 downto 0);
-   
---    -------------------------------------------------------------------------------------------
---    -- MGBT 2
---    -------------------------------------------------------------------------------------------
---    refclk_125Mhz_P   : in    std_logic; 
---    refclk_125Mhz_N   : in    std_logic; 
---    refclk_TCDS_P     : in    std_logic; 
---    refclk_TCDS_N     : in    std_logic; 
-----                              
---    sgmii_tx_P        : out   std_logic; 
---    sgmii_tx_N        : out   std_logic; 
---    sgmii_rx_P        : in    std_logic; 
---    sgmii_rx_N        : in    std_logic;
-----                              
---    tts_P             : out   std_logic; 
---    tts_N             : out   std_logic; 
---    ttc_P             : in    std_logic; 
---    ttc_N             : in    std_logic; 
-----                              
---    fake_ttc_P        : out   std_logic; 
---    fake_ttc_N        : out   std_logic; 
---    m1_tts_P          : in    std_logic; 
---    m1_tts_N          : in    std_logic;                       
---    m2_tts_P          : in    std_logic; 
---    m2_tts_N          : in    std_logic;
-    IPMC_SDA : inout STD_LOGIC;
-    IPMC_SCL : in    STD_LOGIC;
-    SI_scl : inout STD_LOGIC;
-    SI_sda : inout STD_LOGIC
+    
+    
+    
+    
+-----    -------------------------------------------------------------------------------------------
+-----    -- MGBT 1
+-----    -------------------------------------------------------------------------------------------
+    AXI_C2C_CM1_Rx_P      : in    std_logic_vector(0 to 0);
+    AXI_C2C_CM1_Rx_N      : in    std_logic_vector(0 to 0);
+    AXI_C2C_CM1_Tx_P      : out   std_logic_vector(0 to 0);
+    AXI_C2C_CM1_Tx_N      : out   std_logic_vector(0 to 0);
+
+    AXI_C2C_CM2_Rx_P      : in    std_logic_vector(0 to 0);
+    AXI_C2C_CM2_Rx_N      : in    std_logic_vector(0 to 0);
+    AXI_C2C_CM2_Tx_P      : out   std_logic_vector(0 to 0);
+    AXI_C2C_CM2_Tx_N      : out   std_logic_vector(0 to 0);
+
+                             
+--    SSD_rx_P        : in    std_logic; 
+--    SSD_rx_N        : in    std_logic;
+--    SSD_tx_P        : out   std_logic; 
+--    SSD_tx_N        : out   std_logic; 
+
+    CM1_TCDS_TTS_P          : in    std_logic; 
+    CM1_TCDS_TTS_N          : in    std_logic;                       
+    TCDS_TTS_P             : out   std_logic; 
+    TCDS_TTS_N             : out   std_logic; 
+
+
+    refclk_SSD_P   : in    std_logic; 
+    refclk_SSD_N   : in    std_logic; 
+    
+    refclk_C2C1_P          : in    std_logic_vector(0 downto 0);
+    refclk_C2C1_N          : in    std_logic_vector(0 downto 0);
+
+ 
+    -------------------------------------------------------------------------------------------
+    -- MGBT 2
+    -------------------------------------------------------------------------------------------
+--    AXI_C2C_CM1_Rx_P      : in    std_logic_vector(1 to 1);
+--    AXI_C2C_CM1_Rx_N      : in    std_logic_vector(1 to 1);
+--    AXI_C2C_CM1_Tx_P      : out   std_logic_vector(1 to 1);
+--    AXI_C2C_CM1_Tx_N      : out   std_logic_vector(1 to 1);
+--                                                   1 to 1
+--    AXI_C2C_CM2_Rx_P      : in    std_logic_vector(1 to 1);
+--    AXI_C2C_CM2_Rx_N      : in    std_logic_vector(1 to 1);
+--    AXI_C2C_CM2_Tx_P      : out   std_logic_vector(1 to 1);
+--    AXI_C2C_CM2_Tx_N      : out   std_logic_vector(1 to 1);
+
+    TCDS_TTC_P             : in    std_logic; 
+    TCDS_TTC_N             : in    std_logic; 
+                              
+    LOCAL_TCDS_TTC_P        : out   std_logic; 
+    LOCAL_TCDS_TTC_N        : out   std_logic; 
+    CM2_TCDS_TTS_P          : in    std_logic; 
+    CM2_TCDS_TTS_N          : in    std_logic;
+
+    refclk_CMS_P      : in    std_logic; 
+    refclk_CMS_N      : in    std_logic; 
+
+    refclk_C2C2_P          : in    std_logic_vector(0 downto 0);
+    refclk_C2C2_N          : in    std_logic_vector(0 downto 0);
+
+    
+    -------------------------------------------------------------------------------------------
+    -- IPMC Interface
+    -------------------------------------------------------------------------------------------
+    ZYNQ_BOOT_DONE         : out   std_logic;
+    IPMC_SDA               : inout STD_LOGIC;
+    IPMC_SCL               : in    STD_LOGIC;
+--    IPMC_IN                : in    std_logic_vector(3 downto 0);
+    IPMC_OUT               : out   std_logic_vector(1 downto 0)
+    
     );    
 end entity top;
 
@@ -166,7 +243,48 @@ architecture structure of top is
 
   signal pl_reset_n : std_logic;
   
-    
+------- TCDS
+  signal refclk_TCDS : std_logic;
+  signal ttc_data : std_logic_vector(35 downto 0); 
+  signal tts_data : std_logic_vector(35 downto 0); 
+  signal fake_ttc_data : std_logic_vector(35 downto 0);
+  signal m1_tts_data : std_logic_vector(35 downto 0);
+  signal m2_tts_data : std_logic_vector(35 downto 0);
+  signal ttc_dv : std_logic; 
+  signal tts_dv : std_logic; 
+  signal fake_ttc_dv : std_logic;
+  signal m1_tts_dv : std_logic;
+  signal m2_tts_dv : std_logic;
+  signal TTC_SRC_SEL : std_logic;
+  
+  -- AXI C2C
+  signal AXI_C2CM1_RX_data              : STD_LOGIC_VECTOR(63 downto 0 ); -- (127 downto 0 );
+  signal AXI_C2CM1_RX_dv                : STD_LOGIC;                          
+  signal AXI_C2CM1_TX_data              : STD_LOGIC_VECTOR(63 downto 0 ); -- (127 downto 0 );
+  signal AXI_C2CM1_TX_ready             : STD_LOGIC;                       
+  signal AXI_C2CM1_TX_dv                : STD_LOGIC;                         
+  signal AXI_C2C_aurora_init_clk        : STD_LOGIC;                  
+  signal AXI_C2C_aurora_mmcm_not_locked : STD_LOGIC;           
+  signal AXI_C2C_aurora_pma_init_out    : STD_LOGIC;             
+  signal AXI_C2C_reset                  : STD_LOGIC;                           
+  signal AXI_C2CM1_channel_up           : STD_LOGIC;                     
+  signal AXI_C2CM1_phy_clk              : STD_LOGIC;                        
+  signal AXI_C2CM1_phy_clk_raw          : std_logic;
+  
+  signal refclk_C2C        : std_logic;
+
+  signal AXI_C2C_ReadMOSI  : AXIReadMOSI_array_t (1 downto 0);
+  signal AXI_C2C_ReadMISO  : AXIReadMISO_array_t (1 downto 0);
+  signal AXI_C2C_WriteMOSI : AXIWriteMOSI_array_t(1 downto 0);
+  signal AXI_C2C_WriteMISO : AXIWriteMISO_array_t(1 downto 0);
+  
+  signal C2C_gt_qpllclk_quad4 : std_logic;
+  signal C2C_gt_qpllrefclk_quad4 : std_logic;
+
+  signal AXI_C2C_powerdown : std_logic_vector(1 downto 0);
+
+
+  
 -- AXI BUS
   signal AXI_clk : std_logic;
   constant PL_AXI_SLAVE_COUNT : integer := 7;
@@ -181,9 +299,9 @@ architecture structure of top is
   signal AXI_MSTR_WMISO : AXIWriteMISO;
   
   --Monitoring
-  signal SGMII_MON : SGMII_MONITOR_t;
+--  signal SGMII_MON : SGMII_MONITOR_t;
   signal SGMII_MON_CDC : SGMII_MONITOR_t;
-  signal SGMII_CTRL : SGMII_CONTROL_t;
+--  signal SGMII_CTRL : SGMII_CONTROL_t;
   
   signal onbloard_clk_n : std_logic;
   signal onbloard_clk_p : std_logic;
@@ -238,6 +356,19 @@ architecture structure of top is
   signal clk_C2C1_PHY : std_logic;
 begin  -- architecture structure
 
+  --debugging start
+  FP_1V8_GPIO <= "000000";
+  EEPROM_WE_N <= '1';
+
+  CPLD_TCK <= '0';
+  CPLD_TDI <= '0';
+  CPLD_TMS <= '0';
+
+  GPIO  <= x"00";
+  ZYNQ_BOOT_DONE <= linux_booted;
+  IPMC_OUT <= "00";
+  
+  
   pl_reset_n <= axi_reset_n ;
   pl_clk <= axi_clk;
   AXI_C2C_powerdown(0) <= not CM_enable_IOs(0);
@@ -380,6 +511,46 @@ begin  -- architecture structure
       SM_INFO_wstrb           => AXI_BUS_WMOSI(3).data_write_strobe,
       SM_INFO_wvalid          => AXI_BUS_WMOSI(3).data_valid,
 
+            TCDS_DRP_araddr          => AXI_BUS_RMOSI(4).address,
+      TCDS_DRP_arprot          => AXI_BUS_RMOSI(4).protection_type,
+      TCDS_DRP_arready         => AXI_BUS_RMISO(4).ready_for_address,
+      TCDS_DRP_arvalid         => AXI_BUS_RMOSI(4).address_valid,
+      TCDS_DRP_awaddr          => AXI_BUS_WMOSI(4).address,
+      TCDS_DRP_awprot          => AXI_BUS_WMOSI(4).protection_type,
+      TCDS_DRP_awready         => AXI_BUS_WMISO(4).ready_for_address,
+      TCDS_DRP_awvalid         => AXI_BUS_WMOSI(4).address_valid,
+      TCDS_DRP_bready          => AXI_BUS_WMOSI(4).ready_for_response,
+      TCDS_DRP_bresp           => AXI_BUS_WMISO(4).response,
+      TCDS_DRP_bvalid          => AXI_BUS_WMISO(4).response_valid,
+      TCDS_DRP_rdata           => AXI_BUS_RMISO(4).data,
+      TCDS_DRP_rready          => AXI_BUS_RMOSI(4).ready_for_data,
+      TCDS_DRP_rresp           => AXI_BUS_RMISO(4).response,
+      TCDS_DRP_rvalid          => AXI_BUS_RMISO(4).data_valid,
+      TCDS_DRP_wdata           => AXI_BUS_WMOSI(4).data,
+      TCDS_DRP_wready          => AXI_BUS_WMISO(4).ready_for_data,
+      TCDS_DRP_wstrb           => AXI_BUS_WMOSI(4).data_write_strobe,
+      TCDS_DRP_wvalid          => AXI_BUS_WMOSI(4).data_valid,
+
+      TCDS_araddr              => AXI_BUS_RMOSI(5).address,
+      TCDS_arprot              => AXI_BUS_RMOSI(5).protection_type,
+      TCDS_arready             => AXI_BUS_RMISO(5).ready_for_address,
+      TCDS_arvalid             => AXI_BUS_RMOSI(5).address_valid,
+      TCDS_awaddr              => AXI_BUS_WMOSI(5).address,
+      TCDS_awprot              => AXI_BUS_WMOSI(5).protection_type,
+      TCDS_awready             => AXI_BUS_WMISO(5).ready_for_address,
+      TCDS_awvalid             => AXI_BUS_WMOSI(5).address_valid,
+      TCDS_bready              => AXI_BUS_WMOSI(5).ready_for_response,
+      TCDS_bresp               => AXI_BUS_WMISO(5).response,
+      TCDS_bvalid              => AXI_BUS_WMISO(5).response_valid,
+      TCDS_rdata               => AXI_BUS_RMISO(5).data,
+      TCDS_rready              => AXI_BUS_RMOSI(5).ready_for_data,
+      TCDS_rresp               => AXI_BUS_RMISO(5).response,
+      TCDS_rvalid              => AXI_BUS_RMISO(5).data_valid,
+      TCDS_wdata               => AXI_BUS_WMOSI(5).data,
+      TCDS_wready              => AXI_BUS_WMISO(5).ready_for_data,
+      TCDS_wstrb               => AXI_BUS_WMOSI(5).data_write_strobe,
+      TCDS_wvalid              => AXI_BUS_WMOSI(5).data_valid,
+
 
       PLXVC_araddr               => AXI_BUS_RMOSI(6).address,
       PLXVC_arprot               => AXI_BUS_RMOSI(6).protection_type,
@@ -400,6 +571,116 @@ begin  -- architecture structure
       PLXVC_wready               => AXI_BUS_WMISO(6).ready_for_data,
       PLXVC_wstrb                => AXI_BUS_WMOSI(6).data_write_strobe,
       PLXVC_wvalid               => AXI_BUS_WMOSI(6).data_valid,
+
+            init_clk        =>  AXI_C2C_aurora_init_clk,
+      C2C1_phy_Rx_rxn =>  AXI_C2C_CM1_Rx_N(0 to 0),
+      C2C1_phy_Rx_rxp =>  AXI_C2C_CM1_Rx_P(0 to 0),
+      C2C1_phy_Tx_txn =>  AXI_C2C_CM1_Tx_N(0 to 0),
+      C2C1_phy_Tx_txp =>  AXI_C2C_CM1_Tx_P(0 to 0),
+      C2C1_phy_refclk_clk_n => refclk_C2C2_N(0),
+      C2C1_phy_refclk_clk_p => refclk_C2C2_P(0),
+      C2C1_phy_power_down   => AXI_C2C_powerdown(0),
+      C2C1_aurora_do_cc                 => CM_C2C_Mon.CM(1).aurora_do_cc                ,
+      C2C1_aurora_pma_init_in           => CM_C2C_Ctrl.CM(1).aurora_pma_init_in,
+      C2C1_axi_c2c_config_error_out     => CM_C2C_Mon.CM(1).axi_c2c_config_error_out    ,
+      C2C1_axi_c2c_link_error_out       => CM_C2C_Mon.CM(1).axi_c2c_link_error_out      ,
+      C2C1_axi_c2c_link_status_out      => CM_C2C_Mon.CM(1).axi_c2c_link_status_out     ,
+      C2C1_axi_c2c_multi_bit_error_out  => CM_C2C_Mon.CM(1).axi_c2c_multi_bit_error_out ,
+      C2C1_phy_gt_pll_lock              => CM_C2C_Mon.CM(1).phy_gt_pll_lock             ,
+      C2C1_phy_hard_err                 => CM_C2C_Mon.CM(1).phy_hard_err                ,
+      C2C1_phy_lane_up                  => CM_C2C_Mon.CM(1).phy_lane_up                 ,
+      C2C1_phy_link_reset_out           => CM_C2C_Mon.CM(1).phy_link_reset_out          ,
+      C2C1_phy_gt_refclk1_out           => C2C1_phy_gt_refclk1_out          ,
+      C2C1_phy_mmcm_not_locked_out      => CM_C2C_Mon.CM(1).phy_mmcm_not_locked_out     ,
+      C2C1_phy_soft_err                 => CM_C2C_Mon.CM(1).phy_soft_err                ,
+      C2C1_PHY_DEBUG_cplllock         => CM_C2C_Mon.CM(1).cplllock,
+      C2C1_PHY_DEBUG_dmonitorout      => CM_C2C_Mon.CM(1).dmonitorout,
+      C2C1_PHY_DEBUG_eyescandataerror => CM_C2C_Mon.CM(1).eyescandataerror,
+      C2C1_PHY_DEBUG_eyescanreset     => CM_C2C_Ctrl.CM(1).eyescanreset,
+      C2C1_PHY_DEBUG_eyescantrigger   => CM_C2C_Ctrl.CM(1).eyescantrigger,
+      C2C1_PHY_DEBUG_rxbufreset       => CM_C2C_Ctrl.CM(1).rxbufreset,
+      C2C1_PHY_DEBUG_rxbufstatus      => CM_C2C_Mon.CM(1).rxbufstatus,
+      C2C1_PHY_DEBUG_rxcdrhold        => CM_C2C_Ctrl.CM(1).rxcdrhold,
+      C2C1_PHY_DEBUG_rxdfeagchold     => CM_C2C_Ctrl.CM(1).rxdfeagchold,
+      C2C1_PHY_DEBUG_rxdfeagcovrden   => CM_C2C_Ctrl.CM(1).rxdfeagcovrden,
+      C2C1_PHY_DEBUG_rxdfelfhold      => CM_C2C_Ctrl.CM(1).rxdfelfhold,
+      C2C1_PHY_DEBUG_rxdfelpmreset    => CM_C2C_Ctrl.CM(1).rxdfelpmreset,
+      C2C1_PHY_DEBUG_rxlpmen          => CM_C2C_Ctrl.CM(1).rxlpmen,
+      C2C1_PHY_DEBUG_rxlpmhfovrden    => CM_C2C_Ctrl.CM(1).rxlpmhfovrden,
+      C2C1_PHY_DEBUG_rxlpmlfklovrden  => CM_C2C_Ctrl.CM(1).rxlpmlfklovrden,
+      C2C1_PHY_DEBUG_rxmonitorout     => CM_C2C_Mon.CM(1).rxmonitorout,
+      C2C1_PHY_DEBUG_rxmonitorsel     => CM_C2C_Ctrl.CM(1).rxmonitorsel,
+      C2C1_PHY_DEBUG_rxpcsreset       => CM_C2C_Ctrl.CM(1).rxpcsreset,    
+      C2C1_PHY_DEBUG_rxpmareset       => CM_C2C_Ctrl.CM(1).rxpmareset,    
+      C2C1_PHY_DEBUG_rxprbscntreset   => CM_C2C_Ctrl.CM(1).rxprbscntreset,
+      C2C1_PHY_DEBUG_rxprbserr        => CM_C2C_Mon.CM(1).rxprbserr,
+      C2C1_PHY_DEBUG_rxprbssel        => CM_C2C_Ctrl.CM(1).rxprbssel,
+      C2C1_PHY_DEBUG_rxreseTDOne      => CM_C2C_Mon.CM(1).rxreseTDOne,
+      C2C1_PHY_DEBUG_txbufstatus      => CM_C2C_Mon.CM(1).txbufstatus,
+      C2C1_PHY_DEBUG_txdiffctrl       => CM_C2C_Ctrl.CM(1).txdiffctrl,      
+      C2C1_PHY_DEBUG_txinhibit        => CM_C2C_Ctrl.CM(1).txinhibit,       
+      C2C1_PHY_DEBUG_txmaincursor     => CM_C2C_Ctrl.CM(1).txmaincursor,    
+      C2C1_PHY_DEBUG_txpcsreset       => CM_C2C_Ctrl.CM(1).txpcsreset,      
+      C2C1_PHY_DEBUG_txpmareset       => CM_C2C_Ctrl.CM(1).txpmareset,      
+      C2C1_PHY_DEBUG_txpolarity       => CM_C2C_Ctrl.CM(1).txpolarity,      
+      C2C1_PHY_DEBUG_txpostcursor     => CM_C2C_Ctrl.CM(1).txpostcursor,    
+      C2C1_PHY_DEBUG_txprbsforceerr   => CM_C2C_Ctrl.CM(1).txprbsforceerr,  
+      C2C1_PHY_DEBUG_txprbssel        => CM_C2C_Ctrl.CM(1).txprbssel,       
+      C2C1_PHY_DEBUG_txprecursor      => CM_C2C_Ctrl.CM(1).txprecursor,     
+      C2C1_PHY_DEBUG_txreseTDOne      => CM_C2C_Mon.CM(1).txreseTDOne,
+
+      C2C2_phy_Rx_rxn =>  AXI_C2C_CM2_Rx_N(0 to 0),
+      C2C2_phy_Rx_rxp =>  AXI_C2C_CM2_Rx_P(0 to 0),
+      C2C2_phy_Tx_txn =>  AXI_C2C_CM2_Tx_N(0 to 0),
+      C2C2_phy_Tx_txp =>  AXI_C2C_CM2_Tx_P(0 to 0),
+      C2C2_phy_power_down   => AXI_C2C_powerdown(1),
+      C2C2_aurora_do_cc                 => CM_C2C_Mon.CM(2).aurora_do_cc                ,
+      C2C2_aurora_pma_init_in           => CM_C2C_Ctrl.CM(2).aurora_pma_init_in,
+      C2C2_axi_c2c_config_error_out     => CM_C2C_Mon.CM(2).axi_c2c_config_error_out    ,
+      C2C2_axi_c2c_link_error_out       => CM_C2C_Mon.CM(2).axi_c2c_link_error_out      ,
+      C2C2_axi_c2c_link_status_out      => CM_C2C_Mon.CM(2).axi_c2c_link_status_out     ,
+      C2C2_axi_c2c_multi_bit_error_out  => CM_C2C_Mon.CM(2).axi_c2c_multi_bit_error_out ,
+      C2C2_phy_gt_pll_lock              => CM_C2C_Mon.CM(2).phy_gt_pll_lock             ,
+      C2C2_phy_hard_err                 => CM_C2C_Mon.CM(2).phy_hard_err                ,
+      C2C2_phy_lane_up                  => CM_C2C_Mon.CM(2).phy_lane_up                 ,
+      C2C2_phy_link_reset_out           => CM_C2C_Mon.CM(2).phy_link_reset_out          ,
+--      C2C2_phy_mmcm_not_locked_out      => CM2_C2C_Mon.phy_mmcm_not_locked_out     ,
+      C2C2_phy_soft_err                 => CM_C2C_Mon.CM(2).phy_soft_err                ,
+--      C2C2_PHY_DEBUG_cplllock         => CM2_C2C_Mon.cplllock,
+      C2C2_PHY_DEBUG_dmonitorout      => CM_C2C_Mon.CM(2).dmonitorout,
+      C2C2_PHY_DEBUG_eyescandataerror => CM_C2C_Mon.CM(2).eyescandataerror,
+      C2C2_PHY_DEBUG_eyescanreset     => CM_C2C_Ctrl.CM(2).eyescanreset,
+      C2C2_PHY_DEBUG_eyescantrigger   => CM_C2C_Ctrl.CM(2).eyescantrigger,
+      C2C2_PHY_DEBUG_rxbufreset       => CM_C2C_Ctrl.CM(2).rxbufreset,
+      C2C2_PHY_DEBUG_rxbufstatus      => CM_C2C_Mon.CM(2).rxbufstatus,
+      C2C2_PHY_DEBUG_rxcdrhold        => CM_C2C_Ctrl.CM(2).rxcdrhold,
+      C2C2_PHY_DEBUG_rxdfeagchold     => CM_C2C_Ctrl.CM(2).rxdfeagchold,
+      C2C2_PHY_DEBUG_rxdfeagcovrden   => CM_C2C_Ctrl.CM(2).rxdfeagcovrden,
+      C2C2_PHY_DEBUG_rxdfelfhold      => CM_C2C_Ctrl.CM(2).rxdfelfhold,
+      C2C2_PHY_DEBUG_rxdfelpmreset    => CM_C2C_Ctrl.CM(2).rxdfelpmreset,
+      C2C2_PHY_DEBUG_rxlpmen          => CM_C2C_Ctrl.CM(2).rxlpmen,
+      C2C2_PHY_DEBUG_rxlpmhfovrden    => CM_C2C_Ctrl.CM(2).rxlpmhfovrden,
+      C2C2_PHY_DEBUG_rxlpmlfklovrden  => CM_C2C_Ctrl.CM(2).rxlpmlfklovrden,
+      C2C2_PHY_DEBUG_rxmonitorout     => CM_C2C_Mon.CM(2).rxmonitorout,
+      C2C2_PHY_DEBUG_rxmonitorsel     => CM_C2C_Ctrl.CM(2).rxmonitorsel,
+      C2C2_PHY_DEBUG_rxpcsreset       => CM_C2C_Ctrl.CM(2).rxpcsreset,    
+      C2C2_PHY_DEBUG_rxpmareset       => CM_C2C_Ctrl.CM(2).rxpmareset,    
+      C2C2_PHY_DEBUG_rxprbscntreset   => CM_C2C_Ctrl.CM(2).rxprbscntreset,
+      C2C2_PHY_DEBUG_rxprbserr        => CM_C2C_Mon.CM(2).rxprbserr,
+      C2C2_PHY_DEBUG_rxprbssel        => CM_C2C_Ctrl.CM(2).rxprbssel,
+      C2C2_PHY_DEBUG_rxreseTDOne      => CM_C2C_Mon.CM(2).rxreseTDOne,
+      C2C2_PHY_DEBUG_txbufstatus      => CM_C2C_Mon.CM(2).txbufstatus,
+      C2C2_PHY_DEBUG_txdiffctrl       => CM_C2C_Ctrl.CM(2).txdiffctrl,      
+      C2C2_PHY_DEBUG_txinhibit        => CM_C2C_Ctrl.CM(2).txinhibit,       
+      C2C2_PHY_DEBUG_txmaincursor     => CM_C2C_Ctrl.CM(2).txmaincursor,    
+      C2C2_PHY_DEBUG_txpcsreset       => CM_C2C_Ctrl.CM(2).txpcsreset,      
+      C2C2_PHY_DEBUG_txpmareset       => CM_C2C_Ctrl.CM(2).txpmareset,      
+      C2C2_PHY_DEBUG_txpolarity       => CM_C2C_Ctrl.CM(2).txpolarity,      
+      C2C2_PHY_DEBUG_txpostcursor     => CM_C2C_Ctrl.CM(2).txpostcursor,    
+      C2C2_PHY_DEBUG_txprbsforceerr   => CM_C2C_Ctrl.CM(2).txprbsforceerr,  
+      C2C2_PHY_DEBUG_txprbssel        => CM_C2C_Ctrl.CM(2).txprbssel,       
+      C2C2_PHY_DEBUG_txprecursor      => CM_C2C_Ctrl.CM(2).txprecursor,     
+      C2C2_PHY_DEBUG_txreseTDOne      => CM_C2C_Mon.CM(2).txreseTDOne,
 
       CM1_UART_rxd => CM1_UART_rx,
       CM1_UART_txd => CM1_UART_Tx_internal,
@@ -453,6 +734,20 @@ begin  -- architecture structure
   SI_OUT_DIS <= not SI_OE_normal;
   SI_ENABLE  <= SI_EN_normal;
 
+  SGMII_MON_CDC.reset_done    <= '0';
+  SGMII_MON_CDC.cpll_lock     <= '0';
+  SGMII_MON_CDC.mmcm_reset    <= '0';
+  SGMII_MON_CDC.pma_reset     <= '0';
+  SGMII_MON_CDC.mmcm_locked   <= '0';
+  SGMII_MON_CDC.status_vector <= (others => '0');
+  SGMII_MON_CDC.reset         <= '0';
+
+
+
+
+
+  CM_TTC_SEL(1 downto 0) <= (others => TTC_SRC_SEL);
+    
   services_1: entity work.services
     port map (
       clk_axi         => axi_clk,
@@ -462,25 +757,25 @@ begin  -- architecture structure
       writeMOSI       => AXI_BUS_WMOSI(0),
       writeMISO       => AXI_BUS_WMISO(0),
       SGMII_MON       => SGMII_MON_CDC,
-      SGMII_CTRL      => SGMII_CTRL,
+      SGMII_CTRL      => open,
       SI_INT          => SI_INT,
       SI_LOL          => SI_LOL,
-      SI_LOS          => SI_LOS,
+      SI_LOS          => SI_LOS_XAXB,
       SI_OUT_EN       => SI_OE_normal,
       SI_ENABLE       => SI_EN_normal,
       SI_init_reset   => SI_init_reset,
       TTC_SRC_SEL     => TTC_SRC_SEL,
       TCDS_REFCLK_LOCKED => clk_TCDS_locked,
-      LHC_CLK_CMS_LOS => LHC_CLK_CMS_LOS,
+      LHC_CLK_CMS_LOS  => LHC_CLK_BP_LOS,
       LHC_CLK_OSC_LOS => LHC_CLK_OSC_LOS,
       LHC_SRC_SEL     => LHC_SRC_SEL,
-      HQ_CLK_CMS_LOS  => HQ_CLK_CMS_LOS,
+      HQ_CLK_CMS_LOS   => HQ_CLK_BP_LOS,
       HQ_CLK_OSC_LOS  => HQ_CLK_OSC_LOS,
       HQ_SRC_SEL      => HQ_SRC_SEL,
       FP_LED_RST      => FP_LED_RST,
       FP_LED_CLK      => FP_LED_CLK,
       FP_LED_SDA      => FP_LED_SDA,
-      FP_switch       => FP_switch,
+      FP_switch       => FP_Button,
       linux_booted    => linux_booted,
       ESM_LED_CLK     => ESM_LED_CLK,
       ESM_LED_SDA     => ESM_LED_SDA,
@@ -533,11 +828,11 @@ begin  -- architecture structure
       master_readMISO      => AXI_MSTR_RMISO,
       master_writeMOSI     => AXI_MSTR_WMOSI,
       master_writeMISO     => AXI_MSTR_WMISO,
-      CM_mon_uart          => CM1_GPIO(0),
-      enableCM(0)            => CM1_enable,
-      enableCM(1)            => CM2_enable,
-      enableCM_PWR(0)        => CM1_PWR_enable,
-      enableCM_PWR(1)        => CM2_PWR_enable,
+      CM_mon_uart          => CM1_MON_RX,
+      enableCM(0)            => CM1_EN,
+      enableCM(1)            => CM2_EN,
+      enableCM_PWR(0)        => CM1_PWR_EN,
+      enableCM_PWR(1)        => CM2_PWR_EN,
       enableCM_IOs           => CM_enable_IOs,
       from_CM.CM(1).PWR_good    => CM1_PWR_good,
       from_CM.CM(1).TDO         => '0',
@@ -569,9 +864,10 @@ begin  -- architecture structure
       CM_C2C_Ctrl               => CM_C2C_Ctrl);
   plXVC_TDO(0) <= CM1_TDO;
   plXVC_TDO(1) <= CM2_TDO;
-  CM1_ps_rst   <= plXVC_PS_RST(0);
-  CM2_ps_rst   <= plXVC_PS_RST(1);
+  CM1_PS_RST   <= plXVC_PS_RST(0);
+  CM2_PS_RST   <= plXVC_PS_RST(1);
 
+  
   
   plXVC_1: entity work.plXVC_intf
     generic map (
