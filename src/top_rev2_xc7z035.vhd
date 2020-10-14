@@ -49,7 +49,7 @@ entity top is
     FP_LED_RST        : out   std_logic;
     FP_LED_CLK        : out   std_logic;
     FP_LED_SDA        : out   std_logic;
-    FP_Button         : in    std_logic;
+    FP_BUTTON         : in    std_logic;
     FP_1V8_GPIO       : out   std_logic_vector(5 downto 0);
     
     SATA_DETECT_N     : in    std_logic;
@@ -91,8 +91,8 @@ entity top is
     SI_LOS_XAXB       : in    std_logic;
     SI_OUT_DIS        : out   std_logic;
     SI_ENABLE         : out   std_logic;
-    SI_scl            : inout STD_LOGIC;
-    SI_sda            : inout STD_LOGIC;
+    SI_SCL            : inout STD_LOGIC;
+    SI_SDA            : inout STD_LOGIC;
     
     -------------------------------------
     -- ESM
@@ -182,17 +182,17 @@ entity top is
 --    SSD_tx_P        : out   std_logic; 
 --    SSD_tx_N        : out   std_logic; 
 
-    CM1_TCDS_TTS_P          : in    std_logic; 
-    CM1_TCDS_TTS_N          : in    std_logic;                       
-    TCDS_TTS_P             : out   std_logic; 
-    TCDS_TTS_N             : out   std_logic; 
+--    CM1_TCDS_TTS_P          : in    std_logic; 
+--    CM1_TCDS_TTS_N          : in    std_logic;                       
+--    TCDS_TTS_P             : out   std_logic; 
+--    TCDS_TTS_N             : out   std_logic; 
 
 
-    refclk_SSD_P   : in    std_logic; 
-    refclk_SSD_N   : in    std_logic; 
-    
-    refclk_C2C1_P          : in    std_logic_vector(0 downto 0);
-    refclk_C2C1_N          : in    std_logic_vector(0 downto 0);
+--    refclk_SSD_P   : in    std_logic; 
+--    refclk_SSD_N   : in    std_logic; 
+--    
+--    refclk_C2C1_P          : in    std_logic_vector(0 downto 0);
+--    refclk_C2C1_N          : in    std_logic_vector(0 downto 0);
 
  
     -------------------------------------------------------------------------------------------
@@ -208,16 +208,16 @@ entity top is
 --    AXI_C2C_CM2_Tx_P      : out   std_logic_vector(1 to 1);
 --    AXI_C2C_CM2_Tx_N      : out   std_logic_vector(1 to 1);
 
-    TCDS_TTC_P             : in    std_logic; 
-    TCDS_TTC_N             : in    std_logic; 
-                              
-    LOCAL_TCDS_TTC_P        : out   std_logic; 
-    LOCAL_TCDS_TTC_N        : out   std_logic; 
-    CM2_TCDS_TTS_P          : in    std_logic; 
-    CM2_TCDS_TTS_N          : in    std_logic;
-
-    refclk_CMS_P      : in    std_logic; 
-    refclk_CMS_N      : in    std_logic; 
+--    TCDS_TTC_P             : in    std_logic; 
+--    TCDS_TTC_N             : in    std_logic; 
+--                              
+--    LOCAL_TCDS_TTC_P        : out   std_logic; 
+--    LOCAL_TCDS_TTC_N        : out   std_logic; 
+--    CM2_TCDS_TTS_P          : in    std_logic; 
+--    CM2_TCDS_TTS_N          : in    std_logic;
+--
+--    refclk_CMS_P      : in    std_logic; 
+--    refclk_CMS_N      : in    std_logic; 
 
     refclk_C2C2_P          : in    std_logic_vector(0 downto 0);
     refclk_C2C2_N          : in    std_logic_vector(0 downto 0);
@@ -511,45 +511,45 @@ begin  -- architecture structure
       SM_INFO_wstrb           => AXI_BUS_WMOSI(3).data_write_strobe,
       SM_INFO_wvalid          => AXI_BUS_WMOSI(3).data_valid,
 
-            TCDS_DRP_araddr          => AXI_BUS_RMOSI(4).address,
-      TCDS_DRP_arprot          => AXI_BUS_RMOSI(4).protection_type,
-      TCDS_DRP_arready         => AXI_BUS_RMISO(4).ready_for_address,
-      TCDS_DRP_arvalid         => AXI_BUS_RMOSI(4).address_valid,
-      TCDS_DRP_awaddr          => AXI_BUS_WMOSI(4).address,
-      TCDS_DRP_awprot          => AXI_BUS_WMOSI(4).protection_type,
-      TCDS_DRP_awready         => AXI_BUS_WMISO(4).ready_for_address,
-      TCDS_DRP_awvalid         => AXI_BUS_WMOSI(4).address_valid,
-      TCDS_DRP_bready          => AXI_BUS_WMOSI(4).ready_for_response,
-      TCDS_DRP_bresp           => AXI_BUS_WMISO(4).response,
-      TCDS_DRP_bvalid          => AXI_BUS_WMISO(4).response_valid,
-      TCDS_DRP_rdata           => AXI_BUS_RMISO(4).data,
-      TCDS_DRP_rready          => AXI_BUS_RMOSI(4).ready_for_data,
-      TCDS_DRP_rresp           => AXI_BUS_RMISO(4).response,
-      TCDS_DRP_rvalid          => AXI_BUS_RMISO(4).data_valid,
-      TCDS_DRP_wdata           => AXI_BUS_WMOSI(4).data,
-      TCDS_DRP_wready          => AXI_BUS_WMISO(4).ready_for_data,
-      TCDS_DRP_wstrb           => AXI_BUS_WMOSI(4).data_write_strobe,
-      TCDS_DRP_wvalid          => AXI_BUS_WMOSI(4).data_valid,
-
-      TCDS_araddr              => AXI_BUS_RMOSI(5).address,
-      TCDS_arprot              => AXI_BUS_RMOSI(5).protection_type,
-      TCDS_arready             => AXI_BUS_RMISO(5).ready_for_address,
-      TCDS_arvalid             => AXI_BUS_RMOSI(5).address_valid,
-      TCDS_awaddr              => AXI_BUS_WMOSI(5).address,
-      TCDS_awprot              => AXI_BUS_WMOSI(5).protection_type,
-      TCDS_awready             => AXI_BUS_WMISO(5).ready_for_address,
-      TCDS_awvalid             => AXI_BUS_WMOSI(5).address_valid,
-      TCDS_bready              => AXI_BUS_WMOSI(5).ready_for_response,
-      TCDS_bresp               => AXI_BUS_WMISO(5).response,
-      TCDS_bvalid              => AXI_BUS_WMISO(5).response_valid,
-      TCDS_rdata               => AXI_BUS_RMISO(5).data,
-      TCDS_rready              => AXI_BUS_RMOSI(5).ready_for_data,
-      TCDS_rresp               => AXI_BUS_RMISO(5).response,
-      TCDS_rvalid              => AXI_BUS_RMISO(5).data_valid,
-      TCDS_wdata               => AXI_BUS_WMOSI(5).data,
-      TCDS_wready              => AXI_BUS_WMISO(5).ready_for_data,
-      TCDS_wstrb               => AXI_BUS_WMOSI(5).data_write_strobe,
-      TCDS_wvalid              => AXI_BUS_WMOSI(5).data_valid,
+--            TCDS_DRP_araddr          => AXI_BUS_RMOSI(4).address,
+--      TCDS_DRP_arprot          => AXI_BUS_RMOSI(4).protection_type,
+--      TCDS_DRP_arready         => AXI_BUS_RMISO(4).ready_for_address,
+--      TCDS_DRP_arvalid         => AXI_BUS_RMOSI(4).address_valid,
+--      TCDS_DRP_awaddr          => AXI_BUS_WMOSI(4).address,
+--      TCDS_DRP_awprot          => AXI_BUS_WMOSI(4).protection_type,
+--      TCDS_DRP_awready         => AXI_BUS_WMISO(4).ready_for_address,
+--      TCDS_DRP_awvalid         => AXI_BUS_WMOSI(4).address_valid,
+--      TCDS_DRP_bready          => AXI_BUS_WMOSI(4).ready_for_response,
+--      TCDS_DRP_bresp           => AXI_BUS_WMISO(4).response,
+--      TCDS_DRP_bvalid          => AXI_BUS_WMISO(4).response_valid,
+--      TCDS_DRP_rdata           => AXI_BUS_RMISO(4).data,
+--      TCDS_DRP_rready          => AXI_BUS_RMOSI(4).ready_for_data,
+--      TCDS_DRP_rresp           => AXI_BUS_RMISO(4).response,
+--      TCDS_DRP_rvalid          => AXI_BUS_RMISO(4).data_valid,
+--      TCDS_DRP_wdata           => AXI_BUS_WMOSI(4).data,
+--      TCDS_DRP_wready          => AXI_BUS_WMISO(4).ready_for_data,
+--      TCDS_DRP_wstrb           => AXI_BUS_WMOSI(4).data_write_strobe,
+--      TCDS_DRP_wvalid          => AXI_BUS_WMOSI(4).data_valid,
+--
+--      TCDS_araddr              => AXI_BUS_RMOSI(5).address,
+--      TCDS_arprot              => AXI_BUS_RMOSI(5).protection_type,
+--      TCDS_arready             => AXI_BUS_RMISO(5).ready_for_address,
+--      TCDS_arvalid             => AXI_BUS_RMOSI(5).address_valid,
+--      TCDS_awaddr              => AXI_BUS_WMOSI(5).address,
+--      TCDS_awprot              => AXI_BUS_WMOSI(5).protection_type,
+--      TCDS_awready             => AXI_BUS_WMISO(5).ready_for_address,
+--      TCDS_awvalid             => AXI_BUS_WMOSI(5).address_valid,
+--      TCDS_bready              => AXI_BUS_WMOSI(5).ready_for_response,
+--      TCDS_bresp               => AXI_BUS_WMISO(5).response,
+--      TCDS_bvalid              => AXI_BUS_WMISO(5).response_valid,
+--      TCDS_rdata               => AXI_BUS_RMISO(5).data,
+--      TCDS_rready              => AXI_BUS_RMOSI(5).ready_for_data,
+--      TCDS_rresp               => AXI_BUS_RMISO(5).response,
+--      TCDS_rvalid              => AXI_BUS_RMISO(5).data_valid,
+--      TCDS_wdata               => AXI_BUS_WMOSI(5).data,
+--      TCDS_wready              => AXI_BUS_WMISO(5).ready_for_data,
+--      TCDS_wstrb               => AXI_BUS_WMOSI(5).data_write_strobe,
+--      TCDS_wvalid              => AXI_BUS_WMOSI(5).data_valid,
 
 
       PLXVC_araddr               => AXI_BUS_RMOSI(6).address,
@@ -868,6 +868,40 @@ begin  -- architecture structure
   CM2_PS_RST   <= plXVC_PS_RST(1);
 
   
+--  TCDS_2: entity work.TCDS
+--    port map (
+--      clk_axi            => pl_clk,--axi_clk,--clk_TCDS,
+--      reset_axi_n        => pl_reset_n,--axi_reset_n,--pl_reset_n,--clk_TCDS_reset_n,--pl_reset_n,
+--      clk_axi_DRP        => pl_clk,--axi_clk,
+--      reset_axi_DRP_n    => pl_reset_n,--axi_reset_n,--pl_reset_n,
+--      readMOSI           => AXI_BUS_RMOSI(5),
+--      readMISO           => AXI_BUS_RMISO(5),
+--      writeMOSI          => AXI_BUS_WMOSI(5),
+--      writeMISO          => AXI_BUS_WMISO(5),
+--      DRP_readMOSI       => AXI_BUS_RMOSI(4),
+--      DRP_readMISO       => AXI_BUS_RMISO(4),
+--      DRP_writeMOSI      => AXI_BUS_WMOSI(4),
+--      DRP_writeMISO      => AXI_BUS_WMISO(4),
+--      --sysclk        => pl_clk,
+--      refclk_p      => refclk_CMS_P,
+--      refclk_n      => refclk_CMS_N,
+--      QPLL_CLK        => QPLL_CLK,    
+--      QPLL_REF_CLK    => QPLL_REF_CLK,        
+----      reset         => axi_reset,
+--      clk_TCDS    => clk_TCDS,
+--      clk_TCDS_reset_n => clk_TCDS_locked,--open,--clk_TCDS_reset_n,
+--      tx_P(0)     => TCDS_TTS_P,
+--      tx_P(1)     => LOCAL_TCDS_TTC_P,  
+--      tx_P(2)     => open, 
+--      tx_N(0)     => TCDS_TTS_N,
+--      tx_N(1)     => LOCAL_TCDS_TTC_N,  
+--      tx_N(2)     => open, 
+--      rx_P(0)     => TCDS_TTC_P,
+--      rx_P(1)     => CM1_TCDS_TTS_P,    
+--      rx_P(2)     => CM2_TCDS_TTS_P,    
+--      rx_N(0)     => TCDS_TTC_N,
+--      rx_N(1)     => CM1_TCDS_TTS_N,    
+--      rx_N(2)     => CM2_TCDS_TTS_N);
   
   plXVC_1: entity work.plXVC_intf
     generic map (

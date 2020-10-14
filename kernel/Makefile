@@ -124,17 +124,20 @@ $(PACKAGE_LINUX_IMAGE) : $(ZYNQ_OS_PROJECT) $(BUILD_ROOTFS)
 	source $(VIVADO_PETALINUX) && \
 	petalinux-build -x package $(OUTPUT_MARKUP)
 
-$(BOOT_FILES): $(PACKAGE_LINUX_IMAGE)
+$(BOOT_FILES).%: ../../bit/top_%.bit $(PACKAGE_LINUX_IMAGE) 
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
 	source $(VIVADO_PETALINUX) && \
-	petalinux-package --boot --format BIN --fsbl images/linux/zynq_fsbl.elf --fpga ../../bit/top.bit  --uboot --force $(OUTPUT_MARKUP)
+	petalinux-package --boot --format BIN --fsbl images/linux/zynq_fsbl.elf --fpga $<  --uboot --force $(OUTPUT_MARKUP)
 	$(MAKE) NOTIFY_DAN_GOOD
 
-REBUILD_BOOTBIN: 
+REBUILD_BOOTBIN_%: ../../bit/top_%.bit 
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
 	source $(VIVADO_PETALINUX) && \
-	petalinux-package --boot --format BIN --fsbl images/linux/zynq_fsbl.elf --fpga ../../bit/top.bit  --uboot --force $(OUTPUT_MARKUP)
+	petalinux-package --boot --format BIN --fsbl images/linux/zynq_fsbl.elf --fpga $<  --uboot --force $(OUTPUT_MARKUP)
 
+rev2_xc7z035 : $(BOOT_FILES).rev2_xc7z035
+
+rev2_xc7z045 : $(BOOT_FILES).rev2_xc7z045
 
 clean:
 	@rm -rf zynq_os

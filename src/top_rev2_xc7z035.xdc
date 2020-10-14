@@ -31,7 +31,7 @@ set_property -dict {PACKAGE_PIN AE18 IOSTANDARD LVCMOS33}               [get_por
 
 set_property -dict {PACKAGE_PIN AB25 IOSTANDARD LVCMOS33}               [get_ports {CM1_EN}]
 set_property -dict {PACKAGE_PIN AE22 IOSTANDARD LVCMOS33}               [get_ports {CM1_PWR_EN}]
-set_property -dict {PACKAGE_PIN  Y10 IOSTANDARD LVCMOS33 PULLDOWN TRUE} [get_ports {CM1_PWR_good}]
+set_property -dict {PACKAGE_PIN  Y10 IOSTANDARD LVCMOS33 PULLDOWN TRUE} [get_ports {CM1_PWR_GOOD}]
 set_property -dict {PACKAGE_PIN AF22 IOSTANDARD LVCMOS33 PULLDOWN TRUE} [get_ports {CM1_MON_RX}]
 set_property -dict {PACKAGE_PIN AE25 IOSTANDARD LVCMOS33}               [get_ports {CM1_UART_TX}]
 set_property -dict {PACKAGE_PIN AE26 IOSTANDARD LVCMOS33}               [get_ports {CM1_UART_RX}]
@@ -46,7 +46,7 @@ set_property -dict {PACKAGE_PIN AA20 IOSTANDARD LVCMOS33 PULLUP TRUE}   [get_por
 
 set_property -dict {PACKAGE_PIN AA25 IOSTANDARD LVCMOS33}               [get_ports {CM2_EN}]
 set_property -dict {PACKAGE_PIN AC19 IOSTANDARD LVCMOS33}               [get_ports {CM2_PWR_EN}]
-set_property -dict {PACKAGE_PIN AA10 IOSTANDARD LVCMOS33 PULLDOWN TRUE} [get_ports {CM2_PWR_good}]
+set_property -dict {PACKAGE_PIN AA10 IOSTANDARD LVCMOS33 PULLDOWN TRUE} [get_ports {CM2_PWR_GOOD}]
 set_property -dict {PACKAGE_PIN AE23 IOSTANDARD LVCMOS33}               [get_ports {CM2_MON_RX}]
 set_property -dict {PACKAGE_PIN AF24 IOSTANDARD LVCMOS33}               [get_ports {CM2_UART_TX}]
 set_property -dict {PACKAGE_PIN AF25 IOSTANDARD LVCMOS33}               [get_ports {CM2_UART_RX}]
@@ -62,16 +62,16 @@ set_property -dict {PACKAGE_PIN AB24 IOSTANDARD LVCMOS33 PULLUP TRUE}   [get_por
 								        
 set_property -dict {PACKAGE_PIN AD20 IOSTANDARD LVCMOS33}               [get_ports {EEPROM_WE_N}]
 
-set_property -dict {PACKAGE_PIN AF20 IOSTANDARD LVCMOS33}               [get_ports {FP_LED_RST}] #CLK?
-set_property -dict {PACKAGE_PIN AF19 IOSTANDARD LVCMOS33}               [get_ports {FP_LED_CLK}] #RST?
+set_property -dict {PACKAGE_PIN AF20 IOSTANDARD LVCMOS33}               [get_ports {FP_LED_RST}] 
+set_property -dict {PACKAGE_PIN AF19 IOSTANDARD LVCMOS33}               [get_ports {FP_LED_CLK}] 
 set_property -dict {PACKAGE_PIN AD25 IOSTANDARD LVCMOS33}               [get_ports {FP_LED_SDA}]
 set_property -dict {PACKAGE_PIN AB20 IOSTANDARD LVCMOS33}               [get_ports {FP_BUTTON}]
-							                							                
+
 set_property -dict {PACKAGE_PIN AF18 IOSTANDARD LVCMOS33}               [get_ports {ESM_LED_CLK}]
 set_property -dict {PACKAGE_PIN AA24 IOSTANDARD LVCMOS33}               [get_ports {ESM_LED_SDA}]
 set_property -dict {PACKAGE_PIN AA23 IOSTANDARD LVCMOS33}               [get_ports {ESM_UART_TX}]
 set_property -dict {PACKAGE_PIN  W20 IOSTANDARD LVCMOS33}               [get_ports {ESM_UART_RX}]
-								        							        
+
 set_property -dict {PACKAGE_PIN AE20 IOSTANDARD LVCMOS33}               [get_ports {LHC_SRC_SEL}]
 set_property -dict {PACKAGE_PIN AE21 IOSTANDARD LVCMOS33}               [get_ports {LHC_CLK_BP_LOS}]
 set_property -dict {PACKAGE_PIN AB26 IOSTANDARD LVCMOS33}               [get_ports {LHC_CLK_OSC_LOS}]
@@ -126,8 +126,8 @@ set_property -dict {PACKAGE_PIN A4   IOSTANDARD LVCMOS18}               [get_por
 set_property -dict {PACKAGE_PIN A3   IOSTANDARD LVCMOS18}               [get_ports {IPMC_IN[1]}]
 set_property -dict {PACKAGE_PIN B5   IOSTANDARD LVCMOS18}               [get_ports {IPMC_IN[2]}]
 set_property -dict {PACKAGE_PIN B4   IOSTANDARD LVCMOS18}               [get_ports {IPMC_IN[3]}]
-set_property -dict {PACKAGE_PIN B6   IOSTANDARD LVCMOS18}               [get_ports {IPMC_OUT[4]}]
-set_property -dict {PACKAGE_PIN A5   IOSTANDARD LVCMOS18}               [get_ports {IPMC_OUT[5]}]
+set_property -dict {PACKAGE_PIN B6   IOSTANDARD LVCMOS18}               [get_ports {IPMC_OUT[0]}]
+set_property -dict {PACKAGE_PIN A5   IOSTANDARD LVCMOS18}               [get_ports {IPMC_OUT[1]}]
 
 set_property -dict {PACKAGE_PIN E1   IOSTANDARD LVCMOS18}               [get_ports {GPIO[0]}]
 set_property -dict {PACKAGE_PIN F4   IOSTANDARD LVCMOS18}               [get_ports {GPIO[1]}]

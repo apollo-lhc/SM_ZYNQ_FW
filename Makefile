@@ -127,6 +127,9 @@ rev2_xc7z035	:
 rev1_xc7z045	:
 	time $(MAKE) $(BIT_BASE)$@.bit || $(MAKE) NOTIFY_DAN_BAD
 
+rev2_xc7z045	:
+	time $(MAKE) $(BIT_BASE)$@.bit || $(MAKE) NOTIFY_DAN_BAD
+
 interactive : 
 	source $(VIVADO_SHELL) &&\
 	mkdir -p ${MAKE_PATH}/proj &&\
