@@ -1,7 +1,78 @@
-;; This buffer is for text that is not saved, and for Lisp evaluation.
-;; To create a file, visit it with C-x C-f and enter text in its buffer.
+#================================================================================
+#  Create and configure the basic zynq MPSoC series processing system.
+#================================================================================
+#This code is directly sourced and builds the Zynq CPU
+
+set ZYNQ_NAME ZynqMPSoC
+
+startgroup
 
 #create the zynq MPSoC
-create_bd_cell -type ip -vlnv xilinx.com:ip:zynq_ultra_ps_e:3.2 zynq_ultra_ps_e_0
-#configure the Zynq
-set_property -dict [list CONFIG.PSU__ENET0__GRP_MDIO__ENABLE {1} CONFIG.PSU__ENET0__PERIPHERAL__ENABLE {1} CONFIG.PSU__ENET3__PERIPHERAL__ENABLE {1} CONFIG.PSU__GPIO0_MIO__PERIPHERAL__ENABLE {1} CONFIG.PSU__GPIO1_MIO__PERIPHERAL__ENABLE {1} CONFIG.PSU__I2C0__PERIPHERAL__ENABLE {1} CONFIG.PSU__I2C0__PERIPHERAL__IO {MIO 10 .. 11} CONFIG.PSU__QSPI__PERIPHERAL__ENABLE {1} CONFIG.PSU__QSPI__PERIPHERAL__DATA_MODE {x4} CONFIG.PSU__QSPI__GRP_FBCLK__ENABLE {1} CONFIG.PSU__SD0__PERIPHERAL__ENABLE {1} CONFIG.PSU__SD0__SLOT_TYPE {eMMC} CONFIG.PSU__SD1__PERIPHERAL__ENABLE {1} CONFIG.PSU__SD1__PERIPHERAL__IO {MIO 46 .. 51} CONFIG.PSU__SD1__SLOT_TYPE {SD 2.0} CONFIG.PSU__TTC0__PERIPHERAL__ENABLE {1} CONFIG.PSU__DDRC__CWL {12} CONFIG.PSU__DDRC__BG_ADDR_COUNT {1} CONFIG.PSU__DDRC__DEVICE_CAPACITY {8192 MBits} CONFIG.PSU__DDRC__DRAM_WIDTH {16 Bits} CONFIG.PSU__DDRC__ECC {Enabled} CONFIG.PSU__DDRC__ROW_ADDR_COUNT {15} CONFIG.PSU__DDRC__SPEED_BIN {DDR4_2400T} CONFIG.PSU__UART0__PERIPHERAL__ENABLE {1} CONFIG.PSU__UART0__PERIPHERAL__IO {MIO 38 .. 39} CONFIG.PSU__USE__M_AXI_GP0 {1} CONFIG.PSU__USE__M_AXI_GP1 {1} CONFIG.PSU_MIO_12_PULLUPDOWN {disable} CONFIG.PSU_MIO_13_PULLUPDOWN {disable} CONFIG.PSU_MIO_14_PULLUPDOWN {disable} CONFIG.PSU_MIO_15_PULLUPDOWN {disable} CONFIG.PSU_MIO_16_PULLUPDOWN {disable} CONFIG.PSU_MIO_17_PULLUPDOWN {disable} CONFIG.PSU_MIO_18_PULLUPDOWN {disable} CONFIG.PSU_MIO_19_PULLUPDOWN {disable} CONFIG.PSU_MIO_20_PULLUPDOWN {disable} CONFIG.PSU_MIO_21_PULLUPDOWN {disable} CONFIG.PSU_MIO_22_PULLUPDOWN {disable} CONFIG.PSU_MIO_23_PULLUPDOWN {disable} CONFIG.PSU_MIO_26_PULLUPDOWN {disable} CONFIG.PSU_MIO_27_PULLUPDOWN {disable} CONFIG.PSU_MIO_28_PULLUPDOWN {disable} CONFIG.PSU_MIO_29_PULLUPDOWN {disable} CONFIG.PSU_MIO_30_PULLUPDOWN {disable} CONFIG.PSU_MIO_31_PULLUPDOWN {disable} CONFIG.PSU_MIO_32_PULLUPDOWN {disable} CONFIG.PSU_MIO_33_PULLUPDOWN {disable} CONFIG.PSU_MIO_34_PULLUPDOWN {disable} CONFIG.PSU_MIO_35_PULLUPDOWN {disable} CONFIG.PSU_MIO_36_PULLUPDOWN {disable} CONFIG.PSU_MIO_37_PULLUPDOWN {disable} CONFIG.PSU_MIO_38_PULLUPDOWN {disable} CONFIG.PSU_MIO_39_PULLUPDOWN {disable} CONFIG.PSU_MIO_46_PULLUPDOWN {disable} CONFIG.PSU_MIO_47_PULLUPDOWN {disable} CONFIG.PSU_MIO_48_PULLUPDOWN {disable} CONFIG.PSU_MIO_49_PULLUPDOWN {disable} CONFIG.PSU_MIO_50_PULLUPDOWN {disable} CONFIG.PSU_MIO_51_PULLUPDOWN {disable} CONFIG.PSU_MIO_64_PULLUPDOWN {disable} CONFIG.PSU_MIO_65_PULLUPDOWN {disable} CONFIG.PSU_MIO_66_PULLUPDOWN {disable} CONFIG.PSU_MIO_67_PULLUPDOWN {disable} CONFIG.PSU_MIO_68_PULLUPDOWN {disable} CONFIG.PSU_MIO_69_PULLUPDOWN {disable} CONFIG.PSU_MIO_70_PULLUPDOWN {disable} CONFIG.PSU_MIO_71_PULLUPDOWN {disable} CONFIG.PSU_MIO_72_PULLUPDOWN {disable} CONFIG.PSU_MIO_73_PULLUPDOWN {disable} CONFIG.PSU_MIO_74_PULLUPDOWN {disable} CONFIG.PSU_MIO_75_PULLUPDOWN {disable} CONFIG.PSU_BANK_0_IO_STANDARD {LVCMOS33} CONFIG.PSU_BANK_1_IO_STANDARD {LVCMOS33} CONFIG.PSU_BANK_2_IO_STANDARD {LVCMOS33} CONFIG.PSU_BANK_3_IO_STANDARD {LVCMOS33} CONFIG.PSU__SATA__PERIPHERAL__ENABLE {0} CONFIG.PSU__CRF_APB__DDR_CTRL__FREQMHZ {1200}] [get_bd_cells zynq_ultra_ps_e_0]
+#create_bd_cell -type ip -vlnv xilinx.com:ip:zynq_ultra_ps_e:3.2 zynq_ultra_ps_e_0
+create_bd_cell -type ip -vlnv [get_ipdefs -filter {NAME == zynq_ultra_ps_e}] ${ZYNQ_NAME}
+
+#configure the Zynq system
+
+###############################
+#RAM
+###############################
+set_property CONFIG.PSU__DDRC__CWL {12}                             [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__DDRC__BG_ADDR_COUNT {1}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__DDRC__DEVICE_CAPACITY {8192 MBits}	    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__DDRC__DRAM_WIDTH {16 Bits}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__DDRC__ECC {Enabled}			    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__DDRC__ROW_ADDR_COUNT {15}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__DDRC__SPEED_BIN {DDR4_2400T}		    [get_bd_cells ${ZYNQ_NAME}]
+
+###############################
+#clocking
+###############################
+#CPU frequency
+set_property CONFIG.PSU__CRF_APB__ACPU_CTRL__FREQMHZ {1200}	    [get_bd_cells ${ZYNQ_NAME}]
+#PS DDR frequency
+set_property CONFIG.PSU__CRF_APB__DDR_CTRL__FREQMHZ {1200}          [get_bd_cells ${ZYNQ_NAME}]
+#other clocks
+set_property CONFIG.PSU__CRL_APB__PL1_REF_CTRL__FREQMHZ {50}	    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__CRF_APB__TOPSW_MAIN_CTRL__FREQMHZ {500}    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__CRL_APB__CPU_R5_CTRL__FREQMHZ {500}	    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__CRL_APB__IOU_SWITCH_CTRL__FREQMHZ {250}    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__CRL_APB__LPD_SWITCH_CTRL__FREQMHZ {500}    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__CRL_APB__ADMA_REF_CTRL__FREQMHZ {500}      [get_bd_cells ${ZYNQ_NAME}]
+
+###############################
+#AXI MASTERS
+###############################
+set_property CONFIG.PSU__USE__M_AXI_GP0 {1}			    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__USE__M_AXI_GP1 {1}			    [get_bd_cells ${ZYNQ_NAME}]
+
+#connect FCLK_CLK0 to the master AXI_GP0 clock
+set AXI_MASTER_CLK ${ZYNQ_NAME}/pl_clk1
+make_bd_pins_external -name axi_clk [get_bd_pins ${AXI_MASTER_CLK}]
+
+connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins ${ZYNQ_NAME}/maxihpm0_fpd_aclk]
+connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins ${ZYNQ_NAME}/maxihpm1_fpd_aclk]
+
+###############################
+#MIO configuration
+###############################
+#All MIO configurations are in build_CPU_MIO.tcl
+source ../src/ZynqPS/xczu7ev/build_CPU_MIO_rev2.tcl
+
+#SDIO clock
+set_property CONFIG.PSU__CRL_APB__SDIO1_REF_CTRL__FREQMHZ {50}	    [get_bd_cells ${ZYNQ_NAME}]
+
+set SYS_RESETER sys_reseter
+create_bd_cell -type ip -vlnv [get_ipdefs -filter {NAME == proc_sys_reset}] $SYS_RESETER
+
+#connect external reset
+connect_bd_net [get_bd_pins ${ZYNQ_NAME}/pl_resetn0] [get_bd_pins $SYS_RESETER/ext_reset_in]
+#connect clock
+connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins $SYS_RESETER/slowest_sync_clk]
+#set interconnect reset
+set AXI_MASTER_RSTN [get_bd_pins ${SYS_RESETER}/interconnect_aresetn]
+set AXI_SLAVE_RSTN [get_bd_pins ${SYS_RESETER}/peripheral_aresetn]
+make_bd_pins_external -name axi_rst_n [get_bd_pins ${AXI_SLAVE_RSTN}]
+
+
+#add interrupts from PL to PS
+set_property CONFIG.PSU__USE__IRQ0 {1} [get_bd_cells ${ZYNQ_NAME}]
