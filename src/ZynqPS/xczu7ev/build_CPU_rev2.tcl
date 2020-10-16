@@ -14,23 +14,10 @@ create_bd_cell -type ip -vlnv [get_ipdefs -filter {NAME == zynq_ultra_ps_e}] ${Z
 #configure the Zynq system
 
 ###############################
-#RAM
-###############################
-set_property CONFIG.PSU__DDRC__CWL {12}                             [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU__DDRC__BG_ADDR_COUNT {1}		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU__DDRC__DEVICE_CAPACITY {8192 MBits}	    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU__DDRC__DRAM_WIDTH {16 Bits}		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU__DDRC__ECC {Enabled}			    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU__DDRC__ROW_ADDR_COUNT {15}		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU__DDRC__SPEED_BIN {DDR4_2400T}		    [get_bd_cells ${ZYNQ_NAME}]
-
-###############################
 #clocking
 ###############################
 #CPU frequency
 set_property CONFIG.PSU__CRF_APB__ACPU_CTRL__FREQMHZ {1200}	    [get_bd_cells ${ZYNQ_NAME}]
-#PS DDR frequency
-set_property CONFIG.PSU__CRF_APB__DDR_CTRL__FREQMHZ {1200}          [get_bd_cells ${ZYNQ_NAME}]
 #other clocks
 set_property CONFIG.PSU__CRL_APB__PL1_REF_CTRL__FREQMHZ {50}	    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU__CRF_APB__TOPSW_MAIN_CTRL__FREQMHZ {500}    [get_bd_cells ${ZYNQ_NAME}]
@@ -38,6 +25,22 @@ set_property CONFIG.PSU__CRL_APB__CPU_R5_CTRL__FREQMHZ {500}	    [get_bd_cells $
 set_property CONFIG.PSU__CRL_APB__IOU_SWITCH_CTRL__FREQMHZ {250}    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU__CRL_APB__LPD_SWITCH_CTRL__FREQMHZ {500}    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU__CRL_APB__ADMA_REF_CTRL__FREQMHZ {500}      [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__FPGA_PL1_ENABLE {1}                        [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__CRL_APB__PL1_REF_CTRL__FREQMHZ {50}        [get_bd_cells ${ZYNQ_NAME}]
+
+
+###############################
+#RAM (PS DDR)
+###############################
+set_property -dict [list CONFIG.PSU__CRF_APB__DDR_CTRL__FREQMHZ {1200}         \
+			CONFIG.PSU__DDRC__SPEED_BIN {DDR4_2400T}               \
+                        CONFIG.PSU__DDRC__CWL {12}                             \
+			CONFIG.PSU__DDRC__BG_ADDR_COUNT {1}		       \
+			CONFIG.PSU__DDRC__DEVICE_CAPACITY {8192 MBits}	       \
+			CONFIG.PSU__DDRC__DRAM_WIDTH {16 Bits}		       \
+			CONFIG.PSU__DDRC__ECC {Enabled}			       \
+			CONFIG.PSU__DDRC__ROW_ADDR_COUNT {16}]      [get_bd_cells ${ZYNQ_NAME}]
+
 
 ###############################
 #AXI MASTERS
@@ -76,3 +79,5 @@ make_bd_pins_external -name axi_rst_n [get_bd_pins ${AXI_SLAVE_RSTN}]
 
 #add interrupts from PL to PS
 set_property CONFIG.PSU__USE__IRQ0 {1} [get_bd_cells ${ZYNQ_NAME}]
+
+endgroup

@@ -39,7 +39,7 @@ connect_bd_intf_net [get_bd_intf_pins ${ZYNQ_NAME}/M_AXI_HPM0_FPD] [get_bd_intf_
 
 
 #build the C2C interconnect
-[BUILD_AXI_INTERCONNECT ${AXI_C2C_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} [list ${ZYNQ_NAME}/M_AXI_HPM1_FPD1] [list ${AXI_MASTER_CLK}] [list ${AXI_MASTER_RSTN}]]
+[BUILD_AXI_INTERCONNECT ${AXI_C2C_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} [list ${ZYNQ_NAME}/M_AXI_HPM1_FPD] [list ${AXI_MASTER_CLK}] [list ${AXI_MASTER_RSTN}]]
 set_property CONFIG.STRATEGY {1} [get_bd_cells ${AXI_C2C_INTERCONNECT_NAME}]
 
 #tak the INT_AXI_FW to the C2C interconnect

@@ -7,6 +7,11 @@ set_property CONFIG.PSU_BANK_1_IO_STANDARD {LVCMOS33}		    [get_bd_cells ${ZYNQ_
 set_property CONFIG.PSU_BANK_2_IO_STANDARD {LVCMOS33}		    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU_BANK_3_IO_STANDARD {LVCMOS33}		    [get_bd_cells ${ZYNQ_NAME}]
 
+#i2c for rtc
+set_property CONFIG.PSU__I2C0__PERIPHERAL__ENABLE {1} 		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__I2C0__PERIPHERAL__IO {MIO 10 .. 11} 	    [get_bd_cells ${ZYNQ_NAME}]
+
+
 #spi
 set_property CONFIG.PSU__QSPI__PERIPHERAL__ENABLE {1}		    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU__QSPI__PERIPHERAL__DATA_MODE {x4}	    [get_bd_cells ${ZYNQ_NAME}]
@@ -44,13 +49,23 @@ set_property CONFIG.PSU_MIO_73_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NA
 set_property CONFIG.PSU_MIO_74_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU_MIO_75_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
 
-#uart
-set_property CONFIG.PSU__UART0__PERIPHERAL__ENABLE {1}		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU__UART0__PERIPHERAL__IO {MIO 38 .. 39}	    [get_bd_cells ${ZYNQ_NAME}]
 
-#i2c for rtc
-set_property CONFIG.PSU__I2C0__PERIPHERAL__ENABLE {1} 		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU__I2C0__PERIPHERAL__IO {MIO 10 .. 11} 	    [get_bd_cells ${ZYNQ_NAME}]
+#SD Card
+set_property CONFIG.PSU__SD1__PERIPHERAL__ENABLE {1}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__SD1__SLOT_TYPE {SD 2.0}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__SD1__PERIPHERAL__IO {MIO 46 .. 51}	    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_46_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_47_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_48_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_49_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_50_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_51_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+
+#uart
+set_property -dict [list CONFIG.PSU__UART0__PERIPHERAL__ENABLE {1}       \
+			CONFIG.PSU__UART0__PERIPHERAL__IO {MIO 38 .. 39}]\
+			                                            [get_bd_cells ${ZYNQ_NAME}]
+
 
 #SD eMMC
 set_property CONFIG.PSU__SD0__PERIPHERAL__ENABLE {1}		    [get_bd_cells ${ZYNQ_NAME}]
@@ -66,16 +81,6 @@ set_property CONFIG.PSU_MIO_20_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NA
 set_property CONFIG.PSU_MIO_21_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU_MIO_22_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
 
-#SD Card
-set_property CONFIG.PSU__SD1__PERIPHERAL__ENABLE {1}		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU__SD1__PERIPHERAL__IO {MIO 46 .. 51}	    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU__SD1__SLOT_TYPE {SD 2.0}		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_46_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_47_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_48_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_49_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_50_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_51_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
 
 #gpios
 set_property CONFIG.PSU__GPIO0_MIO__PERIPHERAL__ENABLE {1} 	    [get_bd_cells ${ZYNQ_NAME}]
