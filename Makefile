@@ -24,7 +24,7 @@ HW_TCL=${MAKE_PATH}/scripts/Run_hw.tcl
 PL_PATH=${MAKE_PATH}/src
 BD_PATH=${MAKE_PATH}/bd
 CORES_PATH=${MAKE_PATH}/cores
-ADDRESS_TABLE = os/address_table/address_apollo.xml
+ADDRESS_TABLE = ${MAKE_PATH}/os/address_table/address_apollo.xml
 
 
 #################################################################################
@@ -130,13 +130,17 @@ rev1_xc7z045	:
 rev2_xc7z045	:
 	time $(MAKE) $(BIT_BASE)$@.bit || $(MAKE) NOTIFY_DAN_BAD
 
+rev2_xczu7ev	:
+	time $(MAKE) $(BIT_BASE)$@.bit || $(MAKE) NOTIFY_DAN_BAD
+
 interactive : 
 	source $(VIVADO_SHELL) &&\
 	mkdir -p ${MAKE_PATH}/proj &&\
 	cd proj &&\
 	vivado -mode tcl
-#$(BIT_BASE)%.bit	: $(ADDSLAVE_TCL_PATH)/AddSlaves_%.tcl $(ADDRESS_TABLE_CREATION_PATH)/slaves_%.yaml $(SLAVE_DTSI_PATH)/slaves_%.yaml
-$(BIT_BASE)%.bit	: 
+
+#$(BIT_BASE)%.bit	: 
+$(BIT_BASE)%.bit	: $(ADDSLAVE_TCL_PATH)/AddSlaves_%.tcl $(ADDRESS_TABLE_CREATION_PATH)/slaves_%.yaml $(SLAVE_DTSI_PATH)/slaves_%.yaml
 	source $(VIVADO_SHELL) &&\
 	mkdir -p ${MAKE_PATH}/kernel/hw &&\
 	mkdir -p ${MAKE_PATH}/proj &&\

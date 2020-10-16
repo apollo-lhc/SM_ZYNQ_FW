@@ -4,7 +4,7 @@ create_bd_design -dir ./ "zynq_bd"
 
 #helpers for building AXI things
 source ${apollo_root_path}/bd/axi_helpers.tcl
-source ${apollo_root_path}/bd/Xilinx_AXI_slaves.tcl
+source ${apollo_root_path}/bd/Xilinx_AXI_slaves_USP.tcl
 
 #================================================================================
 #  Create and configure the basic zynq processing system.
@@ -26,8 +26,8 @@ set PL_M_RSTN AXI_RSTN_${PL_MASTER}
 set PL_M_FREQ 50000000
 [AXI_PL_MASTER_PORT ${PL_M} ${PL_M_CLK} ${PL_M_RSTN} ${PL_M_FREQ}]
 
-set AXI_MASTER_CLK_FREQ 50000000
-
+#set AXI_MASTER_CLK_FREQ 50000000
+set AXI_MASTER_CLK_FREQ 49999500
 #create an axi FW for the main interconnect
 set INT_AXI_FW INT_AXI_FW
 create_bd_cell -type ip -vlnv [get_ipdefs -filter {NAME == axi_firewall}] ${INT_AXI_FW}

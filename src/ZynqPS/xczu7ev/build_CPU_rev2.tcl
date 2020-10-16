@@ -54,6 +54,7 @@ make_bd_pins_external -name axi_clk [get_bd_pins ${AXI_MASTER_CLK}]
 
 connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins ${ZYNQ_NAME}/maxihpm0_fpd_aclk]
 connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins ${ZYNQ_NAME}/maxihpm1_fpd_aclk]
+connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins ${ZYNQ_NAME}/maxihpm0_lpd_aclk]
 
 ###############################
 #MIO configuration
