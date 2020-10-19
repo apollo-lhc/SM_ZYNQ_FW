@@ -140,7 +140,8 @@ interactive :
 	vivado -mode tcl
 
 #$(BIT_BASE)%.bit	: 
-$(BIT_BASE)%.bit	: $(ADDSLAVE_TCL_PATH)/AddSlaves_%.tcl $(ADDRESS_TABLE_CREATION_PATH)/slaves_%.yaml $(SLAVE_DTSI_PATH)/slaves_%.yaml
+#$(BIT_BASE)%.bit	: $(ADDSLAVE_TCL_PATH)/AddSlaves_%.tcl $(ADDRESS_TABLE_CREATION_PATH)/slaves_%.yaml $(SLAVE_DTSI_PATH)/slaves_%.yaml
+$(BIT_BASE)%.bit	: $(ADDSLAVE_TCL_PATH)/AddSlaves_%.tcl 
 	source $(VIVADO_SHELL) &&\
 	mkdir -p ${MAKE_PATH}/kernel/hw &&\
 	mkdir -p ${MAKE_PATH}/proj &&\

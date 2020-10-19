@@ -9,8 +9,9 @@ set_property CONFIG.PSU_BANK_3_IO_STANDARD {LVCMOS33}		    [get_bd_cells ${ZYNQ_
 
 #i2c for rtc
 set_property CONFIG.PSU__I2C0__PERIPHERAL__ENABLE {1} 		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU__I2C0__PERIPHERAL__IO {MIO 10 .. 11} 	    [get_bd_cells ${ZYNQ_NAME}]
-
+set_property CONFIG.PSU__I2C0__PERIPHERAL__IO {EMIO} 	            [get_bd_cells ${ZYNQ_NAME}]
+create_bd_intf_port -mode Master -vlnv xilinx.com:interface:iic_rtl:1.0 IIC_0
+connect_bd_intf_net [get_bd_intf_pins ${ZYNQ_NAME}/IIC_0] [get_bd_intf_ports IIC_0]
 
 #spi
 set_property CONFIG.PSU__QSPI__PERIPHERAL__ENABLE {1}		    [get_bd_cells ${ZYNQ_NAME}]
@@ -19,8 +20,9 @@ set_property CONFIG.PSU__QSPI__GRP_FBCLK__ENABLE {1}		    [get_bd_cells ${ZYNQ_N
 set_property CONFIG.PSU__CRL_APB__QSPI_REF_CTRL__FREQMHZ {50}	    [get_bd_cells ${ZYNQ_NAME}]
 
 #ethernet 0
-set_property CONFIG.PSU__ENET0__GRP_MDIO__ENABLE {1} 		    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU__ENET0__PERIPHERAL__ENABLE {1} 		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__ENET0__GRP_MDIO__ENABLE {1} 		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__ENET0__GRP_MDIO__IO {MIO 76 .. 77}         [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU_MIO_26_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU_MIO_27_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU_MIO_28_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
