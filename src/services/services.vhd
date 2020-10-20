@@ -61,7 +61,7 @@ architecture behavioral of services is
   signal SGMII_MON_buf1 : SGMII_MONITOR_t;
   signal SGMII_MON_buf2 : SGMII_MONITOR_t;
 
-  constant FP_REG_COUNT : integer := 4;
+  constant FP_REG_COUNT : integer := 6;
   signal FP_regs : slv8_array_t(0 to (FP_REG_COUNT - 1)) := (others => (others => '0'));
   signal FP_addr : slv_6_t;
   
@@ -90,19 +90,33 @@ begin  -- architecture behavioral
   FP_regs(1)(2) <= SGMII_MON.reset_done;
   FP_regs(1)(3) <= SGMII_MON.cpll_lock ;
 
-  FP_regs(2)(0) <= CM1_C2C_Mon.axi_c2c_config_error_out   ;
-  FP_regs(2)(1) <= CM1_C2C_Mon.axi_c2c_link_error_out     ;
-  FP_regs(2)(2) <= CM1_C2C_Mon.axi_c2c_link_status_out    ;
-  FP_regs(2)(3) <= CM1_C2C_Mon.axi_c2c_multi_bit_error_out;
+  FP_regs(2)(0)          <= CM1_C2C_Mon.STATUS.config_error   ;
+  FP_regs(2)(1)          <= CM1_C2C_Mon.STATUS.link_error     ;
+  FP_regs(2)(2)          <= CM1_C2C_Mon.STATUS.link_good    ;
+  FP_regs(2)(3)          <= CM1_C2C_Mon.STATUS.MB_error;
+                         
+  FP_regs(3)(0)          <= CM1_C2C_Mon.STATUS.do_cc               ;
+  FP_regs(3)(1)          <= CM1_C2C_Mon.STATUS.phy_gt_pll_lock            ;
+  FP_regs(3)(2)          <= CM1_C2C_Mon.STATUS.phy_hard_err               ;
+  FP_regs(3)(3 downto 3) <= CM1_C2C_Mon.STATUS.phy_lane_up(0 downto 0)                ;
+  FP_regs(3)(5)          <= CM1_C2C_Mon.STATUS.phy_reset         ;
+  FP_regs(3)(6)          <= CM1_C2C_Mon.STATUS.phy_mmcm_LOL    ;
+  FP_regs(3)(7)          <= CM1_C2C_Mon.STATUS.phy_soft_err               ;
 
-  FP_regs(3)(0) <= CM1_C2C_Mon.aurora_do_cc               ;
-  FP_regs(3)(1) <= CM1_C2C_Mon.phy_gt_pll_lock            ;
-  FP_regs(3)(2) <= CM1_C2C_Mon.phy_hard_err               ;
-  FP_regs(3)(3 downto 3) <= CM1_C2C_Mon.phy_lane_up                ;
-  FP_regs(3)(5) <= CM1_C2C_Mon.phy_link_reset_out         ;
-  FP_regs(3)(6) <= CM1_C2C_Mon.phy_mmcm_not_locked_out    ;
-  FP_regs(3)(7) <= CM1_C2C_Mon.phy_soft_err               ;
+  FP_regs(4)(0)          <= CM1_C2C_Mon.STATUS.config_error   ;
+  FP_regs(4)(1)          <= CM1_C2C_Mon.STATUS.link_error     ;
+  FP_regs(4)(2)          <= CM1_C2C_Mon.STATUS.link_good    ;
+  FP_regs(4)(3)          <= CM1_C2C_Mon.STATUS.MB_error;
+                         
+  FP_regs(5)(0)          <= CM1_C2C_Mon.STATUS.do_cc               ;
+  FP_regs(5)(1)          <= CM1_C2C_Mon.STATUS.phy_gt_pll_lock            ;
+  FP_regs(5)(2)          <= CM1_C2C_Mon.STATUS.phy_hard_err               ;
+  FP_regs(5)(3 downto 3) <= CM1_C2C_Mon.STATUS.phy_lane_up(0 downto 0)                ;
+  FP_regs(5)(5)          <= CM1_C2C_Mon.STATUS.phy_reset         ;
+  FP_regs(5)(6)          <= CM1_C2C_Mon.STATUS.phy_mmcm_LOL    ;
+  FP_regs(5)(7)          <= CM1_C2C_Mon.STATUS.phy_soft_err               ;
 
+  
   LED0_Mode_sel: process (linux_booted,Ctrl.FP_LEDS.PAGE0_FORCE ) is
   begin  -- process LED0_Mode_sel
     if(Ctrl.FP_LEDS.PAGE0_FORCE = '1') then

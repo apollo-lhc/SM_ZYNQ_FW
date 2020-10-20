@@ -1,8 +1,0 @@
-<node id="CM">                                                                                                     
-  <!-- CTRL 0x0 -> 0x3 mapped to 0x00 -> 0x03 -->
-  <node id="CTRL"    address="0x00"  module="file://CM_CTRL.xml"/>
-  <!-- CTRL 0x0 -> 0x19 mapped to 0x14 -> 0x2D -->
-  <node id="C2C"     address="0x14"  module="file://CM_C2C.xml"/>  
-  <!-- MONITOR 0x0 -> 0xA mapped to 0x2D -> 0x37 -->
-  <node id="MONITOR" address="0x21"  module="file://CM_CTRL.xml>"/>
-</node>                                                                                                 

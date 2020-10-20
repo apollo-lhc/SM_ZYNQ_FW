@@ -1,9 +1,9 @@
 <node id="LINK_DEBUG">
-  <node id="CPLL_LOCK"          address="0x1" mask="0x00100000" permission="r"  description="DEBUG cplllock" />
-  <node id="EYESCAN_DATA_ERROR" address="0x1" mask="0x00200000" permission="r"  description="DEBUG eyescan data error" />
-  <node id="EYESCAN_RESET"      address="0x1" mask="0x00400000" permission="rw" description="DEBUG eyescan reset" />
-  <node id="EYESCAN_TRIGGER"    address="0x1" mask="0x00800000" permission="rw" description="DEBUG eyescan trigger" />
-  <node id="DMONITOR"           address="0x1" mask="0xFF000000" permission="r"  description="DEBUG d monitor" />
+  <node id="CPLL_LOCK"          address="0x0" mask="0x00100000" permission="r"  description="DEBUG cplllock" />
+  <node id="EYESCAN_DATA_ERROR" address="0x0" mask="0x00200000" permission="r"  description="DEBUG eyescan data error" />
+  <node id="EYESCAN_RESET"      address="0x0" mask="0x00400000" permission="rw" description="DEBUG eyescan reset" />
+  <node id="EYESCAN_TRIGGER"    address="0x0" mask="0x00800000" permission="rw" description="DEBUG eyescan trigger" />
+  <node id="DMONITOR"           address="0x0" mask="0x000000FF" permission="r"  description="DEBUG d monitor" />
 
   <node id="RX" address="0x2">
     <node id="BUF_STATUS"        mask="0x00000007" permission="r"  description="DEBUG rx buf status" />
@@ -26,7 +26,7 @@
     <node id="PRBS_SEL"          mask="0x1C000000" permission="rw" description="DEBUG rx PRBS select" />
   </node>
 
-  <node id="TX" address="0x3">
+  <node id="TX" address="0x4">
     <node id="BUF_STATUS"     mask="0x00000003" permission="r"  description="DEBUG tx buf status" />
     <node id="RESET_DONE"     mask="0x00000004" permission="r"  description="DEBUG tx reset done" />
     <node id="DIFF_CTRL"      mask="0x00000078" permission="rw" description="DEBUG tx diff control" />

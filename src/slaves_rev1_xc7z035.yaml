@@ -73,8 +73,13 @@ AXI_SLAVES:
   CM:
     TCL_CALL: "[AXI_PL_DEV_CONNECT CM        ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} ${AXI_MASTER_CLK_FREQ} 0x4000A000 8K]"
     XML:
-      - "address_table/modules/CM.xml"
-      - "address_table/modules/CM_single.xml"
+      - "address_table/modules/CM_7s.xml"
+      - "address_table/modules/CM_single_7s.xml"
+      - "address_table/modules/address_table/modules/CM_C2C_7s.xml"
+      - "address_table/modules/address_table/modules/CM_CTRL.xml"
+      - "address_table/modules/address_table/modules/CM_C2C_Status.xml"
+      - "address_table/modules/CM_C2C_DEBUG_7s.xml"
+      - "address_table/modules/address_table/modules/CM_Mon.xml"
     UHAL_BASE: 0x03000000    
     HDL: "src/CM_interface"
   

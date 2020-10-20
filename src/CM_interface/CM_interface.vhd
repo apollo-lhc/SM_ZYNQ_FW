@@ -17,26 +17,26 @@ entity CM_intf is
     CLKFREQ          : integer := 50000000;       --clk frequency in Hz
     ERROR_WAIT_TIME  : integer := 50000000);      --Wait time for error checking states
   port (
-    clk_axi          : in  std_logic;
-    reset_axi_n      : in  std_logic;
-    slave_readMOSI   : in  AXIReadMOSI;
-    slave_readMISO   : out AXIReadMISO  := DefaultAXIReadMISO;
-    slave_writeMOSI  : in  AXIWriteMOSI;
-    slave_writeMISO  : out AXIWriteMISO := DefaultAXIWriteMISO;
-    master_readMOSI  : out AXIReadMOSI  := DefaultAXIReadMOSI;
-    master_readMISO  : in  AXIReadMISO;
-    master_writeMOSI : out AXIWriteMOSI := DefaultAXIWriteMOSI;
-    master_writeMISO : in  AXIWriteMISO;
-    CM_mon_uart      : in  std_logic := '1';
-    enableCM         : out std_logic_vector(1 downto 0);
-    enableCM_PWR     : out std_logic_vector(1 downto 0);
-    enableCM_IOs     : out std_logic_vector(1 downto 0);
-    from_CM          : in from_CM_t;
-    to_CM_in         : in to_CM_t; --from SM
-    to_CM_out        : out to_CM_t; --from SM, but tristated
-    clk_C2C          : in std_logic_vector(1 downto 0);
-    CM_C2C_Mon       : in C2C_Monitor_t;
-    CM_C2C_Ctrl      : out C2C_Control_t);
+    clk_axi           : in  std_logic;
+    reset_axi_n       : in  std_logic;
+    slave_readMOSI    : in  AXIReadMOSI;
+    slave_readMISO    : out AXIReadMISO  := DefaultAXIReadMISO;
+    slave_writeMOSI   : in  AXIWriteMOSI;
+    slave_writeMISO   : out AXIWriteMISO := DefaultAXIWriteMISO;
+    master_readMOSI   : out AXIReadMOSI  := DefaultAXIReadMOSI;
+    master_readMISO   : in  AXIReadMISO;
+    master_writeMOSI  : out AXIWriteMOSI := DefaultAXIWriteMOSI;
+    master_writeMISO  : in  AXIWriteMISO;
+    CM_mon_uart       : in  std_logic := '1';
+    enableCM          : out std_logic_vector(1 downto 0);
+    enableCM_PWR      : out std_logic_vector(1 downto 0);
+    enableCM_IOs      : out std_logic_vector(1 downto 0);
+    from_CM           : in from_CM_t;
+    to_CM_in          : in to_CM_t; --from SM
+    to_CM_out         : out to_CM_t; --from SM, but tristated
+    clk_C2C           : in std_logic_vector(1 downto 0);
+    CM_C2C_Mon        : in  C2C_Monitor_t;
+    CM_C2C_Ctrl       : out C2C_Control_t);
 end entity CM_intf;
 
 architecture behavioral of CM_intf is
@@ -85,6 +85,9 @@ architecture behavioral of CM_intf is
   signal Mon  : CM_Mon_t;
   signal Ctrl : CM_Ctrl_t;
 
+  constant CDC_PRBS_SEL_LENGTH : integer := CM_C2C_Ctrl.CM(0).LINK_DEBUG.RX.PRBS_SEL'length;
+  type CDC_PASSTHROUGH_t is array (1 to 2) of std_logic_vector(CDC_PRBS_SEL_LENGTH -1 + 1 downto 0);
+  signal CDC_PASSTHROUGH : CDC_PASSTHROUGH_t;
   
 begin
   --reset
@@ -161,18 +164,37 @@ begin
     -------------------------------------------------------------------------------
     -- DC data CDC
     -------------------------------------------------------------------------------
+
+    --The following code is ugly, but it is being used to pass two signals from
+    --a record assignment through a CDC
+    --The signals aren't listed explicityly since we want the fundamental
+    --record type to be unexposed since this record will change between 7series
+    --and USP
     DC_data_CDC_X: entity work.DC_data_CDC
     generic map (
-      DATA_WIDTH           => 4)
+      DATA_WIDTH           => 1 + CDC_PRBS_SEL_LENGTH)
     port map (
       clk_in               => clk_axi,
       clk_out              => clk_C2C(iCM - 1),
       reset                => reset,
-      pass_in(0)           => CTRL.CM(iCM).C2C.RX.PRBS_CNT_RST,
-      pass_in(3 downto 1)  => CTRL.CM(iCM).C2C.RX.PRBS_SEL,
-      pass_out(0)          => CM_C2C_Ctrl.CM(iCM).rxprbscntreset,
-      pass_out(3 downto 1) => CM_C2C_Ctrl.CM(iCM).rxprbssel);
+      pass_in(0)                                      => CTRL.CM(iCM).C2C.LINK_DEBUG.RX.PRBS_CNT_RST,
+      pass_in( (CDC_PRBS_SEL_LENGTH -1) + 1 downto 1) => CTRL.CM(iCM).C2C.LINK_DEBUG.RX.PRBS_SEL,
+      pass_out(0)                                     => CDC_PASSTHROUGH(iCM)(0),               
+      pass_out((CDC_PRBS_SEL_LENGTH -1) + 1 downto 1) => CDC_PASSTHROUGH(iCM)((CDC_PRBS_SEL_LENGTH - 1) + 1 downto 1));
 
+--    partial_assignment: process (CDC_PASSTHROUGH(iCM),CTRL.CM(iCM).C2C.LINK_DEBUG, CTRL.CM(iCM).C2C.status) is
+    partial_assignment: process (clk_axi) is
+    begin  -- process partial_assignment
+      if clk_axi'event and clk_axi = '1' then  -- rising clock edge
+        --assign everything
+        CM_C2C_Ctrl.CM(iCM).link_debug                 <= CTRL.CM(iCM).C2C.LINK_DEBUG;
+        CM_C2C_Ctrl.CM(iCM).status                     <= CTRL.CM(iCM).C2C.status;
+        --override these signals with the CDC versions
+        CM_C2C_Ctrl.CM(iCM).LINK_DEBUG.RX.PRBS_CNT_RST <= CDC_PASSTHROUGH(iCM)(0);
+        CM_C2C_Ctrl.CM(iCM).LINK_DEBUG.RX.PRBS_SEL     <= CDC_PASSTHROUGH(iCM)((CDC_PRBS_SEL_LENGTH -1) + 1 downto 1);        
+      end if;
+    end process partial_assignment;
+    
     -------------------------------------------------------------------------------
     -- CM interface
     -------------------------------------------------------------------------------
@@ -210,7 +232,7 @@ begin
         reset            => reset,
         reset_counter    => CTRL.CM(iCM).C2C.CNT.RESET_COUNTERS,
         enable           => phycontrol_en(iCM - 1),
-        phy_lane_up      => CM_C2C_Mon.CM(iCM).phy_lane_up(0),
+        phy_lane_up      => CM_C2C_Mon.CM(iCM).status.phy_lane_up(0),
         phy_lane_stable  => CTRL.CM(iCM).CTRL.PHY_LANE_STABLE,
         READ_TIME        => CTRL.CM(iCM).CTRL.PHY_READ_TIME,
         initialize_out   => aurora_init_buf(iCM - 1),
@@ -219,17 +241,7 @@ begin
         count_error_wait => Mon.CM(iCM).C2C.CNT.PHY_ERRORSTATE_COUNT,
         count_alltime    => Mon.CM(iCM).C2C.CNT.INIT_ALLTIME,
         count_shortterm  => Mon.CM(iCM).C2C.CNT.INIT_SHORTTERM);
-    CM_C2C_Ctrl.CM(iCM).aurora_pma_init_in <= (aurora_init_buf(iCM - 1) and CTRL.CM(iCM).CTRL.ENABLE_PHY_CTRL) or (CTRL.CM(iCM).C2C.INITIALIZE and (not CTRL.CM(iCM).CTRL.ENABLE_PHY_CTRL));
-    
-    ----Chipscope for probing
-    --ChipScope_X: entity work.chipscope
-    --  port map (
-    --    clk       => clk_axi, --maybe C2C clk
-    --    probe0(0) => CM_C2C_Mon.CM(iCM).phy_lane_up(0),
-    --    probe1(0) => aurora_init_buf(iCM - 1),
-    --    probe2(0) => phycontrol_en(iCM - 1),
-    --    probe3(0) => '0',
-    --    probe4    => Mon.CM(iCM).C2C.CNT.PHYLANE_STATE);
+    CM_C2C_Ctrl.CM(iCM).aurora_pma_init_in <= (aurora_init_buf(iCM - 1) and CTRL.CM(iCM).CTRL.ENABLE_PHY_CTRL) or (CTRL.CM(iCM).C2C.STATUS.INITIALIZE and (not CTRL.CM(iCM).CTRL.ENABLE_PHY_CTRL));
     
     -------------------------------------------------------------------------------
     --Power-up sequences
@@ -267,54 +279,10 @@ begin
     Mon.CM(iCM).CTRL.STATE             <= CM_seq_state(((iCM*4)-1) downto ((iCM-1)*4));
     Mon.CM(iCM).CTRL.PWR_ENABLED       <= enable_PWR(iCM - 1);
     Mon.CM(iCM).CTRL.IOS_ENABLED       <= enable_IOs(iCM - 1);
-    Mon.CM(iCM).C2C.CONFIG_ERROR       <= CM_C2C_Mon.CM(iCM).axi_c2c_config_error_out;
-    Mon.CM(iCM).C2C.LINK_ERROR         <= CM_C2C_Mon.CM(iCM).axi_c2c_link_error_out;     
-    Mon.CM(iCM).C2C.LINK_GOOD          <= CM_C2C_Mon.CM(iCM).axi_c2c_link_status_out;    
-    Mon.CM(iCM).C2C.MB_ERROR           <= CM_C2C_Mon.CM(iCM).axi_c2c_multi_bit_error_out;
-    Mon.CM(iCM).C2C.DO_CC              <= CM_C2C_Mon.CM(iCM).aurora_do_cc;
-    Mon.CM(iCM).C2C.PHY_RESET          <= CM_C2C_Mon.CM(iCM).phy_link_reset_out;     
-    Mon.CM(iCM).C2C.PHY_GT_PLL_LOCK    <= CM_C2C_Mon.CM(iCM).phy_gt_pll_lock;        
-    Mon.CM(iCM).C2C.PHY_MMCM_LOL       <= CM_C2C_Mon.CM(iCM).phy_mmcm_not_locked_out;
-    Mon.CM(iCM).C2C.PHY_LANE_UP(0)     <= CM_C2C_Mon.CM(iCM).phy_lane_up(0);
-    Mon.CM(iCM).C2C.PHY_HARD_ERR       <= CM_C2C_Mon.CM(iCM).phy_hard_err;           
-    Mon.CM(iCM).C2C.PHY_SOFT_ERR       <= CM_C2C_Mon.CM(iCM).phy_soft_err;
-    Mon.CM(iCM).C2C.CPLL_LOCK          <= CM_C2C_Mon.CM(iCM).cplllock;
-    Mon.CM(iCM).C2C.EYESCAN_DATA_ERROR <= CM_C2C_Mon.CM(iCM).eyescandataerror;
-    Mon.CM(iCM).C2C.DMONITOR           <= CM_C2C_Mon.CM(iCM).dmonitorout;
-    Mon.CM(iCM).C2C.RX.BUF_STATUS      <= CM_C2C_Mon.CM(iCM).rxbufstatus;
-    Mon.CM(iCM).C2C.RX.MONITOR         <= CM_C2C_Mon.CM(iCM).rxmonitorout;
-    Mon.CM(iCM).C2C.RX.PRBS_ERR        <= CM_C2C_Mon.CM(iCM).rxprbserr;
-    Mon.CM(iCM).C2C.RX.RESET_DONE      <= CM_C2C_Mon.CM(iCM).rxresetdone;
-    Mon.CM(iCM).C2C.TX.BUF_STATUS      <= CM_C2C_Mon.CM(iCM).txbufstatus;
-    Mon.CM(iCM).C2C.TX.RESET_DONE      <= CM_C2C_Mon.CM(iCM).txresetdone;
+    Mon.CM(iCM).C2C.LINK_DEBUG         <= CM_C2C_Mon.CM(iCM).LINK_DEBUG;
+    Mon.CM(iCM).C2C.STATUS             <= CM_C2C_Mon.CM(iCM).STATUS;
     --C2C control signals
     --CM_C2C_Ctrl.CM(I).aurora_pma_init_in <= CTRL.CM(I).C2C.INITIALIZE;
-    CM_C2C_Ctrl.CM(iCM).eyescanreset       <= CTRL.CM(iCM).C2C.EYESCAN_RESET;
-    CM_C2C_Ctrl.CM(iCM).eyescantrigger     <= CTRL.CM(iCM).C2C.EYESCAN_TRIGGER;
-    CM_C2C_Ctrl.CM(iCM).rxbufreset         <= CTRL.CM(iCM).C2C.RX.BUF_RESET;
-    CM_C2C_Ctrl.CM(iCM).rxcdrhold          <= CTRL.CM(iCM).C2C.RX.CDR_HOLD;   
-    CM_C2C_Ctrl.CM(iCM).rxdfeagchold       <= CTRL.CM(iCM).C2C.RX.DFE_AGC_HOLD;
-    CM_C2C_Ctrl.CM(iCM).rxdfeagcovrden     <= CTRL.CM(iCM).C2C.RX.DFE_AGC_OVERRIDE;
-    CM_C2C_Ctrl.CM(iCM).rxdfelfhold        <= CTRL.CM(iCM).C2C.RX.DFE_LF_HOLD;
-    CM_C2C_Ctrl.CM(iCM).rxdfelpmreset      <= CTRL.CM(iCM).C2C.RX.DFE_LPM_RESET;
-    CM_C2C_Ctrl.CM(iCM).rxlpmen            <= CTRL.CM(iCM).C2C.RX.LPM_EN;
-    CM_C2C_Ctrl.CM(iCM).rxlpmhfovrden      <= CTRL.CM(iCM).C2C.RX.LPM_HF_OVERRIDE;
-    CM_C2C_Ctrl.CM(iCM).rxlpmlfklovrden    <= CTRL.CM(iCM).C2C.RX.LPM_LFKL_OVERRIDE;
-    CM_C2C_Ctrl.CM(iCM).rxmonitorsel       <= CTRL.CM(iCM).C2C.RX.MON_SEL;
-    CM_C2C_Ctrl.CM(iCM).rxpcsreset         <= CTRL.CM(iCM).C2C.RX.PCS_RESET;
-    CM_C2C_Ctrl.CM(iCM).rxpmareset         <= CTRL.CM(iCM).C2C.RX.PMA_RESET;
-    --CM_C2C_Ctrl.CM(iCM).rxprbscntreset     <= CTRL.CM(iCM).C2C.RX.PRBS_CNT_RST;
-    --CM_C2C_Ctrl.CM(iCM).rxprbssel          <= CTRL.CM(iCM).C2C.RX.PRBS_SEL;
-    CM_C2C_Ctrl.CM(iCM).txdiffctrl         <= CTRL.CM(iCM).C2C.TX.DIFF_CTRL;
-    CM_C2C_Ctrl.CM(iCM).txinhibit          <= CTRL.CM(iCM).C2C.TX.INHIBIT;
-    CM_C2C_Ctrl.CM(iCM).txmaincursor       <= CTRL.CM(iCM).C2C.TX.MAIN_CURSOR;
-    CM_C2C_Ctrl.CM(iCM).txpcsreset         <= CTRL.CM(iCM).C2C.TX.PCS_RESET;
-    CM_C2C_Ctrl.CM(iCM).txpmareset         <= CTRL.CM(iCM).C2C.TX.PMA_RESET;
-    CM_C2C_Ctrl.CM(iCM).txpolarity         <= CTRL.CM(iCM).C2C.TX.POLARITY;
-    CM_C2C_Ctrl.CM(iCM).txpostcursor       <= CTRL.CM(iCM).C2C.TX.POST_CURSOR;
-    CM_C2C_Ctrl.CM(iCM).txprbsforceerr     <= CTRL.CM(iCM).C2C.TX.PRBS_FORCE_ERR;
-    CM_C2C_Ctrl.CM(iCM).txprbssel          <= CTRL.CM(iCM).C2C.TX.PRBS_SEL;
-    CM_C2C_Ctrl.CM(iCM).txprecursor        <= CTRL.CM(iCM).C2C.TX.PRE_CURSOR;
     -------------------------------------------------------------------------------
     -- COUNTERS
     -------------------------------------------------------------------------------
@@ -337,11 +305,11 @@ begin
     end generate GENERATE_COUNTERS_LOOP;
     --PATTERN FOR COUNTERS
     --setting events, run 0 to (COUNTER_COUNT - 1)
-    counter_events(0 + ((iCM - 1) * COUNTER_COUNT)) <= Mon.CM(iCM).C2C.CONFIG_ERROR;
-    counter_events(1 + ((iCM - 1) * COUNTER_COUNT)) <= Mon.CM(iCM).C2C.LINK_ERROR; 
-    counter_events(2 + ((iCM - 1) * COUNTER_COUNT)) <= Mon.CM(iCM).C2C.MB_ERROR;
-    counter_events(3 + ((iCM - 1) * COUNTER_COUNT)) <= Mon.CM(iCM).C2C.PHY_HARD_ERR;
-    counter_events(4 + ((iCM - 1) * COUNTER_COUNT)) <= Mon.CM(iCM).C2C.PHY_SOFT_ERR;
+    counter_events(0 + ((iCM - 1) * COUNTER_COUNT)) <= Mon.CM(iCM).C2C.STATUS.CONFIG_ERROR;
+    counter_events(1 + ((iCM - 1) * COUNTER_COUNT)) <= Mon.CM(iCM).C2C.STATUS.LINK_ERROR; 
+    counter_events(2 + ((iCM - 1) * COUNTER_COUNT)) <= Mon.CM(iCM).C2C.STATUS.MB_ERROR;
+    counter_events(3 + ((iCM - 1) * COUNTER_COUNT)) <= Mon.CM(iCM).C2C.STATUS.PHY_HARD_ERR;
+    counter_events(4 + ((iCM - 1) * COUNTER_COUNT)) <= Mon.CM(iCM).C2C.STATUS.PHY_SOFT_ERR;
     --setting counters, run 1 to COUNTER_COUNT
     Mon.CM(iCM).C2C.CNT.CONFIG_ERROR_COUNT   <= C2C_Counter(1 + ((iCM - 1) * COUNTER_COUNT));
     Mon.CM(iCM).C2C.CNT.LINK_ERROR_COUNT     <= C2C_Counter(1 + ((iCM - 1) * COUNTER_COUNT));
