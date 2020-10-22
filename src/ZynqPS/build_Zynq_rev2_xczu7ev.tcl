@@ -1,6 +1,7 @@
 #create a block design called "zynq_bd"
 create_bd_design -dir ./ "zynq_bd"
 
+set AXI_ADDR_WIDTH 40
 
 #helpers for building AXI things
 source ${apollo_root_path}/bd/axi_helpers.tcl
@@ -24,7 +25,7 @@ set PL_M      AXIM_${PL_MASTER}
 set PL_M_CLK  AXI_CLK_${PL_MASTER}
 set PL_M_RSTN AXI_RSTN_${PL_MASTER}
 set PL_M_FREQ 50000000
-[AXI_PL_MASTER_PORT ${PL_M} ${PL_M_CLK} ${PL_M_RSTN} ${PL_M_FREQ}]
+[AXI_PL_MASTER_PORT ${PL_M} ${PL_M_CLK} ${PL_M_RSTN} ${PL_M_FREQ} AXI4LITE 40]
 
 #set AXI_MASTER_CLK_FREQ 50000000
 set AXI_MASTER_CLK_FREQ 49999500

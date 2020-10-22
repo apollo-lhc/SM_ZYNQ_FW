@@ -60,7 +60,7 @@ set vhdl_files "\
 set xdc_files src/top_rev2_xczu7ev.xdc
 
 set xci_files "\
-    	      cores/onboard_CLK/onboard_CLK.xci \
+    	      cores/onboard_CLK_USP/onboard_CLK.xci \
               cores/LHC/LHC.xci \
               cores/TCDS_DRP_BRIDGE/TCDS_DRP_BRIDGE.xci \
               "

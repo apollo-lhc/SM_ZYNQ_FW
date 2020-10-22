@@ -1,17 +1,15 @@
 ###############################
 #MIO configuration
 ###############################
-#io voltage
-set_property CONFIG.PSU_BANK_0_IO_STANDARD {LVCMOS33}		    [get_bd_cells ${ZYNQ_NAME}]
+#io voltage (banks 0 and 2 have level shifters on the enclustra to map to connA IOBs)
+set_property CONFIG.PSU_BANK_0_IO_STANDARD {LVCMOS18}		    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU_BANK_1_IO_STANDARD {LVCMOS33}		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_BANK_2_IO_STANDARD {LVCMOS33}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_BANK_2_IO_STANDARD {LVCMOS18}		    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU_BANK_3_IO_STANDARD {LVCMOS33}		    [get_bd_cells ${ZYNQ_NAME}]
 
 #i2c for rtc
 set_property CONFIG.PSU__I2C0__PERIPHERAL__ENABLE {1} 		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU__I2C0__PERIPHERAL__IO {EMIO} 	            [get_bd_cells ${ZYNQ_NAME}]
-create_bd_intf_port -mode Master -vlnv xilinx.com:interface:iic_rtl:1.0 IIC_0
-connect_bd_intf_net [get_bd_intf_pins ${ZYNQ_NAME}/IIC_0] [get_bd_intf_ports IIC_0]
+set_property CONFIG.PSU__I2C0__PERIPHERAL__IO {MIO 10 .. 11}        [get_bd_cells ${ZYNQ_NAME}]
 
 #spi
 set_property CONFIG.PSU__QSPI__PERIPHERAL__ENABLE {1}		    [get_bd_cells ${ZYNQ_NAME}]

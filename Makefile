@@ -150,7 +150,7 @@ $(BIT_BASE)%.bit	: $(ADDSLAVE_TCL_PATH)/AddSlaves_%.tcl
 	vivado $(VIVADO_FLAGS) -source $(SETUP_BUILD_TCL) -tclargs ${MAKE_PATH} $(subst .bit,,$(subst ${BIT_BASE},,$@)) $(OUTPUT_MARKUP)
 	$(MAKE) NOTIFY_DAN_GOOD
 
-all-the-things: clean clean_ip clean_bd clean_kernel clean_bit clean_remote clean_CM clean_prebuild
+all-the-things: clean clean_bd clean_kernel clean_bit clean_remote clean_CM clean_prebuild
 	cd os     && $(MAKE) -f Makefile clean && cd ${MAKE_PATH}
 	cd kernel && $(MAKE) -f Makefile clean && cd ${MAKE_PATH}
 	$(MAKE) init

@@ -51,8 +51,8 @@ architecture behavioral of IPMC_i2c_slave is
   
   --------------------------------------
   -- AXI bridge signals
-  signal localAddress : slv_32_t;
-  signal localAddress_latch : slv_32_t;
+  signal localAddress : std_logic_vector(AXI_ADDR_WIDTH-1 downto 0);
+  signal localAddress_latch : std_logic_vector(AXI_ADDR_WIDTH-1 downto 0);
   signal localRdData  : slv_32_t;
   signal localRdData_latch  : slv_32_t;
   signal localWrData  : slv_32_t;
@@ -76,7 +76,7 @@ architecture behavioral of IPMC_i2c_slave is
  
   ---------------------------------------
   -- heart-beat
-  signal last_localAddress : slv_32_t;
+  signal last_localAddress : std_logic_vector(AXI_ADDR_WIDTH-1 downto 0);
   signal heart_beat : std_logic;
   signal PS_is_shutdown : std_logic;
   constant I2C_SHUTDOWN_REG : std_logic_vector(log2(4*REG32_COUNT*SLAVE_COUNT)-1 downto 0) := (others => '0');-- reg 0

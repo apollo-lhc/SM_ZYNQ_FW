@@ -74,7 +74,7 @@ architecture behavioral of CM_intf is
   signal mon_errors : slv16_array_t(0 to 1);
 
   constant INACTIVE_COUNT : slv_32_t := x"03FFFFFF";
-  constant PL_MEM_ADDR    : unsigned(31 downto 0) := x"40000000";
+  constant PL_MEM_ADDR    : unsigned(AXI_ADDR_WIDTH-1 downto 0) := to_unsigned(16#40000000#,AXI_ADDR_WIDTH); --because fuck VHDL
 
   signal debug_history   : slv_32_t;
   signal debug_valid     : slv_4_t;

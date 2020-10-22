@@ -19,7 +19,7 @@ entity PLXVC_interface is
     );
 end entity PLXVC_interface;
 architecture behavioral of PLXVC_interface is
-  signal localAddress       : slv_32_t;
+  signal localAddress       : std_logic_vector(AXI_ADDR_WIDTH-1 downto 0);
   signal localRdData        : slv_32_t;
   signal localRdData_latch  : slv_32_t;
   signal localWrData        : slv_32_t;

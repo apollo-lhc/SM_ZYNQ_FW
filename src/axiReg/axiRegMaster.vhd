@@ -14,7 +14,7 @@ entity axiLiteMaster is
     writeMOSI    : out AXIwriteMOSI;
     writeMISO    : in  AXIwriteMISO;
     busy         : out std_logic;
-    address      : in  slv_32_t;
+    address      : in  std_logic_vector(AXI_ADDR_WIDTH-1 downto 0);
     rd_en        : in  std_logic;
     rd_data      : out slv_32_t;
     rd_data_valid: out std_logic;
@@ -37,13 +37,13 @@ architecture behavioral of axiLiteMaster is
   
   
   signal local_readMOSI_address_valid  : std_logic;
-  signal local_readMOSI_address        : slv_32_t;
+  signal local_readMOSI_address        : std_logic_vector(AXI_ADDR_WIDTH-1 downto 0);
   signal local_writeMOSI_address_valid : std_logic;
-  signal local_writeMOSI_address       : slv_32_t;
+  signal local_writeMOSI_address       : std_logic_vector(AXI_ADDR_WIDTH-1 downto 0);
   signal local_writeMOSI_data_valid    : std_logic;
   signal local_writeMOSI_data          : slv_32_t;
 
-  signal local_address_latch :slv_32_t;
+  signal local_address_latch :std_logic_vector(AXI_ADDR_WIDTH-1 downto 0);
   signal local_data_latch    :slv_32_t;
 
   signal wr_waiting_for_ready_for_address : std_logic;
