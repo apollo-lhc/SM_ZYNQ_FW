@@ -6,6 +6,7 @@ use work.types.all;
 use work.AXIRegPKG.all;
 use work.SGMII_MONITOR.all;
 use work.CM_package.all;
+ 
 
 Library UNISIM;
 use UNISIM.vcomponents.all;
@@ -17,8 +18,8 @@ entity top is
     -------------------------------------
     -- Onboard Enclustra
 
-    onboard_CLK_P     : in  std_logic;
-    onboard_CLK_N     : in  std_logic;
+    ONBOARD_CLK_P     : in  std_logic;
+    ONBOARD_CLK_N     : in  std_logic;
 
     -------------------------------------
     -- Misc SM
@@ -143,15 +144,15 @@ entity top is
 -----    -------------------------------------------------------------------------------------------
 -----    -- MGBT 1
 -----    -------------------------------------------------------------------------------------------
-    AXI_C2C_CM1_Rx_P      : in    std_logic_vector(0 to 0);
-    AXI_C2C_CM1_Rx_N      : in    std_logic_vector(0 to 0);
-    AXI_C2C_CM1_Tx_P      : out   std_logic_vector(0 to 0);
-    AXI_C2C_CM1_Tx_N      : out   std_logic_vector(0 to 0);
+    AXI_C2C_CM1_RX_P      : in    std_logic_vector(0 to 0);
+    AXI_C2C_CM1_RX_N      : in    std_logic_vector(0 to 0);
+    AXI_C2C_CM1_TX_P      : out   std_logic_vector(0 to 0);
+    AXI_C2C_CM1_TX_N      : out   std_logic_vector(0 to 0);
 
-    AXI_C2C_CM2_Rx_P      : in    std_logic_vector(0 to 0);
-    AXI_C2C_CM2_Rx_N      : in    std_logic_vector(0 to 0);
-    AXI_C2C_CM2_Tx_P      : out   std_logic_vector(0 to 0);
-    AXI_C2C_CM2_Tx_N      : out   std_logic_vector(0 to 0);
+    AXI_C2C_CM2_RX_P      : in    std_logic_vector(0 to 0);
+    AXI_C2C_CM2_RX_N      : in    std_logic_vector(0 to 0);
+    AXI_C2C_CM2_TX_P      : out   std_logic_vector(0 to 0);
+    AXI_C2C_CM2_TX_N      : out   std_logic_vector(0 to 0);
 
                              
 --    SSD_rx_P        : in    std_logic; 
@@ -196,8 +197,8 @@ entity top is
 --    refclk_CMS_P      : in    std_logic; 
 --    refclk_CMS_N      : in    std_logic; 
 
-    refclk_C2C2_P          : in    std_logic_vector(0 downto 0);
-    refclk_C2C2_N          : in    std_logic_vector(0 downto 0);
+    REFCLK_C2C2_P          : in    std_logic_vector(0 downto 0);
+    REFCLK_C2C2_N          : in    std_logic_vector(0 downto 0);
 
     
     -------------------------------------------------------------------------------------------
@@ -214,6 +215,22 @@ end entity top;
 
 architecture structure of top is
 
+  component onboard_CLK
+    port
+      (-- Clock in ports
+        -- Clock out ports
+        clk_200Mhz          : out    std_logic;
+        clk_50Mhz          : out    std_logic;
+        -- Status and control signals
+        reset             : in     std_logic;
+        locked            : out    std_logic;
+        clk_in1_p         : in     std_logic;
+        clk_in1_n         : in     std_logic
+        );
+  end component;
+
+
+  
   signal pl_clk : std_logic;
   signal axi_reset_n : std_logic;
   signal axi_reset : std_logic;
@@ -649,9 +666,9 @@ begin  -- architecture structure
       CM2_UART_txd => CM2_UART_Tx_internal,
       ESM_UART_rxd => ESM_UART_rx,
       ESM_UART_txd => ESM_UART_tx,
-      BRAM_PORTB_0_addr => x"00000000",
+      BRAM_PORTB_0_addr => (others => '0'),
       BRAM_PORTB_0_clk  => AXI_clk,
-      BRAM_PORTB_0_din  => x"00000000",
+      BRAM_PORTB_0_din  => (others => '0'),
       BRAM_PORTB_0_dout => open,
       BRAM_PORTB_0_en   => '0',
       BRAM_PORTB_0_rst  => '0',
@@ -682,7 +699,7 @@ begin  -- architecture structure
       T  => SCL_t_phy,
       O  => SCL_i_phy);
 
-  onboard_CLK_1: entity work.onboard_CLK
+  onboard_CLK_1: onboard_CLK
     port map (
       clk_200Mhz => clk_200Mhz,
       clk_50Mhz  => AXI_C2C_aurora_init_clk,

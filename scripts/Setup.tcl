@@ -54,9 +54,18 @@ for {set j 0} {$j < [llength $xdc_files ] } {incr j} {
 #Add xci files
 for {set j 0} {$j < [llength $xci_files ] } {incr j} {
     set filename "${apollo_root_path}/[lindex $xci_files $j]"
+    set ip_name [file rootname [file tail $filename]]
+    puts "Adding $filename"    
     read_ip $filename
-    puts "Adding $filename"
+    puts "Generating target all on $ip_name"
+#    generate_target {synthesis} [get_files $filename]         
+    generate_target all [get_files $filename]         
+    puts "Running synth on $ip_name"
+    create_ip_run -force [get_ips $ip_name]
+    launch_runs [get_runs]
+#    synth_ip $ip_name
 }
+
 
 check_syntax -fileset sources_1
 

@@ -8,6 +8,7 @@ source ${apollo_root_path}/scripts/settings_${build_name}.tcl
 set ip_to_regenerate [get_ips]
 for {set j 0} {$j < [llength $ip_to_regenerate ] } {incr j} {
     set ip_name [lindex $ip_to_regenerate $j]
+    
     set ip_xci ${apollo_root_path}/cores/$ip_name/$ip_name.xci
     if {[string length [get_files -q $ip_xci]]} {
 	puts "Building $ip_name \n\n"
