@@ -28,10 +28,10 @@ set_property BITSTREAM.CONFIG.UNUSEDPIN PULLNONE [current_design]
 set_property -dict {PACKAGE_PIN B15  IOSTANDARD LVCMOS33 PULLDOWN TRUE} [get_ports {ZYNQ_BOOT_DONE}]
 
 #alternate, not used by default
-set_property -dict {PACKAGE_PIN F16  IOSTANDARD LVCMOS33}               [get_ports {UART_RX_Zynq}] 
-set_property -dict {PACKAGE_PIN F15  IOSTANDARD LVCMOS33}               [get_ports {UART_TX_Zynq}] 
+set_property -dict {PACKAGE_PIN F16  IOSTANDARD LVCMOS33}               [get_ports {UART_RX_ZYNQ}] 
+set_property -dict {PACKAGE_PIN F15  IOSTANDARD LVCMOS33}               [get_ports {UART_TX_ZYNQ}] 
 
-set_property -dict {PACKAGE_PIN C12  IOSTANDARD LVCMOS33}               [get_ports {IPMC_SDA}]
+set_property -dict {PACKAGE_PIN G14  IOSTANDARD LVCMOS33}               [get_ports {IPMC_SDA}]
 set_property -dict {PACKAGE_PIN D12  IOSTANDARD LVCMOS33}               [get_ports {IPMC_SCL}]
 
 set_property -dict {PACKAGE_PIN E13  IOSTANDARD LVCMOS33}               [get_ports {CM1_EN}]
@@ -97,9 +97,9 @@ set_property -dict {PACKAGE_PIN G15  IOSTANDARD LVCMOS33}               [get_por
 # -------------------------------------------------------------------------------------------------
 # bank 33 & 34
 # -------------------------------------------------------------------------------------------------
-set_property -dict {PACKAGE_PIN AH6  IOSTANDARD LVDS}                   [get_ports {ONBOARD_CLK_N}]
-set_property -dict {PACKAGE_PIN AJ6  IOSTANDARD LVDS}                   [get_ports {ONBOARD_CLK_P}]
-create_clock -period 10.000 -name onboard_CLK_P -add [get_ports onboard_CLK_P]
+set_property -dict {PACKAGE_PIN AH6  IOSTANDARD LVDS}                   [get_ports {ONBOARD_CLK_P}]
+set_property -dict {PACKAGE_PIN AJ6  IOSTANDARD LVDS}                   [get_ports {ONBOARD_CLK_N}]
+create_clock -period 10.000 -name ONBOARD_CLK_P -add [get_ports ONBOARD_CLK_P]
 
 set_property -dict {PACKAGE_PIN AD7  IOSTANDARD LVDS}                   [get_ports {CLK_LHC_P}]
 set_property -dict {PACKAGE_PIN AE7  IOSTANDARD LVDS}                   [get_ports {CLK_LHC_N}]
@@ -168,17 +168,17 @@ set_property -dict {PACKAGE_PIN AD12 IOSTANDARD LVCMOS18 PULLDOWN TRUE} [get_por
 # -------------------------------------------------------------------------------------------------
 # MGBT (refclks)
 # -------------------------------------------------------------------------------------------------
-set_property -dict {PACKAGE_PIN M23 }  [get_ports REFCLK_SSD_P]
-set_property -dict {PACKAGE_PIN M24 }  [get_ports REFCLK_SSD_N]
+#set_property -dict {PACKAGE_PIN M23 }  [get_ports REFCLK_SSD_P]
+#set_property -dict {PACKAGE_PIN M24 }  [get_ports REFCLK_SSD_N]
 
-set_property -dict {PACKAGE_PIN D10 }  [get_ports REFCLK_C2C1_P[0]]
-set_property -dict {PACKAGE_PIN D9  }  [get_ports REFCLK_C2C1_N[0]]
+#set_property -dict {PACKAGE_PIN D10 }  [get_ports REFCLK_C2C1_P[0]]
+#set_property -dict {PACKAGE_PIN D9  }  [get_ports REFCLK_C2C1_N[0]]
 
-set_property -dict {PACKAGE_PIN B10 }  [get_ports REFCLK_CMS_P[0]]
-set_property -dict {PACKAGE_PIN B9  }  [get_ports REFCLK_CMS_N[0]]
+#set_property -dict {PACKAGE_PIN B10 }  [get_ports REFCLK_CMS_P[0]]
+#set_property -dict {PACKAGE_PIN B9  }  [get_ports REFCLK_CMS_N[0]]
 
-set_property -dict {PACKAGE_PIN L25 }  [get_ports REFCLK_C2C2_P[0]]
-set_property -dict {PACKAGE_PIN L26 }  [get_ports REFCLK_C2C2_N[0]]
+#set_property -dict {PACKAGE_PIN L25 }  [get_ports REFCLK_C2C2_P[0]]
+#set_property -dict {PACKAGE_PIN L26 }  [get_ports REFCLK_C2C2_N[0]]
 
 set_property -dict {PACKAGE_PIN H10 }  [get_ports REFCLK_C2C1_P[1]]
 set_property -dict {PACKAGE_PIN H9  }  [get_ports REFCLK_C2C1_N[1]]

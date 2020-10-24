@@ -31,8 +31,8 @@ entity top is
     FP_1V8_GPIO       : out   std_logic_vector(5 downto 0);
     
     SATA_DETECT_N     : in    std_logic;
---         UART_Rx_Zynq  : in    std_logic; -- not used
---         UART_Tx_Zynq  : out   std_logic; -- not used
+--         UART_Rx_ZYNQ  : in    std_logic; -- not used
+--         UART_Tx_ZYNQ  : out   std_logic; -- not used
 
     CPLD_TCK          : out   std_logic;
     CPLD_TDI          : out   std_logic;
@@ -197,8 +197,8 @@ entity top is
 --    refclk_CMS_P      : in    std_logic; 
 --    refclk_CMS_N      : in    std_logic; 
 
-    REFCLK_C2C2_P          : in    std_logic_vector(0 downto 0);
-    REFCLK_C2C2_N          : in    std_logic_vector(0 downto 0);
+    REFCLK_C2C2_P          : in    std_logic_vector(1 downto 1);
+    REFCLK_C2C2_N          : in    std_logic_vector(1 downto 1);
 
     
     -------------------------------------------------------------------------------------------
@@ -548,8 +548,8 @@ begin  -- architecture structure
       C2C1_phy_Rx_rxp =>  AXI_C2C_CM1_Rx_P(0 to 0),
       C2C1_phy_Tx_txn =>  AXI_C2C_CM1_Tx_N(0 to 0),
       C2C1_phy_Tx_txp =>  AXI_C2C_CM1_Tx_P(0 to 0),
-      C2C1_phy_refclk_clk_n => refclk_C2C2_N(0),
-      C2C1_phy_refclk_clk_p => refclk_C2C2_P(0),
+      C2C1_phy_refclk_clk_n => refclk_C2C2_N(1),
+      C2C1_phy_refclk_clk_p => refclk_C2C2_P(1),
       C2C1_phy_power_down   => AXI_C2C_powerdown(0),
 
       C2C1_aurora_do_cc                 => CM_C2C_Mon.CM(1).status.do_cc                ,

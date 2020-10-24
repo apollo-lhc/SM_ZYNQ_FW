@@ -139,6 +139,8 @@ rev2_xc7z035 : $(BOOT_FILES).rev2_xc7z035
 
 rev2_xc7z045 : $(BOOT_FILES).rev2_xc7z045
 
+rev2_xczu7ev : $(BOOT_FILES).rev2_xczu7ev
+
 clean:
 	@rm -rf zynq_os
 	@rm -f  make_log.txt
