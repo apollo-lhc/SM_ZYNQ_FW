@@ -133,15 +133,15 @@ clean:
 
 ZYNQ_OS_MODS_BASE=zynq_os_mods/
 define copy_configs =
-	@echo "adding rootfs mods"
+	@echo "adding rootfs mods" $(OUTPUT_MARKUP)
 	@cp $(ZYNQ_OS_MODS_BASE)/$@/$(USER_MOD_ROOTFS_PATH)  $(BUILD_ROOTFS) 2>/dev/null || :
-	@echo "adding user kernel modifications"
-	@mkdir -p $(KERNEL_USER_MODS_BASE)
-	@cp -r ./zynq_os_mods/kernel/linux $(KERNEL_USER_MODS_BASE)
-	DTSI_PATH="./hw ./hw_*" $(ZYNQ_OS_MODS_BASE)/$@/device-tree/build_user_dtsi.sh > $(DEVICE_TREE_USER)
-	@echo "Modify FSBL"
+	@echo "adding user kernel modifications" $(OUTPUT_MARKUP)
+	@mkdir -p $(KERNEL_USER_MODS_BASE) $(OUTPUT_MARKUP)
+	@cp -r ./zynq_os_mods/$@/kernel/linux $(KERNEL_USER_MODS_BASE) $(OUTPUT_MARKUP)
+	DTSI_PATH="./hw ./hw_*" $(ZYNQ_OS_MODS_BASE)/$@/device-tree/build_user_dtsi.sh > $(DEVICE_TREE_USER) $(OUTPUT_MARKUP)
+	@echo "Modify FSBL" $(OUTPUT_MARKUP)
 	@mkdir -p $(FSBL_BASE)
-	@cp -r $(FSBL_MOD)/* $(FSBL_BASE)
+	@cp -r $(ZYNQ_OS_MODS_BASE)/$@/fsbl/* $(FSBL_BASE)
 endef
 
 
@@ -150,13 +150,14 @@ endef
 
 rev2_xczu7ev : ../bit/top_rev2_xczu7ev.bit
 	@echo "Creating fresh OS project"
+	@rm -f make_log.txt
 	@rm -rf $(ZYNQ_OS_PROJECT_PATH)	
 	source $(VIVADO_PETALINUX) && \
-	petalinux-create --type project --name $(ZYNQ_OS) --template zynqMP --force
+	petalinux-create --type project --name $(ZYNQ_OS) --template zynqMP --force $(OUTPUT_MARKUP)
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
 	source $(VIVADO_PETALINUX) && \
-	petalinux-config --get-hw-description ../hw --silentconfig
-	$(TB_RULE)
+	petalinux-config --get-hw-description ../hw --silentconfig $(OUTPUT_MARKUP)
+	$(copy_configs) 
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
 	source $(VIVADO_PETALINUX) && \
 	petalinux-build $(OUTPUT_MARKUP)
@@ -166,4 +167,5 @@ rev2_xczu7ev : ../bit/top_rev2_xczu7ev.bit
 	petalinux-build -x package $(OUTPUT_MARKUP)
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
 	source $(VIVADO_PETALINUX) && \
-	petalinux-package --boot --format BIN --fsbl images/linux/zynqmp_fsbl.elf --fpga ../$<  --uboot --force $(OUTPUT_MARKUP)
+	petalinux-package --boot --format BIN --fsbl images/linux/zynqmp_fsbl.elf --fpga ../$<  --uboot images/linux/u-boot.elf --pmufw images/linux/pmufw.elf --atf images/linux/bl31.elf  --force $(OUTPUT_MARKUP)
+#	petalinux-package --boot --format BIN --fsbl images/linux/zynqmp_fsbl.elf --fpga ../$<  --uboot --force $(OUTPUT_MARKUP)
