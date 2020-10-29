@@ -84,6 +84,28 @@ set_property -dict {PACKAGE_PIN AD21 IOSTANDARD LVCMOS33}               [get_por
 set_property -dict {PACKAGE_PIN AD23 IOSTANDARD LVCMOS33}               [get_ports {ZYNQ_CPLD_GPIO[2]}]
 set_property -dict {PACKAGE_PIN AD24 IOSTANDARD LVCMOS33}               [get_ports {ZYNQ_CPLD_GPIO[3]}]
 
+
+set_property -dict {PACKAGE_PIN W14   IOSTANDARD LVCMOS33}              [get_ports ETH1_CLK]
+set_property -dict {PACKAGE_PIN W17   IOSTANDARD LVCMOS33}              [get_ports ETH1_INT_PWDN_N]
+set_property -dict {PACKAGE_PIN AD14  IOSTANDARD LVCMOS33}              [get_ports ETH1_MDC]
+set_property -dict {PACKAGE_PIN AD11  IOSTANDARD LVCMOS33}              [get_ports ETH1_MDIO]
+set_property -dict {PACKAGE_PIN AF14  IOSTANDARD LVCMOS33}              [get_ports ETH1_RESET_N]
+set_property -dict {PACKAGE_PIN J11   IOSTANDARD LVCMOS18}              [get_ports ETH1A_COL_PL]
+set_property -dict {PACKAGE_PIN G6    IOSTANDARD LVCMOS18}              [get_ports ETH1A_CRS_PL]
+set_property -dict {PACKAGE_PIN AC13  IOSTANDARD LVCMOS33}              [get_ports ETH1A_RXCLK]
+set_property -dict {PACKAGE_PIN AE12  IOSTANDARD LVCMOS33}              [get_ports {ETH1A_RXD[0]}]
+set_property -dict {PACKAGE_PIN AF12  IOSTANDARD LVCMOS33}              [get_ports {ETH1A_RXD[1]}]
+set_property -dict {PACKAGE_PIN AE11  IOSTANDARD LVCMOS33}              [get_ports {ETH1A_RXD[2]}]
+set_property -dict {PACKAGE_PIN AF10  IOSTANDARD LVCMOS33}              [get_ports {ETH1A_RXD[3]}]
+set_property -dict {PACKAGE_PIN AE13  IOSTANDARD LVCMOS33}              [get_ports ETH1A_RXDV]
+set_property -dict {PACKAGE_PIN AF13  IOSTANDARD LVCMOS33}              [get_ports ETH1A_RXER]
+set_property -dict {PACKAGE_PIN AC12  IOSTANDARD LVCMOS33}              [get_ports ETH1A_TXCLK]
+set_property -dict {PACKAGE_PIN AB12  IOSTANDARD LVCMOS33}              [get_ports {ETH1A_TXD[0]}]
+set_property -dict {PACKAGE_PIN AC11  IOSTANDARD LVCMOS33}              [get_ports {ETH1A_TXD[1]}]
+set_property -dict {PACKAGE_PIN AB11  IOSTANDARD LVCMOS33}              [get_ports {ETH1A_TXD[2]}]
+set_property -dict {PACKAGE_PIN AB10  IOSTANDARD LVCMOS33}              [get_ports {ETH1A_TXD[3]}]
+set_property -dict {PACKAGE_PIN AE10  IOSTANDARD LVCMOS33}              [get_ports ETH1A_TXEN]
+
 # -------------------------------------------------------------------------------------------------
 # bank 33 & 34
 # -------------------------------------------------------------------------------------------------
