@@ -3,10 +3,13 @@ include mk/helpers.mk
 #################################################################################
 # VIVADO stuff
 #################################################################################
-#VIVADO_VERSION=2018.2
-VIVADO_VERSION=2019.2
+
+
 VIVADO_FLAGS=-notrace -mode batch
-VIVADO_SHELL?="/opt/Xilinx/Vivado/"$(VIVADO_VERSION)"/settings64.sh"
+#VIVADO_SHELL?="/opt/Xilinx/Vivado/"$(VIVADO_VERSION)"/settings64.sh"
+#VIVADO_VERSION=2019.2
+#VIVADO_SHELL="~/Xilinx/Vivado/"$(VIVADO_VERSION)"/settings64.sh"
+VIVADO_SHELL="/home/dan/Xilinx/Vivado/2019.2/settings64.sh"
 
 
 #################################################################################

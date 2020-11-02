@@ -3,8 +3,12 @@ include ../mk/helpers.mk
 #################################################################################
 # VIVADO stuff
 #################################################################################
-VIVADO_VERSION=2019.2 #2018.2
-VIVADO_PETALINUX="/home/dan/Xilinx/petalinux/settings.sh" #"/opt/Xilinx/petalinux/"$(VIVADO_VERSION)"/settings.sh"
+VIVADO_VERSION=2019.2 
+#2018.2
+VIVADO_PETALINUX="/home/dan/Xilinx/petalinux/settings.sh" 
+#"/opt/Xilinx/petalinux/"$(VIVADO_VERSION)"/settings.sh"
+#VIVADO_VERSION=2018.2
+#VIVADO_PETALINUX="/opt/Xilinx/petalinux/"$(VIVADO_VERSION)"/settings.sh"
 
 HDF_FILE=hw/top.hdf
 ZYNQ_OS=zynq_os
@@ -142,6 +146,9 @@ define copy_configs =
 	@echo "Modify FSBL" $(OUTPUT_MARKUP)
 	@mkdir -p $(FSBL_BASE)
 	@cp -r $(ZYNQ_OS_MODS_BASE)/$@/fsbl/* $(FSBL_BASE)
+#	@echo "Fixing dtsi sizes"
+#	@mkdir -p $(YOCTO_MOD_BASE)/recipes-bsp/device-tree-generation
+#	@cp -r $(ZYNQ_OS_MODS_BASE)/$@/device-tree-patch/* $(YOCTO_MOD_BASE)/recipes-bsp/device-tree-generation
 endef
 
 
@@ -157,6 +164,7 @@ rev2_xczu7ev : ../bit/top_rev2_xczu7ev.bit
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
 	source $(VIVADO_PETALINUX) && \
 	petalinux-config --get-hw-description ../hw --silentconfig $(OUTPUT_MARKUP)
+#	petalinux-config --get-hw-description ../hw --oldconfig $(OUTPUT_MARKUP)
 	$(copy_configs) 
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
 	source $(VIVADO_PETALINUX) && \
