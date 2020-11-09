@@ -4,6 +4,8 @@
 #This code is directly sourced and builds the Zynq CPU
 set ZYNQ_NAME Zynq7
 
+set ZYNQ_NAME Zynq7
+
 startgroup
 #create basic zynq processing system
 create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7:5.5 ${ZYNQ_NAME}
@@ -24,6 +26,8 @@ set_property CONFIG.PCW_APU_CLK_RATIO_ENABLE {6:2:1}         [get_bd_cells ${ZYN
 #extra clock for ethernet 
 set_property CONFIG.PCW_EN_CLK1_PORT {1}                     [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PCW_FPGA1_PERIPHERAL_FREQMHZ {25}        [get_bd_cells ${ZYNQ_NAME}]
+
+
 
 ###############################
 #RAM

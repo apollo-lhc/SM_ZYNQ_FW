@@ -1,0 +1,13 @@
+diff --git a/lib/sw_apps/zynqmp_fsbl/src/xfsbl_debug.h b/lib/sw_apps/zynqmp_fsbl/src/xfsbl_debug.h
+index d3d1261..7f4a654 100644
+--- a/lib/sw_apps/zynqmp_fsbl/src/xfsbl_debug.h
++++ b/lib/sw_apps/zynqmp_fsbl/src/xfsbl_debug.h
+@@ -48,6 +48,8 @@
+ #ifndef XFSBL_DEBUG_H
+ #define XFSBL_DEBUG_H
+ 
++#define FSBL_DEBUG_INFO 1
++
+ #ifdef __cplusplus
+ extern "C" {
+ #endif

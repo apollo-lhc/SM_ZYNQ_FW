@@ -1,6 +1,9 @@
 PWD=$(shell pwd)
 
-QEMU=qemu-arm-static
+QEMU=qemu-aarch64-static
+#QEMU=qemu-arm-static
+ZYNQ_ARCH=aarch64
+#ZYNQ_ARCH=armv7hl
 QEMU_PATH=/usr/local/bin
 MODS_PATH=${PWD}/mods
 SECURE_PATH=${PWD}/secure
@@ -38,7 +41,7 @@ ${QEMU_PATH}/${QEMU} ${INSTALL_PATH}/${QEMU_PATH}/${QEMU}: | ${INSTALL_PATH}
 
 ${ETC_PATH} ${TMP_PATH}: ${QEMU_PATH}/${QEMU} ${INSTALL_PATH}/${QEMU_PATH}/${QEMU} centos-rootfs/extra_rpms.txt
 	cd centos-rootfs && \
-		sudo python mkrootfs.py --root=${INSTALL_PATH} --arch=armv7hl --extra=extra_rpms.txt
+		sudo python mkrootfs.py --root=${INSTALL_PATH} --arch=${ZYNQ_ARCH} --extra=extra_rpms.txt
 
 ${OPT_PATH}: ${TMP_PATH}
 	sudo mkdir -p ${OPT_PATH}
