@@ -64,6 +64,7 @@ source ../src/ZynqPS/xczu7ev/build_CPU_MIO_rev2.tcl
 
 #SDIO clock
 set_property CONFIG.PSU__CRL_APB__SDIO1_REF_CTRL__FREQMHZ {25}	    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__CRL_APB__SDIO1_REF_CTRL__SRCSEL {IOPLL}    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU_MIO_46_PULLUPDOWN {pullup}                  [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU_MIO_47_PULLUPDOWN {pullup}                  [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU_MIO_48_PULLUPDOWN {pullup}                  [get_bd_cells ${ZYNQ_NAME}]

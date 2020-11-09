@@ -60,6 +60,12 @@ set_property CONFIG.PSU_MIO_48_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NA
 set_property CONFIG.PSU_MIO_49_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU_MIO_50_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU_MIO_51_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_46_SLEW {slow}                          [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_47_SLEW {slow}                          [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_48_SLEW {slow}                          [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_49_SLEW {slow}                          [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_50_SLEW {slow}                          [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_51_SLEW {slow}                          [get_bd_cells ${ZYNQ_NAME}]
 
 #uart
 set_property -dict [list CONFIG.PSU__UART0__PERIPHERAL__ENABLE {1}       \

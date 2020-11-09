@@ -4,6 +4,7 @@ use ieee.numeric_std.all;
 use ieee.std_logic_misc.all;
 
 use work.types.all;
+use work.axiRegWidthPkg.all;
 use work.axiRegPkg.all;
 
 

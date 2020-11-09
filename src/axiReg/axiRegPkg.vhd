@@ -6,11 +6,12 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 use work.types.all;
+use work.AXIRegWidthPkg.all;
 
 package AXIRegPkg is
 
   constant AXI_ID_BIT_COUNT : integer := 6;
-  constant AXI_ADDR_WIDTH   : integer := 40;
+
 
   
   type AXIReadMOSI is record

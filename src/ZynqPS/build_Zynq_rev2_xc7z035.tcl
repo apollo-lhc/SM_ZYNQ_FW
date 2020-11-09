@@ -13,6 +13,7 @@ source ${apollo_root_path}/bd/Xilinx_AXI_slaves.tcl
 puts "Building CPU"
 source ${apollo_root_path}/src/ZynqPS/xc7z/build_CPU_rev2.tcl
 
+
 #================================================================================
 #  Create an AXI interconnect
 #================================================================================
@@ -32,14 +33,14 @@ set AXI_MASTER_CLK_FREQ 50000000
 set INT_AXI_FW INT_AXI_FW
 create_bd_cell -type ip -vlnv [get_ipdefs -filter {NAME == axi_firewall}] ${INT_AXI_FW}
 #connect Zynq to this FW
-connect_bd_intf_net [get_bd_intf_pins processing_system7_0/M_AXI_GP0] [get_bd_intf_pins ${INT_AXI_FW}/S_AXI]
+connect_bd_intf_net [get_bd_intf_pins ${ZYNQ_NAME}/M_AXI_GP0] [get_bd_intf_pins ${INT_AXI_FW}/S_AXI]
 
 #create the main interconnect (connected to the PL master and the Zynq(via FW))
 [BUILD_AXI_INTERCONNECT ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} [list ${INT_AXI_FW}/M_AXI ${PL_M}] [list ${AXI_MASTER_CLK} ${PL_M_CLK}] [list ${AXI_MASTER_RSTN} ${PL_M_RSTN}]]
 
 
 #build the C2C interconnect
-[BUILD_AXI_INTERCONNECT ${AXI_C2C_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} [list processing_system7_0/M_AXI_GP1] [list ${AXI_MASTER_CLK}] [list ${AXI_MASTER_RSTN}]]
+[BUILD_AXI_INTERCONNECT ${AXI_C2C_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} [list ${ZYNQ_NAME}/M_AXI_GP1] [list ${AXI_MASTER_CLK}] [list ${AXI_MASTER_RSTN}]]
 set_property CONFIG.STRATEGY {1} [get_bd_cells ${AXI_C2C_INTERCONNECT_NAME}]
 
 #tak the INT_AXI_FW to the C2C interconnect
@@ -58,7 +59,7 @@ create_bd_port -dir I -type reset ${TCDS_RSTN}
 set IRQ_ORR interrupt_or_reduce
 create_bd_cell -type ip -vlnv  [get_ipdefs -filter {NAME == xlconcat}] ${IRQ_ORR}
 set_property -dict [list CONFIG.NUM_PORTS {3}] [get_bd_cells ${IRQ_ORR}]
-connect_bd_net [get_bd_pins ${IRQ_ORR}/dout] [get_bd_pins processing_system7_0/IRQ_F2P]
+connect_bd_net [get_bd_pins ${IRQ_ORR}/dout] [get_bd_pins ${ZYNQ_NAME}/IRQ_F2P]
 
 set INIT_CLK init_clk
 create_bd_port -dir I -type clk ${INIT_CLK}

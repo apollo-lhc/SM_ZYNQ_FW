@@ -10,10 +10,14 @@ for {set j 0} {$j < [llength $ip_to_regenerate ] } {incr j} {
     set ip_name [lindex $ip_to_regenerate $j]
     
     set ip_xci ${apollo_root_path}/cores/$ip_name/$ip_name.xci
+#    generate_target all [get_files $filename]
+#    synth_ip [lindex $ip_to_regenerate $j]
     if {[string length [get_files -q $ip_xci]]} {
 	puts "Building $ip_name \n\n"
-	generate_target {synthesis} [get_files $ip_xci]
+#	generate_target all [get_files $filename]
+	#generate_target {synthesis} [get_files $ip_xci]
 	synth_ip [lindex $ip_to_regenerate $j]
+#	create_ip_run -force [get_ips $ip_name]
     }
 }
 

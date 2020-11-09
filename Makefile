@@ -7,8 +7,8 @@ include mk/helpers.mk
 
 VIVADO_FLAGS=-notrace -mode batch
 #VIVADO_SHELL?="/opt/Xilinx/Vivado/"$(VIVADO_VERSION)"/settings64.sh"
-#VIVADO_VERSION=2019.2
-#VIVADO_SHELL="~/Xilinx/Vivado/"$(VIVADO_VERSION)"/settings64.sh"
+#VIVADO_VERSION=2018.2
+#VIVADO_SHELL?="/opt/Xilinx/Vivado/"$(VIVADO_VERSION)"/settings64.sh"
 VIVADO_SHELL="/home/dan/Xilinx/Vivado/2019.2/settings64.sh"
 
 
@@ -135,6 +135,9 @@ rev2_xc7z045	:
 	time $(MAKE) $(BIT_BASE)$@.bit || $(MAKE) NOTIFY_DAN_BAD
 
 rev2_xczu7ev	:
+	time $(MAKE) $(BIT_BASE)$@.bit || $(MAKE) NOTIFY_DAN_BAD
+
+rev2_xczu7ev_testing	:
 	time $(MAKE) $(BIT_BASE)$@.bit || $(MAKE) NOTIFY_DAN_BAD
 
 interactive : 
