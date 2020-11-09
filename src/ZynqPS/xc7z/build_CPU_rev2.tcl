@@ -2,6 +2,7 @@
 #  Create and configure the basic zynq 7000 series processing system.
 #================================================================================
 #This code is directly sourced and builds the Zynq CPU
+set ZYNQ_NAME Zynq7
 
 set ZYNQ_NAME Zynq7
 
@@ -22,7 +23,7 @@ set_property CONFIG.PCW_UIPARAM_DDR_FREQ_MHZ {533.333374}           [get_bd_cell
 set_property CONFIG.PCW_APU_PERIPHERAL_FREQMHZ {667}	     [get_bd_cells ${ZYNQ_NAME}]
 #clock ratio settings
 set_property CONFIG.PCW_APU_CLK_RATIO_ENABLE {6:2:1}         [get_bd_cells ${ZYNQ_NAME}]
-#extra clock for ethernet
+#extra clock for ethernet 
 set_property CONFIG.PCW_EN_CLK1_PORT {1}                     [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PCW_FPGA1_PERIPHERAL_FREQMHZ {25}        [get_bd_cells ${ZYNQ_NAME}]
 

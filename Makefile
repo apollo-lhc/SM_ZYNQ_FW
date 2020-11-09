@@ -6,10 +6,8 @@ include mk/helpers.mk
 
 
 VIVADO_FLAGS=-notrace -mode batch
-#VIVADO_SHELL?="/opt/Xilinx/Vivado/"$(MAKEFILE_VIVADO_VERSION)"/settings64.sh"
-MAKEFILE_VIVADO_VERSION=2018.3
-MAKEFILE_VIVADO_SHELL="/work/Xilinx/Vivado/"$(MAKEFILE_VIVADO_VERSION)"/settings64.sh"
-#MAKEFILE_VIVADO_SHELL="/home/dan/Xilinx/Vivado/2019.2/settings64.sh"
+BUILD_VIVADO_VERSION=2018.3
+BUILD_VIVADO_SHELL="/work/Xilinx/Vivado/"$(BUILD_VIVADO_VERSION)"/settings64.sh"
 
 
 #################################################################################
@@ -102,19 +100,19 @@ clean_everything: clean clean_remote clean_CM clean_prebuild
 #################################################################################
 
 open_project : 
-	source $(MAKEFILE_VIVADO_SHELL) &&\
+	source $(BUILD_VIVADO_SHELL) &&\
 	cd ${MAKE_PATH}/proj &&\
 	vivado top.xpr
 open_synth : 
-	source $(MAKEFILE_VIVADO_SHELL) &&\
+	source $(BUILD_VIVADO_SHELL) &&\
 	cd ${MAKE_PATH}/proj &&\
 	vivado post_synth.dcp
 open_impl : 
-	source $(MAKEFILE_VIVADO_SHELL) &&\
+	source $(BUILD_VIVADO_SHELL) &&\
 	cd ${MAKE_PATH}/proj &&\
 	vivado post_route.dcp
 open_hw :
-	source $(MAKEFILE_VIVADO_SHELL) &&\
+	source $(BUILD_VIVADO_SHELL) &&\
 	cd ${MAKE_PATH}/proj &&\
 	vivado -source ../$(HW_TCL)
 
@@ -137,8 +135,11 @@ rev2_xc7z045	:
 rev2_xczu7ev	:
 	time $(MAKE) $(BIT_BASE)$@.bit || $(MAKE) NOTIFY_DAN_BAD
 
+rev2_xczu7ev_testing	:
+	time $(MAKE) $(BIT_BASE)$@.bit || $(MAKE) NOTIFY_DAN_BAD
+
 interactive : 
-	source $(MAKEFILE_VIVADO_SHELL) &&\
+	source $(BUILD_VIVADO_SHELL) &&\
 	mkdir -p ${MAKE_PATH}/proj &&\
 	cd proj &&\
 	vivado -mode tcl
@@ -146,7 +147,7 @@ interactive :
 #$(BIT_BASE)%.bit	: 
 #$(BIT_BASE)%.bit	: $(ADDSLAVE_TCL_PATH)/AddSlaves_%.tcl $(ADDRESS_TABLE_CREATION_PATH)/slaves_%.yaml $(SLAVE_DTSI_PATH)/slaves_%.yaml
 $(BIT_BASE)%.bit	: $(ADDSLAVE_TCL_PATH)/AddSlaves_%.tcl 
-	source $(MAKEFILE_VIVADO_SHELL) &&\
+	source $(BUILD_VIVADO_SHELL) &&\
 	mkdir -p ${MAKE_PATH}/kernel/hw &&\
 	mkdir -p ${MAKE_PATH}/proj &&\
 	mkdir -p ${MAKE_PATH}/bit &&\

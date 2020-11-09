@@ -33,8 +33,22 @@ entity top is
     FIXED_IO_ps_clk   : inout STD_LOGIC;
     FIXED_IO_ps_porb  : inout STD_LOGIC;
     FIXED_IO_ps_srstb : inout STD_LOGIC;
-
-
+    
+    ETH1_CLK          : out  std_logic;      
+--    ETH1_INT_PWDN_N   :     std_logic;
+    ETH1_MDC          : out std_logic;      
+    ETH1_MDIO         : inout std_logic;     
+    ETH1_RESET_N      : out std_logic; 
+    ETH1A_COL_PL      : in  std_logic;  
+    ETH1A_CRS_PL      : in  std_logic;
+    ETH1A_RXCLK       : in  std_logic;   
+    ETH1A_RXD         : in  std_logic_vector(3 downto 0);
+    ETH1A_RXDV        : in  std_logic;
+    ETH1A_RXER        : in  std_logic;    
+    ETH1A_TXCLK       : out std_logic;   
+    ETH1A_TXD         : out std_logic_vector(3 downto 0);
+    ETH1A_TXEN        : out std_logic;
+    
     -------------------------------------
     -- Onboard Enclustra
     I2C_SCL           : inout std_logic;
@@ -236,7 +250,21 @@ entity top is
 end entity top;
 
 architecture structure of top is
+  component onboard_CLK
+    port
+      (-- Clock in ports
+        -- Clock out ports
+        clk_200Mhz          : out    std_logic;
+        clk_50Mhz          : out    std_logic;
+        -- Status and control signals
+        reset             : in     std_logic;
+        locked            : out    std_logic;
+        clk_in1_p         : in     std_logic;
+        clk_in1_n         : in     std_logic
+        );
+  end component;
 
+  
   signal pl_clk : std_logic;
   signal axi_reset_n : std_logic;
   signal axi_reset : std_logic;
@@ -408,6 +436,22 @@ begin  -- architecture structure
       SI_sda_i                  => SDA_i_phy,--SDA_i_normal,
       SI_sda_o                  => SDA_o_phy,--SDA_o_normal,
       SI_sda_t                  => SDA_t_phy,--SDA_t_normal,
+
+      FCLK_CLK1_0               => ETH1_CLK,
+      GMII_ETHERNET_1_0_col     => ETH1A_COL_PL,
+      GMII_ETHERNET_1_0_crs     => ETH1A_CRS_PL,
+      GMII_ETHERNET_1_0_rx_dv   => ETH1A_RXDV,
+      GMII_ETHERNET_1_0_rx_er   => ETH1A_RXER,
+      GMII_ETHERNET_1_0_rxd(7 downto 4)  => (others => '0'),
+      GMII_ETHERNET_1_0_rxd(3 downto 0)  => ETH1A_RXD,
+      GMII_ETHERNET_1_0_tx_en(0) => ETH1A_TXEN,
+      GMII_ETHERNET_1_0_tx_er   => open,
+      GMII_ETHERNET_1_0_txd(7 downto 4)  => open,
+      GMII_ETHERNET_1_0_txd(3 downto 0)  => ETH1A_TXD,
+      MDIO_ETHERNET_1_0_mdc     => ETH1_MDC,
+      MDIO_ETHERNET_1_0_mdio_io => ETH1_MDIO,
+
+
       AXI_CLK_PL                => pl_clk,
       AXI_RSTN_PL               => pl_reset_n,
       AXIM_PL_awaddr            => AXI_MSTR_WMOSI.address,
@@ -682,8 +726,6 @@ begin  -- architecture structure
       C2C2_PHY_DEBUG_txprecursor      => CM_C2C_Ctrl.CM(2).LINK_DEBUG.tx.pre_cursor,     
       C2C2_PHY_DEBUG_txreseTDOne      => CM_C2C_Mon.CM(2).LINK_DEBUG.tx.reseT_DOne,
 
-
-
       CM1_UART_rxd => CM1_UART_rx,
       CM1_UART_txd => CM1_UART_Tx_internal,
       CM2_UART_rxd => CM2_UART_rx,
@@ -723,7 +765,7 @@ begin  -- architecture structure
       T  => SCL_t_phy,
       O  => SCL_i_phy);
 
-  onboard_CLK_1: entity work.onboard_CLK
+  onboard_CLK_1: onboard_CLK
     port map (
       clk_200Mhz => clk_200Mhz,
       clk_50Mhz  => AXI_C2C_aurora_init_clk,

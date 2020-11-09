@@ -18,6 +18,7 @@ set vhdl_files "\
      src/misc/capture_CDC.vhd \
      src/misc/pacd.vhd \
      src/misc/capture_CDC.vhd \
+     src/axiReg/axiRegWidthPkg_32.vhd \
      src/axiReg/axiRegPkg.vhd \
      src/axiReg/axiReg.vhd \
      src/axiReg/axiRegMaster.vhd \
