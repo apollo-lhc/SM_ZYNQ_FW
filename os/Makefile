@@ -1,9 +1,9 @@
 PWD=$(shell pwd)
 
-QEMU=qemu-aarch64-static
-#QEMU=qemu-arm-static
-ZYNQ_ARCH=aarch64
-#ZYNQ_ARCH=armv7hl
+#QEMU=qemu-aarch64-static
+QEMU=qemu-arm-static
+#ZYNQ_ARCH=aarch64
+ZYNQ_ARCH=armv7hl
 QEMU_PATH=/usr/local/bin
 MODS_PATH=${PWD}/mods
 SECURE_PATH=${PWD}/secure
