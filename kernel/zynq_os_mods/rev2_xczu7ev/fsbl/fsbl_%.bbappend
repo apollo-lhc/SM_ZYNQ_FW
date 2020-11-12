@@ -1,5 +1,5 @@
 SRC_URI_append = " \
-	       file://0004-fsbl.patch \
+	       file://0001-fsbl.patch \
         "
  
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"

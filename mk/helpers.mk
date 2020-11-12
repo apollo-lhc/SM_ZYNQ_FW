@@ -9,6 +9,10 @@ MAKE_PATH := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 OUTPUT_MARKUP= 2>&1 | tee -a ../make_log.txt | ccze -A
 SLACK_MESG ?= echo
 
+all:
+	@echo "Please specify a design to build"
+	@$(MAKE) list 
+
 #################################################################################
 # Slack notifications
 #################################################################################

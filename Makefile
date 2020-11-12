@@ -6,7 +6,7 @@ include mk/helpers.mk
 
 
 VIVADO_FLAGS=-notrace -mode batch
-BUILD_VIVADO_VERSION=2018.3
+BUILD_VIVADO_VERSION=2019.1
 BUILD_VIVADO_SHELL="/work/Xilinx/Vivado/"$(BUILD_VIVADO_VERSION)"/settings64.sh"
 
 
@@ -39,8 +39,6 @@ BIT_BASE=${MAKE_PATH}/bit/top_
 
 .PHONY: clean list bit NOTIFY_DAN_BAD NOTIFY_DAN_GOOD init
 
-all:
-	$(MAKE) xc7z035 || $(MAKE) NOTIFY_DAN_BAD
 
 #################################################################################
 # preBuild 
@@ -92,6 +90,10 @@ clean_kernel:
 clean: clean_bd clean_ip clean_bit clean_kernel
 	@rm -rf ${MAKE_PATH}/proj/*
 	@echo "Cleaning up"
+clean_ip_%:
+	source $(BUILD_VIVADO_SHELL) &&\
+	cd ${MAKE_PATH}/proj &&\
+	vivado $(VIVADO_FLAGS) -source ../scripts/CleanIPs.tcl -tclargs ${MAKE_PATH} $(subst .bit,,$(subst clean_ip_,,$@))
 
 clean_everything: clean clean_remote clean_CM clean_prebuild
 

@@ -57,15 +57,23 @@ for {set j 0} {$j < [llength $xci_files ] } {incr j} {
     set ip_name [file rootname [file tail $filename]]
     puts "Adding $filename"    
     read_ip $filename
+    set isLocked [get_property IS_LOCKED [get_ips $ip_name]]
+    puts "IP $ip_name : locked = $isLocked"
+    set upgrade  [get_property UPGRADE_VERSIONS [get_ips $ip_name]]
+    if {$isLocked && $upgrade != ""} {
+	puts "Upgrading IP"
+	upgrade_ip [get_ips $ip_name]}
+
+
     puts "Generating target all on $ip_name"
 #    generate_target {synthesis} [get_files $filename]         
-    reset_target all [get_files $filename]
-    generate_target all [get_files $filename]         
+#    reset_target all [get_files $filename]
+    generate_target all [get_ips $ip_name]  
     puts "Running synth on $ip_name"
-    create_ip_run -force [get_ips $ip_name]
-#    synth_ip $ip_name
+#    create_ip_run -force [get_ips $ip_name]
+    synth_ip [get_ips $ip_name]
 }
-launch_runs [get_runs]
+#launch_runs [get_runs]
 
 
 check_syntax -fileset sources_1
