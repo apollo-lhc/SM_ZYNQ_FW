@@ -1,4 +1,4 @@
-source ${apollo_root_path}/scripts/settings_${build_name}.tcl
+#source ${apollo_root_path}/scripts/settings_${build_name}.tcl
 #source ${apollo_root_path}/scripts/settings.tcl
 
 #################################################################################

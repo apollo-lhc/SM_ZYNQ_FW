@@ -1,5 +1,5 @@
 #create a block design called "zynq_bd"
-create_bd_design -dir ./ "zynq_bd"
+create_bd_design -dir ./ $bd_name
 
 set AXI_ADDR_WIDTH 40
 

@@ -1,10 +1,7 @@
 set bd_path proj/
 
-set bd_name zynq_bd
-
-set bd_files "\
-    src/ZynqPS/build_Zynq_rev2_xc7z035.tcl \
-    "
+array set bd_files [list {zynq_bd} {src/ZynqPS/build_Zynq_rev2_xc7z045.tcl} \
+		       ]
 
 set vhdl_files "\
      src/top_rev2_xc7z035.vhd \
@@ -50,7 +47,7 @@ set vhdl_files "\
      src/plXVC/virtualJTAG.vhd \
      "
 
-set xdc_files src/top_rev2_xc7z035.xdc
+set xdc_files src/top_rev2_xc7z045.xdc
 
 set xci_files "\
     	      cores/onboard_CLK/onboard_CLK.xci \

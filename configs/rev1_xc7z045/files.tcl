@@ -1,13 +1,10 @@
 set bd_path proj/
 
-set bd_name zynq_bd
-
-set bd_files "\
-    src/ZynqPS/build_Zynq_rev2_xczu7ev.tcl \
-    "
+array set bd_files [list {zynq_bd} {src/ZynqPS/build_Zynq_rev1_xc7z045.tcl} \
+		       ]
 
 set vhdl_files "\
-     src/top_rev2_xczu7ev.vhd \
+     src/top_rev1_xc7z035.vhd \
      src/misc/types.vhd \
      src/misc/counter.vhd \
      src/misc/counter_CDC.vhd \
@@ -18,10 +15,12 @@ set vhdl_files "\
      src/misc/capture_CDC.vhd \
      src/misc/pacd.vhd \
      src/misc/capture_CDC.vhd \
-     src/axiReg/axiRegWidthPkg_40.vhd \
      src/axiReg/axiRegPkg.vhd \
      src/axiReg/axiReg.vhd \
      src/axiReg/axiRegMaster.vhd \
+     src/SGMII/SGMII.vhd \
+     src/SGMII/SGMII_INTF_clocking.vhd \
+     src/SGMII/SGMII_INTF_resets.vhd \
      src/services/services.vhd \
      src/services/SGMII_MON_pkg.vhd \
      src/services/SERV_map.vhd \
@@ -44,15 +43,26 @@ set vhdl_files "\
      src/SM_info/SM_INFO_map.vhd \
      src/SM_info/SM_INFO_PKG.vhd \
      src/SM_info/SM_info.vhd \
+     src/TCDS/lhc_gt_usrclk_source.vhd \
+     src/TCDS/MGBT2_common_reset.vhd \
+     src/TCDS/MGBT2_common.vhd \
+     src/TCDS/TCDS.vhd \
+     src/TCDS/TCDS_Control.vhd \
+     src/TCDS/TCDS_Monitor.vhd \
+     src/TCDS/TCDS_map.vhd \
+     src/TCDS/TCDS_PKG.vhd \
      src/plXVC/PLXVC_map.vhd \
      src/plXVC/PLXVC_PKG.vhd \
      src/plXVC/plXVC_intf.vhd \
      src/plXVC/virtualJTAG.vhd \
      "
 
-set xdc_files src/top_rev2_xczu7ev.xdc
+set xdc_files src/top_rev1_xc7z045.xdc
 
 set xci_files "\
-    	      cores/onboard_CLK_USP/onboard_CLK.xci \
-              "
+    	      cores/SGMII_INTF/SGMII_INTF.xci \
+    	      cores/onboard_CLK/onboard_CLK.xci \
+              cores/LHC/LHC.xci \
+              cores/TCDS_DRP_BRIDGE/TCDS_DRP_BRIDGE.xci \
+    	      "
 

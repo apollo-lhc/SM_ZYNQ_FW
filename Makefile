@@ -43,7 +43,7 @@ BIT_BASE=${MAKE_PATH}/bit/top_
 #################################################################################
 # preBuild 
 #################################################################################
-SLAVE_DEF_FILE_BASE=${MAKE_PATH}/src/slaves_
+SLAVE_DEF_FILE_BASE=${MAKE_PATH}/configs/
 ADDSLAVE_TCL_PATH=${MAKE_PATH}/src/ZynqPS/
 ADDRESS_TABLE_CREATION_PATH=${MAKE_PATH}/os/
 SLAVE_DTSI_PATH=${MAKE_PATH}/kernel/
@@ -146,8 +146,6 @@ interactive :
 	cd proj &&\
 	vivado -mode tcl
 
-#$(BIT_BASE)%.bit	: 
-#$(BIT_BASE)%.bit	: $(ADDSLAVE_TCL_PATH)/AddSlaves_%.tcl $(ADDRESS_TABLE_CREATION_PATH)/slaves_%.yaml $(SLAVE_DTSI_PATH)/slaves_%.yaml
 $(BIT_BASE)%.bit	: $(ADDSLAVE_TCL_PATH)/AddSlaves_%.tcl 
 	source $(BUILD_VIVADO_SHELL) &&\
 	mkdir -p ${MAKE_PATH}/kernel/hw &&\
