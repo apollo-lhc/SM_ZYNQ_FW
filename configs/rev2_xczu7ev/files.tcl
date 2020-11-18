@@ -4,7 +4,7 @@ array set bd_files [list {zynq_bd} {src/ZynqPS/build_Zynq_rev2_xczu7ev.tcl} \
 		       ]
 
 set vhdl_files "\
-     src/top_rev2_xczu7ev.vhd \
+     configs/rev2_xczu7ev/top.vhd \
      src/misc/types.vhd \
      src/misc/counter.vhd \
      src/misc/counter_CDC.vhd \
@@ -47,7 +47,9 @@ set vhdl_files "\
      src/plXVC/virtualJTAG.vhd \
      "
 
-set xdc_files src/top_rev2_xczu7ev.xdc
+set xdc_files "\
+     configs/rev2_xczu7ev/top.xdc \
+     "
 
 set xci_files "\
     	      cores/onboard_CLK_USP/onboard_CLK.xci \

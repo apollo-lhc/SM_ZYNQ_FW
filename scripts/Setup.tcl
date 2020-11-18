@@ -67,20 +67,15 @@ for {set j 0} {$j < [llength $xci_files ] } {incr j} {
 
 
     puts "Generating target all on $ip_name"
-#    generate_target {synthesis} [get_files $filename]         
-#    reset_target all [get_files $filename]
     generate_target all [get_ips $ip_name]  
     puts "Running synth on $ip_name"
-#    create_ip_run -force [get_ips $ip_name]
     synth_ip [get_ips $ip_name]
 }
-#launch_runs [get_runs]
 
 
 check_syntax -fileset sources_1
 
 #Add bd files
-#for {set j 0} {$j < [llength $bd_files ] } {incr j} {
 foreach bd_name [array names bd_files] {
     set filename "${apollo_root_path}/$bd_files($bd_name)"
     source $filename
