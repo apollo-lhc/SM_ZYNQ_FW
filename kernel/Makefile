@@ -3,10 +3,10 @@ include ../mk/helpers.mk
 #################################################################################
 # VIVADO stuff
 #################################################################################
-BUILD_VIVADO_VERSION=2018.3
-BUILD_VIVADO_PETALINUX="/work/Xilinx/petalinux/"$(BUILD_VIVADO_VERSION)"/settings.sh"
-#BUILD_VIVADO_VERSION=2018.2
-#BUILD_VIVADO_PETALINUX="/opt/Xilinx/petalinux/"$(BUILD_VIVADO_VERSION)"/settings.sh"
+#BUILD_VIVADO_VERSION=2018.3
+#BUILD_VIVADO_PETALINUX="/work/Xilinx/petalinux/"$(BUILD_VIVADO_VERSION)"/settings.sh"
+BUILD_VIVADO_VERSION=2018.2
+BUILD_VIVADO_PETALINUX="/opt/Xilinx/petalinux/"$(BUILD_VIVADO_VERSION)"/settings.sh"
 
 ifeq ($(BUILD_VIVADO_VERSION),2018.2)
 	PETALINUX_OLD_CONFIG_OPTION=--oldconfig

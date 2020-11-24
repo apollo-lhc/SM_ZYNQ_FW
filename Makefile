@@ -6,10 +6,10 @@ include mk/helpers.mk
 
 
 VIVADO_FLAGS=-notrace -mode batch
-BUILD_VIVADO_VERSION=2018.3
-BUILD_VIVADO_SHELL="/work/Xilinx/Vivado/"$(BUILD_VIVADO_VERSION)"/settings64.sh"
-#BUILD_VIVADO_VERSION=2018.2
-#BUILD_VIVADO_SHELL="/opt/Xilinx/Vivado/"$(BUILD_VIVADO_VERSION)"/settings64.sh"
+#BUILD_VIVADO_VERSION=2018.3
+#BUILD_VIVADO_SHELL="/work/Xilinx/Vivado/"$(BUILD_VIVADO_VERSION)"/settings64.sh"
+BUILD_VIVADO_VERSION=2018.2
+BUILD_VIVADO_SHELL="/opt/Xilinx/Vivado/"$(BUILD_VIVADO_VERSION)"/settings64.sh"
 
 
 #################################################################################
@@ -78,7 +78,8 @@ clean_remote:
 	@rm -f ${MAKE_PATH}/kernel/*_slaves.yaml
 clean_ip:
 	@echo "Cleaning up ip dcps"
-	@find ${MAKE_PATH}/cores -type f -name '*.dcp' -delete
+	@find ${MAKE_PATH}/cores -type f | grep -v xci | awk '{print "rm " $$1}' | bash
+#	@find ${MAKE_PATH}/cores -type f -name '*.dcp' -delete
 clean_bd:
 	@echo "Cleaning up bd generated files"
 	@rm -rf ${MAKE_PATH}/bd/zynq_bd

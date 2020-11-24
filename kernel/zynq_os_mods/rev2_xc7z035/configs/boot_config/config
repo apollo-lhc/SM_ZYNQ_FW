@@ -248,6 +248,8 @@ CONFIG_YOCTO_NETWORK_SSTATE_FEEDS_URL="http://petalinux.xilinx.com/sswreleases/r
 #
 # User Layers
 #
+#CONFIG_USER_LAYER_0="meta-user"
+#CONFIG_USER_LAYER_1=""
 CONFIG_USER_LAYER_0=""
 #CONFIG_SUBSYSTEM_BOOTARGS_GENERATED="console=ttyPS0,115200 earlyprintk root=/dev/mmcblk0p2 rw rootwait"
 CONFIG_SUBSYSTEM_BOOTARGS_GENERATED="earlycon uio_pdrv_genirq.of_id=generic-uio root=/dev/mmcblk0p2 rw rootwait"
