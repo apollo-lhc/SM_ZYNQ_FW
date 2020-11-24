@@ -89,7 +89,7 @@ To Build the centos image
      os/image
 
    
-Organization:
+### Organization:
   Build scripts are in ./scripts and are called by the Makefile
   
   Zynq block diagram generation tcl scripts are in ./src/ZynqOS
@@ -108,6 +108,6 @@ Organization:
     ./os/address_table contains the build address table and module files
     ./os/mods contains the modifications to the centos system
 
-Dependencies:
+### Dependencies:
 	UHAL is required for HDL builds from address tables
 	generation of xml regmaps requires the Jinja2 library for python
