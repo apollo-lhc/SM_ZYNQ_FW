@@ -60,21 +60,25 @@ Buildable Groups:
 
 #### FW
 To Build FPGA FW:
-  >make revN_xcFPGA
+  `make revN_xcFPGA`
 
   Ouput:
-    bit/top_revN_xcFPGA.bit
-    kernel/hw/*.dtsi_chunk,*.dtsi_post_chunk,hwdef
+  
+   - bit/top_revN_xcFPGA.bit
+  
+   - kernel/hw/*.dtsi_chunk,*.dtsi_post_chunk,hwdef
 
 To Build zynq fsbl+kernel+fs
   First, build FPGA FW
-  >make pull_cm
-  >cd kernel
-  >make revN_xcFPGA
+  `make pull_cm
+  cd kernel
+  make revN_xcFPGA`
 
   Output:
-    kernel/zynq_os/images/linux/BOOT.bin
-    kernel/zynq_os/images/linux/image.ub
+  
+   - kernel/zynq_os/images/linux/BOOT.bin
+  
+   - kernel/zynq_os/images/linux/image.ub
 
   Notes: In order to do this you must have a personal github token defined as an env variable
   export GH_TOKEN=<your token here>
