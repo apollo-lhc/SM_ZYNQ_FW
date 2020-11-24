@@ -69,10 +69,11 @@ To Build FPGA FW:
    - kernel/hw/*.dtsi_chunk,*.dtsi_post_chunk,hwdef
 
 To Build zynq fsbl+kernel+fs
-  First, build FPGA FW
-  `make pull_cm
-  cd kernel
-  make revN_xcFPGA`
+  
+  - First, build FPGA FW
+  - `make pull_cm`
+  - `cd kernel`
+  - `make revN_xcFPGA`
 
   Output:
   
@@ -86,13 +87,13 @@ To Build zynq fsbl+kernel+fs
 
 
 To Build the centos image
-   First, build FPGA FW and run the GetReleases script if you haven't already
-   > make address_table
-   > cd os
-   > sudo make clean; sudo make
+   - First, build FPGA FW and run the GetReleases script if you haven't already
+   - `make address_table`
+   - `cd os`
+   - `sudo make clean; sudo make`
 
-   Output: (follow os/README for copying instructions)
-     os/image
+   Output: (follow os/README for copying instructions)   
+   - os/image
 
    
 ### Organization:
