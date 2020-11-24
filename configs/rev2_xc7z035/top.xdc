@@ -79,7 +79,8 @@ set_property -dict {PACKAGE_PIN AC26 IOSTANDARD LVCMOS33}               [get_por
 set_property -dict {PACKAGE_PIN AD18 IOSTANDARD LVCMOS33}               [get_ports {HQ_CLK_BP_LOS}]
 set_property -dict {PACKAGE_PIN AD19 IOSTANDARD LVCMOS33}               [get_ports {HQ_CLK_OSC_LOS}]
 
-set_property -dict {PACKAGE_PIN Y12  IOSTANDARD LVCMOS33}               [get_ports {ZYNQ_CPLD_GPIO[0]}]   #CPLD CLK pin
+#CPLD CLK pin
+set_property -dict {PACKAGE_PIN Y12  IOSTANDARD LVCMOS33}               [get_ports {ZYNQ_CPLD_GPIO[0]}]   
 set_property -dict {PACKAGE_PIN AD21 IOSTANDARD LVCMOS33}               [get_ports {ZYNQ_CPLD_GPIO[1]}]
 set_property -dict {PACKAGE_PIN AD23 IOSTANDARD LVCMOS33}               [get_ports {ZYNQ_CPLD_GPIO[2]}]
 set_property -dict {PACKAGE_PIN AD24 IOSTANDARD LVCMOS33}               [get_ports {ZYNQ_CPLD_GPIO[3]}]

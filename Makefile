@@ -8,6 +8,8 @@ include mk/helpers.mk
 VIVADO_FLAGS=-notrace -mode batch
 BUILD_VIVADO_VERSION=2018.3
 BUILD_VIVADO_SHELL="/work/Xilinx/Vivado/"$(BUILD_VIVADO_VERSION)"/settings64.sh"
+#BUILD_VIVADO_VERSION=2018.2
+#BUILD_VIVADO_SHELL="/opt/Xilinx/Vivado/"$(BUILD_VIVADO_VERSION)"/settings64.sh"
 
 
 #################################################################################
@@ -116,7 +118,7 @@ open_impl :
 open_hw :
 	source $(BUILD_VIVADO_SHELL) &&\
 	cd ${MAKE_PATH}/proj &&\
-	vivado -source ../$(HW_TCL)
+	vivado -source $(HW_TCL)
 
 
 #################################################################################

@@ -360,7 +360,7 @@ architecture structure of top is
   signal  SI_init_reset : std_logic;
 
   --For plXVC
-  constant XVC_COUNT    : integer := 2;
+  constant XVC_COUNT    : integer := 3;
   signal plXVC_TMS      : std_logic_vector((XVC_COUNT -1) downto 0);
   signal plXVC_TDI      : std_logic_vector((XVC_COUNT -1) downto 0);
   signal plXVC_TDO      : std_logic_vector((XVC_COUNT -1) downto 0);
@@ -387,10 +387,6 @@ begin  -- architecture structure
   --debugging start
   FP_1V8_GPIO <= "000000";
   EEPROM_WE_N <= '1';
-
-  CPLD_TCK <= '0';
-  CPLD_TDI <= '0';
-  CPLD_TMS <= '0';
 
   GPIO  <= x"00";
   ZYNQ_BOOT_DONE <= linux_booted;
@@ -946,7 +942,12 @@ begin  -- architecture structure
 --      rx_N(0)     => TCDS_TTC_N,
 --      rx_N(1)     => CM1_TCDS_TTS_N,    
 --      rx_N(2)     => CM2_TCDS_TTS_N);
-  
+
+  --Adding CPLD JTAG Chain
+  CPLD_TMS     <= plXVC_TMS(2);
+  CPLD_TDI     <= plXVC_TDI(2);
+  plXVC_TDO(2) <= CPLD_TDO;
+  CPLD_TCK     <=  plXVC_TCK(2);    
   plXVC_1: entity work.plXVC_intf
     generic map (
       --TCK_RATIO         => 1,

@@ -7,4 +7,3 @@ SRC_URI += "file://fsr-2level.patch"
 
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
-

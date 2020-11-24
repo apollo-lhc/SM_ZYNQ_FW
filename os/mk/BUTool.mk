@@ -19,6 +19,7 @@ ${OPT_PATH}/BUTool: ${OPT_PATH}/cactus | ${OPT_PATH} ${TMP_PATH}
 	sudo ln -s /opt/BUTool/systemd/htmlStatus.service  ${ETC_PATH}/systemd/system/htmlStatus.service
 	sudo ln -s /opt/BUTool/systemd/xvc_cm1.service     ${ETC_PATH}/systemd/system/xvc_cm1.service
 	sudo ln -s /opt/BUTool/systemd/xvc_cm2.service     ${ETC_PATH}/systemd/system/xvc_cm2.service
+	sudo ln -s /opt/BUTool/systemd/xvc_CPLD.service    ${ETC_PATH}/systemd/system/xvc_CPLD.service
 	sudo ln -s /opt/BUTool/systemd/xvc_local.service   ${ETC_PATH}/systemd/system/xvc_local.service
 	sudo ln -s /etc/systemd/system/smboot.service      ${ETC_PATH}/systemd/system/basic.target.wants/smboot.service
 	sudo ln -s /etc/systemd/system/heartbeat.service   ${ETC_PATH}/systemd/system/basic.target.wants/heartbeat.service
