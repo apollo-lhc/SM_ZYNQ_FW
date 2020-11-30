@@ -13,7 +13,7 @@ AXI_SLAVES:
   SERV:
     TCL_CALL: "[AXI_PL_DEV_CONNECT SERV      ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} ${AXI_MASTER_CLK_FREQ} 0xA3C20000 8K]"
     XML: 
-      - "address_table/modules/SERV.xml"
+      - "address_table/modules/SERV_rev2.xml"
     UHAL_BASE: 0x04000000
     HDL: "src/services"
   

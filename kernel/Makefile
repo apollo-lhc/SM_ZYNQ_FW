@@ -3,10 +3,10 @@ include ../mk/helpers.mk
 #################################################################################
 # VIVADO stuff
 #################################################################################
-#BUILD_VIVADO_VERSION=2018.3
-#BUILD_VIVADO_PETALINUX="/work/Xilinx/petalinux/"$(BUILD_VIVADO_VERSION)"/settings.sh"
-BUILD_VIVADO_VERSION=2018.2
-BUILD_VIVADO_PETALINUX="/opt/Xilinx/petalinux/"$(BUILD_VIVADO_VERSION)"/settings.sh"
+BUILD_VIVADO_VERSION=2018.3
+BUILD_VIVADO_PETALINUX="/work/Xilinx/petalinux/"$(BUILD_VIVADO_VERSION)"/settings.sh"
+#BUILD_VIVADO_VERSION=2018.2
+#BUILD_VIVADO_PETALINUX="/opt/Xilinx/petalinux/"$(BUILD_VIVADO_VERSION)"/settings.sh"
 
 ifeq ($(BUILD_VIVADO_VERSION),2018.2)
 	PETALINUX_OLD_CONFIG_OPTION=--oldconfig
@@ -137,7 +137,7 @@ define build_USp =
 #	package
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
 	source $(BUILD_VIVADO_PETALINUX) && \
-	petalinux-package --boot --format BIN --fsbl images/linux/zynq_fsbl.elf --fpga ../$<  --uboot --force $(OUTPUT_MARKUP)
+	petalinux-package --boot --format BIN --fsbl images/linux/zynqmp_fsbl.elf --fpga ../$<  --uboot images/linux/u-boot.elf --pmufw images/linux/pmufw.elf --atf images/linux/bl31.elf  --force $(OUTPUT_MARKUP)
 endef
 
 
@@ -223,4 +223,7 @@ rev2_xc7z045 : ../bit/top_rev2_xc7z045.bit
 	$(build_7s)
 
 rev2_xczu7ev : ../bit/top_rev2_xczu7ev.bit
+	$(build_USp)
+
+rev2_xczu7ev_testing : ../bit/top_rev2_xczu7ev_testing.bit
 	$(build_USp)

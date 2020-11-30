@@ -65,7 +65,10 @@ set_property CONFIG.PSU_MIO_47_SLEW {slow}                          [get_bd_cell
 set_property CONFIG.PSU_MIO_48_SLEW {slow}                          [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU_MIO_49_SLEW {slow}                          [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU_MIO_50_SLEW {slow}                          [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_51_SLEW {slow}                          [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_51_SLEW {FAST}                          [get_bd_cells ${ZYNQ_NAME}]
+#SDIO clock
+set_property CONFIG.PSU__CRL_APB__SDIO1_REF_CTRL__FREQMHZ {50}	    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__CRL_APB__SDIO1_REF_CTRL__SRCSEL {IOPLL}    [get_bd_cells ${ZYNQ_NAME}]
 
 #uart
 set_property -dict [list CONFIG.PSU__UART0__PERIPHERAL__ENABLE {1}       \
@@ -74,19 +77,19 @@ set_property -dict [list CONFIG.PSU__UART0__PERIPHERAL__ENABLE {1}       \
 
 
 #SD eMMC
-set_property CONFIG.PSU__SD0__PERIPHERAL__ENABLE {0}		    [get_bd_cells ${ZYNQ_NAME}]
-#set_property CONFIG.PSU__SD0__PERIPHERAL__ENABLE {1}		    [get_bd_cells ${ZYNQ_NAME}]
-#set_property CONFIG.PSU__SD0__SLOT_TYPE {eMMC}			    [get_bd_cells ${ZYNQ_NAME}]
-#set_property CONFIG.PSU_MIO_13_PULLUPDOWN {disable}                 [get_bd_cells ${ZYNQ_NAME}]
-#set_property CONFIG.PSU_MIO_14_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-#set_property CONFIG.PSU_MIO_15_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-#set_property CONFIG.PSU_MIO_16_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-#set_property CONFIG.PSU_MIO_17_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-#set_property CONFIG.PSU_MIO_18_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-#set_property CONFIG.PSU_MIO_19_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-#set_property CONFIG.PSU_MIO_20_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-#set_property CONFIG.PSU_MIO_21_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-#set_property CONFIG.PSU_MIO_22_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+#set_property CONFIG.PSU__SD0__PERIPHERAL__ENABLE {0}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__SD0__PERIPHERAL__ENABLE {1}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__SD0__SLOT_TYPE {eMMC}			    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_13_PULLUPDOWN {disable}                 [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_14_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_15_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_16_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_17_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_18_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_19_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_20_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_21_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_22_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
 
 
 #gpios

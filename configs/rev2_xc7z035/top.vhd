@@ -820,7 +820,9 @@ begin  -- architecture structure
       ESM_LED_CLK     => ESM_LED_CLK,
       ESM_LED_SDA     => ESM_LED_SDA,
       CM1_C2C_Mon     => CM_C2C_Mon.CM(1),
-      CM2_C2C_Mon     => CM_C2C_Mon.CM(2));
+      CM2_C2C_Mon     => CM_C2C_Mon.CM(2),
+      CPLD_Mon        => CPLD_Mon,
+      CPLD_Ctrl       => CPLD_Ctrl);
 
   SM_info_1: entity work.SM_info
     port map (
@@ -944,10 +946,26 @@ begin  -- architecture structure
 --      rx_N(2)     => CM2_TCDS_TTS_N);
 
   --Adding CPLD JTAG Chain
-  CPLD_TMS     <= plXVC_TMS(2);
-  CPLD_TDI     <= plXVC_TDI(2);
+  -------------------------------------------------------------------------------
+  -- CPLD JTAG
+  -------------------------------------------------------------------------------
+  CPLD_JTAG_BUF_TMS : OBUFT
+    port map (
+      T => disable_CPLD_JTAG),
+      I => plXVC_TMS(2),
+      O => CPLD_TMS);
+  CPLD_JTAG_BUF_TDI : OBUFT
+    port map (
+      T => disable_CPLD_JTAG),
+      I => plXVC_TDI(2),
+      O => CPLD_TDI);
+  CPLD_JTAG_BUF_TCK : OBUFT
+    port map (
+      T => disable_CPLD_JTAG),
+      I => plXVC_TCK(2),
+      O => CPLD_TCK);
   plXVC_TDO(2) <= CPLD_TDO;
-  CPLD_TCK     <=  plXVC_TCK(2);    
+
   plXVC_1: entity work.plXVC_intf
     generic map (
       --TCK_RATIO         => 1,

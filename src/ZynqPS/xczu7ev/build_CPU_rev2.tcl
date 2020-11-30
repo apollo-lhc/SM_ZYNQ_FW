@@ -62,15 +62,6 @@ connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins ${ZYNQ_NAME}/maxihpm0_
 #All MIO configurations are in build_CPU_MIO.tcl
 source ../src/ZynqPS/xczu7ev/build_CPU_MIO_rev2.tcl
 
-#SDIO clock
-set_property CONFIG.PSU__CRL_APB__SDIO1_REF_CTRL__FREQMHZ {25}	    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU__CRL_APB__SDIO1_REF_CTRL__SRCSEL {IOPLL}    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_46_PULLUPDOWN {pullup}                  [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_47_PULLUPDOWN {pullup}                  [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_48_PULLUPDOWN {pullup}                  [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_49_PULLUPDOWN {pullup}                  [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_50_PULLUPDOWN {pullup}                  [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_51_PULLUPDOWN {pullup}                  [get_bd_cells ${ZYNQ_NAME}]
 
 
 set SYS_RESETER sys_reseter
