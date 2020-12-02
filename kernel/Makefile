@@ -18,6 +18,8 @@ else
 endif
 endif
 
+BUILD_TIME=$(shell date +%s)
+
 HDF_FILE=hw/top.hdf
 ZYNQ_OS=zynq_os
 ZYNQ_OS_PROJECT_PATH=$(ZYNQ_OS)
@@ -59,6 +61,11 @@ clean:
 
 
 ZYNQ_OS_MODS_BASE=zynq_os_mods/
+
+#################################################################################
+# Helper calls to simplify build rules
+#################################################################################
+
 define copy_configs =
 	@echo "adding rootfs mods" $(OUTPUT_MARKUP)
 #	@mkdir -p $(dir $(BUILD_ROOTFS)) $(OUTPUT_MARKUP)
@@ -77,10 +84,12 @@ define copy_configs =
 	@mkdir -p $(dir $(KERNEL_USER_MODS_BASE)) $(OUTPUT_MARKUP)
 #	@cp -r ./zynq_os_mods/$@/kernel/linux $(KERNEL_USER_MODS_BASE) $(OUTPUT_MARKUP)
 	@cp -r ./zynq_os_mods/$@/kernel/ $(KERNEL_USER_MODS_BASE) $(OUTPUT_MARKUP)
-	DTSI_PATH="./hw ./hw_*" $(ZYNQ_OS_MODS_BASE)/$@/device-tree/build_user_dtsi.sh > $(DEVICE_TREE_USER) $(OUTPUT_MARKUP)
+	DTSI_PATH="./hw ./hw_* ./$(ZYNQ_OS_MODS_BASE)/$@/hw_user" $(ZYNQ_OS_MODS_BASE)/$@/device-tree/build_user_dtsi.sh > $(DEVICE_TREE_USER) $(OUTPUT_MARKUP)
 	@echo "Modify FSBL" $(OUTPUT_MARKUP)
 	@mkdir -p $(FSBL_BASE)
 	@cp -r $(ZYNQ_OS_MODS_BASE)/$@/fsbl/* $(FSBL_BASE)
+	@echo "layer config (if needed)"
+	@cp ./zynq_os_mods/$@/configs/layer.conf $(ZYNQ_OS_PROJECT_PATH)/project-spec/meta-user/conf/
 	@echo "End of mods"
 endef
 
@@ -91,130 +100,62 @@ define setup_path =
 endef
 
 define build_project =
-#	Config the project with info from the HW
+	@echo "Config the project with info from the HW"
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
 	source $(BUILD_VIVADO_PETALINUX) && \
 	petalinux-config --get-hw-description ../hw $(PETALINUX_OLD_CONFIG_OPTION) $(OUTPUT_MARKUP)
-#	Copy all mods
+	@echo "Apply all mods"
 	$(copy_configs) 
-#	Reset the project build
+	@echo "Reset the project build"
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
 	source $(BUILD_VIVADO_PETALINUX) && \
 	petalinux-build -x mrproper $(OUTPUT_MARKUP)
-#	Build the project
+	@echo "Build the project"
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
 	source $(BUILD_VIVADO_PETALINUX) && \
 	petalinux-build $(OUTPUT_MARKUP)
-#	Package up
 	@echo "Packaging images"
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
 	source $(BUILD_VIVADO_PETALINUX) && \
 	petalinux-build -x package $(OUTPUT_MARKUP)
 endef
 
+#################################################################################
+# Calls for building 7 vs US+ configs
+#################################################################################
+
 define build_7s =
-#	clean out old things
+	@echo "clean out old things"
 	$(setup_path)
-#	Create petalinux project
+	@echo "Create petalinux project"
 	source $(BUILD_VIVADO_PETALINUX) && \
 	petalinux-create --type project --name $(ZYNQ_OS) --template zynq --force $(OUTPUT_MARKUP)
-#	build
+	@echo "build"
 	$(build_project)
-#	package
+	@echo "package"
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
 	source $(BUILD_VIVADO_PETALINUX) && \
 	petalinux-package --boot --format BIN --fsbl images/linux/zynq_fsbl.elf --fpga ../$<  --uboot --force $(OUTPUT_MARKUP)
 endef
 
 define build_USp =
-#	clean out old things
+	@echo "clean out old things"
 	$(setup_path)
-#	Create petalinux project
+	@echo "Create petalinux project"
 	source $(BUILD_VIVADO_PETALINUX) && \
 	petalinux-create --type project --name $(ZYNQ_OS) --template zynqMP --force $(OUTPUT_MARKUP)
-#	build
+	@echo "build"
 	$(build_project)
-#	package
+	@echo "package"
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
 	source $(BUILD_VIVADO_PETALINUX) && \
 	petalinux-package --boot --format BIN --fsbl images/linux/zynqmp_fsbl.elf --fpga ../$<  --uboot images/linux/u-boot.elf --pmufw images/linux/pmufw.elf --atf images/linux/bl31.elf  --force $(OUTPUT_MARKUP)
 endef
 
 
-
-
-
-#####rev2_xczu7ev : ../bit/top_rev2_xczu7ev.bit
-#####	@echo "Creating fresh OS project"
-#####	@rm -f make_log.txt
-#####	@rm -rf $(ZYNQ_OS_PROJECT_PATH)	
-#####	source $(BUILD_VIVADO_PETALINUX) && \
-#####	petalinux-create --type project --name $(ZYNQ_OS) --template zynqMP --force $(OUTPUT_MARKUP)
-#####	@echo "foo"  $(OUTPUT_MARKUP)
-#####	$(copy_configs)
-#####	@echo "foo2"  $(OUTPUT_MARKUP)
-#####	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
-#####	source $(BUILD_VIVADO_PETALINUX) && \
-#####	petalinux-config --get-hw-description ../hw $(PETALINUX_OLD_CONFIG_OPTION) $(OUTPUT_MARKUP)
-#####	$(copy_configs) 
-#####	@echo "foo3"  $(OUTPUT_MARKUP)
-#####	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
-#####	source $(BUILD_VIVADO_PETALINUX) && \
-#####	petalinux-build $(OUTPUT_MARKUP)
-#####	@echo "Packaging images"  $(OUTPUT_MARKUP)
-#####	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
-#####	source $(BUILD_VIVADO_PETALINUX) && \
-#####	petalinux-build -x package $(OUTPUT_MARKUP)
-#####	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
-#####	source $(BUILD_VIVADO_PETALINUX) && \
-#####	petalinux-package --boot --format BIN --fsbl images/linux/zynqmp_fsbl.elf --fpga ../$<  --uboot images/linux/u-boot.elf --pmufw images/linux/pmufw.elf --atf images/linux/bl31.elf  --force $(OUTPUT_MARKUP)
-######	petalinux-package --boot --format BIN --fsbl images/linux/zynqmp_fsbl.elf --fpga ../$<  --uboot --force $(OUTPUT_MARKUP)
-
-#rev2_xc7z035 : ../bit/top_rev2_xc7z035.bit
-#	@echo "Creating fresh OS project"
-#	@rm -f make_log.txt
-#	@rm -rf $(ZYNQ_OS_PROJECT_PATH)	
-#	source $(BUILD_VIVADO_PETALINUX) && \
-#	petalinux-create --type project --name $(ZYNQ_OS) --template zynq --force $(OUTPUT_MARKUP)
-#	$(copy_configs) 
-#	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
-#	source $(BUILD_VIVADO_PETALINUX) && \
-#	petalinux-config --get-hw-description ../hw $(PETALINUX_OLD_CONFIG_OPTION) $(OUTPUT_MARKUP)
-#	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
-#	source $(BUILD_VIVADO_PETALINUX) && \
-#	petalinux-build $(OUTPUT_MARKUP)
-#	@echo "Packaging images"
-#	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
-#	source $(BUILD_VIVADO_PETALINUX) && \
-#	petalinux-build -x package $(OUTPUT_MARKUP)
-#	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
-#	source $(BUILD_VIVADO_PETALINUX) && \
-#	petalinux-package --boot --format BIN --fsbl images/linux/zynq_fsbl.elf --fpga ../$<  --uboot --force $(OUTPUT_MARKUP)
-
-
-#rev2_xc7z045 : ../bit/top_rev2_xc7z045.bit
-#	@echo "Creating fresh OS project"
-#	@rm -f make_log.txt
-#	@rm -rf $(ZYNQ_OS_PROJECT_PATH)	
-#	source $(BUILD_VIVADO_PETALINUX) && \
-#	petalinux-create --type project --name $(ZYNQ_OS) --template zynq --force $(OUTPUT_MARKUP)
-#	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
-#	source $(BUILD_VIVADO_PETALINUX) && \
-#	petalinux-config -v --get-hw-description ../hw $(PETALINUX_OLD_CONFIG_OPTION) $(OUTPUT_MARKUP)
-#	$(copy_configs) 
-#	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
-#	source $(BUILD_VIVADO_PETALINUX) && \
-#	petalinux-build -x mrproper $(OUTPUT_MARKUP)
-#	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
-#	source $(BUILD_VIVADO_PETALINUX) && \
-#	petalinux-build $(OUTPUT_MARKUP)
-#	@echo "Packaging images"
-#	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
-#	source $(BUILD_VIVADO_PETALINUX) && \
-#	petalinux-build -x package $(OUTPUT_MARKUP)
-#	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
-#	source $(BUILD_VIVADO_PETALINUX) && \
-#	petalinux-package --boot --format BIN --fsbl images/linux/zynq_fsbl.elf --fpga ../$<  --uboot --force $(OUTPUT_MARKUP)
+#################################################################################
+# Real builds
+#################################################################################
 
 rev2_xc7z035 : ../bit/top_rev2_xc7z035.bit
 	$(build_7s)
@@ -227,3 +168,7 @@ rev2_xczu7ev : ../bit/top_rev2_xczu7ev.bit
 
 rev2_xczu7ev_testing : ../bit/top_rev2_xczu7ev_testing.bit
 	$(build_USp)
+
+
+get_built_dts : ${ZYNQ_OS_PROJECT_PATH}/images/linux/system.dtb
+	dtc -I dtb -O dts -o dump_${BUILD_TIME}.dts ${ZYNQ_OS_PROJECT_PATH}/images/linux/system.dtb

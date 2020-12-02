@@ -371,6 +371,9 @@ architecture structure of top is
   signal CM2_UART_Tx_internal : std_logic;
   signal CM_C2C_Mon     : C2C_Monitor_t;
   
+  signal CPLD_Mon       :  CPLD_Mon_t;
+  signal CPLD_Ctrl      :  CPLD_Ctrl_t;
+  
   signal CM_enable_IOs   : std_logic_vector(1 downto 0);
   signal CM_C2C_Ctrl : C2C_Control_t;
   signal C2C1_phy_gt_refclk1_out : std_logic;

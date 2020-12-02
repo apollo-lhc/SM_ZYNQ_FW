@@ -35,6 +35,7 @@
   </node>
   <node id="CPLD" address="0x10">
     <node id="ENABLE_JTAG" address="0x00" mask="0x00000001" permission="rw" description="Enable the JTAG lines to the CPLD" parameters="default=0x0"/>
+    <node id="IO" address="0x02" mask="0x0000000F" permission="r" description="inputs(for now) from CPLD"/>
   </node>
 
 </node>

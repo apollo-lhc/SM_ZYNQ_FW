@@ -19,7 +19,7 @@ set vhdl_files "\
      src/axiReg/axiRegPkg.vhd \
      src/axiReg/axiReg.vhd \
      src/axiReg/axiRegMaster.vhd \
-     src/services/services.vhd \
+     src/services/services_rev2.vhd \
      src/services/SGMII_MON_pkg.vhd \
      src/services/SERV_map.vhd \
      src/services/SERV_PKG.vhd \

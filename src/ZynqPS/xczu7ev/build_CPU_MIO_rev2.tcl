@@ -54,11 +54,11 @@ set_property CONFIG.PSU_MIO_75_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NA
 set_property CONFIG.PSU__SD1__PERIPHERAL__ENABLE {1}		    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU__SD1__SLOT_TYPE {SD 2.0}		    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU__SD1__PERIPHERAL__IO {MIO 46 .. 51}	    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_46_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_47_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_48_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_49_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_50_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_46_PULLUPDOWN {pullup}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_47_PULLUPDOWN {pullup}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_48_PULLUPDOWN {pullup}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_49_PULLUPDOWN {pullup}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_50_PULLUPDOWN {pullup}		    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU_MIO_51_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU_MIO_46_SLEW {slow}                          [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU_MIO_47_SLEW {slow}                          [get_bd_cells ${ZYNQ_NAME}]
@@ -101,7 +101,16 @@ set_property CONFIG.PSU_MIO_38_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NA
 set_property CONFIG.PSU_MIO_39_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
 
 #SSD
-set_property CONFIG.PSU__SATA__PERIPHERAL__ENABLE {0}               [get_bd_cells ${ZYNQ_NAME}]
+#set_property CONFIG.PSU__SATA__PERIPHERAL__ENABLE {0}               [get_bd_cells ${ZYNQ_NAME}]
+
+
+set_property CONFIG.PSU__SATA__PERIPHERAL__ENABLE {1}               [get_bd_cells ${ZYNQ_NAME}] 
+set_property CONFIG.PSU__SATA__LANE0__ENABLE {1}                    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__SATA__LANE1__ENABLE {0}                    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__SATA__LANE0__IO {GT Lane2}                 [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__SATA__REF_CLK_SEL {Ref Clk0}               [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__SATA__REF_CLK_FREQ {125}                   [get_bd_cells ${ZYNQ_NAME}]
+
 
 #other
 set_property CONFIG.PSU__TTC0__PERIPHERAL__ENABLE {1}		    [get_bd_cells ${ZYNQ_NAME}]

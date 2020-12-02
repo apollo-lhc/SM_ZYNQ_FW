@@ -4,8 +4,8 @@ use ieee.numeric_std.all;
 
 use work.types.all;
 use work.AXIRegPKG.all;
-use work.SGMII_MONITOR.all;
 use work.CM_package.all;
+use work.SERV_CTRL.all;
  
 
 Library UNISIM;
@@ -81,7 +81,7 @@ entity top is
 
     -------------------------------------
     -- GPIOs CPLD
---    ZYNQ_CPLD_GPIO    : in std_logic_vector(3 downto 0);
+    ZYNQ_CPLD_GPIO    : in std_logic_vector(3 downto 0);
 
     -------------------------------------
     -- GPIOs Zynq
@@ -293,9 +293,6 @@ architecture structure of top is
   signal AXI_MSTR_WMISO : AXIWriteMISO;
   
   --Monitoring
---  signal SGMII_MON : SGMII_MONITOR_t;
-  signal SGMII_MON_CDC : SGMII_MONITOR_t;
---  signal SGMII_CTRL : SGMII_CONTROL_t;
   
   signal onbloard_clk_n : std_logic;
   signal onbloard_clk_p : std_logic;
@@ -326,7 +323,7 @@ architecture structure of top is
   signal  SI_init_reset : std_logic;
 
   --For plXVC
-  constant XVC_COUNT    : integer := 2;
+  constant XVC_COUNT    : integer := 3;
   signal plXVC_TMS      : std_logic_vector((XVC_COUNT -1) downto 0);
   signal plXVC_TDI      : std_logic_vector((XVC_COUNT -1) downto 0);
   signal plXVC_TDO      : std_logic_vector((XVC_COUNT -1) downto 0);
@@ -336,6 +333,9 @@ architecture structure of top is
   signal CM1_UART_Tx_internal : std_logic;
   signal CM2_UART_Tx_internal : std_logic;
   signal CM_C2C_Mon     : C2C_Monitor_t;
+
+  signal CPLD_Mon       :  SERV_CPLD_Mon_t;
+  signal CPLD_Ctrl      :  SERV_CPLD_Ctrl_t;
   
   signal CM_enable_IOs   : std_logic_vector(1 downto 0);
   signal CM_C2C_Ctrl : C2C_Control_t;
@@ -353,10 +353,6 @@ begin  -- architecture structure
   --debugging start
   FP_1V8_GPIO <= "000000";
   EEPROM_WE_N <= '1';
-
-  CPLD_TCK <= '0';
-  CPLD_TDI <= '0';
-  CPLD_TMS <= '0';
 
   GPIO  <= x"00";
   ZYNQ_BOOT_DONE <= linux_booted;
@@ -712,14 +708,6 @@ begin  -- architecture structure
   SI_OUT_DIS <= not SI_OE_normal;
   SI_ENABLE  <= SI_EN_normal;
 
-  SGMII_MON_CDC.reset_done    <= '0';
-  SGMII_MON_CDC.cpll_lock     <= '0';
-  SGMII_MON_CDC.mmcm_reset    <= '0';
-  SGMII_MON_CDC.pma_reset     <= '0';
-  SGMII_MON_CDC.mmcm_locked   <= '0';
-  SGMII_MON_CDC.status_vector <= (others => '0');
-  SGMII_MON_CDC.reset         <= '0';
-
 
 
 
@@ -734,8 +722,6 @@ begin  -- architecture structure
       readMISO        => AXI_BUS_RMISO(0),
       writeMOSI       => AXI_BUS_WMOSI(0),
       writeMISO       => AXI_BUS_WMISO(0),
-      SGMII_MON       => SGMII_MON_CDC,
-      SGMII_CTRL      => open,
       SI_INT          => SI_INT,
       SI_LOL          => SI_LOL,
       SI_LOS          => SI_LOS_XAXB,
@@ -758,7 +744,9 @@ begin  -- architecture structure
       ESM_LED_CLK     => ESM_LED_CLK,
       ESM_LED_SDA     => ESM_LED_SDA,
       CM1_C2C_Mon     => CM_C2C_Mon.CM(1),
-      CM2_C2C_Mon     => CM_C2C_Mon.CM(2));
+      CM2_C2C_Mon     => CM_C2C_Mon.CM(2),
+      CPLD_Mon        => CPLD_Mon,
+      CPLD_Ctrl       => CPLD_Ctrl);
 
   SM_info_1: entity work.SM_info
     port map (
@@ -846,41 +834,28 @@ begin  -- architecture structure
   CM2_PS_RST   <= plXVC_PS_RST(1);
 
   
---  TCDS_2: entity work.TCDS
---    port map (
---      clk_axi            => pl_clk,--axi_clk,--clk_TCDS,
---      reset_axi_n        => pl_reset_n,--axi_reset_n,--pl_reset_n,--clk_TCDS_reset_n,--pl_reset_n,
---      clk_axi_DRP        => pl_clk,--axi_clk,
---      reset_axi_DRP_n    => pl_reset_n,--axi_reset_n,--pl_reset_n,
---      readMOSI           => AXI_BUS_RMOSI(5),
---      readMISO           => AXI_BUS_RMISO(5),
---      writeMOSI          => AXI_BUS_WMOSI(5),
---      writeMISO          => AXI_BUS_WMISO(5),
---      DRP_readMOSI       => AXI_BUS_RMOSI(4),
---      DRP_readMISO       => AXI_BUS_RMISO(4),
---      DRP_writeMOSI      => AXI_BUS_WMOSI(4),
---      DRP_writeMISO      => AXI_BUS_WMISO(4),
---      --sysclk        => pl_clk,
---      refclk_p      => refclk_CMS_P,
---      refclk_n      => refclk_CMS_N,
---      QPLL_CLK        => QPLL_CLK,    
---      QPLL_REF_CLK    => QPLL_REF_CLK,        
-----      reset         => axi_reset,
---      clk_TCDS    => clk_TCDS,
---      clk_TCDS_reset_n => clk_TCDS_locked,--open,--clk_TCDS_reset_n,
---      tx_P(0)     => TCDS_TTS_P,
---      tx_P(1)     => LOCAL_TCDS_TTC_P,  
---      tx_P(2)     => open, 
---      tx_N(0)     => TCDS_TTS_N,
---      tx_N(1)     => LOCAL_TCDS_TTC_N,  
---      tx_N(2)     => open, 
---      rx_P(0)     => TCDS_TTC_P,
---      rx_P(1)     => CM1_TCDS_TTS_P,    
---      rx_P(2)     => CM2_TCDS_TTS_P,    
---      rx_N(0)     => TCDS_TTC_N,
---      rx_N(1)     => CM1_TCDS_TTS_N,    
---      rx_N(2)     => CM2_TCDS_TTS_N);
-  
+
+  --Adding CPLD JTAG Chain
+  -------------------------------------------------------------------------------
+  -- CPLD JTAG
+  -------------------------------------------------------------------------------
+  CPLD_JTAG_BUF_TMS : OBUFT
+    port map (
+      T => not CPLD_Ctrl.ENABLE_JTAG,
+      I => plXVC_TMS(2),
+      O => CPLD_TMS);
+  CPLD_JTAG_BUF_TDI : OBUFT
+    port map (
+      T => not CPLD_Ctrl.ENABLE_JTAG,
+      I => plXVC_TDI(2),
+      O => CPLD_TDI);
+  CPLD_JTAG_BUF_TCK : OBUFT
+    port map (
+      T => not CPLD_Ctrl.ENABLE_JTAG,
+      I => plXVC_TCK(2),
+      O => CPLD_TCK);
+  plXVC_TDO(2) <= CPLD_TDO;
+
   plXVC_1: entity work.plXVC_intf
     generic map (
       --TCK_RATIO         => 1,

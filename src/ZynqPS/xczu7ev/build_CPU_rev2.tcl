@@ -45,6 +45,7 @@ set_property -dict [list CONFIG.PSU__CRF_APB__DDR_CTRL__FREQMHZ {1200}         \
 ###############################
 #AXI MASTERS
 ###############################
+set_property CONFIG.PSU__USE__M_AXI_GP2 {0}			    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU__USE__M_AXI_GP0 {1}			    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU__USE__M_AXI_GP1 {1}			    [get_bd_cells ${ZYNQ_NAME}]
 
@@ -52,9 +53,14 @@ set_property CONFIG.PSU__USE__M_AXI_GP1 {1}			    [get_bd_cells ${ZYNQ_NAME}]
 set AXI_MASTER_CLK ${ZYNQ_NAME}/pl_clk1
 make_bd_pins_external -name axi_clk [get_bd_pins ${AXI_MASTER_CLK}]
 
+set_property CONFIG.PSU__MAXIGP0__DATA_WIDTH {32}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__MAXIGP1__DATA_WIDTH {32}		    [get_bd_cells ${ZYNQ_NAME}]
+
 connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins ${ZYNQ_NAME}/maxihpm0_fpd_aclk]
 connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins ${ZYNQ_NAME}/maxihpm1_fpd_aclk]
-connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins ${ZYNQ_NAME}/maxihpm0_lpd_aclk]
+#connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins ${ZYNQ_NAME}/maxihpm0_lpd_aclk]
+
+set ZYNQ_RESETN ${ZYNQ_NAME}/pl_resetn0
 
 ###############################
 #MIO configuration
@@ -68,7 +74,7 @@ set SYS_RESETER sys_reseter
 create_bd_cell -type ip -vlnv [get_ipdefs -filter {NAME == proc_sys_reset}] $SYS_RESETER
 
 #connect external reset
-connect_bd_net [get_bd_pins ${ZYNQ_NAME}/pl_resetn0] [get_bd_pins $SYS_RESETER/ext_reset_in]
+connect_bd_net [get_bd_pins ${ZYNQ_RESETN}] [get_bd_pins $SYS_RESETER/ext_reset_in]
 #connect clock
 connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins $SYS_RESETER/slowest_sync_clk]
 #set interconnect reset

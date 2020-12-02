@@ -15,12 +15,11 @@ set vhdl_files "\
      src/misc/capture_CDC.vhd \
      src/misc/pacd.vhd \
      src/misc/capture_CDC.vhd \
-     src/axiReg/axiRegWidthPkg_40.vhd \
+     src/axiReg/axiRegWidthPkg_32.vhd \
      src/axiReg/axiRegPkg.vhd \
      src/axiReg/axiReg.vhd \
      src/axiReg/axiRegMaster.vhd \
-     src/services/services.vhd \
-     src/services/SGMII_MON_pkg.vhd \
+     src/services/services_rev2.vhd \
      src/services/SERV_map.vhd \
      src/services/SERV_PKG.vhd \
      src/IPMC_i2c_slave/i2c_slave.vhd \
