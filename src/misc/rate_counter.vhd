@@ -6,11 +6,12 @@
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
+use ieee.numeric_std.all;
 
 entity rate_counter is
   
   generic (
-    CLK_A_1_SECOND : unsigned(31 downto 0) := 100000000);  -- 100Mhz
+    CLK_A_1_SECOND : integer := 1000000);  -- 100Mhz
 
   port (
     clk_A   : in  std_logic;
@@ -36,7 +37,7 @@ begin  -- architecture behavioral
   counter_clk: entity work.counter
     generic map (
       roll_over   => '1',
-      end_value   => CLK_A_1_SECOND)
+      end_value   => std_logic_vector(to_unsigned(CLK_A_1_SECOND,32)))
     port map (
       clk         => clk_A,
       reset_async => '0',
@@ -53,36 +54,29 @@ begin  -- architecture behavioral
       roll_over   => '0')
     port map (
       clk         => clk_b,
-      reset_async => '0',
+      reset_async => reset_A_async,
       reset_sync  => measure_B,
       enable      => '1',
       event       => event_b,
       count       => count_b,
       at_max      => open);
 
-  --Send a request for a measurement from the clk_A domain to the clk_b domain
-  capture_CDC_1: entity work.capture_CDC
-    generic map (
-      WIDTH => 1)    
-    port map (
-      clkA       => clk_A,
-      clkB       => clk_B,
-      inA        => '1',
-      inA_valid(0)  => measure_A,
-      outB       => '1',
-      outB_valid(0) => measure_B);
-
+      
   --When clk_B gets a measure request from clk_B, capture and reset clk_B's counter
   capture_CDC_2: entity work.capture_CDC
     generic map (
       WIDTH => 32)
     port map (
-      clkA       => clk_b,
-      clkB       => clk_a,
-      inA        => count_b,
-      inA_valid  => measure_B,
-      outB       => measured_rate,
-      outB_valid => measured_rate_valid);
+      clkA           => clk_a,
+      clkB           => clk_b,
+      resetA         => reset_A_async,
+      resetB         => reset_A_async,
+      capture_pulseA => measure_A,
+      outA           => measured_rate,
+      outA_valid     => measured_rate_valid,
+      capture_pulseB => measure_B,
+      inB            => count_b,
+      inB_valid      => measure_B);
 
   
   -- purpose: reset_A_async

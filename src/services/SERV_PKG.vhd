@@ -42,6 +42,9 @@ package SERV_CTRL is
     LHC_LOS_OSC                :std_logic;     -- Local Si LHC clk LOS
     HQ_LOS_BP                  :std_logic;     -- Backplane HQ clk LOS
     HQ_LOS_OSC                 :std_logic;     -- Local Si HQ clk LOS
+    LHC_CLK_FREQ               :std_logic_vector(31 downto 0);  -- Measured Freq of clock
+    HQ_CLK_FREQ                :std_logic_vector(31 downto 0);  -- Measured Freq of clock
+    TTC_CLK_FREQ               :std_logic_vector(31 downto 0);  -- Measured Freq of clock
   end record SERV_CLOCKING_MON_t;
 
 

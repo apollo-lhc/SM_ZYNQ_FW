@@ -32,9 +32,12 @@ entity services is
     LHC_CLK_CMS_LOS    : in  std_logic;
     LHC_CLK_OSC_LOS    : in  std_logic;
     LHC_SRC_SEL        : out std_logic;
+    LHC_CLK_freq       : in  std_logic_vector(31 downto 0);
     HQ_CLK_CMS_LOS     : in  std_logic;
     HQ_CLK_OSC_LOS     : in  std_logic;
     HQ_SRC_SEL         : out std_logic;
+    HQ_CLK_freq        : in  std_logic_vector(31 downto 0);
+    TTC_CLK_freq       : in  std_logic_vector(31 downto 0);
     FP_LED_RST         : out std_logic;
     FP_LED_CLK         : out std_logic;
     FP_LED_SDA         : out std_logic;
@@ -170,8 +173,11 @@ begin  -- architecture behavioral
   Mon.TCDS.REFCLK_LOCKED       <= TCDS_REFCLK_LOCKED;
   Mon.CLOCKING.HQ_LOS_BP       <= HQ_CLK_CMS_LOS;
   Mon.CLOCKING.HQ_LOS_OSC      <= HQ_CLK_OSC_LOS;
+  Mon.CLOCKING.HQ_CLK_FREQ     <= HQ_CLK_freq;
   Mon.CLOCKING.LHC_LOS_BP      <= LHC_CLK_CMS_LOS;
   Mon.CLOCKING.LHC_LOS_OSC     <= LHC_CLK_OSC_LOS;
+  Mon.CLOCKING.LHC_CLK_FREQ    <= LHC_CLK_freq;
+  Mon.CLOCKING.TTC_CLK_FREQ    <= TTC_CLK_freq;
   Mon.FP_LEDS.BUTTON           <= FP_switch;
   Mon.FP_LEDS.FP_SHDWN_REQ     <= FP_shutdown;
   Mon.SWITCH.STATUS            <= ESM_LEDs;
