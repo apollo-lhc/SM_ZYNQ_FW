@@ -15,6 +15,9 @@ post_chunks=$(find $DTSI_PATH -name "*dtsi_post_chunk")
 
 #output updated dtsi fle
 echo "/include/ \"system-conf.dtsi\"" > $filename
+echo "#include <dt-bindings/gpio/gpio.h>" >> $filename
+echo "#include <dt-bindings/pinctrl/pinctrl-zynqmp.h>" >> $filename
+echo "#include <dt-bindings/phy/phy.h>" >> $filename
 echo "/{"                             >> $filename
 echo "  chosen {"                     >> $filename
 #update bootargs to include uio
