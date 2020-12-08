@@ -12,9 +12,14 @@
 #    fi
 #}
  
+#SRC_URI_append = " \
+#        file://0001-fsbl.patch \
+#        "
+
 SRC_URI_append = " \
-        file://0001-fsbl.patch \
-        "
+	       file://2018.3-mods.patch \
+	       "
+
  
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 

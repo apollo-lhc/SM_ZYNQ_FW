@@ -4,8 +4,9 @@ use ieee.numeric_std.all;
 
 use work.types.all;
 use work.AXIRegPKG.all;
-use work.SGMII_MONITOR.all;
 use work.CM_package.all;
+use work.SERV_CTRL.all;
+
 
 Library UNISIM;
 use UNISIM.vcomponents.all;
@@ -86,13 +87,13 @@ entity top is
     HQ_CLK_OSC_LOS    : in  std_logic;
     HQ_SRC_SEL        : out std_logic;
 
---    CLK_LHC_P         : in std_logic;
---    CLK_LHC_N         : in std_logic;
---    CLK_HQ_P          : in std_logic;
---    CLK_HQ_N          : in std_logic;
+    CLK_LHC_P         : in std_logic;
+    CLK_LHC_N         : in std_logic;
+    CLK_HQ_P          : in std_logic;
+    CLK_HQ_N          : in std_logic;
 
---    CLK_TTC_P         : in  std_logic;
---    CLK_TTC_N         : in  std_logic;
+    CLK_TTC_P         : in  std_logic;
+    CLK_TTC_N         : in  std_logic;
 
 --    TTC_P             : in  std_logic;
 --    TTC_N             : in  std_logic;
@@ -327,9 +328,6 @@ architecture structure of top is
   signal AXI_MSTR_WMISO : AXIWriteMISO;
   
   --Monitoring
---  signal SGMII_MON : SGMII_MONITOR_t;
-  signal SGMII_MON_CDC : SGMII_MONITOR_t;
---  signal SGMII_CTRL : SGMII_CONTROL_t;
   
   signal onbloard_clk_n : std_logic;
   signal onbloard_clk_p : std_logic;
@@ -371,8 +369,8 @@ architecture structure of top is
   signal CM2_UART_Tx_internal : std_logic;
   signal CM_C2C_Mon     : C2C_Monitor_t;
   
-  signal CPLD_Mon       :  CPLD_Mon_t;
-  signal CPLD_Ctrl      :  CPLD_Ctrl_t;
+  signal CPLD_Mon       :  SERV_CPLD_Mon_t;
+  signal CPLD_Ctrl      :  SERV_CPLD_Ctrl_t;
   
   signal CM_enable_IOs   : std_logic_vector(1 downto 0);
   signal CM_C2C_Ctrl : C2C_Control_t;
@@ -385,6 +383,18 @@ architecture structure of top is
   signal clk_TCDS_locked : std_logic;
 
   signal clk_C2C1_PHY : std_logic;
+
+    --other clocks
+  signal clk_LHC : std_logic;
+  signal local_clk_LHC : std_logic;
+  signal clk_LHC_freq : std_logic_vector(31 downto 0);
+  signal clk_HQ : std_logic;
+  signal local_clk_HQ : std_logic;
+  signal clk_HQ_freq : std_logic_vector(31 downto 0);
+  signal clk_TTC : std_logic;
+  signal local_clk_TTC : std_logic;
+  signal clk_TTC_freq : std_logic_vector(31 downto 0);
+
 begin  -- architecture structure
 
   --debugging start
@@ -777,15 +787,6 @@ begin  -- architecture structure
   SI_OUT_DIS <= not SI_OE_normal;
   SI_ENABLE  <= SI_EN_normal;
 
-  SGMII_MON_CDC.reset_done    <= '0';
-  SGMII_MON_CDC.cpll_lock     <= '0';
-  SGMII_MON_CDC.mmcm_reset    <= '0';
-  SGMII_MON_CDC.pma_reset     <= '0';
-  SGMII_MON_CDC.mmcm_locked   <= '0';
-  SGMII_MON_CDC.status_vector <= (others => '0');
-  SGMII_MON_CDC.reset         <= '0';
-
-
 
 
 
@@ -799,8 +800,6 @@ begin  -- architecture structure
       readMISO        => AXI_BUS_RMISO(0),
       writeMOSI       => AXI_BUS_WMOSI(0),
       writeMISO       => AXI_BUS_WMISO(0),
-      SGMII_MON       => SGMII_MON_CDC,
-      SGMII_CTRL      => open,
       SI_INT          => SI_INT,
       SI_LOL          => SI_LOL,
       SI_LOS          => SI_LOS_XAXB,
@@ -812,9 +811,12 @@ begin  -- architecture structure
       LHC_CLK_CMS_LOS  => LHC_CLK_BP_LOS,
       LHC_CLK_OSC_LOS => LHC_CLK_OSC_LOS,
       LHC_SRC_SEL     => LHC_SRC_SEL,
+      LHC_CLK_FREQ    => clk_LHC_freq,
       HQ_CLK_CMS_LOS   => HQ_CLK_BP_LOS,
       HQ_CLK_OSC_LOS  => HQ_CLK_OSC_LOS,
       HQ_SRC_SEL      => HQ_SRC_SEL,
+      HQ_CLK_FREQ     => clk_HQ_freq,
+      TTC_CLK_FREQ    => clk_TTC_freq,
       FP_LED_RST      => FP_LED_RST,
       FP_LED_CLK      => FP_LED_CLK,
       FP_LED_SDA      => FP_LED_SDA,
@@ -954,17 +956,17 @@ begin  -- architecture structure
   -------------------------------------------------------------------------------
   CPLD_JTAG_BUF_TMS : OBUFT
     port map (
-      T => disable_CPLD_JTAG),
+      T => not CPLD_Ctrl.ENABLE_JTAG,
       I => plXVC_TMS(2),
       O => CPLD_TMS);
   CPLD_JTAG_BUF_TDI : OBUFT
     port map (
-      T => disable_CPLD_JTAG),
+      T => not CPLD_Ctrl.ENABLE_JTAG,
       I => plXVC_TDI(2),
       O => CPLD_TDI);
   CPLD_JTAG_BUF_TCK : OBUFT
     port map (
-      T => disable_CPLD_JTAG),
+      T => not CPLD_Ctrl.ENABLE_JTAG,
       I => plXVC_TCK(2),
       O => CPLD_TCK);
   plXVC_TDO(2) <= CPLD_TDO;
@@ -986,4 +988,64 @@ begin  -- architecture structure
       TDO             => plXVC_TDO,
       TCK             => plXVC_TCK,
       PS_RST          => plXVC_PS_RST);
+
+  -------------------------------------------------------------------------------
+  -- extra clock monitoring
+  -------------------------------------------------------------------------------
+  ibufds_CLK_LHC : IBUFDS
+    port map (
+      I  => CLK_LHC_P,
+      IB => CLK_LHC_N,
+      O  => local_CLK_LHC);
+  BUFG_CLK_LHC : BUFG
+    port map (
+      I  => local_CLK_LHC,
+      O  => clk_LHC);
+  rate_counter_LHC: entity work.rate_counter
+    generic map (
+      CLK_A_1_SECOND => 2000000)
+    port map (
+      clk_A         => clk_200Mhz,
+      clk_B         => clk_LHC,
+      reset_A_async => axi_reset,
+      event_b       => '1',
+      rate          => clk_LHC_freq);
+  ibufds_CLK_HQ : IBUFDS
+    port map (
+      I  => CLK_HQ_P,
+      IB => CLK_HQ_N,
+      O  => local_CLK_HQ);
+  BUFG_CLK_HQ : BUFG
+    port map (
+      I  => local_CLK_HQ,
+      O  => clk_HQ);
+  rate_counter_HQ: entity work.rate_counter
+    generic map (
+      CLK_A_1_SECOND => 2000000)
+    port map (
+      clk_A         => clk_200Mhz,
+      clk_B         => clk_HQ,
+      reset_A_async => axi_reset,
+      event_b       => '1',
+      rate          => clk_HQ_freq);
+  ibufds_CLK_TTC : IBUFDS
+    port map (
+      I  => CLK_TTC_P,
+      IB => CLK_TTC_N,
+      O  => local_CLK_TTC);
+  BUFG_CLK_TTC : BUFG
+    port map (
+      I  => local_CLK_TTC,
+      O  => clk_TTC);
+  rate_counter_TTC: entity work.rate_counter
+    generic map (
+      CLK_A_1_SECOND => 2000000)
+    port map (
+      clk_A         => clk_200Mhz,
+      clk_B         => clk_TTC,
+      reset_A_async => axi_reset,
+      event_b       => '1',
+      rate          => clk_TTC_freq);
+
+
 end architecture structure;

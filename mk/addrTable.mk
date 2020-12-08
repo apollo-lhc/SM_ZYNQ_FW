@@ -7,6 +7,10 @@ clean_CM:
 	@rm -f kernel/*.yaml
 	@echo rm -rf $(shell find ./kernel/ -maxdepth 1 | grep "hw_" | grep -v "hw_user" | xargs)	
 	@echo rm -rf $(shell find ./os/ -maxdepth 2 | grep "modules" | xargs)
+
+clean_address_table:
+	@rm -rf os/address_table/*
+
 #################################################################################
 # address tables
 #################################################################################

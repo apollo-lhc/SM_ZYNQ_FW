@@ -35,19 +35,20 @@ set_property CONFIG.PSU_MIO_36_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NA
 set_property CONFIG.PSU_MIO_37_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
 
 #ethernet 1
-set_property CONFIG.PSU__ENET3__PERIPHERAL__ENABLE {1} 		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_64_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_65_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_66_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_67_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_68_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_69_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_70_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_71_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_72_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_73_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_74_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU_MIO_75_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__ENET3__PERIPHERAL__ENABLE {0} 		    [get_bd_cells ${ZYNQ_NAME}]
+#set_property CONFIG.PSU__ENET3__PERIPHERAL__ENABLE {1} 		    [get_bd_cells ${ZYNQ_NAME}]
+#set_property CONFIG.PSU_MIO_64_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+#set_property CONFIG.PSU_MIO_65_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+#set_property CONFIG.PSU_MIO_66_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+#set_property CONFIG.PSU_MIO_67_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+#set_property CONFIG.PSU_MIO_68_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+#set_property CONFIG.PSU_MIO_69_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+#set_property CONFIG.PSU_MIO_70_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+#set_property CONFIG.PSU_MIO_71_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+#set_property CONFIG.PSU_MIO_72_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+#set_property CONFIG.PSU_MIO_73_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+#set_property CONFIG.PSU_MIO_74_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
+#set_property CONFIG.PSU_MIO_75_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
 
 
 #SD Card

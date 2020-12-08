@@ -11,16 +11,20 @@ clean_prebuild:
 	@rm -rf $(ADDRESS_TABLE_CREATION_PATH)/address_table/*
 	@rm -f $(SLAVE_DTSI_PATH)/slaves*.yaml
 
+
 #################################################################################
 # prebuild 
 #################################################################################
 
-$(SLAVE_DTSI_PATH)/slaves_%.yaml $(ADDRESS_TABLE_CREATION_PATH)/slaves_%.yaml $(ADDSLAVE_TCL_PATH)/AddSlaves_%.tcl : $(SLAVE_DEF_FILE_BASE)/%/slaves.yaml
+$(SLAVE_DTSI_PATH)/slaves_%.yaml $(ADDRESS_TABLE_CREATION_PATH)/slaves_%.yaml : $(SLAVE_DEF_FILE_BASE)/%/slaves.yaml
+	@mkdir -p $(ADDRESS_TABLE_CREATION_PATH)
+	@mkdir -p $(SLAVE_DTSI_PATH)
 	LD_LIBRARY_PATH=$(CACTUS_LD_PATH) ./scripts/preBuild.py \
 			                     -s $^ \
 				             -t $(ADDSLAVE_TCL_PATH) \
 				             -a $(ADDRESS_TABLE_CREATION_PATH) \
 				             -d $(SLAVE_DTSI_PATH)
 
-prebuild_% : $(SLAVE_DTSI_PATH)/slaves_%.yaml $(ADDRESS_TABLE_CREATION_PATH)/slaves_%.yaml $(ADDSLAVE_TCL_PATH)/AddSlaves_%.tcl
+
+prebuild_% : $(SLAVE_DTSI_PATH)/slaves_%.yaml $(ADDRESS_TABLE_CREATION_PATH)/slaves_%.yaml
 

@@ -137,8 +137,10 @@ set_property -dict {PACKAGE_PIN D8   IOSTANDARD LVCMOS18}               [get_por
 set_property -dict {PACKAGE_PIN B10  IOSTANDARD LVCMOS18}               [get_ports {CPLD_TDO}]
 set_property -dict {PACKAGE_PIN A10  IOSTANDARD LVCMOS18}               [get_ports {CPLD_TMS}]
 
-set_property -dict {PACKAGE_PIN B7   IOSTANDARD LVCMOS18}               [get_ports {SI_SDA}]
-set_property -dict {PACKAGE_PIN A7   IOSTANDARD LVCMOS18}               [get_ports {SI_SCL}]
+#set_property -dict {PACKAGE_PIN B7   IOSTANDARD LVCMOS18}               [get_ports {SI_SDA}]
+#set_property -dict {PACKAGE_PIN A7   IOSTANDARD LVCMOS18}               [get_ports {SI_SCL}]
+set_property -dict {PACKAGE_PIN A7   IOSTANDARD LVCMOS18}               [get_ports {SI_SDA}]
+set_property -dict {PACKAGE_PIN B7   IOSTANDARD LVCMOS18}               [get_ports {SI_SCL}]
 set_property -dict {PACKAGE_PIN C9   IOSTANDARD LVCMOS18}               [get_ports {SI_INT}]
 set_property -dict {PACKAGE_PIN B9   IOSTANDARD LVCMOS18}               [get_ports {SI_OUT_DIS}]
 set_property -dict {PACKAGE_PIN C4   IOSTANDARD LVCMOS18}               [get_ports {SI_ENABLE}]

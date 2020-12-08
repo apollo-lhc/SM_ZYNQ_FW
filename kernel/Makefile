@@ -89,7 +89,7 @@ define copy_configs =
 	@mkdir -p $(FSBL_BASE)
 	@cp -r $(ZYNQ_OS_MODS_BASE)/$@/fsbl/* $(FSBL_BASE)
 	@echo "layer config (if needed)"
-	@cp ./zynq_os_mods/$@/configs/layer.conf $(ZYNQ_OS_PROJECT_PATH)/project-spec/meta-user/conf/
+	@cp ./zynq_os_mods/$@/configs/layer.conf $(ZYNQ_OS_PROJECT_PATH)/project-spec/meta-user/conf/ || :
 	@echo "End of mods"
 endef
 

@@ -1,0 +1,27 @@
+<node id="SI5344_I2C">
+	<node id="I2C_RESET"        address="0x10" permission="rw" mask="0x0000000F"/>
+	<node id="I2C_CONTROL"      address="0x40" permission="rw">
+	  <node id="EN"                            permission="rw" mask="0x1"/>        
+	  <node id="TX_FIFO_RST"                   permission="rw" mask="0x2"/>        
+	  <node id="MS_MODE"                       permission="rw" mask="0x4"/>        
+	  <node id="TXRX_MODE"                     permission="rw" mask="0x8"/>        
+	</node>
+	<node id="I2C_STATUS"       address="0x41" permission="r" >
+	  <node id="BUSY"                          permission="r"  mask="0x4"/>        
+	</node>
+	<node id="I2C_TX_FIFO"      address="0x42" permission="rw">
+	  <node id="DATA"                          permission="rw" mask="0x0FF"/>        
+	  <node id="START"                         permission="rw" mask="0x100"/>        
+	  <node id="STOP"                          permission="rw" mask="0x200"/>        
+	</node>
+	<node id="I2C_RX_FIFO"      address="0x43" permission="r" >
+	  <node id="DATA"                          permission="r"  mask="0xFF"/>        
+	</node>
+	<node id="I2C_RX_FIFO_PIRQ" address="0x46" permission="rw">
+	  <node id="SET_DEPTH_IRQ"                 permission="rw" mask="0xF"/>        
+	</node>
+	<node id="I2C_TIMING" address="0x05">
+	  <node id="CLK_PARAM"    address="0x4F" permission="rw" mask="0xFFFFFFFF" description="Value = ((AXI Clock frequency in Hz)/(2 × IIC frequency in Hz)) – 7 – SCL_INERTIAL_DELAY(default 0).    AXI frequency is 25 MHz, IIC frequency is 100 KHz and SCL_INERTIAL_DELAY is 0, then
+this equals 118"/>
+	</node>
+</node>
