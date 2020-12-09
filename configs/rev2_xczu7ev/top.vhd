@@ -903,7 +903,7 @@ begin  -- architecture structure
       O  => clk_LHC);
   rate_counter_LHC: entity work.rate_counter
     generic map (
-      CLK_A_1_SECOND => 2000000)
+      CLK_A_1_SECOND => 200000000)
     port map (
       clk_A         => clk_200Mhz,
       clk_B         => clk_LHC,
@@ -921,7 +921,7 @@ begin  -- architecture structure
       O  => clk_HQ);
   rate_counter_HQ: entity work.rate_counter
     generic map (
-      CLK_A_1_SECOND => 2000000)
+      CLK_A_1_SECOND => 200000000)
     port map (
       clk_A         => clk_200Mhz,
       clk_B         => clk_HQ,
@@ -939,7 +939,7 @@ begin  -- architecture structure
       O  => clk_TTC);
   rate_counter_TTC: entity work.rate_counter
     generic map (
-      CLK_A_1_SECOND => 2000000)
+      CLK_A_1_SECOND => 200000000)
     port map (
       clk_A         => clk_200Mhz,
       clk_B         => clk_TTC,
