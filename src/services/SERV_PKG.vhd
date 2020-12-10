@@ -50,13 +50,19 @@ package SERV_CTRL is
 
   type SERV_CLOCKING_CTRL_t is record
     LHC_SEL                    :std_logic;     -- LHC clk source select
+    LHC_CLK_IBUF_EN            :std_logic;     -- Enable FPGA IBUFDS
     HQ_SEL                     :std_logic;     -- HQ clk source select
+    HQ_CLK_IBUF_EN             :std_logic;     -- Enable FPGA IBUFDS
+    TTC_CLK_IBUF_EN            :std_logic;     -- Enable FPGA IBUFDS
   end record SERV_CLOCKING_CTRL_t;
 
 
   constant DEFAULT_SERV_CLOCKING_CTRL_t : SERV_CLOCKING_CTRL_t := (
+                                                                   TTC_CLK_IBUF_EN => '0',
                                                                    HQ_SEL => '1',
-                                                                   LHC_SEL => '1'
+                                                                   LHC_SEL => '1',
+                                                                   LHC_CLK_IBUF_EN => '1',
+                                                                   HQ_CLK_IBUF_EN => '1'
                                                                   );
   type SERV_FP_LEDS_MON_t is record
     BUTTON                     :std_logic;     -- FP button (not debounced)

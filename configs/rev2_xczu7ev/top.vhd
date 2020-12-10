@@ -334,8 +334,12 @@ architecture structure of top is
   signal CM2_UART_Tx_internal : std_logic;
   signal CM_C2C_Mon     : C2C_Monitor_t;
 
-  signal CPLD_Mon       :  SERV_CPLD_Mon_t;
-  signal CPLD_Ctrl      :  SERV_CPLD_Ctrl_t;
+  signal CPLD_Mon       : SERV_CPLD_Mon_t;
+  signal CPLD_Ctrl      : SERV_CPLD_Ctrl_t;
+
+  signal CLOCKING_Mon   : SERV_CLOCKING_MON_t;
+  signal CLOCKING_Ctrl  : SERV_CLOCKING_CTRL_t;
+
   
   signal CM_enable_IOs   : std_logic_vector(1 downto 0);
   signal CM_C2C_Ctrl : C2C_Control_t;
@@ -724,8 +728,13 @@ begin  -- architecture structure
 
 
 
-  CM_TTC_SEL(1 downto 0) <= (others => TTC_SRC_SEL);
-    
+  CM_TTC_SEL(1 downto 0)   <= (others => TTC_SRC_SEL);
+  Clocking_Mon.LHC_LOS_BP  <= LHC_CLK_BP_LOS;
+  Clocking_Mon.LHC_LOS_OSC <= LHC_CLK_OSC_LOS;
+  Clocking_Mon.HQ_LOS_BP   <= HQ_CLK_BP_LOS;
+  Clocking_Mon.HQ_LOS_OSC  <= HQ_CLK_OSC_LOS;
+  LHC_SRC_SEL                   <= Clocking_Ctrl.LHC_SEL;
+  HQ_SRC_SEL                    <= Clocking_Ctrl.HQ_SEL;      
   services_1: entity work.services
     port map (
       clk_axi         => axi_clk,
@@ -742,15 +751,6 @@ begin  -- architecture structure
       SI_init_reset   => SI_init_reset,
       TTC_SRC_SEL     => TTC_SRC_SEL,
       TCDS_REFCLK_LOCKED => clk_TCDS_locked,
-      LHC_CLK_CMS_LOS  => LHC_CLK_BP_LOS,
-      LHC_CLK_OSC_LOS => LHC_CLK_OSC_LOS,
-      LHC_SRC_SEL     => LHC_SRC_SEL,
-      LHC_CLK_FREQ    => clk_LHC_freq,
-      HQ_CLK_CMS_LOS   => HQ_CLK_BP_LOS,
-      HQ_CLK_OSC_LOS  => HQ_CLK_OSC_LOS,
-      HQ_SRC_SEL      => HQ_SRC_SEL,
-      HQ_CLK_FREQ     => clk_HQ_freq,
-      TTC_CLK_FREQ    => clk_TTC_freq,
       FP_LED_RST      => FP_LED_RST,
       FP_LED_CLK      => FP_LED_CLK,
       FP_LED_SDA      => FP_LED_SDA,
@@ -758,6 +758,8 @@ begin  -- architecture structure
       linux_booted    => linux_booted,
       ESM_LED_CLK     => ESM_LED_CLK,
       ESM_LED_SDA     => ESM_LED_SDA,
+      Clocking_Mon    => Clocking_Mon,
+      Clocking_Ctrl   => Clocking_Ctrl,
       CM1_C2C_Mon     => CM_C2C_Mon.CM(1),
       CM2_C2C_Mon     => CM_C2C_Mon.CM(2),
       CPLD_Mon        => CPLD_Mon,
@@ -895,56 +897,59 @@ begin  -- architecture structure
   ibufds_CLK_LHC : IBUFDS
     port map (
       I  => CLK_LHC_P,
-      IB => CLK_LHC_N,
+      IB => CLK_LHC_N,      
       O  => local_CLK_LHC);
-  BUFG_CLK_LHC : BUFG
+  BUFG_CLK_LHC : BUFGCE
     port map (
       I  => local_CLK_LHC,
-      O  => clk_LHC);
+      O  => clk_LHC,
+      CE => Clocking_Ctrl.LHC_CLK_IBUF_EN);
   rate_counter_LHC: entity work.rate_counter
     generic map (
       CLK_A_1_SECOND => 200000000)
     port map (
       clk_A         => clk_200Mhz,
       clk_B         => clk_LHC,
-      reset_A_async => axi_reset,
+      reset_A_async => axi_reset or (not Clocking_Ctrl.LHC_CLK_IBUF_EN),
       event_b       => '1',
-      rate          => clk_LHC_freq);
+      rate          => Clocking_Mon.LHC_CLK_FREQ);
   ibufds_CLK_HQ : IBUFDS
     port map (
       I  => CLK_HQ_P,
       IB => CLK_HQ_N,
       O  => local_CLK_HQ);
-  BUFG_CLK_HQ : BUFG
+  BUFG_CLK_HQ : BUFGCE
     port map (
       I  => local_CLK_HQ,
-      O  => clk_HQ);
+      O  => clk_HQ,
+      CE => Clocking_Ctrl.HQ_CLK_IBUF_EN);
   rate_counter_HQ: entity work.rate_counter
     generic map (
       CLK_A_1_SECOND => 200000000)
     port map (
       clk_A         => clk_200Mhz,
       clk_B         => clk_HQ,
-      reset_A_async => axi_reset,
+      reset_A_async => axi_reset or (not Clocking_Ctrl.HQ_CLK_IBUF_EN),
       event_b       => '1',
-      rate          => clk_HQ_freq);
+      rate          => Clocking_Mon.HQ_CLK_FREQ);
   ibufds_CLK_TTC : IBUFDS
     port map (
       I  => CLK_TTC_P,
       IB => CLK_TTC_N,
       O  => local_CLK_TTC);
-  BUFG_CLK_TTC : BUFG
+  BUFG_CLK_TTC : BUFGCE
     port map (
       I  => local_CLK_TTC,
-      O  => clk_TTC);
+      O  => clk_TTC,
+      CE => Clocking_Ctrl.TTC_CLK_IBUF_EN);
   rate_counter_TTC: entity work.rate_counter
     generic map (
       CLK_A_1_SECOND => 200000000)
     port map (
       clk_A         => clk_200Mhz,
       clk_B         => clk_TTC,
-      reset_A_async => axi_reset,
+      reset_A_async => axi_reset or (not Clocking_Ctrl.TTC_CLK_IBUF_EN),
       event_b       => '1',
-      rate          => clk_TTC_freq);
+      rate          => Clocking_Mon.TTC_CLK_FREQ);
 
 end architecture structure;

@@ -12,15 +12,18 @@
     <node id="REFCLK_LOCKED" address="0x0" permission="r" mask="0x10" description="TCDS refclk locked"/>
   </node>
   <node id="CLOCKING" address="0x05" permission="r">
-    <node id="LHC_LOS_BP" permission="r" mask="0x1" description="Backplane LHC clk LOS" parameters="Table=CLOCKING;Column=LOS;Row=LHC_BP;Status=2;Show=nz" />
-    <node id="LHC_LOS_OSC" permission="r" mask="0x2" description="Local Si LHC clk LOS" parameters="Table=CLOCKING;Column=LOS;Row=LHC_OSC;Status=2;Show=nz"/>
-    <node id="LHC_SEL" permission="rw" mask="0x10" description="LHC clk source select"      parameters="Table=CLOCKING;Column=SOURCE;Row=LHC;Status=2;default=0x1"/>
-    <node id="HQ_LOS_BP" permission="r" mask="0x100" description="Backplane HQ clk LOS" parameters="Table=CLOCKING;Column=LOS;Row=HQ_BP;Status=2;Show=nz" />
-    <node id="HQ_LOS_OSC" permission="r" mask="0x200" description="Local Si HQ clk LOS" parameters="Table=CLOCKING;Column=LOS;Row=HQ_OSC;Status=2;Show=nz"/>
-    <node id="HQ_SEL" permission="rw" mask="0x1000" description="HQ clk source select"     parameters="Table=CLOCKING;Column=SOURCE;Row=HQ;Status=2;default=0x1"/>
-    <node id="LHC_CLK_FREQ" address="0x1" permission="r" mask="0xFFFFFFFF" description="Measured Freq of clock" parameters="Table=CLOCKING;Column=FREQ;Row=LHC;Status=3;Show=nz" />
-    <node id="HQ_CLK_FREQ" address="0x2" permission="r" mask="0xFFFFFFFF" description="Measured Freq of clock" parameters="Table=CLOCKING;Column=FREQ;Row=HQ;Status=3;Show=nz" />
-    <node id="TTC_CLK_FREQ" address="0x3" permission="r" mask="0xFFFFFFFF" description="Measured Freq of clock" parameters="Table=CLOCKING;Column=FREQ;Row=TTC;Status=3;Show=nz" />
+    <node id="LHC_LOS_BP"      permission="r"  mask="0x000001" description="Backplane LHC clk LOS" parameters="Table=CLOCKING;Column=LOS;Row=LHC_BP;Status=2;Show=nz" />
+    <node id="LHC_LOS_OSC"     permission="r"  mask="0x000002" description="Local Si LHC clk LOS"  parameters="Table=CLOCKING;Column=LOS;Row=LHC_OSC;Status=2;Show=nz"/>
+    <node id="LHC_SEL"         permission="rw" mask="0x000010" description="LHC clk source select" parameters="Table=CLOCKING;Column=SOURCE;Row=LHC;Status=2;default=0x1"/>
+    <node id="LHC_CLK_IBUF_EN" permission="rw" mask="0x000020" description="Enable FPGA IBUFDS"    parameters="Table=CLOCKING;Column=IBUF_EN;Row=LHC;Status=2;default=0x1"/>
+    <node id="HQ_LOS_BP"       permission="r"  mask="0x000100" description="Backplane HQ clk LOS"  parameters="Table=CLOCKING;Column=LOS;Row=HQ_BP;Status=2;Show=nz" />
+    <node id="HQ_LOS_OSC"      permission="r"  mask="0x000200" description="Local Si HQ clk LOS"   parameters="Table=CLOCKING;Column=LOS;Row=HQ_OSC;Status=2;Show=nz"/>
+    <node id="HQ_SEL"          permission="rw" mask="0x001000" description="HQ clk source select"  parameters="Table=CLOCKING;Column=SOURCE;Row=HQ;Status=2;default=0x1"/>
+    <node id="HQ_CLK_IBUF_EN"  permission="rw" mask="0x002000" description="Enable FPGA IBUFDS"    parameters="Table=CLOCKING;Column=IBUF_EN;Row=HQ;Status=2;default=0x1"/>
+    <node id="TTC_CLK_IBUF_EN" permission="rw" mask="0x200000" description="Enable FPGA IBUFDS"    parameters="Table=CLOCKING;Column=IBUF_EN;Row=TTC;Status=2;default=0x0"/>
+    <node id="LHC_CLK_FREQ" address="0x1" permission="r" mask="0xFFFFFFFF" description="Measured Freq of clock" parameters="Table=CLOCKING;Column=FREQ;Row=LHC;Status=3;Show=nz;Format=m_1_1_1000000_1_0_1" />
+    <node id="HQ_CLK_FREQ" address="0x2" permission="r" mask="0xFFFFFFFF" description="Measured Freq of clock" parameters="Table=CLOCKING;Column=FREQ;Row=HQ;Status=3;Show=nz;Format=m_1_1_1000000_1_0_1" />
+    <node id="TTC_CLK_FREQ" address="0x3" permission="r" mask="0xFFFFFFFF" description="Measured Freq of clock" parameters="Table=CLOCKING;Column=FREQ;Row=TTC;Status=3;Show=nz;Format=m_1_1_1000000_1_0_1" />
 
   </node>
   <node id="FP_LEDS" address="0x10">

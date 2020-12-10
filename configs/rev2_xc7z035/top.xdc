@@ -40,8 +40,11 @@ set_property -dict {PACKAGE_PIN AC21 IOSTANDARD LVCMOS33}               [get_por
 set_property -dict {PACKAGE_PIN AC22 IOSTANDARD LVCMOS33}               [get_ports {CM1_GPIO[2]}]
 set_property -dict {PACKAGE_PIN AB21 IOSTANDARD LVCMOS33}               [get_ports {CM1_TCK}]
 set_property -dict {PACKAGE_PIN AB22 IOSTANDARD LVCMOS33}               [get_ports {CM1_TMS}]
-set_property -dict {PACKAGE_PIN AA19 IOSTANDARD LVCMOS33}               [get_ports {CM1_TDO}]
-set_property -dict {PACKAGE_PIN AB19 IOSTANDARD LVCMOS33}               [get_ports {CM1_TDI}]
+#TDO and TDI are swapped
+#set_property -dict {PACKAGE_PIN AA19 IOSTANDARD LVCMOS33}               [get_ports {CM1_TDO}]
+#set_property -dict {PACKAGE_PIN AB19 IOSTANDARD LVCMOS33}               [get_ports {CM1_TDI}]
+set_property -dict {PACKAGE_PIN AB19 IOSTANDARD LVCMOS33}               [get_ports {CM1_TDO}]
+set_property -dict {PACKAGE_PIN AA19 IOSTANDARD LVCMOS33}               [get_ports {CM1_TDI}]
 set_property -dict {PACKAGE_PIN AA20 IOSTANDARD LVCMOS33 PULLUP TRUE}   [get_ports {CM1_PS_RST}]
 
 set_property -dict {PACKAGE_PIN AA25 IOSTANDARD LVCMOS33}               [get_ports {CM2_EN}]
@@ -116,12 +119,15 @@ create_clock -period 5.000 -name onboard_CLK_P -add [get_ports onboard_CLK_P]
 
 set_property -dict {PACKAGE_PIN J4   IOSTANDARD LVDS}                   [get_ports {CLK_LHC_P}]
 set_property -dict {PACKAGE_PIN J3   IOSTANDARD LVDS}                   [get_ports {CLK_LHC_N}]
+create_clock -period 24.95 -name CLK_LHC_P -add [get_ports CLK_LHC_P]
 
 set_property -dict {PACKAGE_PIN C8   IOSTANDARD LVDS}                   [get_ports {CLK_HQ_P}]
 set_property -dict {PACKAGE_PIN C7   IOSTANDARD LVDS}                   [get_ports {CLK_HQ_N}]
+create_clock -period 6.238 -name CLK_HQ_P -add [get_ports CLK_HQ_P]
 
 set_property -dict {PACKAGE_PIN G7   IOSTANDARD LVDS}                   [get_ports {CLK_TTC_P}]
 set_property -dict {PACKAGE_PIN F7   IOSTANDARD LVDS}                   [get_ports {CLK_TTC_N}]
+create_clock -period 6.238 -name CLK_TTC_P -add [get_ports CLK_TTC_P]
 set_property -dict {PACKAGE_PIN F5   IOSTANDARD LVDS}                   [get_ports {TTC_P}]
 set_property -dict {PACKAGE_PIN E5   IOSTANDARD LVDS}                   [get_ports {TTC_N}]
 set_property -dict {PACKAGE_PIN E6   IOSTANDARD LVDS}                   [get_ports {TTS_P}]

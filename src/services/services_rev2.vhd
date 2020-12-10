@@ -29,15 +29,6 @@ entity services is
     TTC_SRC_SEL        : out std_logic;
     TCDS_REFCLK_LOCKED :  in std_logic;
 
-    LHC_CLK_CMS_LOS    : in  std_logic;
-    LHC_CLK_OSC_LOS    : in  std_logic;
-    LHC_SRC_SEL        : out std_logic;
-    LHC_CLK_freq       : in  std_logic_vector(31 downto 0);
-    HQ_CLK_CMS_LOS     : in  std_logic;
-    HQ_CLK_OSC_LOS     : in  std_logic;
-    HQ_SRC_SEL         : out std_logic;
-    HQ_CLK_freq        : in  std_logic_vector(31 downto 0);
-    TTC_CLK_freq       : in  std_logic_vector(31 downto 0);
     FP_LED_RST         : out std_logic;
     FP_LED_CLK         : out std_logic;
     FP_LED_SDA         : out std_logic;
@@ -46,6 +37,8 @@ entity services is
                        
     ESM_LED_CLK        : in  std_logic;
     ESM_LED_SDA        : in  std_logic;
+    CLOCKING_Mon       : in  SERV_CLOCKING_MON_t;
+    CLOCKING_Ctrl      : out SERV_CLOCKING_CTRL_t;
     CM1_C2C_Mon        : in  single_C2C_Monitor_t;
     CM2_C2C_Mon        : in  single_C2C_Monitor_t;
     CPLD_Mon           : in  SERV_CPLD_Mon_t;
@@ -171,13 +164,7 @@ begin  -- architecture behavioral
   Mon.SI5344.LOL               <= not SI_LOL;
   Mon.SI5344.LOS               <= not SI_LOS;
   Mon.TCDS.REFCLK_LOCKED       <= TCDS_REFCLK_LOCKED;
-  Mon.CLOCKING.HQ_LOS_BP       <= HQ_CLK_CMS_LOS;
-  Mon.CLOCKING.HQ_LOS_OSC      <= HQ_CLK_OSC_LOS;
-  Mon.CLOCKING.HQ_CLK_FREQ     <= HQ_CLK_freq;
-  Mon.CLOCKING.LHC_LOS_BP      <= LHC_CLK_CMS_LOS;
-  Mon.CLOCKING.LHC_LOS_OSC     <= LHC_CLK_OSC_LOS;
-  Mon.CLOCKING.LHC_CLK_FREQ    <= LHC_CLK_freq;
-  Mon.CLOCKING.TTC_CLK_FREQ    <= TTC_CLK_freq;
+  Mon.CLOCKING                 <= CLOCKING_Mon;
   Mon.FP_LEDS.BUTTON           <= FP_switch;
   Mon.FP_LEDS.FP_SHDWN_REQ     <= FP_shutdown;
   Mon.SWITCH.STATUS            <= ESM_LEDs;
@@ -186,8 +173,7 @@ begin  -- architecture behavioral
   SI_ENABLE     <= Ctrl.SI5344.EN; 
   SI_init_reset <= Ctrl.SI5344.FPGA_PLL_RESET;
   TTC_SRC_SEL   <= Ctrl.TCDS.TTC_SOURCE;
-  LHC_SRC_SEL   <= Ctrl.CLOCKING.LHC_SEL;
-  HQ_SRC_SEL    <= Ctrl.CLOCKING.HQ_SEL;
+  CLOCKING_Ctrl <= Ctrl.CLOCKING;
   FP_LED_RST    <= not Ctrl.FP_LEDS.RESET;
 
   Mon.CPLD <= CPLD_Mon;

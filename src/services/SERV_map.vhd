@@ -84,9 +84,12 @@ begin  -- architecture behavioral
           localRdData( 0)            <=  Mon.CLOCKING.LHC_LOS_BP;         --Backplane LHC clk LOS
           localRdData( 1)            <=  Mon.CLOCKING.LHC_LOS_OSC;        --Local Si LHC clk LOS
           localRdData( 4)            <=  reg_data( 5)( 4);                --LHC clk source select
+          localRdData( 5)            <=  reg_data( 5)( 5);                --Enable FPGA IBUFDS
           localRdData( 8)            <=  Mon.CLOCKING.HQ_LOS_BP;          --Backplane HQ clk LOS
           localRdData( 9)            <=  Mon.CLOCKING.HQ_LOS_OSC;         --Local Si HQ clk LOS
           localRdData(12)            <=  reg_data( 5)(12);                --HQ clk source select
+          localRdData(13)            <=  reg_data( 5)(13);                --Enable FPGA IBUFDS
+          localRdData(21)            <=  reg_data( 5)(21);                --Enable FPGA IBUFDS
         when 6 => --0x6
           localRdData(31 downto  0)  <=  Mon.CLOCKING.LHC_CLK_FREQ;       --Measured Freq of clock
         when 7 => --0x7
@@ -119,20 +122,23 @@ begin  -- architecture behavioral
 
 
   -- Register mapping to ctrl structures
-  Ctrl.SI5344.OE              <=  reg_data( 0)( 0);               
-  Ctrl.SI5344.EN              <=  reg_data( 0)( 1);               
-  Ctrl.SI5344.FPGA_PLL_RESET  <=  reg_data( 0)( 2);               
-  Ctrl.TCDS.TTC_SOURCE        <=  reg_data( 4)( 0);               
-  Ctrl.CLOCKING.LHC_SEL       <=  reg_data( 5)( 4);               
-  Ctrl.CLOCKING.HQ_SEL        <=  reg_data( 5)(12);               
-  Ctrl.FP_LEDS.RESET          <=  reg_data(16)( 0);               
-  Ctrl.FP_LEDS.PAGE0_FORCE    <=  reg_data(16)( 1);               
-  Ctrl.FP_LEDS.PAGE0_MODE     <=  reg_data(16)( 4 downto  2);     
-  Ctrl.FP_LEDS.PAGE0_SPEED    <=  reg_data(16)(11 downto  8);     
-  Ctrl.FP_LEDS.FORCED_PAGE    <=  reg_data(16)(21 downto 16);     
-  Ctrl.FP_LEDS.FORCE_PAGE     <=  reg_data(16)(22);               
-  Ctrl.FP_LEDS.PAGE           <=  reg_data(16)(29 downto 24);     
-  Ctrl.CPLD.ENABLE_JTAG       <=  reg_data(48)( 0);               
+  Ctrl.SI5344.OE                 <=  reg_data( 0)( 0);               
+  Ctrl.SI5344.EN                 <=  reg_data( 0)( 1);               
+  Ctrl.SI5344.FPGA_PLL_RESET     <=  reg_data( 0)( 2);               
+  Ctrl.TCDS.TTC_SOURCE           <=  reg_data( 4)( 0);               
+  Ctrl.CLOCKING.LHC_SEL          <=  reg_data( 5)( 4);               
+  Ctrl.CLOCKING.LHC_CLK_IBUF_EN  <=  reg_data( 5)( 5);               
+  Ctrl.CLOCKING.HQ_SEL           <=  reg_data( 5)(12);               
+  Ctrl.CLOCKING.HQ_CLK_IBUF_EN   <=  reg_data( 5)(13);               
+  Ctrl.CLOCKING.TTC_CLK_IBUF_EN  <=  reg_data( 5)(21);               
+  Ctrl.FP_LEDS.RESET             <=  reg_data(16)( 0);               
+  Ctrl.FP_LEDS.PAGE0_FORCE       <=  reg_data(16)( 1);               
+  Ctrl.FP_LEDS.PAGE0_MODE        <=  reg_data(16)( 4 downto  2);     
+  Ctrl.FP_LEDS.PAGE0_SPEED       <=  reg_data(16)(11 downto  8);     
+  Ctrl.FP_LEDS.FORCED_PAGE       <=  reg_data(16)(21 downto 16);     
+  Ctrl.FP_LEDS.FORCE_PAGE        <=  reg_data(16)(22);               
+  Ctrl.FP_LEDS.PAGE              <=  reg_data(16)(29 downto 24);     
+  Ctrl.CPLD.ENABLE_JTAG          <=  reg_data(48)( 0);               
 
 
   reg_writes: process (clk_axi, reset_axi_n) is
@@ -143,7 +149,10 @@ begin  -- architecture behavioral
       reg_data( 0)( 2)  <= DEFAULT_SERV_CTRL_t.SI5344.FPGA_PLL_RESET;
       reg_data( 4)( 0)  <= DEFAULT_SERV_CTRL_t.TCDS.TTC_SOURCE;
       reg_data( 5)( 4)  <= DEFAULT_SERV_CTRL_t.CLOCKING.LHC_SEL;
+      reg_data( 5)( 5)  <= DEFAULT_SERV_CTRL_t.CLOCKING.LHC_CLK_IBUF_EN;
       reg_data( 5)(12)  <= DEFAULT_SERV_CTRL_t.CLOCKING.HQ_SEL;
+      reg_data( 5)(13)  <= DEFAULT_SERV_CTRL_t.CLOCKING.HQ_CLK_IBUF_EN;
+      reg_data( 5)(21)  <= DEFAULT_SERV_CTRL_t.CLOCKING.TTC_CLK_IBUF_EN;
       reg_data(16)( 0)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.RESET;
       reg_data(16)( 1)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.PAGE0_FORCE;
       reg_data(16)( 4 downto  2)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.PAGE0_MODE;
@@ -175,7 +184,10 @@ begin  -- architecture behavioral
           reg_data( 4)( 0)            <=  localWrData( 0);                --TTC source select (0:TCDS,1:TTC_FAKE
         when 5 => --0x5
           reg_data( 5)( 4)            <=  localWrData( 4);                --LHC clk source select
+          reg_data( 5)( 5)            <=  localWrData( 5);                --Enable FPGA IBUFDS
           reg_data( 5)(12)            <=  localWrData(12);                --HQ clk source select
+          reg_data( 5)(13)            <=  localWrData(13);                --Enable FPGA IBUFDS
+          reg_data( 5)(21)            <=  localWrData(21);                --Enable FPGA IBUFDS
         when 48 => --0x30
           reg_data(48)( 0)            <=  localWrData( 0);                --Enable the JTAG lines to the CPLD
 
