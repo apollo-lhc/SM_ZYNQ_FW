@@ -143,6 +143,7 @@ set_property -dict {PACKAGE_PIN D8   IOSTANDARD LVCMOS18}               [get_por
 set_property -dict {PACKAGE_PIN B10  IOSTANDARD LVCMOS18}               [get_ports {CPLD_TDO}]
 set_property -dict {PACKAGE_PIN A10  IOSTANDARD LVCMOS18}               [get_ports {CPLD_TMS}]
 
+#swapped SDA and SCL
 #set_property -dict {PACKAGE_PIN B7   IOSTANDARD LVCMOS18}               [get_ports {SI_SDA}]
 #set_property -dict {PACKAGE_PIN A7   IOSTANDARD LVCMOS18}               [get_ports {SI_SCL}]
 set_property -dict {PACKAGE_PIN A7   IOSTANDARD LVCMOS18}               [get_ports {SI_SDA}]

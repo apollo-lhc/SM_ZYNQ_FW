@@ -46,8 +46,11 @@ set_property -dict {PACKAGE_PIN G13  IOSTANDARD LVCMOS33}               [get_por
 set_property -dict {PACKAGE_PIN F13  IOSTANDARD LVCMOS33}               [get_ports {CM1_GPIO[2]}]
 set_property -dict {PACKAGE_PIN K15  IOSTANDARD LVCMOS33}               [get_ports {CM1_TCK}]
 set_property -dict {PACKAGE_PIN K14  IOSTANDARD LVCMOS33}               [get_ports {CM1_TMS}]
-set_property -dict {PACKAGE_PIN K12  IOSTANDARD LVCMOS33}               [get_ports {CM1_TDO}]
-set_property -dict {PACKAGE_PIN K11  IOSTANDARD LVCMOS33}               [get_ports {CM1_TDI}]
+#TDO and TDI are swapped
+#set_property -dict {PACKAGE_PIN K12  IOSTANDARD LVCMOS33}               [get_ports {CM1_TDO}]
+#set_property -dict {PACKAGE_PIN K11  IOSTANDARD LVCMOS33}               [get_ports {CM1_TDI}]
+set_property -dict {PACKAGE_PIN K11  IOSTANDARD LVCMOS33}               [get_ports {CM1_TDO}]
+set_property -dict {PACKAGE_PIN K12  IOSTANDARD LVCMOS33}               [get_ports {CM1_TDI}]
 set_property -dict {PACKAGE_PIN L15  IOSTANDARD LVCMOS33 PULLUP TRUE}   [get_ports {CM1_PS_RST}]
 
 set_property -dict {PACKAGE_PIN E14  IOSTANDARD LVCMOS33}               [get_ports {CM2_EN}]
