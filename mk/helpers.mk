@@ -13,6 +13,9 @@ all:
 	@echo "Please specify a design to build"
 	@$(MAKE) list 
 
+clean_make_log:
+	@rm make_log.txt &> /dev/null
+
 #################################################################################
 # Slack notifications
 #################################################################################

@@ -125,22 +125,22 @@ open_hw :
 #################################################################################
 # FPGA building
 #################################################################################
-rev1_xc7z035	: 
+rev1_xc7z035	: clean_make_log
 	time $(MAKE) $(BIT_BASE)$@.bit || $(MAKE) NOTIFY_DAN_BAD
 
-rev2_xc7z035	: 
+rev2_xc7z035	:  clean_make_log
 	time $(MAKE) $(BIT_BASE)$@.bit || $(MAKE) NOTIFY_DAN_BAD
 
-rev1_xc7z045	:
+rev1_xc7z045	:  clean_make_log
 	time $(MAKE) $(BIT_BASE)$@.bit || $(MAKE) NOTIFY_DAN_BAD
 
-rev2_xc7z045	:
+rev2_xc7z045	: clean_make_log
 	time $(MAKE) $(BIT_BASE)$@.bit || $(MAKE) NOTIFY_DAN_BAD
 
-rev2_xczu7ev	:
+rev2_xczu7ev	: clean_make_log
 	time $(MAKE) $(BIT_BASE)$@.bit || $(MAKE) NOTIFY_DAN_BAD
 
-rev2_xczu7ev_testing	:
+rev2_xczu7ev_testing	: clean_make_log
 	time $(MAKE) $(BIT_BASE)$@.bit || $(MAKE) NOTIFY_DAN_BAD
 
 interactive : 

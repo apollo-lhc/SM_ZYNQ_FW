@@ -6,6 +6,8 @@ mdio {
      #address-cells = <1>;
      #size-cells = <0>;
      phy7: ethernet-phy@7 {
+     	   compatible = "micrel,ksz9031";
+           device_type = "ethernet-phy";
      	   reg = <7>;
 	   txc-skew-ps = <1800>;
 	   txen-skew-ps = <420>;
@@ -21,6 +23,8 @@ mdio {
            rxd3-skew-ps = <420>;
      };
      phy3: ethernet-phy@3 {
+     	   compatible = "micrel,ksz9031";
+           device_type = "ethernet-phy";
            reg = <3>;
            txc-skew-ps = <1800>;
            txen-skew-ps = <420>;
