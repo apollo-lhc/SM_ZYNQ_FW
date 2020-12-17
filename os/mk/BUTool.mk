@@ -1,5 +1,6 @@
 #Build BUTool from ApolloTool meta repo
-APOLLO_TOOL_TAG=v1.6.2
+#APOLLO_TOOL_TAG=v1.6.2
+APOLLO_TOOL_TAG=feature-USP_addrs
 ${OPT_PATH}/BUTool: ${OPT_PATH}/cactus | ${OPT_PATH} ${TMP_PATH} 
 	cd ${TMP_PATH} && \
 		git clone --branch ${APOLLO_TOOL_TAG} https://github.com/apollo-lhc/ApolloTool.git

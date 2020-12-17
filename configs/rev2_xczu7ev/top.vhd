@@ -555,7 +555,7 @@ begin  -- architecture structure
       PLXVC_wstrb                => AXI_BUS_WMOSI(6).data_write_strobe,
       PLXVC_wvalid               => AXI_BUS_WMOSI(6).data_valid,
 
-            init_clk        =>  AXI_C2C_aurora_init_clk,
+      init_clk        =>  AXI_C2C_aurora_init_clk,
       C2C1_phy_Rx_rxn =>  AXI_C2C_CM1_Rx_N(0 to 0),
       C2C1_phy_Rx_rxp =>  AXI_C2C_CM1_Rx_P(0 to 0),
       C2C1_phy_Tx_txn =>  AXI_C2C_CM1_Tx_N(0 to 0),
@@ -951,5 +951,26 @@ begin  -- architecture structure
       reset_A_async => axi_reset or (not Clocking_Ctrl.TTC_CLK_IBUF_EN),
       event_b       => '1',
       rate          => Clocking_Mon.TTC_CLK_FREQ);
+
+  CM_C2C_Mon.CM(2).USER_CLK_FREQ <=   CM_C2C_Mon.CM(1).USER_CLK_FREQ;
+  rate_counter_C2C_USER: entity work.rate_counter
+    generic map (
+      CLK_A_1_SECOND => 200000000)
+    port map (
+      clk_A         => clk_200Mhz,
+      clk_B         => clk_C2C1_PHY,
+      reset_A_async => axi_reset or (CM_C2C_Mon.CM(1).status.phy_mmcm_lol),
+      event_b       => '1',
+      rate          => CM_C2C_Mon.CM(1).USER_CLK_FREQ);
+
+  rate_counter_AXI: entity work.rate_counter
+    generic map (
+      CLK_A_1_SECOND => 200000000)
+    port map (
+      clk_A         => clk_200Mhz,
+      clk_B         => axi_clk,
+      reset_A_async => axi_reset,
+      event_b       => '1',
+      rate          => Clocking_Mon.AXI_CLK_FREQ);
 
 end architecture structure;

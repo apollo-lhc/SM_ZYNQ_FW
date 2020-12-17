@@ -176,6 +176,8 @@ begin  -- architecture behavioral
           localRdData( 2 downto  0)  <=  Mon.CM(1).C2C.CNT.PHYLANE_STATE;                  --Current state of phy_lane_control module
         when 41 => --0x29
           localRdData(31 downto  0)  <=  Mon.CM(1).C2C.CNT.PHY_ERRORSTATE_COUNT;           --Count for phylane in error state
+        when 42 => --0x2a
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C.CNT.USER_CLK_FREQ;                  --Frequency of the user C2C clk
         when 338 => --0x152
           localRdData( 7 downto  0)  <=  Mon.CM(2).MONITOR.BAD_TRANS.ADDR;                 --Sensor addr bits
           localRdData(23 downto  8)  <=  Mon.CM(2).MONITOR.BAD_TRANS.DATA;                 --Sensor data bits
@@ -282,6 +284,8 @@ begin  -- architecture behavioral
           localRdData(31 downto  0)  <=  Mon.CM(2).C2C.CNT.PHY_ERRORSTATE_COUNT;           --Count for phylane in error state
         when 276 => --0x114
           localRdData( 2 downto  0)  <=  reg_data(276)( 2 downto  0);                      --DEBUG rx rate
+        when 298 => --0x12a
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C.CNT.USER_CLK_FREQ;                  --Frequency of the user C2C clk
         when 277 => --0x115
           localRdData( 1 downto  0)  <=  Mon.CM(2).C2C.LINK_DEBUG.TX.BUF_STATUS;           --DEBUG tx buf status
           localRdData( 2)            <=  Mon.CM(2).C2C.LINK_DEBUG.TX.RESET_DONE;           --DEBUG tx reset done

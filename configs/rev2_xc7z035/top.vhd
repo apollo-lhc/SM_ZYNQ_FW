@@ -1052,5 +1052,25 @@ begin  -- architecture structure
       event_b       => '1',
       rate          => Clocking_Mon.TTC_CLK_FREQ);
 
+  CM_C2C_Mon.CM(2).USER_CLK_FREQ <=   CM_C2C_Mon.CM(1).USER_CLK_FREQ;
+  rate_counter_C2C_USER: entity work.rate_counter
+    generic map (
+      CLK_A_1_SECOND => 200000000)
+    port map (
+      clk_A         => clk_200Mhz,
+      clk_B         => clk_C2C1_PHY,
+      reset_A_async => axi_reset or (CM_C2C_Mon.CM(1).status.phy_mmcm_lol),
+      event_b       => '1',
+      rate          => CM_C2C_Mon.CM(1).USER_CLK_FREQ);
+
+  rate_counter_AXI: entity work.rate_counter
+    generic map (
+      CLK_A_1_SECOND => 200000000)
+    port map (
+      clk_A         => clk_200Mhz,
+      clk_B         => axi_clk,
+      reset_A_async => axi_reset,
+      event_b       => '1',
+      rate          => Clocking_Mon.AXI_CLK_FREQ);
 
 end architecture structure;

@@ -282,6 +282,7 @@ begin
     Mon.CM(iCM).CTRL.IOS_ENABLED       <= enable_IOs(iCM - 1);
     Mon.CM(iCM).C2C.LINK_DEBUG         <= CM_C2C_Mon.CM(iCM).LINK_DEBUG;
     Mon.CM(iCM).C2C.STATUS             <= CM_C2C_Mon.CM(iCM).STATUS;
+    Mon.CM(iCM).C2C.CNT.USER_CLK_FREQ  <= CM_C2C_Mon.CM(iCM).user_clk_freq;
     --C2C control signals
     --CM_C2C_Ctrl.CM(I).aurora_pma_init_in <= CTRL.CM(I).C2C.INITIALIZE;
     -------------------------------------------------------------------------------

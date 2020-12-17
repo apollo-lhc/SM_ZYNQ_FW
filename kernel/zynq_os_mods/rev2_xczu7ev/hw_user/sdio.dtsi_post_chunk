@@ -1,7 +1,28 @@
   &sdhci1 {
     no-1-8-v;   
+    pinctrl-names = "default";
+    pinctrl-0 = <&pinctrl_sdhci1_default>;
     max-frequency = <25000000>;
     // Disable write protect so we can write to the SD card (microSD)
     disable-wp;
     broken-cd;
+  };
+
+  &pinctrl0 {
+            status = "okay";
+            
+	    pinctrl_sdhci1_default: sdhci1-default {
+                 mux {
+                      groups = "sdio1_11_grp";
+                      function = "sdio1";
+                 };
+            
+                 conf {
+                      groups = "sdio1_11_grp";
+                      slew-rate = <SLEW_RATE_SLOW>;
+                      io-standard = <IO_STANDARD_LVCMOS33>;
+                      bias-disable;
+                 };
+                 
+            };
   };

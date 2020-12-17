@@ -28,6 +28,8 @@ generate_target all [get_files "[get_bd_designs].bd"]
 set_property source_mgmt_mode All [current_project]
 update_compile_order -fileset sources_1
 
+#check for syntax errors
+synth_design -rtl
 
 #synth design
 synth_design -top $top -part $FPGA_part -flatten rebuilt
