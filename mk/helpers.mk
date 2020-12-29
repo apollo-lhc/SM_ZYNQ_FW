@@ -32,7 +32,12 @@ NOTIFY_DAN_BAD:
 list:
 	@echo
 	@echo Apollo SM config:
-	@$(MAKE) -pRrq -f $(MAKEFILE_LIST) | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | grep rev[[:digit:]]_ | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | column
+	@$(MAKE) -pRrq -f $(MAKEFILE_LIST) | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | grep rev[[:digit:]]_ | gre\
+p -v prebuild | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | column
+	@echo
+	@echo Prebuilds:
+	@$(MAKE) -pRrq -f $(MAKEFILE_LIST) | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | grep prebuild_ | egrep -v\
+ -e '^[^[:alnum:]]' -e '^$@$$' | column
 	@echo
 	@echo Vivado:
 	@$(MAKE) -pRrq -f $(MAKEFILE_LIST) | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | grep open_ | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | column

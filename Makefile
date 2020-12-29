@@ -30,16 +30,22 @@ BD_PATH=${MAKE_PATH}/bd
 CORES_PATH=${MAKE_PATH}/cores
 ADDRESS_TABLE = ${MAKE_PATH}/os/address_table/address_apollo.xml
 
+################################################################################
+# Configs
+#################################################################################
+#get a list of the subdirs in configs.  These are our FPGA builds
+CONFIGS=$(filter-out configs/,$(patsubst configs/%/,%,$(dir $(wildcard configs/*/))))
+
+define CONFIGS_template =
+ $(1): clean_make_log
+	time $(MAKE) $(BIT_BASE)$$@.bit || $(MAKE) NOTIFY_DAN_BAD
+endef
 
 #################################################################################
 # Short build names
 #################################################################################
 
 BIT_BASE=${MAKE_PATH}/bit/top_
-
-.SECONDARY:
-
-.PHONY: clean list bit NOTIFY_DAN_BAD NOTIFY_DAN_GOOD init
 
 
 #################################################################################
@@ -68,6 +74,13 @@ endif
 ifneq ("$(wildcard ${MAKE_PATH}/mk/addrTable.mk)","")
   include ${MAKE_PATH}/mk/addrTable.mk
 endif
+
+
+
+.SECONDARY:
+
+.PHONY: clean list bit NOTIFY_DAN_BAD NOTIFY_DAN_GOOD init  $(CONFIGS) $(PREBUILDS)
+
 
 #################################################################################
 # Clean
@@ -125,23 +138,8 @@ open_hw :
 #################################################################################
 # FPGA building
 #################################################################################
-rev1_xc7z035	: clean_make_log
-	time $(MAKE) $(BIT_BASE)$@.bit || $(MAKE) NOTIFY_DAN_BAD
-
-rev2_xc7z035	:  clean_make_log
-	time $(MAKE) $(BIT_BASE)$@.bit || $(MAKE) NOTIFY_DAN_BAD
-
-rev1_xc7z045	:  clean_make_log
-	time $(MAKE) $(BIT_BASE)$@.bit || $(MAKE) NOTIFY_DAN_BAD
-
-rev2_xc7z045	: clean_make_log
-	time $(MAKE) $(BIT_BASE)$@.bit || $(MAKE) NOTIFY_DAN_BAD
-
-rev2_xczu7ev	: clean_make_log
-	time $(MAKE) $(BIT_BASE)$@.bit || $(MAKE) NOTIFY_DAN_BAD
-
-rev2_xczu7ev_testing	: clean_make_log
-	time $(MAKE) $(BIT_BASE)$@.bit || $(MAKE) NOTIFY_DAN_BAD
+#generate a build rule for each FPGA in the configs dir ($CONFIGS) 
+$(foreach config,$(CONFIGS),$(eval $(call CONFIGS_template,$(config))))
 
 interactive : 
 	source $(BUILD_VIVADO_SHELL) &&\
@@ -178,3 +176,4 @@ endif
 
 init:
 	git submodule update --init --recursive 
+

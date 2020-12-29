@@ -11,6 +11,14 @@ clean_prebuild:
 	@rm -rf $(ADDRESS_TABLE_CREATION_PATH)/address_table/*
 	@rm -f $(SLAVE_DTSI_PATH)/slaves*.yaml
 
+#################################################################################
+# generate prebuilds for FPGA builds in config
+#################################################################################
+define PREBUILD_template =
+ prebuild_$(1):  $(SLAVE_DTSI_PATH)/slaves_$(1).yaml $(ADDRESS_TABLE_CREATION_PATH)/slaves_$(1).yaml $(ADDSLAVE_TCL_PATH)/AddSlaves.tcl
+endef
+PREBUILDS=$(addprefix,prebuild_,$(CONFIGS))
+
 
 #################################################################################
 # prebuild 
@@ -26,5 +34,5 @@ $(SLAVE_DTSI_PATH)/slaves_%.yaml $(ADDRESS_TABLE_CREATION_PATH)/slaves_%.yaml : 
 				             -d $(SLAVE_DTSI_PATH)
 
 
-prebuild_% : $(SLAVE_DTSI_PATH)/slaves_%.yaml $(ADDRESS_TABLE_CREATION_PATH)/slaves_%.yaml
+$(foreach prebuild,$(CONFIGS),$(eval $(call PREBUILD_template,$(prebuild))))
 
