@@ -45,6 +45,8 @@ UPDATE_BOOT=UPDATE_BOOT
 USER_MOD_UBOOT_PATH=u-boot/
 BUILD_UBOOT=$(ZYNQ_OS_PROJECT_PATH)/project-spec/meta-user/recipes-bsp/u-boot/
 
+USER_MOD_ATF_PATH=ATF/
+BUILD_ATF=$(ZYNQ_OS_PROJECT_PATH)/project-spec/meta-user/recipes-bsp/arm-trusted-firmware/
 
 YOCTO_MOD_BASE=$(ZYNQ_OS_PROJECT_PATH)/project-spec/meta-user/
 PACKAGE_LINUX_IMAGE=$(ZYNQ_OS_PROJECT_PATH)/images/linux/image.elf
@@ -80,6 +82,9 @@ define copy_configs =
 	@echo "adding u-boot files" $(OUTPUT_MARKUP)
 	@mkdir -p $(dir $(BUILD_UBOOT)) $(OUTPUT_MARKUP)
 	@cp -r $(ZYNQ_OS_MODS_BASE)/$@/$(USER_MOD_UBOOT_PATH)/*  $(BUILD_UBOOT) || :
+	@echo "adding ATF files" $(OUTPUT_MARKUP)
+	@mkdir -p $(dir $(BUILD_ATF)) $(OUTPUT_MARKUP) 
+	@cp -r $(ZYNQ_OS_MODS_BASE)/$@/$(USER_MOD_ATF_PATH)/*    $(BUILD_ATF) || :
 	@echo "adding user kernel modifications" $(OUTPUT_MARKUP)
 	@mkdir -p $(dir $(KERNEL_USER_MODS_BASE)) $(OUTPUT_MARKUP)
 #	@cp -r ./zynq_os_mods/$@/kernel/linux $(KERNEL_USER_MODS_BASE) $(OUTPUT_MARKUP)
@@ -172,3 +177,9 @@ rev2_xczu7ev_testing : ../bit/top_rev2_xczu7ev_testing.bit
 
 get_built_dts : ${ZYNQ_OS_PROJECT_PATH}/images/linux/system.dtb
 	dtc -I dtb -O dts -o dump_${BUILD_TIME}.dts ${ZYNQ_OS_PROJECT_PATH}/images/linux/system.dtb
+
+
+reconfig_kernel:
+	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
+	source $(BUILD_VIVADO_PETALINUX) && \
+	petalinux-config -c kernel

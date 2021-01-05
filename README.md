@@ -10,7 +10,7 @@ The differences between these configurations are located in the "configs" direct
 The build process uses Vivado but is directed by makefiles. 
 
 ### configs
-The configs directory contains directories for each different configuraiton and the name of this directory should match the make rule.
+The configs directory contains directories for each different configuraiton and the name of this directory is used by make for the make rule
 In these folders you will need to have atleast the following three files:
  - files.tcl  
    A tcl file that lists the files to be included
@@ -49,6 +49,8 @@ Buildable Groups:
 
     - Apollo SM config:
       Different FWs to make (you probably just want one of these)
+    - Prebuild:
+      provides address table to HDL conversions, kernel & OS yaml files, and AddSlaves.tcl building
     - Vivado:
       Drive interactive vivado sessions
     - Clean:
