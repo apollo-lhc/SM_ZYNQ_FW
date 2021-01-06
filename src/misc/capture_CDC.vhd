@@ -13,6 +13,7 @@ entity capture_CDC is
     capture_pulseA   : in  std_logic;
     outA             : out std_logic_vector(WIDTH-1 downto 0);
     outA_valid       : out std_logic;
+    capture_pulseB   : out std_logic;
     inB              : in std_logic_vector(WIDTH-1 downto 0);
     inB_valid        : in std_logic
     );
@@ -35,7 +36,7 @@ architecture behavioral of capture_CDC is
   signal local_outA_valid : std_logic;
   signal local_validA     : std_logic;
   -- clkB
-  signal capture_pulseB   : std_logic;
+  signal local_capture_pulseB   : std_logic;
   signal local_validB     : std_logic;
   signal wait_for_B_valid : std_logic;
   -- both
@@ -43,7 +44,7 @@ architecture behavioral of capture_CDC is
 
   
 begin  -- architecture behavioral
-
+  capture_pulseB <= local_capture_pulseB;
   --pass a pulse from A to B for capture
   pacd_1: entity work.pacd
     port map (
@@ -52,7 +53,7 @@ begin  -- architecture behavioral
       iRSTA   => resetA,--'1',
       iClkB   => clkB,
       iRSTB   => resetB, --'1',
-      oPulseB => capture_pulseB);
+      oPulseB => local_capture_pulseB);
 
   outA_valid <= local_outA_valid when resetA = '0' else '0';
   capture: process (clkA,capture_pulseA,resetA) is
@@ -90,7 +91,7 @@ begin  -- architecture behavioral
       local_validB <= '0';
 
       --Wait for a capture_pulse from A (via PACD)
-      if capture_pulseB = '1' then
+      if local_capture_pulseB = '1' then
         if inB_Valid = '1' then
           --The B data is already valid, pass it
           local_data <= inB;

@@ -3,6 +3,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.AXIRegWidthPkg.all;
 use work.AXIRegPkg.all;
 use work.types.all;
 use work.SM_INFO_Ctrl.all;
@@ -18,7 +19,7 @@ entity SM_INFO_interface is
     );
 end entity SM_INFO_interface;
 architecture behavioral of SM_INFO_interface is
-  signal localAddress       : slv_32_t;
+  signal localAddress       : std_logic_vector(AXI_ADDR_WIDTH-1 downto 0);
   signal localRdData        : slv_32_t;
   signal localRdData_latch  : slv_32_t;
   signal localWrData        : slv_32_t;

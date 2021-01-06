@@ -1,0 +1,24 @@
+From fb068c7e2547939f123a9de4faa639b4dfb16148 Mon Sep 17 00:00:00 2001
+From: Dan Gastler <dgastler@gmail.com>
+Date: Tue, 1 Dec 2020 14:26:26 -0500
+Subject: [PATCH 3/7] adding missed includes
+
+---
+ lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.h b/lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.h
+index 6542020..0dc6129 100644
+--- a/lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.h
++++ b/lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.h
+@@ -5,6 +5,7 @@
+ extern "C" {
+ #endif
+ 
++#include "xfsbl_hw.h"
+ #include "xil_types.h"
+ 
+ #define SI_CONFIG_BASE_ADDR 0xA1600000
+-- 
+1.8.3.1
+

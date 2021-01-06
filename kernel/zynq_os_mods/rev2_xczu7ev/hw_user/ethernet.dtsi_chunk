@@ -1,0 +1,38 @@
+mdio {
+       compatible = "cdns,macb-mdio";
+       reg = <0x0 0xff0b0000 0x0 0x1000>;
+       clocks =  <&clk 45>, <&clk 45>, <&clk 49>;
+       clock-names = "pclk", "tx_clk", "hclk";
+       #address-cells = <1>;
+       #size-cells = <0>;
+       phy7: ethernet-phy@7 {
+            reg = <7>;
+            txc-skew-ps = <1800>;
+            txen-skew-ps = <420>;
+            txd0-skew-ps = <420>;
+            txd1-skew-ps = <420>;
+            txd2-skew-ps = <420>;
+            txd3-skew-ps = <420>;
+            rxc-skew-ps = <900>;
+            rxdv-skew-ps = <420>;
+            rxd0-skew-ps = <420>;
+            rxd1-skew-ps = <420>;
+            rxd2-skew-ps = <420>;
+            rxd3-skew-ps = <420>;
+       };
+       phy3: ethernet-phy@3 {
+            reg = <3>;
+            txc-skew-ps = <1800>;
+            txen-skew-ps = <420>;
+            txd0-skew-ps = <420>;
+            txd1-skew-ps = <420>;
+            txd2-skew-ps = <420>;
+            txd3-skew-ps = <420>;
+            rxc-skew-ps = <900>;
+            rxdv-skew-ps = <420>;
+            rxd0-skew-ps = <420>;
+            rxd1-skew-ps = <420>;
+            rxd2-skew-ps = <420>;
+            rxd3-skew-ps = <420>;
+       };
+     };

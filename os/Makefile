@@ -1,6 +1,10 @@
+SHELL=bash
 PWD=$(shell pwd)
 
-QEMU=qemu-arm-static
+QEMU=qemu-aarch64-static
+#QEMU=qemu-arm-static
+ZYNQ_ARCH=aarch64
+#ZYNQ_ARCH=armv7hl
 QEMU_PATH=/usr/local/bin
 MODS_PATH=${PWD}/mods
 SECURE_PATH=${PWD}/secure
@@ -38,7 +42,7 @@ ${QEMU_PATH}/${QEMU} ${INSTALL_PATH}/${QEMU_PATH}/${QEMU}: | ${INSTALL_PATH}
 
 ${ETC_PATH} ${TMP_PATH}: ${QEMU_PATH}/${QEMU} ${INSTALL_PATH}/${QEMU_PATH}/${QEMU} centos-rootfs/extra_rpms.txt
 	cd centos-rootfs && \
-		sudo python mkrootfs.py --root=${INSTALL_PATH} --arch=armv7hl --extra=extra_rpms.txt
+		sudo python mkrootfs.py --root=${INSTALL_PATH} --arch=${ZYNQ_ARCH} --extra=extra_rpms.txt
 
 ${OPT_PATH}: ${TMP_PATH}
 	sudo mkdir -p ${OPT_PATH}
@@ -67,8 +71,9 @@ include mk/Monitoring.mk
 
 include mk/CM_MCU.mk
 
+include mk/mmc-utils.mk
 
-finalize_image: ${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_PATH}/passwd ${ETC_PATH}/shadow  ${OPT_PATH}/BUTool ${HOME_PATH}/cms ${HOME_PATH}/atlas ${OPT_PATH}/mcu_tools ${OPT_PATH}/Graphite_Monitor
+finalize_image: ${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_PATH}/passwd ${ETC_PATH}/shadow  ${OPT_PATH}/BUTool ${HOME_PATH}/cms ${HOME_PATH}/atlas ${OPT_PATH}/mcu_tools ${OPT_PATH}/Graphite_Monitor ${INSTALL_PATH}/usr/local/bin/mmc
 #	sudo rm -rf ${INSTALL_PATH}/usr/share/doc
 	sudo cp ${MODS_PATH}/cleanup_locale.sh ${TMP_PATH}
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/cleanup_locale.sh

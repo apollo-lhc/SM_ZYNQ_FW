@@ -1,0 +1,125 @@
+AXI_SLAVES:
+  PL_MEM:
+    TCL_CALL: "[AXI_IP_BRAM PL_MEM ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_SLAVE_RSTN} ${AXI_MASTER_CLK_FREQ} 0xA0000000 8K]"
+    XML: 
+      - "address_table/modules/PL_MEM.xml"
+      - "address_table/modules/I2C_REGULATOR_MONITOR.xml"
+    UHAL_BASE: 0x15000000
+  
+  SI:
+    TCL_CALL: "[AXI_IP_I2C SI                ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_SLAVE_RSTN} ${AXI_MASTER_CLK_FREQ} 0xA1600000 8K]"
+    XML:
+      - "address_table/modules/SI_5344.xml"  
+    UHAL_BASE: 0x21000000
+  
+  
+  SERV:
+    TCL_CALL: "[AXI_PL_DEV_CONNECT SERV      ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_SLAVE_RSTN} ${AXI_MASTER_CLK_FREQ} 0xA3C20000 8K]"
+    XML: 
+      - "address_table/modules/SERV_rev2.xml"
+    UHAL_BASE: 0x04000000
+    HDL: "src/services"
+  
+  C2C:
+    TCL_CALL: "[AXI_C2C_MASTER C2C1          ${AXI_C2C_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_SLAVE_RSTN} ${AXI_MASTER_CLK_FREQ} 1        ${INIT_CLK} 100 0xBA000000 32M 0xB3c40000 64K]"
+    SUB_SLAVES:
+      1_AXI_FW:
+        XML:
+          - "address_table/modules/C2C1_AXI_FW.xml"
+        UHAL_BASE: 0x0D000000
+      1_AXILITE_FW:
+        XML:
+          - "address_table/modules/C2C1_AXILITE_FW.xml"
+        UHAL_BASE: 0x0E000000
+      1_PHY:
+        XML:
+          - "address_table/modules/DRP_USP_GTH.xml"
+        UHAL_BASE: 0x19000000
+  
+      2:
+        TCL_CALL: "[AXI_C2C_MASTER C2C2          ${AXI_C2C_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_SLAVE_RSTN} ${AXI_MASTER_CLK_FREQ} C2C1_PHY ${INIT_CLK} 100 0xBC000000 32M 0xB3d40000 64K]"
+        SUB_SLAVES:
+          _AXI_FW:
+            XML:
+              - "address_table/modules/C2C2_AXI_FW.xml"
+            UHAL_BASE: 0x13000000
+          _AXILITE_FW:
+            XML:
+              - "address_table/modules/C2C2_AXILITE_FW.xml"
+            UHAL_BASE: 0x14000000
+          _PHY:
+            XML:
+              - "address_table/modules/DRP_USP_GTH.xml"
+            UHAL_BASE: 0x1B000000
+  
+                
+  PLXVC:
+    TCL_CALL: "[AXI_PL_DEV_CONNECT PLXVC     ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_SLAVE_RSTN} ${AXI_MASTER_CLK_FREQ} 0xA0010000 64K]"
+    XML:
+      - "address_table/modules/plXVC_rev2.xml"
+      - "address_table/modules/plXVC_single.xml"
+    UHAL_BASE: 0x06000000
+    HDL: "src/plXVC"
+  
+  XVC_LOCAL:
+    TCL_CALL: "[AXI_IP_LOCAL_XVC XVC_LOCAL   ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_SLAVE_RSTN} ${AXI_MASTER_CLK_FREQ} 0xA0030000 64K]"
+    XML:
+      - "address_table/modules/XVC.xml"
+    UHAL_BASE: 0x08000000    
+  
+  SLAVE_I2C:
+    TCL_CALL: "[AXI_PL_DEV_CONNECT SLAVE_I2C ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_SLAVE_RSTN} ${AXI_MASTER_CLK_FREQ} 0xA0008000 8K]"
+    XML:
+      - "address_table/modules/SLAVE_I2C.xml"
+    UHAL_BASE: 0x05000000    
+  
+  CM:
+    TCL_CALL: "[AXI_PL_DEV_CONNECT CM        ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_SLAVE_RSTN} ${AXI_MASTER_CLK_FREQ} 0xA000A000 8K]"
+    XML:
+      - "address_table/modules/CM_USP.xml"
+      - "address_table/modules/CM_single_USP.xml"
+      - "address_table/modules/CM_C2C_USP.xml"
+      - "address_table/modules/CM_C2C_CNT.xml"
+      - "address_table/modules/CM_CTRL.xml"
+      - "address_table/modules/CM_C2C_Status.xml"
+      - "address_table/modules/CM_C2C_DEBUG_USP.xml"
+      - "address_table/modules/CM_Mon.xml"
+    UHAL_BASE: 0x03000000    
+    HDL: "src/CM_interface"
+  
+  SM_INFO:
+    TCL_CALL: "[AXI_PL_DEV_CONNECT SM_INFO   ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_SLAVE_RSTN} ${AXI_MASTER_CLK_FREQ} 0xA000C000 8K]"
+    XML:
+      - "address_table/modules/FW_INFO.xml"
+    UHAL_BASE: 0x0A000000    
+    HDL: "src/SM_info"
+  
+  MONITOR:
+    TCL_CALL: "[AXI_IP_SYS_MGMT 0 MONITOR      ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_SLAVE_RSTN} ${AXI_MASTER_CLK_FREQ} 0xA0040000 64K 0]"
+    XML:
+      - "address_table/modules/MONITOR_USP.xml"
+    UHAL_BASE: 0x0B000000    
+  
+  CM1_UART:
+    TCL_CALL: "[AXI_IP_UART 115200 ${IRQ_ORR}/in0 CM1_UART   ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_SLAVE_RSTN} ${AXI_MASTER_CLK_FREQ} 0xA0140000 8K]"      
+  
+  CM2_UART:
+    TCL_CALL: "[AXI_IP_UART 115200 ${IRQ_ORR}/in1 CM2_UART   ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_SLAVE_RSTN} ${AXI_MASTER_CLK_FREQ} 0xA0150000 8K]"
+  
+  ESM_UART:
+    TCL_CALL: "[AXI_IP_UART 115200 ${IRQ_ORR}/in2 ESM_UART   ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_SLAVE_RSTN} ${AXI_MASTER_CLK_FREQ} 0xA0160000 8K]"
+  
+  
+  AXI_MON:
+    TCL_CALL: "[AXI_IP_AXI_MONITOR [list ${ZYNQ_NAME}/M_AXI_HPM0_FPD ${ZYNQ_NAME}/M_AXI_HPM1_FPD] [list ${AXI_MASTER_CLK} ${AXI_MASTER_CLK}] [list ${AXI_MASTER_RSTN} ${AXI_MASTER_RSTN}] ${AXI_MASTER_CLK} ${ZYNQ_RESETN} AXI_MON ${AXI_C2C_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_SLAVE_RSTN} ${AXI_MASTER_CLK_FREQ} ]"
+    XML:
+      - "address_table/modules/AXI_MONITOR.xml"
+      - "address_table/modules/AXI_MONITOR_COUNTER.xml"
+    UHAL_BASE: 0x1F000000
+
+  INT_AXI_FW:
+    XML:
+      - "address_table/modules/INT_AXI_FW.xml"
+    UHAL_BASE: 0x20000000
+
+    

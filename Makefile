@@ -1,19 +1,15 @@
-#################################################################################
-# make stuff
-#################################################################################
-SHELL=/bin/bash -o pipefail
-OUTPUT_MARKUP= 2>&1 | tee ../make_log.txt | ccze -A
-SLACK_MESG ?= echo
-#add path so build can be more generic
-MAKE_PATH := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
-
+include mk/helpers.mk
 
 #################################################################################
 # VIVADO stuff
 #################################################################################
-VIVADO_VERSION=2018.2
+
+
 VIVADO_FLAGS=-notrace -mode batch
-VIVADO_SHELL?="/opt/Xilinx/Vivado/"$(VIVADO_VERSION)"/settings64.sh"
+BUILD_VIVADO_VERSION=2018.3
+BUILD_VIVADO_SHELL="/work/Xilinx/Vivado/"$(BUILD_VIVADO_VERSION)"/settings64.sh"
+#BUILD_VIVADO_VERSION=2018.2
+#BUILD_VIVADO_SHELL="/opt/Xilinx/Vivado/"$(BUILD_VIVADO_VERSION)"/settings64.sh"
 
 
 #################################################################################
@@ -32,26 +28,30 @@ HW_TCL=${MAKE_PATH}/scripts/Run_hw.tcl
 PL_PATH=${MAKE_PATH}/src
 BD_PATH=${MAKE_PATH}/bd
 CORES_PATH=${MAKE_PATH}/cores
-ADDRESS_TABLE = os/address_table/address_apollo.xml
+ADDRESS_TABLE = ${MAKE_PATH}/os/address_table/address_apollo.xml
 
+################################################################################
+# Configs
+#################################################################################
+#get a list of the subdirs in configs.  These are our FPGA builds
+CONFIGS=$(filter-out configs/,$(patsubst configs/%/,%,$(dir $(wildcard configs/*/))))
+
+define CONFIGS_template =
+ $(1): clean_make_log
+	time $(MAKE) $(BIT_BASE)$$@.bit || $(MAKE) NOTIFY_DAN_BAD
+endef
 
 #################################################################################
 # Short build names
 #################################################################################
 
-BIT=${MAKE_PATH}/bit/top.bit
+BIT_BASE=${MAKE_PATH}/bit/top_
 
-.SECONDARY:
-
-.PHONY: clean list bit NOTIFY_DAN_BAD NOTIFY_DAN_GOOD init
-
-all:
-	$(MAKE) bit || $(MAKE) NOTIFY_DAN_BAD
 
 #################################################################################
 # preBuild 
 #################################################################################
-SLAVE_DEF_FILE=${MAKE_PATH}/src/slaves.yaml
+SLAVE_DEF_FILE_BASE=${MAKE_PATH}/configs/
 ADDSLAVE_TCL_PATH=${MAKE_PATH}/src/ZynqPS/
 ADDRESS_TABLE_CREATION_PATH=${MAKE_PATH}/os/
 SLAVE_DTSI_PATH=${MAKE_PATH}/kernel/
@@ -75,6 +75,13 @@ ifneq ("$(wildcard ${MAKE_PATH}/mk/addrTable.mk)","")
   include ${MAKE_PATH}/mk/addrTable.mk
 endif
 
+
+
+.SECONDARY:
+
+.PHONY: clean list bit NOTIFY_DAN_BAD NOTIFY_DAN_GOOD init  $(CONFIGS) $(PREBUILDS)
+
+
 #################################################################################
 # Clean
 #################################################################################
@@ -84,7 +91,8 @@ clean_remote:
 	@rm -f ${MAKE_PATH}/kernel/*_slaves.yaml
 clean_ip:
 	@echo "Cleaning up ip dcps"
-	@find ${MAKE_PATH}/cores -type f -name '*.dcp' -delete
+	@find ${MAKE_PATH}/cores -type f | grep -v xci | awk '{print "rm " $$1}' | bash
+#	@find ${MAKE_PATH}/cores -type f -name '*.dcp' -delete
 clean_bd:
 	@echo "Cleaning up bd generated files"
 	@rm -rf ${MAKE_PATH}/bd/zynq_bd
@@ -98,60 +106,57 @@ clean_kernel:
 clean: clean_bd clean_ip clean_bit clean_kernel
 	@rm -rf ${MAKE_PATH}/proj/*
 	@echo "Cleaning up"
+clean_ip_%:
+	source $(BUILD_VIVADO_SHELL) &&\
+	cd ${MAKE_PATH}/proj &&\
+	vivado $(VIVADO_FLAGS) -source ../scripts/CleanIPs.tcl -tclargs ${MAKE_PATH} $(subst .bit,,$(subst clean_ip_,,$@))
 
+clean_everything: clean clean_remote clean_CM clean_prebuild
 
 #################################################################################
 # Open vivado
 #################################################################################
 
 open_project : 
-	source $(VIVADO_SHELL) &&\
+	source $(BUILD_VIVADO_SHELL) &&\
 	cd ${MAKE_PATH}/proj &&\
 	vivado top.xpr
 open_synth : 
-	source $(VIVADO_SHELL) &&\
+	source $(BUILD_VIVADO_SHELL) &&\
 	cd ${MAKE_PATH}/proj &&\
 	vivado post_synth.dcp
 open_impl : 
-	source $(VIVADO_SHELL) &&\
+	source $(BUILD_VIVADO_SHELL) &&\
 	cd ${MAKE_PATH}/proj &&\
 	vivado post_route.dcp
 open_hw :
-	source $(VIVADO_SHELL) &&\
+	source $(BUILD_VIVADO_SHELL) &&\
 	cd ${MAKE_PATH}/proj &&\
-	vivado -source ../$(HW_TCL)
-
-#################################################################################
-# Slack notifications
-#################################################################################
-NOTIFY_DAN_GOOD:
-	${SLACK_MESG} "FINISHED building FW!"
-NOTIFY_DAN_BAD:
-	${SLACK_MESG} "FAILED to build FW!"
-
+	vivado -source $(HW_TCL)
 
 
 #################################################################################
 # FPGA building
 #################################################################################
-bit	:
-	time $(MAKE) $(BIT) || $(MAKE) NOTIFY_DAN_BAD
+#generate a build rule for each FPGA in the configs dir ($CONFIGS) 
+$(foreach config,$(CONFIGS),$(eval $(call CONFIGS_template,$(config))))
 
 interactive : 
-	source $(VIVADO_SHELL) &&\
+	source $(BUILD_VIVADO_SHELL) &&\
 	mkdir -p ${MAKE_PATH}/proj &&\
 	cd proj &&\
 	vivado -mode tcl
-$(BIT)	:
-	source $(VIVADO_SHELL) &&\
+
+$(BIT_BASE)%.bit	: $(SLAVE_DTSI_PATH)/slaves_%.yaml $(ADDRESS_TABLE_CREATION_PATH)/slaves_%.yaml
+	source $(BUILD_VIVADO_SHELL) &&\
 	mkdir -p ${MAKE_PATH}/kernel/hw &&\
 	mkdir -p ${MAKE_PATH}/proj &&\
 	mkdir -p ${MAKE_PATH}/bit &&\
 	cd proj &&\
-	vivado $(VIVADO_FLAGS) -source $(SETUP_BUILD_TCL) $(OUTPUT_MARKUP)
+	vivado $(VIVADO_FLAGS) -source $(SETUP_BUILD_TCL) -tclargs ${MAKE_PATH} $(subst .bit,,$(subst ${BIT_BASE},,$@)) $(OUTPUT_MARKUP)
 	$(MAKE) NOTIFY_DAN_GOOD
 
-all-the-things: clean clean_ip clean_bd clean_kernel clean_bit clean_remote clean_CM clean_prebuild
+all-the-things: clean clean_bd clean_kernel clean_bit clean_remote clean_CM clean_prebuild
 	cd os     && $(MAKE) -f Makefile clean && cd ${MAKE_PATH}
 	cd kernel && $(MAKE) -f Makefile clean && cd ${MAKE_PATH}
 	$(MAKE) init
@@ -169,22 +174,6 @@ include ${MAKE_PATH}/sim/sim.mk
 endif
 
 
-
-################################################################################# 
-# Generate MAP and PKG files from address table 
-################################################################################# 
-#XML2VHD_PATH=regmap_helper
-#ifneq ("$(wildcard $(XML2VHD_PATH)/xml_regmap.mk)","") 
-#	include $(XML2VHD_PATH)/xml_regmap.mk
-#endif
-
-#################################################################################
-# Help 
-#################################################################################
-
-#list magic: https://stackoverflow.com/questions/4219255/how-do-you-get-the-list-of-targets-in-a-makefile
-list:
-	@$(MAKE) -pRrq -f $(MAKEFILE_LIST) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | column
-
 init:
 	git submodule update --init --recursive 
+

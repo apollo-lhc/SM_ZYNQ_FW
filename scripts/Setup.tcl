@@ -2,7 +2,8 @@
 # collect files
 # run synthesis
 
-source ${apollo_root_path}/scripts/settings.tcl
+#source ${apollo_root_path}/scripts/settings.tcl
+source ${apollo_root_path}/configs/${build_name}/settings.tcl
 source ${apollo_root_path}/scripts/FW_info.tcl
 
 #################################################################################
@@ -20,6 +21,12 @@ if {[file isfile $projectDir/$top.xpr]} {
 create_project -force -part $FPGA_part $top $projectDir
 set_property target_language VHDL [current_project]
 
+source ${apollo_root_path}/configs/${build_name}/files.tcl
+
+#DRP ip
+set ip_repo_path ../bd/IP
+set_property  ip_repo_paths ${ip_repo_path}  [current_project]
+update_ip_catalog
 
 #################################################################################
 # STEP#1: setup design sources and constraints
@@ -28,9 +35,6 @@ set_property target_language VHDL [current_project]
 #build the build timestamp file
 [build_fw_version ${apollo_root_path}/src $FPGA_part]
 
-
-#load list of vhd, xdc, and xci files
-source ${apollo_root_path}/files.tcl
 
 #Add vhdl files
 set timestamp_file ${apollo_root_path}/src/fw_version.vhd
@@ -52,15 +56,29 @@ for {set j 0} {$j < [llength $xdc_files ] } {incr j} {
 #Add xci files
 for {set j 0} {$j < [llength $xci_files ] } {incr j} {
     set filename "${apollo_root_path}/[lindex $xci_files $j]"
+    set ip_name [file rootname [file tail $filename]]
+    puts "Adding $filename"    
     read_ip $filename
-    puts "Adding $filename"
+    set isLocked [get_property IS_LOCKED [get_ips $ip_name]]
+    puts "IP $ip_name : locked = $isLocked"
+    set upgrade  [get_property UPGRADE_VERSIONS [get_ips $ip_name]]
+    if {$isLocked && $upgrade != ""} {
+	puts "Upgrading IP"
+	upgrade_ip [get_ips $ip_name]}
+
+
+    puts "Generating target all on $ip_name"
+    generate_target all [get_ips $ip_name]  
+    puts "Running synth on $ip_name"
+    synth_ip [get_ips $ip_name]
 }
+
 
 check_syntax -fileset sources_1
 
 #Add bd files
-for {set j 0} {$j < [llength $bd_files ] } {incr j} {
-    set filename "${apollo_root_path}/[lindex $bd_files $j]"
+foreach bd_name [array names bd_files] {
+    set filename "${apollo_root_path}/$bd_files($bd_name)"
     source $filename
     puts "Running $filename"
     read_bd [get_files "${apollo_root_path}/$bd_path/$bd_name/$bd_name.bd"]

@@ -54,4 +54,4 @@ yaml-cpp-devel
 msgpack-devel
 cppzmq-devel
 dosfstools
-zsh.armv7hl
+mmc-utils
