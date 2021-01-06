@@ -2,7 +2,8 @@
     no-1-8-v;   
     pinctrl-names = "default";
     pinctrl-0 = <&pinctrl_sdhci1_default>;
-    max-frequency = <25000000>;
+    max-frequency = <50000000>;
+    xlnx,mio_bank = <1>;
     // Disable write protect so we can write to the SD card (microSD)
     disable-wp;
     broken-cd;

@@ -5,40 +5,6 @@
       phy-handle = <&phy3>;
       pinctrl-names = "default";
       pinctrl-0 = <&pinctrl_gem0_default>;
-      #address-cells = <1>;
-      #size-cells = <0>;
-      phy3: ethernet-phy@3 {
-            device_type = "ethernet-phy";
-            reg = <3>;
-            txc-skew-ps = <1800>;
-            txen-skew-ps = <420>;
-            txd0-skew-ps = <420>;
-            txd1-skew-ps = <420>;
-            txd2-skew-ps = <420>;
-            txd3-skew-ps = <420>;
-            rxc-skew-ps = <900>;
-            rxdv-skew-ps = <420>;
-            rxd0-skew-ps = <420>;
-            rxd1-skew-ps = <420>;
-            rxd2-skew-ps = <420>;
-            rxd3-skew-ps = <420>;
-      };
-      phy7: ethernet-phy@7 {
-            device_type = "ethernet-phy";
-      	   reg = <7>;
- 	   txc-skew-ps = <1800>;
- 	   txen-skew-ps = <420>;
-            txd0-skew-ps = <420>;
-            txd1-skew-ps = <420>;
-            txd2-skew-ps = <420>;
-            txd3-skew-ps = <420>;
-            rxc-skew-ps = <900>;
-            rxdv-skew-ps = <420>;
-            rxd0-skew-ps = <420>;
-            rxd1-skew-ps = <420>;
-            rxd2-skew-ps = <420>;
-            rxd3-skew-ps = <420>;
-      };
  };
  
  &gem3 {
