@@ -1,3 +1,4 @@
+#add path so build can be more generic
 include ../mk/helpers.mk
 
 #################################################################################
@@ -17,6 +18,26 @@ else
 	PETALINUX_OLD_CONFIG_OPTION=--silentconfig
 endif
 endif
+
+################################################################################
+# Configs
+#################################################################################
+#get a list of the subdirs in configs.  These are our FPGA builds
+CONFIGS_7s=$(filter-out configs/,$(patsubst configs/%/,%,$(dir $(wildcard configs/*xc7z*/))))
+CONFIGS_USp=$(filter-out configs/,$(patsubst configs/%/,%,$(dir $(wildcard configs/*xczu*/))))
+
+define CONFIGS_7s_template =
+ $(1): ../bit/top_$(1).bit
+	$(build_7s)
+endef
+define CONFIGS_USp_template =
+ $(1): ../bit/top_$(1).bit
+	$(build_USp)
+endef
+
+################################################################################
+# Kernel build variables
+#################################################################################
 
 BUILD_TIME=$(shell date +%s)
 
@@ -62,7 +83,7 @@ clean:
 	@rm -f  make_log.txt
 
 
-ZYNQ_OS_MODS_BASE=zynq_os_mods/
+CONFIGS_BASE=configs/
 
 #################################################################################
 # Helper calls to simplify build rules
@@ -71,30 +92,30 @@ ZYNQ_OS_MODS_BASE=zynq_os_mods/
 define copy_configs =
 	@echo "adding rootfs mods" $(OUTPUT_MARKUP)
 #	@mkdir -p $(dir $(BUILD_ROOTFS)) $(OUTPUT_MARKUP)
-	@echo $(ZYNQ_OS_MODS_BASE)/$@/$(USER_MOD_ROOTFS_PATH)  $(BUILD_ROOTFS)
-	@cp $(ZYNQ_OS_MODS_BASE)/$@/$(USER_MOD_ROOTFS_PATH)  $(BUILD_ROOTFS)
-	@cp $(ZYNQ_OS_MODS_BASE)/$@/$(USER_MOD_ROOTFS_PATH)  $(BUILD_ROOTFS).old 
+	@echo $(CONFIGS_BASE)/$$@/$(USER_MOD_ROOTFS_PATH)  $(BUILD_ROOTFS)
+	@cp $(CONFIGS_BASE)/$$@/$(USER_MOD_ROOTFS_PATH)  $(BUILD_ROOTFS)
+	@cp $(CONFIGS_BASE)/$$@/$(USER_MOD_ROOTFS_PATH)  $(BUILD_ROOTFS).old 
 	@echo "adding boot mods" $(OUTPUT_MARKUP)
 #	@mkdir -p $(dir $(BUILD_BOOT)) $(OUTPUT_MARKUP)
-	@echo $(ZYNQ_OS_MODS_BASE)/$@/$(USER_MOD_BOOT_PATH)  $(BUILD_BOOT)
-	@cp $(ZYNQ_OS_MODS_BASE)/$@/$(USER_MOD_BOOT_PATH)  $(BUILD_BOOT)
-	@cp $(ZYNQ_OS_MODS_BASE)/$@/$(USER_MOD_BOOT_PATH)  $(BUILD_BOOT).old
+	@echo $(CONFIGS_BASE)/$$@/$(USER_MOD_BOOT_PATH)  $(BUILD_BOOT)
+	@cp $(CONFIGS_BASE)/$$@/$(USER_MOD_BOOT_PATH)  $(BUILD_BOOT)
+	@cp $(CONFIGS_BASE)/$$@/$(USER_MOD_BOOT_PATH)  $(BUILD_BOOT).old
 	@echo "adding u-boot files" $(OUTPUT_MARKUP)
 	@mkdir -p $(dir $(BUILD_UBOOT)) $(OUTPUT_MARKUP)
-	@cp -r $(ZYNQ_OS_MODS_BASE)/$@/$(USER_MOD_UBOOT_PATH)/*  $(BUILD_UBOOT) || :
+	@cp -r $(CONFIGS_BASE)/$$@/$(USER_MOD_UBOOT_PATH)/*  $(BUILD_UBOOT) || :
 	@echo "adding ATF files" $(OUTPUT_MARKUP)
 	@mkdir -p $(dir $(BUILD_ATF)) $(OUTPUT_MARKUP) 
-	@cp -r $(ZYNQ_OS_MODS_BASE)/$@/$(USER_MOD_ATF_PATH)/*    $(BUILD_ATF) || :
+	@cp -r $(CONFIGS_BASE)/$$@/$(USER_MOD_ATF_PATH)/*    $(BUILD_ATF) || :
 	@echo "adding user kernel modifications" $(OUTPUT_MARKUP)
 	@mkdir -p $(dir $(KERNEL_USER_MODS_BASE)) $(OUTPUT_MARKUP)
-#	@cp -r ./zynq_os_mods/$@/kernel/linux $(KERNEL_USER_MODS_BASE) $(OUTPUT_MARKUP)
-	@cp -r ./zynq_os_mods/$@/kernel/ $(KERNEL_USER_MODS_BASE) $(OUTPUT_MARKUP)
-	DTSI_PATH="./hw ./hw_* ./$(ZYNQ_OS_MODS_BASE)/$@/hw_user" $(ZYNQ_OS_MODS_BASE)/$@/device-tree/build_user_dtsi.sh > $(DEVICE_TREE_USER) $(OUTPUT_MARKUP)
+#	@cp -r ./configs/$$@/kernel/linux $(KERNEL_USER_MODS_BASE) $(OUTPUT_MARKUP)
+	@cp -r ./configs/$$@/kernel/ $(KERNEL_USER_MODS_BASE) $(OUTPUT_MARKUP)
+	DTSI_PATH="./hw ./hw_* ./$(CONFIGS_BASE)/$$@/hw_user" $(CONFIGS_BASE)/$$@/device-tree/build_user_dtsi.sh > $(DEVICE_TREE_USER) $(OUTPUT_MARKUP)
 	@echo "Modify FSBL" $(OUTPUT_MARKUP)
 	@mkdir -p $(FSBL_BASE)
-	@cp -r $(ZYNQ_OS_MODS_BASE)/$@/fsbl/* $(FSBL_BASE)
+	@cp -r $(CONFIGS_BASE)/$$@/fsbl/* $(FSBL_BASE)
 	@echo "layer config (if needed)"
-	@cp ./zynq_os_mods/$@/configs/layer.conf $(ZYNQ_OS_PROJECT_PATH)/project-spec/meta-user/conf/ || :
+	@cp ./configs/$$@/configs/layer.conf $(ZYNQ_OS_PROJECT_PATH)/project-spec/meta-user/conf/ || :
 	@echo "End of mods"
 endef
 
@@ -140,7 +161,7 @@ define build_7s =
 	@echo "package"
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
 	source $(BUILD_VIVADO_PETALINUX) && \
-	petalinux-package --boot --format BIN --fsbl images/linux/zynq_fsbl.elf --fpga ../$<  --uboot --force $(OUTPUT_MARKUP)
+	petalinux-package --boot --format BIN --fsbl images/linux/zynq_fsbl.elf --fpga ../$$<  --uboot --force $(OUTPUT_MARKUP)
 endef
 
 define build_USp =
@@ -154,25 +175,16 @@ define build_USp =
 	@echo "package"
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
 	source $(BUILD_VIVADO_PETALINUX) && \
-	petalinux-package --boot --format BIN --fsbl images/linux/zynqmp_fsbl.elf --fpga ../$<  --uboot images/linux/u-boot.elf --pmufw images/linux/pmufw.elf --atf images/linux/bl31.elf  --force $(OUTPUT_MARKUP)
+	petalinux-package --boot --format BIN --fsbl images/linux/zynqmp_fsbl.elf --fpga ../$$<  --uboot images/linux/u-boot.elf --pmufw images/linux/pmufw.elf --atf images/linux/bl31.elf  --force $(OUTPUT_MARKUP)
 endef
 
 
 #################################################################################
 # Real builds
 #################################################################################
-
-rev2_xc7z035 : ../bit/top_rev2_xc7z035.bit
-	$(build_7s)
-
-rev2_xc7z045 : ../bit/top_rev2_xc7z045.bit
-	$(build_7s)
-
-rev2_xczu7ev : ../bit/top_rev2_xczu7ev.bit
-	$(build_USp)
-
-rev2_xczu7ev_testing : ../bit/top_rev2_xczu7ev_testing.bit
-	$(build_USp)
+#generate a build rule for each config in the configs dir ($CONFIGS) 
+$(foreach config,$(CONFIGS_7s), $(eval $(call CONFIGS_7s_template, $(config))))
+$(foreach config,$(CONFIGS_USp),$(eval $(call CONFIGS_USp_template,$(config))))
 
 
 get_built_dts : ${ZYNQ_OS_PROJECT_PATH}/images/linux/system.dtb
