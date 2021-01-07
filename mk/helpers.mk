@@ -27,29 +27,34 @@ NOTIFY_DAN_BAD:
 #################################################################################
 # Help 
 #################################################################################
-
 #list magic: https://stackoverflow.com/questions/4219255/how-do-you-get-the-list-of-targets-in-a-makefile
+#define that builds a list of make rules based on a regex
+#ex:
+#   $(call LIST_template,REXEX)
+define LIST_template = 
+@$(MAKE) -pRrq -f $(MAKEFILE_LIST) | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | { grep $(1) || true;} | { grep -v prebuild || true;} | { egrep -v -e '^[^[:alnum:]]' -e '^$@$$' || true;} | column
+endef
+
 list:
 	@echo
 	@echo Apollo SM config:
-	@$(MAKE) -pRrq -f $(MAKEFILE_LIST) | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | grep rev[[:digit:]]_ | gre\
-p -v prebuild | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | column
+	$(call LIST_template,rev[[:digit:]]_)
 	@echo
 	@echo Prebuilds:
-	@$(MAKE) -pRrq -f $(MAKEFILE_LIST) | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | grep prebuild_ | egrep -v\
- -e '^[^[:alnum:]]' -e '^$@$$' | column
+	$(call LIST_template,prebuild_)
 	@echo
 	@echo Vivado:
-	@$(MAKE) -pRrq -f $(MAKEFILE_LIST) | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | grep open_ | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | column
+	$(call LIST_template,open_)
 	@echo
 	@echo Clean:
-	@$(MAKE) -pRrq -f $(MAKEFILE_LIST) | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | grep clean_ | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | column
+	$(call LIST_template,clean_)
 	@echo
 	@echo Tests:
-	@$(MAKE) -pRrq -f $(MAKEFILE_LIST) | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | grep test_ | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | column
+	$(call LIST_template,test_)
 	@echo
 	@echo Test-benches:
-	@$(MAKE) -pRrq -f $(MAKEFILE_LIST) | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | grep tb_ | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | column
+	$(call LIST_template,tb_)
 
 full_list:
-	@$(MAKE) -pRrq -f $(MAKEFILE_LIST) | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | column
+	$(call LIST_template,.)
+#	@$(MAKE) -pRrq -f $(MAKEFILE_LIST) | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | column
