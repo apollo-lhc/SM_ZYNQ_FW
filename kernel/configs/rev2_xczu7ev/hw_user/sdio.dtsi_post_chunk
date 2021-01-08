@@ -7,6 +7,7 @@
     // Disable write protect so we can write to the SD card (microSD)
     disable-wp;
     broken-cd;
+    broken-mmc-highspeed;
   };
 
   &pinctrl0 {

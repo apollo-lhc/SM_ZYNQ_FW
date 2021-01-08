@@ -129,7 +129,8 @@ define build_project =
 	@echo "Config the project with info from the HW"
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
 	source $(BUILD_VIVADO_PETALINUX) && \
-	petalinux-config --get-hw-description ../hw $(PETALINUX_OLD_CONFIG_OPTION) $(OUTPUT_MARKUP)
+	pwd && \
+	petalinux-config --get-hw-description ../hw/ $(PETALINUX_OLD_CONFIG_OPTION) $(OUTPUT_MARKUP)
 	@echo "Apply all mods"
 	$(copy_configs) 
 	@echo "Reset the project build"
@@ -162,6 +163,8 @@ define build_7s =
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
 	source $(BUILD_VIVADO_PETALINUX) && \
 	petalinux-package --boot --format BIN --fsbl images/linux/zynq_fsbl.elf --fpga ../$$<  --uboot --force $(OUTPUT_MARKUP)
+	@echo "Build ended:"
+	@date
 endef
 
 define build_USp =
@@ -176,6 +179,8 @@ define build_USp =
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
 	source $(BUILD_VIVADO_PETALINUX) && \
 	petalinux-package --boot --format BIN --fsbl images/linux/zynqmp_fsbl.elf --fpga ../$$<  --uboot images/linux/u-boot.elf --pmufw images/linux/pmufw.elf --atf images/linux/bl31.elf  --force $(OUTPUT_MARKUP)
+	@echo "Build ended:"
+	@date
 endef
 
 
