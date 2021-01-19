@@ -5,7 +5,7 @@ file://user_uio.cfg \
 file://user_pinctrl.cfg \
 file://user_ethernet.cfg"
 
-SRC_URI_append = " file://0001-net-macb-Add-MDIO-driver-for-accessing-multiple-PHY-.patch"
+#SRC_URI_append = " file://0001-net-macb-Add-MDIO-driver-for-accessing-multiple-PHY-.patch"
 
 
 #HACK for 2018.3
