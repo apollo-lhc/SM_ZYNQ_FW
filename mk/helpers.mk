@@ -14,7 +14,7 @@ all:
 	@$(MAKE) list 
 
 clean_make_log:
-	@rm make_log.txt &> /dev/null
+	@rm -f make_log.txt &> /dev/null
 
 #################################################################################
 # Slack notifications
