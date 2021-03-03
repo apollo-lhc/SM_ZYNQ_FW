@@ -24,7 +24,7 @@ set_property target_language VHDL [current_project]
 source ${apollo_root_path}/configs/${build_name}/files.tcl
 
 #DRP ip
-set ip_repo_path ../bd/IP
+set ip_repo_path ${apollo_root_path}/bd/IP
 set_property  ip_repo_paths ${ip_repo_path}  [current_project]
 update_ip_catalog
 
