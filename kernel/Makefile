@@ -4,7 +4,7 @@ include ../mk/helpers.mk
 #################################################################################
 # VIVADO stuff
 #################################################################################
-BUILD_VIVADO_VERSION=2020.1
+BUILD_VIVADO_VERSION=2018.3
 BUILD_VIVADO_PETALINUX="/work/Xilinx/petalinux/"$(BUILD_VIVADO_VERSION)"/settings.sh"
 #BUILD_VIVADO_VERSION=2018.2
 #BUILD_VIVADO_PETALINUX="/opt/Xilinx/petalinux/"$(BUILD_VIVADO_VERSION)"/settings.sh"
@@ -188,7 +188,7 @@ endef
 # Real builds
 #################################################################################
 #generate a build rule for each config in the configs dir ($CONFIGS) 
-$(foreach config,$(CONFIGS_7s), $(eval $(call CONFIGS_7s_template, $(config))))
+$(foreach config,$(CONFIGS_7s), $(eval $(call CONFIGS_7s_template,$(config))))
 $(foreach config,$(CONFIGS_USp),$(eval $(call CONFIGS_USp_template,$(config))))
 
 
