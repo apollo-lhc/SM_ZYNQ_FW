@@ -1,10 +1,9 @@
 #create a block design called "zynq_bd"
 create_bd_design -dir ./ "zynq_bd"
 
-
 #helpers for building AXI things
-source ${apollo_root_path}/bd/axi_helpers.tcl
-source ${apollo_root_path}/bd/Xilinx_AXI_slaves.tcl
+source -quiet ${apollo_root_path}/bd/axi_helpers.tcl
+source -quiet ${apollo_root_path}/bd/Xilinx_AXI_slaves.tcl
 
 #================================================================================
 #  Create and configure the basic zynq processing system.
@@ -67,12 +66,16 @@ set_property CONFIG.FREQ_HZ ${AXI_MASTER_CLK_FREQ} [get_bd_ports ${INIT_CLK}]
 #================================================================================
 #  Configure and add AXI slaves
 #================================================================================
-source ${apollo_root_path}/src/ZynqPS/AddSlaves.tcl
 
+source -quiet ${apollo_root_path}/bd/add_slaves_from_yaml.tcl
+yaml_to_bd "${apollo_root_path}/configs/rev1_xc7z045/slaves.yaml"
 
 #========================================
 #  Finish up
 #========================================
+
+regenerate_bd_layout
+
 set_property CONFIG.STRATEGY {1} [get_bd_cells ${AXI_C2C_INTERCONNECT_NAME}]
 validate_bd_design
 
