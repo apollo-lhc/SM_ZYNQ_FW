@@ -231,37 +231,6 @@ AXI_SLAVES:
       addr_offset: "0x40160000"
       addr_range: "8K"
 
-  TCDS:
-    TCL_CALL:
-      command: "AXI_PL_DEV_CONNECT"
-      device_name: "TCDS"
-      axi_interconnect: "${::AXI_INTERCONNECT_NAME}"
-      axi_clk: "${::AXI_MASTER_CLK}"
-      axi_rstn: "${::AXI_MASTER_RSTN}"
-      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
-      addr_offset: "0x40002000"
-      addr_range: "8K"
-    XML:
-      - "address_table/modules/TCDS.xml"
-      - "address_table/modules/RXTX.xml"
-      - "address_table/modules/TCDS_CONTROL.xml"
-    UHAL_BASE: 0x17000000
-
-  TCDS_DRP:
-    TCL_CALL:
-      command: "AXI_PL_DEV_CONNECT"
-      device_name: "TCDS_DRP"
-      axi_interconnect: "${::AXI_INTERCONNECT_NAME}"
-      axi_clk: "${::AXI_MASTER_CLK}"
-      axi_rstn: "${::AXI_MASTER_RSTN}"
-      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
-      addr_offset: "0x4000E000"
-      addr_range: "8K"
-    XML:
-      - "address_table/modules/TCDS_DRP.xml"
-      - "address_table/modules/DRP_7_GTX.xml"
-    UHAL_BASE: 0x18000000
-
   AXI_MON:
     TCL_CALL:
       command: "AXI_IP_AXI_MONITOR"

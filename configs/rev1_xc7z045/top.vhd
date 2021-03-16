@@ -131,27 +131,27 @@ entity top is
 --    -------------------------------------------------------------------------------------------
 --    -- MGBT 2
 --    -------------------------------------------------------------------------------------------
-    refclk_125Mhz_P   : in    std_logic; 
-    refclk_125Mhz_N   : in    std_logic; 
-    refclk_TCDS_P     : in    std_logic; 
-    refclk_TCDS_N     : in    std_logic; 
+--    refclk_125Mhz_P   : in    std_logic; 
+--    refclk_125Mhz_N   : in    std_logic; 
+--    refclk_TCDS_P     : in    std_logic; 
+--    refclk_TCDS_N     : in    std_logic; 
 --                              
-    sgmii_tx_P        : out   std_logic; 
-    sgmii_tx_N        : out   std_logic; 
-    sgmii_rx_P        : in    std_logic; 
-    sgmii_rx_N        : in    std_logic;
---                              
-    tts_P             : out   std_logic; 
-    tts_N             : out   std_logic; 
-    ttc_P             : in    std_logic; 
-    ttc_N             : in    std_logic; 
---                              
-    fake_ttc_P        : out   std_logic; 
-    fake_ttc_N        : out   std_logic; 
-    m1_tts_P          : in    std_logic; 
-    m1_tts_N          : in    std_logic;                       
-    m2_tts_P          : in    std_logic; 
-    m2_tts_N          : in    std_logic;
+--    sgmii_tx_P        : out   std_logic; 
+--    sgmii_tx_N        : out   std_logic; 
+--    sgmii_rx_P        : in    std_logic; 
+--    sgmii_rx_N        : in    std_logic;
+----                              
+--    tts_P             : out   std_logic; 
+--    tts_N             : out   std_logic; 
+--    ttc_P             : in    std_logic; 
+--    ttc_N             : in    std_logic; 
+----                              
+--    fake_ttc_P        : out   std_logic; 
+--    fake_ttc_N        : out   std_logic; 
+--    m1_tts_P          : in    std_logic; 
+--    m1_tts_N          : in    std_logic;                       
+--    m2_tts_P          : in    std_logic; 
+--    m2_tts_N          : in    std_logic;
     IPMC_SDA : inout STD_LOGIC;
     IPMC_SCL : in    STD_LOGIC;
     SI_scl : inout STD_LOGIC;
@@ -227,7 +227,7 @@ architecture structure of top is
     
 -- AXI BUS
   signal AXI_clk : std_logic;
-  constant PL_AXI_SLAVE_COUNT : integer := 7;
+  constant PL_AXI_SLAVE_COUNT : integer := 5;
   signal AXI_BUS_RMOSI :  AXIReadMOSI_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIReadMOSI);
   signal AXI_BUS_RMISO :  AXIReadMISO_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIReadMISO);
   signal AXI_BUS_WMOSI : AXIWriteMOSI_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIWriteMOSI);
@@ -327,20 +327,20 @@ begin  -- architecture structure
       FIXED_IO_ps_clk      => FIXED_IO_ps_clk,
       FIXED_IO_ps_porb     => FIXED_IO_ps_porb,
       FIXED_IO_ps_srstb    => FIXED_IO_ps_srstb,
-      ENET1_EXT_INTIN_0         => ENET1_EXT_INTIN_0         ,
-      GMII_ETHERNET_1_0_col     => GMII_ETHERNET_col     ,
-      GMII_ETHERNET_1_0_crs     => GMII_ETHERNET_crs     ,
-      GMII_ETHERNET_1_0_rx_clk  => GMII_ETHERNET_rx_clk  ,
-      GMII_ETHERNET_1_0_rx_dv   => GMII_ETHERNET_rx_dv   ,
-      GMII_ETHERNET_1_0_rx_er   => GMII_ETHERNET_rx_er   ,
-      GMII_ETHERNET_1_0_rxd     => GMII_ETHERNET_rxd     ,
-      GMII_ETHERNET_1_0_tx_clk  => GMII_ETHERNET_tx_clk  ,
-      GMII_ETHERNET_1_0_tx_en   => GMII_ETHERNET_tx_en   ,
-      GMII_ETHERNET_1_0_tx_er   => GMII_ETHERNET_tx_er   ,
-      GMII_ETHERNET_1_0_txd     => GMII_ETHERNET_txd     ,
-      ENET1_MDIO_MDC_0          => MDIO_ETHERNET_mdc     ,
-      ENET1_MDIO_I_0            => MDIO_ETHERNET_mdio_i  ,
-      ENET1_MDIO_O_0            => MDIO_ETHERNET_mdio_o  ,
+--      ENET1_EXT_INTIN_0         => ENET1_EXT_INTIN_0         ,
+--      GMII_ETHERNET_1_0_col     => GMII_ETHERNET_col     ,
+--      GMII_ETHERNET_1_0_crs     => GMII_ETHERNET_crs     ,
+--      GMII_ETHERNET_1_0_rx_clk  => GMII_ETHERNET_rx_clk  ,
+--      GMII_ETHERNET_1_0_rx_dv   => GMII_ETHERNET_rx_dv   ,
+--      GMII_ETHERNET_1_0_rx_er   => GMII_ETHERNET_rx_er   ,
+--      GMII_ETHERNET_1_0_rxd     => GMII_ETHERNET_rxd     ,
+--      GMII_ETHERNET_1_0_tx_clk  => GMII_ETHERNET_tx_clk  ,
+--      GMII_ETHERNET_1_0_tx_en   => GMII_ETHERNET_tx_en   ,
+--      GMII_ETHERNET_1_0_tx_er   => GMII_ETHERNET_tx_er   ,
+--      GMII_ETHERNET_1_0_txd     => GMII_ETHERNET_txd     ,
+--      ENET1_MDIO_MDC_0          => MDIO_ETHERNET_mdc     ,
+--      ENET1_MDIO_I_0            => MDIO_ETHERNET_mdio_i  ,
+--      ENET1_MDIO_O_0            => MDIO_ETHERNET_mdio_o  ,
       IIC_0_0_scl_io            => I2C_SCL,
       IIC_0_0_sda_io            => I2C_SDA,
       SI_scl_i                  => SCL_i_phy,--SCL_i_normal,
@@ -452,65 +452,25 @@ begin  -- architecture structure
       SM_INFO_wstrb           => AXI_BUS_WMOSI(3).data_write_strobe,
       SM_INFO_wvalid          => AXI_BUS_WMOSI(3).data_valid,
 
-      TCDS_DRP_araddr          => AXI_BUS_RMOSI(4).address,
-      TCDS_DRP_arprot          => AXI_BUS_RMOSI(4).protection_type,
-      TCDS_DRP_arready         => AXI_BUS_RMISO(4).ready_for_address,
-      TCDS_DRP_arvalid         => AXI_BUS_RMOSI(4).address_valid,
-      TCDS_DRP_awaddr          => AXI_BUS_WMOSI(4).address,
-      TCDS_DRP_awprot          => AXI_BUS_WMOSI(4).protection_type,
-      TCDS_DRP_awready         => AXI_BUS_WMISO(4).ready_for_address,
-      TCDS_DRP_awvalid         => AXI_BUS_WMOSI(4).address_valid,
-      TCDS_DRP_bready          => AXI_BUS_WMOSI(4).ready_for_response,
-      TCDS_DRP_bresp           => AXI_BUS_WMISO(4).response,
-      TCDS_DRP_bvalid          => AXI_BUS_WMISO(4).response_valid,
-      TCDS_DRP_rdata           => AXI_BUS_RMISO(4).data,
-      TCDS_DRP_rready          => AXI_BUS_RMOSI(4).ready_for_data,
-      TCDS_DRP_rresp           => AXI_BUS_RMISO(4).response,
-      TCDS_DRP_rvalid          => AXI_BUS_RMISO(4).data_valid,
-      TCDS_DRP_wdata           => AXI_BUS_WMOSI(4).data,
-      TCDS_DRP_wready          => AXI_BUS_WMISO(4).ready_for_data,
-      TCDS_DRP_wstrb           => AXI_BUS_WMOSI(4).data_write_strobe,
-      TCDS_DRP_wvalid          => AXI_BUS_WMOSI(4).data_valid,
-
-      TCDS_araddr              => AXI_BUS_RMOSI(5).address,
-      TCDS_arprot              => AXI_BUS_RMOSI(5).protection_type,
-      TCDS_arready             => AXI_BUS_RMISO(5).ready_for_address,
-      TCDS_arvalid             => AXI_BUS_RMOSI(5).address_valid,
-      TCDS_awaddr              => AXI_BUS_WMOSI(5).address,
-      TCDS_awprot              => AXI_BUS_WMOSI(5).protection_type,
-      TCDS_awready             => AXI_BUS_WMISO(5).ready_for_address,
-      TCDS_awvalid             => AXI_BUS_WMOSI(5).address_valid,
-      TCDS_bready              => AXI_BUS_WMOSI(5).ready_for_response,
-      TCDS_bresp               => AXI_BUS_WMISO(5).response,
-      TCDS_bvalid              => AXI_BUS_WMISO(5).response_valid,
-      TCDS_rdata               => AXI_BUS_RMISO(5).data,
-      TCDS_rready              => AXI_BUS_RMOSI(5).ready_for_data,
-      TCDS_rresp               => AXI_BUS_RMISO(5).response,
-      TCDS_rvalid              => AXI_BUS_RMISO(5).data_valid,
-      TCDS_wdata               => AXI_BUS_WMOSI(5).data,
-      TCDS_wready              => AXI_BUS_WMISO(5).ready_for_data,
-      TCDS_wstrb               => AXI_BUS_WMOSI(5).data_write_strobe,
-      TCDS_wvalid              => AXI_BUS_WMOSI(5).data_valid,
-
-      PLXVC_araddr               => AXI_BUS_RMOSI(6).address,
-      PLXVC_arprot               => AXI_BUS_RMOSI(6).protection_type,
-      PLXVC_arready              => AXI_BUS_RMISO(6).ready_for_address,
-      PLXVC_arvalid              => AXI_BUS_RMOSI(6).address_valid,
-      PLXVC_awaddr               => AXI_BUS_WMOSI(6).address,
-      PLXVC_awprot               => AXI_BUS_WMOSI(6).protection_type,
-      PLXVC_awready              => AXI_BUS_WMISO(6).ready_for_address,
-      PLXVC_awvalid              => AXI_BUS_WMOSI(6).address_valid,
-      PLXVC_bready               => AXI_BUS_WMOSI(6).ready_for_response,
-      PLXVC_bresp                => AXI_BUS_WMISO(6).response,
-      PLXVC_bvalid               => AXI_BUS_WMISO(6).response_valid,
-      PLXVC_rdata                => AXI_BUS_RMISO(6).data,
-      PLXVC_rready               => AXI_BUS_RMOSI(6).ready_for_data,
-      PLXVC_rresp                => AXI_BUS_RMISO(6).response,
-      PLXVC_rvalid               => AXI_BUS_RMISO(6).data_valid,
-      PLXVC_wdata                => AXI_BUS_WMOSI(6).data,
-      PLXVC_wready               => AXI_BUS_WMISO(6).ready_for_data,
-      PLXVC_wstrb                => AXI_BUS_WMOSI(6).data_write_strobe,
-      PLXVC_wvalid               => AXI_BUS_WMOSI(6).data_valid,
+      PLXVC_araddr               => AXI_BUS_RMOSI(4).address,
+      PLXVC_arprot               => AXI_BUS_RMOSI(4).protection_type,
+      PLXVC_arready              => AXI_BUS_RMISO(4).ready_for_address,
+      PLXVC_arvalid              => AXI_BUS_RMOSI(4).address_valid,
+      PLXVC_awaddr               => AXI_BUS_WMOSI(4).address,
+      PLXVC_awprot               => AXI_BUS_WMOSI(4).protection_type,
+      PLXVC_awready              => AXI_BUS_WMISO(4).ready_for_address,
+      PLXVC_awvalid              => AXI_BUS_WMOSI(4).address_valid,
+      PLXVC_bready               => AXI_BUS_WMOSI(4).ready_for_response,
+      PLXVC_bresp                => AXI_BUS_WMISO(4).response,
+      PLXVC_bvalid               => AXI_BUS_WMISO(4).response_valid,
+      PLXVC_rdata                => AXI_BUS_RMISO(4).data,
+      PLXVC_rready               => AXI_BUS_RMOSI(4).ready_for_data,
+      PLXVC_rresp                => AXI_BUS_RMISO(4).response,
+      PLXVC_rvalid               => AXI_BUS_RMISO(4).data_valid,
+      PLXVC_wdata                => AXI_BUS_WMOSI(4).data,
+      PLXVC_wready               => AXI_BUS_WMISO(4).ready_for_data,
+      PLXVC_wstrb                => AXI_BUS_WMOSI(4).data_write_strobe,
+      PLXVC_wvalid               => AXI_BUS_WMOSI(4).data_valid,
 
       init_clk        =>  AXI_C2C_aurora_init_clk,
       C2C1_phy_Rx_rxn =>  AXI_C2C_CM1_Rx_N(0 to 0),
@@ -642,106 +602,61 @@ begin  -- architecture structure
       TCDS_reset_n      => clk_TCDS_locked--clk_TCDS_reset_n
       );
 
-  DC_data_CDC_1: entity work.DC_data_CDC
-    generic map (
-      DATA_WIDTH => 22)
-    port map (
-      clk_in   => GMII_ETHERNET_tx_clk,--clk_user2_SGMII,--clk_SGMII_tx,
-      clk_out  => axi_clk,
-      reset    => '0',
-      pass_in(0)  => SGMII_MON.reset_done,   
-      pass_in(1)  => SGMII_MON.cpll_lock,    
-      pass_in(2)  => SGMII_MON.mmcm_reset,   
-      pass_in(3)  => SGMII_MON.pma_reset,    
-      pass_in(4)  => SGMII_MON.mmcm_locked,  
-      pass_in(20 downto 5)  => SGMII_MON.status_vector,
-      pass_in(21)  => SGMII_MON.reset,              
-      pass_out(0)   => SGMII_MON_CDC.reset_done,   
-      pass_out(1)  => SGMII_MON_CDC.cpll_lock,    
-      pass_out(2)  => SGMII_MON_CDC.mmcm_reset,   
-      pass_out(3)  => SGMII_MON_CDC.pma_reset,    
-      pass_out(4)  => SGMII_MON_CDC.mmcm_locked,  
-      pass_out(20 downto 5)  => SGMII_MON_CDC.status_vector,
-      pass_out(21)  => SGMII_MON_CDC.reset);
+--  DC_data_CDC_1: entity work.DC_data_CDC
+--    generic map (
+--      DATA_WIDTH => 22)
+--    port map (
+--      clk_in   => GMII_ETHERNET_tx_clk,--clk_user2_SGMII,--clk_SGMII_tx,
+--      clk_out  => axi_clk,
+--      reset    => '0',
+--      pass_in(0)  => SGMII_MON.reset_done,   
+--      pass_in(1)  => SGMII_MON.cpll_lock,    
+--      pass_in(2)  => SGMII_MON.mmcm_reset,   
+--      pass_in(3)  => SGMII_MON.pma_reset,    
+--      pass_in(4)  => SGMII_MON.mmcm_locked,  
+--      pass_in(20 downto 5)  => SGMII_MON.status_vector,
+--      pass_in(21)  => SGMII_MON.reset,              
+--      pass_out(0)   => SGMII_MON_CDC.reset_done,   
+--      pass_out(1)  => SGMII_MON_CDC.cpll_lock,    
+--      pass_out(2)  => SGMII_MON_CDC.mmcm_reset,   
+--      pass_out(3)  => SGMII_MON_CDC.pma_reset,    
+--      pass_out(4)  => SGMII_MON_CDC.mmcm_locked,  
+--      pass_out(20 downto 5)  => SGMII_MON_CDC.status_vector,
+--      pass_out(21)  => SGMII_MON_CDC.reset);
 
 
 --  SGMII_MON_CDC <= SGMII_MON;
-  SGMII_1: entity work.SGMII
-    port map (
-      sys_clk               => axi_clk,
-      refclk_125Mhz_P       => refclk_125Mhz_P,
-      refclk_125Mhz_N       => refclk_125Mhz_N,
-      sgmii_tx_P            => sgmii_tx_P,
-      sgmii_tx_N            => sgmii_tx_N,
-      sgmii_rx_P            => sgmii_rx_P,
-      sgmii_rx_N            => sgmii_rx_N,
-      QPLL_CLK              => QPLL_CLK,              
-      QPLL_REF_CLK          => QPLL_REF_CLK,         
-      ENET1_EXT_INTIN_0     => ENET1_EXT_INTIN_0,
-      GMII_ETHERNET_col     => GMII_ETHERNET_col,
-      GMII_ETHERNET_crs     => GMII_ETHERNET_crs,
-      GMII_ETHERNET_rx_clk  => GMII_ETHERNET_rx_clk,
-      GMII_ETHERNET_rx_dv   => GMII_ETHERNET_rx_dv,
-      GMII_ETHERNET_rx_er   => GMII_ETHERNET_rx_er,
-      GMII_ETHERNET_rxd     => GMII_ETHERNET_rxd,
-      GMII_ETHERNET_tx_clk  => GMII_ETHERNET_tx_clk,
-      GMII_ETHERNET_tx_en   => GMII_ETHERNET_tx_en,
-      GMII_ETHERNET_tx_er   => GMII_ETHERNET_tx_er,
-      GMII_ETHERNET_txd     => GMII_ETHERNET_txd,
-      MDIO_ETHERNET_mdc     => MDIO_ETHERNET_mdc,
-      MDIO_ETHERNET_mdio_i  => MDIO_ETHERNET_mdio_i,
-      MDIO_ETHERNET_mdio_o  => MDIO_ETHERNET_mdio_o,  
-      SGMII_MON             => SGMII_MON,
-      SGMII_CTRL            => SGMII_CTRL);
+--  SGMII_1: entity work.SGMII
+--    port map (
+--      sys_clk               => axi_clk,
+--      refclk_125Mhz_P       => refclk_125Mhz_P,
+--      refclk_125Mhz_N       => refclk_125Mhz_N,
+--      sgmii_tx_P            => sgmii_tx_P,
+--      sgmii_tx_N            => sgmii_tx_N,
+--      sgmii_rx_P            => sgmii_rx_P,
+--      sgmii_rx_N            => sgmii_rx_N,
+--      QPLL_CLK              => QPLL_CLK,              
+--      QPLL_REF_CLK          => QPLL_REF_CLK,         
+--      ENET1_EXT_INTIN_0     => ENET1_EXT_INTIN_0,
+--      GMII_ETHERNET_col     => GMII_ETHERNET_col,
+--      GMII_ETHERNET_crs     => GMII_ETHERNET_crs,
+--      GMII_ETHERNET_rx_clk  => GMII_ETHERNET_rx_clk,
+--      GMII_ETHERNET_rx_dv   => GMII_ETHERNET_rx_dv,
+--      GMII_ETHERNET_rx_er   => GMII_ETHERNET_rx_er,
+--      GMII_ETHERNET_rxd     => GMII_ETHERNET_rxd,
+--      GMII_ETHERNET_tx_clk  => GMII_ETHERNET_tx_clk,
+--      GMII_ETHERNET_tx_en   => GMII_ETHERNET_tx_en,
+--      GMII_ETHERNET_tx_er   => GMII_ETHERNET_tx_er,
+--      GMII_ETHERNET_txd     => GMII_ETHERNET_txd,
+--      MDIO_ETHERNET_mdc     => MDIO_ETHERNET_mdc,
+--      MDIO_ETHERNET_mdio_i  => MDIO_ETHERNET_mdio_i,
+--      MDIO_ETHERNET_mdio_o  => MDIO_ETHERNET_mdio_o,  
+--      SGMII_MON             => SGMII_MON,
+--      SGMII_CTRL            => SGMII_CTRL);
 
 
   axi_reset <= not axi_reset_n;
 
- -- DC_data_CDC_2: entity work.DC_data_CDC
- --   generic map (
- --     DATA_WIDTH => 1)
- --   port map (
- --     clk_in   => axi_clk,
- --     clk_out  => clk_TCDS,
- --     reset    =>  clk_TCDS_locked,
- --     pass_in(0)  => axi_reset_n,
- --     pass_out(0) => clk_TCDS_reset_n);
-  
-    
-  TCDS_2: entity work.TCDS
-    port map (
-      clk_axi            => pl_clk,--axi_clk,--clk_TCDS,
-      reset_axi_n        => pl_reset_n,--axi_reset_n,--pl_reset_n,--clk_TCDS_reset_n,--pl_reset_n,
-      clk_axi_DRP        => pl_clk,--axi_clk,
-      reset_axi_DRP_n    => pl_reset_n,--axi_reset_n,--pl_reset_n,
-      readMOSI           => AXI_BUS_RMOSI(5),
-      readMISO           => AXI_BUS_RMISO(5),
-      writeMOSI          => AXI_BUS_WMOSI(5),
-      writeMISO          => AXI_BUS_WMISO(5),
-      DRP_readMOSI       => AXI_BUS_RMOSI(4),
-      DRP_readMISO       => AXI_BUS_RMISO(4),
-      DRP_writeMOSI      => AXI_BUS_WMOSI(4),
-      DRP_writeMISO      => AXI_BUS_WMISO(4),
-      --sysclk        => pl_clk,
-      refclk_p      => refclk_TCDS_P,
-      refclk_n      => refclk_TCDS_N,
-      QPLL_CLK        => QPLL_CLK,    
-      QPLL_REF_CLK    => QPLL_REF_CLK,        
---      reset         => axi_reset,
-      clk_TCDS    => clk_TCDS,
-      clk_TCDS_reset_n => clk_TCDS_locked,--open,--clk_TCDS_reset_n,
-      tx_P(0)     => tts_P,
-      tx_P(1)     => fake_ttc_P,  
-      tx_P(2)     => open, 
-      tx_N(0)     => tts_N,
-      tx_N(1)     => fake_ttc_N,  
-      tx_N(2)     => open, 
-      rx_P(0)     => ttc_P,
-      rx_P(1)     => m1_tts_P,    
-      rx_P(2)     => m2_tts_P,    
-      rx_N(0)     => ttc_N,
-      rx_N(1)     => m1_tts_N,    
-      rx_N(2)     => m2_tts_N);
 
   SI_i2c_SDA : IOBUF
     port map (
@@ -897,10 +812,10 @@ begin  -- architecture structure
     port map (
       clk_axi         => axi_clk,
       reset_axi_n     => pl_reset_n,
-      readMOSI        => AXI_BUS_RMOSI(6),
-      readMISO        => AXI_BUS_RMISO(6),
-      writeMOSI       => AXI_BUS_WMOSI(6),
-      writeMISO       => AXI_BUS_WMISO(6),
+      readMOSI        => AXI_BUS_RMOSI(4),
+      readMISO        => AXI_BUS_RMISO(4),
+      writeMOSI       => AXI_BUS_WMOSI(4),
+      writeMISO       => AXI_BUS_WMISO(4),
       TMS             => plXVC_TMS,
       TDI             => plXVC_TDI,
       TDO             => plXVC_TDO,
