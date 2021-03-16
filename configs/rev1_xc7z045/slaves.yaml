@@ -1,14 +1,23 @@
-AXI_SLAVES:
-  PL_MEM:
-    TCL_CALL:
-      command: "AXI_IP_BRAM"
-      device_name: "PL_MEM"
+AXI_CONTROL_SETS:
+  AXI_MASTER_CTRL:
       axi_interconnect: "${::AXI_INTERCONNECT_NAME}"
       axi_clk: "${::AXI_MASTER_CLK}"
       axi_rstn: "${::AXI_MASTER_RSTN}"
       axi_freq: "${::AXI_MASTER_CLK_FREQ}"
-      addr_offset: "0x40000000"
-      addr_range: "8K"
+  AXI_C2C_CTRL:
+      axi_interconnect: "${::AXI_C2C_INTERCONNECT_NAME}"
+      axi_clk: "${::AXI_MASTER_CLK}"
+      axi_rstn: "${::AXI_MASTER_RSTN}"
+      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
+
+AXI_SLAVES:
+  PL_MEM:
+    TCL_CALL:
+      command: "AXI_IP_BRAM"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "0x40000000"
+        range: "8K"
     XML:
       - "address_table/modules/PL_MEM.xml"
       - "address_table/modules/I2C_REGULATOR_MONITOR.xml"
@@ -17,24 +26,18 @@ AXI_SLAVES:
   SI:
     TCL_CALL:
       command: "AXI_IP_I2C"
-      device_name: "SI"
-      axi_interconnect: "${::AXI_INTERCONNECT_NAME}"
-      axi_clk: "${::AXI_MASTER_CLK}"
-      axi_rstn: "${::AXI_MASTER_RSTN}"
-      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
-      addr_offset: "0x41600000"
-      addr_range: "8K"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "0x41600000"
+        range: "8K"
 
   SERV:
     TCL_CALL:
       command: "AXI_PL_DEV_CONNECT"
-      device_name: "SERV"
-      axi_interconnect: "${::AXI_INTERCONNECT_NAME}"
-      axi_clk: "${::AXI_MASTER_CLK}"
-      axi_rstn: "${::AXI_MASTER_RSTN}"
-      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
-      addr_offset: "0x43C20000"
-      addr_range: "8K"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "0x43C20000"
+        range: "8K"
     XML:
       - "address_table/modules/SERV_rev1.xml"
     UHAL_BASE: 0x04000000
@@ -44,17 +47,21 @@ AXI_SLAVES:
     TCL_CALL:
       command: "AXI_C2C_MASTER"
       device_name: "C2C1"
-      axi_interconnect: "${::AXI_C2C_INTERCONNECT_NAME}"
-      axi_clk: "${::AXI_MASTER_CLK}"
-      axi_rstn: "${::AXI_MASTER_RSTN}"
-      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
       primary_serdes: "1"
       init_clk: "${::INIT_CLK}"
       refclk_freq: "100.000"
-      addr_offset: "0x8A000000"
-      addr_range: "32M"
-      addrLITE_offset: "0x83c40000"
-      addrLITE_range: "64K"
+      axi_control:
+        axi_interconnect: "${::AXI_C2C_INTERCONNECT_NAME}"
+        axi_clk: "${::AXI_MASTER_CLK}"
+        axi_rstn: "${::AXI_MASTER_RSTN}"
+        axi_freq: "${::AXI_MASTER_CLK_FREQ}"
+      addr:
+        offset: "0x8A000000"
+        range: "32M"
+      addr_lite:
+        lite_offset: "0x83c40000"
+        lite_range: "64K"
+
     SUB_SLAVES:
       1_AXI_FW:
         XML:
@@ -72,17 +79,20 @@ AXI_SLAVES:
         TCL_CALL:
           command: "AXI_C2C_MASTER"
           device_name: "C2C2"
-          axi_interconnect: "${::AXI_C2C_INTERCONNECT_NAME}"
-          axi_clk: "${::AXI_MASTER_CLK}"
-          axi_rstn: "${::AXI_MASTER_RSTN}"
-          axi_freq: "${::AXI_MASTER_CLK_FREQ}"
+          axi_control:
+            axi_interconnect: "${::AXI_C2C_INTERCONNECT_NAME}"
+            axi_clk: "${::AXI_MASTER_CLK}"
+            axi_rstn: "${::AXI_MASTER_RSTN}"
+            axi_freq: "${::AXI_MASTER_CLK_FREQ}"
           primary_serdes: "C2C1_PHY"
           init_clk: "${::INIT_CLK}"
           refclk_freq: "100.000"
-          addr_offset: "0x8C000000"
-          addr_range: "32M"
-          addrLITE_offset: "0x83d40000"
-          addrLITE_range: "64K"
+          addr:
+            offset: "0x8C000000"
+            range: "32M"
+          addr_lite:
+            lite_offset: "0x83d40000"
+            lite_range: "64K"
 
         SUB_SLAVES:
           _AXI_FW:
@@ -101,13 +111,10 @@ AXI_SLAVES:
   PLXVC:
     TCL_CALL:
       command: "AXI_PL_DEV_CONNECT"
-      device_name: "PLXVC"
-      axi_interconnect: "${::AXI_INTERCONNECT_NAME}"
-      axi_clk: "${::AXI_MASTER_CLK}"
-      axi_rstn: "${::AXI_MASTER_RSTN}"
-      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
-      addr_offset: "0x40010000"
-      addr_range: "64K"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "0x40010000"
+        range: "64K"
     XML:
       - "address_table/modules/plXVC_rev1.xml"
       - "address_table/modules/plXVC_single.xml"
@@ -117,13 +124,10 @@ AXI_SLAVES:
   XVC_LOCAL:
     TCL_CALL:
       command: "AXI_IP_LOCAL_XVC"
-      device_name: "XVC_LOCAL"
-      axi_interconnect: "${::AXI_INTERCONNECT_NAME}"
-      axi_clk: "${::AXI_MASTER_CLK}"
-      axi_rstn: "${::AXI_MASTER_RSTN}"
-      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
-      addr_offset: "0x40030000"
-      addr_range: "64K"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "0x40030000"
+        range: "64K"
     XML:
       - "address_table/modules/XVC.xml"
     UHAL_BASE: 0x08000000
@@ -131,13 +135,10 @@ AXI_SLAVES:
   SLAVE_I2C:
     TCL_CALL:
       command: "AXI_PL_DEV_CONNECT"
-      device_name: "SLAVE_I2C"
-      axi_interconnect: "${::AXI_INTERCONNECT_NAME}"
-      axi_clk: "${::AXI_MASTER_CLK}"
-      axi_rstn: "${::AXI_MASTER_RSTN}"
-      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
-      addr_offset: "0x40008000"
-      addr_range: "8K"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "0x40008000"
+        range: "8K"
     XML:
       - "address_table/modules/SLAVE_I2C.xml"
     UHAL_BASE: 0x05000000
@@ -145,13 +146,10 @@ AXI_SLAVES:
   CM:
     TCL_CALL:
       command: "AXI_PL_DEV_CONNECT"
-      device_name: "CM"
-      axi_interconnect: "${::AXI_INTERCONNECT_NAME}"
-      axi_clk: "${::AXI_MASTER_CLK}"
-      axi_rstn: "${::AXI_MASTER_RSTN}"
-      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
-      addr_offset: "0x4000A000"
-      addr_range: "8K"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "0x4000A000"
+        range: "8K"
     XML:
       - "address_table/modules/CM_7s.xml"
       - "address_table/modules/CM_single_7s.xml"
@@ -166,13 +164,10 @@ AXI_SLAVES:
   SM_INFO:
     TCL_CALL:
       command: "AXI_PL_DEV_CONNECT"
-      device_name: "SM_INFO"
-      axi_interconnect: "${::AXI_INTERCONNECT_NAME}"
-      axi_clk: "${::AXI_MASTER_CLK}"
-      axi_rstn: "${::AXI_MASTER_RSTN}"
-      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
-      addr_offset: "0x4000C000"
-      addr_range: "8K"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "0x4000C000"
+        range: "8K"
     XML:
       - "address_table/modules/FW_INFO.xml"
     UHAL_BASE: 0x0A000000
@@ -181,13 +176,10 @@ AXI_SLAVES:
   MONITOR:
     TCL_CALL:
       command: "AXI_IP_XADC"
-      device_name: "MONITOR"
-      axi_interconnect: "${::AXI_INTERCONNECT_NAME}"
-      axi_clk: "${::AXI_MASTER_CLK}"
-      axi_rstn: "${::AXI_MASTER_RSTN}"
-      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
-      addr_offset: "0x40040000"
-      addr_range: "64K"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "0x40040000"
+        range: "64K"
     XML:
       - "address_table/modules/MONITOR.xml"
     UHAL_BASE: 0x0B000000
@@ -197,50 +189,38 @@ AXI_SLAVES:
       command: "AXI_IP_UART"
       baud_rate: "115200"
       irq_port: "${::IRQ_ORR}/in0"
-      device_name: "CM1_UART"
-      axi_interconnect: "${::AXI_INTERCONNECT_NAME}"
-      axi_clk: "${::AXI_MASTER_CLK}"
-      axi_rstn: "${::AXI_MASTER_RSTN}"
-      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
-      addr_offset: "0x40140000"
-      addr_range: "8K"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "0x40140000"
+        range: "8K"
 
   CM2_UART:
     TCL_CALL:
       command: "AXI_IP_UART"
       baud_rate: "115200"
       irq_port: "${::IRQ_ORR}/in1"
-      device_name: "CM2_UART"
-      axi_interconnect: "${::AXI_INTERCONNECT_NAME}"
-      axi_clk: "${::AXI_MASTER_CLK}"
-      axi_rstn: "${::AXI_MASTER_RSTN}"
-      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
-      addr_offset: "0x40150000"
-      addr_range: "8K"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "0x40150000"
+        range: "8K"
 
   ESM_UART:
     TCL_CALL:
       command: "AXI_IP_UART"
       baud_rate: "115200"
       irq_port: "${::IRQ_ORR}/in2"
-      device_name: "ESM_UART"
-      axi_interconnect: "${::AXI_INTERCONNECT_NAME}"
-      axi_clk: "${::AXI_MASTER_CLK}"
-      axi_rstn: "${::AXI_MASTER_RSTN}"
-      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
-      addr_offset: "0x40160000"
-      addr_range: "8K"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "0x40160000"
+        range: "8K"
 
   TCDS:
     TCL_CALL:
       command: "AXI_PL_DEV_CONNECT"
-      device_name: "TCDS"
-      axi_interconnect: "${::AXI_INTERCONNECT_NAME}"
-      axi_clk: "${::AXI_MASTER_CLK}"
-      axi_rstn: "${::AXI_MASTER_RSTN}"
-      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
-      addr_offset: "0x40002000"
-      addr_range: "8K"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "0x40002000"
+        range: "8K"
     XML:
       - "address_table/modules/TCDS.xml"
       - "address_table/modules/RXTX.xml"
@@ -250,13 +230,10 @@ AXI_SLAVES:
   TCDS_DRP:
     TCL_CALL:
       command: "AXI_PL_DEV_CONNECT"
-      device_name: "TCDS_DRP"
-      axi_interconnect: "${::AXI_INTERCONNECT_NAME}"
-      axi_clk: "${::AXI_MASTER_CLK}"
-      axi_rstn: "${::AXI_MASTER_RSTN}"
-      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
-      addr_offset: "0x4000E000"
-      addr_range: "8K"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "0x4000E000"
+        range: "8K"
     XML:
       - "address_table/modules/TCDS_DRP.xml"
       - "address_table/modules/DRP_7_GTX.xml"
@@ -265,24 +242,23 @@ AXI_SLAVES:
   AXI_MON:
     TCL_CALL:
       command: "AXI_IP_AXI_MONITOR"
-      axi_interconnect: "${::AXI_C2C_INTERCONNECT_NAME}"
-      axi_clk: "${::AXI_MASTER_CLK}"
-      axi_rstn: "${::AXI_MASTER_RSTN}"
-      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
-      mon_axi: "[list processing_system7_0/M_AXI_GP0 processing_system7_0/M_AXI_GP1]"
-      mon_axi_clk: "[list ${::AXI_MASTER_CLK} ${::AXI_MASTER_CLK}]"
-      mon_axi_rstn: "[list ${::AXI_MASTER_RSTN} ${::AXI_MASTER_RSTN}]"
+      axi_control: "${::AXI_C2C_CTRL}"
       core_clk: "${::AXI_MASTER_CLK}"
       core_rstn: "${::AXI_MASTER_RSTN}"
-      device_name: "AXI_MON"
+      mon_axi:
+       - "processing_system7_0/M_AXI_GP0"
+       - "processing_system7_0/M_AXI_GP1"
+      mon_axi_clk:
+       - ${::AXI_MASTER_CLK}
+       - ${::AXI_MASTER_CLK}
+      mon_axi_rstn: "${::AXI_MASTER_RSTN} ${::AXI_MASTER_RSTN}"
+
     XML:
       - "address_table/modules/AXI_MONITOR.xml"
       - "address_table/modules/AXI_MONITOR_COUNTER.xml"
     UHAL_BASE: 0x1F000000
 
-#  INT_AXI_FW:
-#    XML:
-#      - "address_table/modules/INT_AXI_FW.xml"
+  INT_AXI_FW:
+    XML:
+      - "address_table/modules/INT_AXI_FW.xml"
 #    UHAL_BASE: 0x20000000
-#
-#
