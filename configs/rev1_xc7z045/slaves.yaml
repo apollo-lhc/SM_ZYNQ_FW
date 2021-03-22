@@ -214,30 +214,6 @@ AXI_SLAVES:
         offset: "0x40160000"
         range: "8K"
 
-  TCDS:
-    TCL_CALL:
-      command: "AXI_PL_DEV_CONNECT"
-      axi_control: "${::AXI_MASTER_CTRL}"
-      addr:
-        offset: "0x40002000"
-        range: "8K"
-    XML:
-      - "address_table/modules/TCDS.xml"
-      - "address_table/modules/RXTX.xml"
-      - "address_table/modules/TCDS_CONTROL.xml"
-    UHAL_BASE: 0x17000000
-
-  TCDS_DRP:
-    TCL_CALL:
-      command: "AXI_PL_DEV_CONNECT"
-      axi_control: "${::AXI_MASTER_CTRL}"
-      addr:
-        offset: "0x4000E000"
-        range: "8K"
-    XML:
-      - "address_table/modules/TCDS_DRP.xml"
-      - "address_table/modules/DRP_7_GTX.xml"
-    UHAL_BASE: 0x18000000
 
   AXI_MON:
     TCL_CALL:
