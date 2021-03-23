@@ -221,8 +221,8 @@ AXI_SLAVES:
       core_clk: "${::AXI_MASTER_CLK}"
       core_rstn: "${::AXI_MASTER_RSTN}"
       mon_axi:
-       - "processing_system7_0/M_AXI_GP0"
-       - "processing_system7_0/M_AXI_GP1"
+       - "${::ZYNQ_NAME}/M_AXI_GP0"
+       - "${::ZYNQ_NAME}/M_AXI_GP1"
       mon_axi_clk:
        - ${::AXI_MASTER_CLK}
        - ${::AXI_MASTER_CLK}

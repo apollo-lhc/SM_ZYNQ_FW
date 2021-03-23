@@ -4,8 +4,6 @@
 #This code is directly sourced and builds the Zynq CPU
 set ZYNQ_NAME Zynq7
 
-set ZYNQ_NAME Zynq7
-
 startgroup
 #create basic zynq processing system
 create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7:5.5 ${ZYNQ_NAME}

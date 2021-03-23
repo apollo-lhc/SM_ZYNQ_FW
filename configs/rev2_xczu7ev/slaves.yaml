@@ -49,7 +49,7 @@ AXI_SLAVES:
       device_name: "C2C1"
       primary_serdes: "1"
       init_clk: "${::INIT_CLK}"
-      refclk_freq: "100.000"
+      refclk_freq: "100"
       axi_control:
         axi_interconnect: "${::AXI_C2C_INTERCONNECT_NAME}"
         axi_clk: "${::AXI_MASTER_CLK}"
@@ -86,7 +86,7 @@ AXI_SLAVES:
             axi_freq: "${::AXI_MASTER_CLK_FREQ}"
           primary_serdes: "C2C1_PHY"
           init_clk: "${::INIT_CLK}"
-          refclk_freq: "100.000"
+          refclk_freq: "100"
           addr:
             offset: "0xBC000000"
             range: "32M"
@@ -125,9 +125,6 @@ AXI_SLAVES:
     TCL_CALL:
       command: "AXI_IP_LOCAL_XVC"
       axi_control: "${::AXI_MASTER_CTRL}"
-      addr:
-        offset: "0xAA0030000"
-        range: "64K"
     XML:
       - "address_table/modules/XVC.xml"
     UHAL_BASE: 0x08000000
@@ -151,12 +148,12 @@ AXI_SLAVES:
         offset: "0xA000A000"
         range: "8K"
     XML:
-      - "address_table/modules/CM_7s.xml"
-      - "address_table/modules/CM_single_7s.xml"
-      - "address_table/modules/address_table/modules/CM_C2C_7s.xml"
+      - "address_table/modules/CM_USP.xml"
+      - "address_table/modules/CM_single_USP.xml"
+      - "address_table/modules/address_table/modules/CM_C2C_USP.xml"
       - "address_table/modules/address_table/modules/CM_CTRL.xml"
       - "address_table/modules/address_table/modules/CM_C2C_Status.xml"
-      - "address_table/modules/CM_C2C_DEBUG_7s.xml"
+      - "address_table/modules/CM_C2C_DEBUG_USP.xml"
       - "address_table/modules/address_table/modules/CM_Mon.xml"
     UHAL_BASE: 0x03000000
     HDL: "src/CM_interface"
@@ -175,13 +172,14 @@ AXI_SLAVES:
 
   MONITOR:
     TCL_CALL:
-      command: "AXI_IP_XADC"
+      command: "AXI_IP_SYS_MGMT"
       axi_control: "${::AXI_MASTER_CTRL}"
+      enable_i2c_pins: 0
       addr:
         offset: "0xA0040000"
         range: "64K"
     XML:
-      - "address_table/modules/MONITOR.xml"
+      - "address_table/modules/MONITOR_USP.xml"
     UHAL_BASE: 0x0B000000
 
   CM1_UART:
@@ -221,8 +219,8 @@ AXI_SLAVES:
       core_clk: "${::AXI_MASTER_CLK}"
       core_rstn: "${::AXI_MASTER_RSTN}"
       mon_axi:
-       - "processing_system7_0/M_AXI_GP0"
-       - "processing_system7_0/M_AXI_GP1"
+       - "${::ZYNQ_NAME}/M_AXI_HPM0_FPD"
+       - "${::ZYNQ_NAME}/M_AXI_HPM1_FPD"
       mon_axi_clk:
        - ${::AXI_MASTER_CLK}
        - ${::AXI_MASTER_CLK}
