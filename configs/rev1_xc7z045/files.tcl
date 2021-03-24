@@ -15,13 +15,11 @@ set vhdl_files "\
      src/misc/capture_CDC.vhd \
      src/misc/pacd.vhd \
      src/misc/capture_CDC.vhd \
+     src/axiReg/axiRegWidthPkg_32.vhd \
      src/axiReg/axiRegPkg.vhd \
      src/axiReg/axiReg.vhd \
      src/axiReg/axiRegMaster.vhd \
-     src/SGMII/SGMII.vhd \
-     src/SGMII/SGMII_INTF_clocking.vhd \
-     src/SGMII/SGMII_INTF_resets.vhd \
-     src/services/services.vhd \
+     src/services/services_rev1.vhd \
      src/services/SGMII_MON_pkg.vhd \
      src/services/SERV_map.vhd \
      src/services/SERV_PKG.vhd \
@@ -43,14 +41,6 @@ set vhdl_files "\
      src/SM_info/SM_INFO_map.vhd \
      src/SM_info/SM_INFO_PKG.vhd \
      src/SM_info/SM_info.vhd \
-     src/TCDS/lhc_gt_usrclk_source.vhd \
-     src/TCDS/MGBT2_common_reset.vhd \
-     src/TCDS/MGBT2_common.vhd \
-     src/TCDS/TCDS.vhd \
-     src/TCDS/TCDS_Control.vhd \
-     src/TCDS/TCDS_Monitor.vhd \
-     src/TCDS/TCDS_map.vhd \
-     src/TCDS/TCDS_PKG.vhd \
      src/plXVC/PLXVC_map.vhd \
      src/plXVC/PLXVC_PKG.vhd \
      src/plXVC/plXVC_intf.vhd \
@@ -62,9 +52,6 @@ set xdc_files "\
      "
 
 set xci_files "\
-    	      cores/SGMII_INTF/SGMII_INTF.xci \
     	      cores/onboard_CLK/onboard_CLK.xci \
-              cores/LHC/LHC.xci \
-              cores/TCDS_DRP_BRIDGE/TCDS_DRP_BRIDGE.xci \
     	      "
 

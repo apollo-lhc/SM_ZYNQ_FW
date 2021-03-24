@@ -68,8 +68,8 @@ set_property CONFIG.FREQ_HZ ${AXI_MASTER_CLK_FREQ} [get_bd_ports ${INIT_CLK}]
 #================================================================================
 #  Configure and add AXI slaves
 #================================================================================
-source ${apollo_root_path}/src/ZynqPS/AddSlaves.tcl
-
+source -quiet ${apollo_root_path}/bd/add_slaves_from_yaml.tcl
+yaml_to_bd "${apollo_root_path}/configs/${build_name}/slaves.yaml"
 
 #========================================
 #  Finish up
