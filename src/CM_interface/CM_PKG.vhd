@@ -58,6 +58,7 @@ package CM_CTRL is
                                                                         );
   type CM_CM_C2C_LINK_DEBUG_RX_MON_t is record
     BUF_STATUS                 :std_logic_vector( 2 downto 0);  -- DEBUG rx buf status
+    MONITOR                    :std_logic_vector( 6 downto 0);  -- DEBUG rx status
     PRBS_ERR                   :std_logic;                      -- DEBUG rx PRBS error
     RESET_DONE                 :std_logic;                      -- DEBUG rx reset done
   end record CM_CM_C2C_LINK_DEBUG_RX_MON_t;
@@ -66,13 +67,18 @@ package CM_CTRL is
   type CM_CM_C2C_LINK_DEBUG_RX_CTRL_t is record
     BUF_RESET                  :std_logic;     -- DEBUG rx buf reset
     CDR_HOLD                   :std_logic;     -- DEBUG rx CDR hold
+    DFE_AGC_HOLD               :std_logic;     -- DEBUG rx DFE AGC HOLD
+    DFE_AGC_OVERRIDE           :std_logic;     -- DEBUG rx DFE AGC OVERRIDE
+    DFE_LF_HOLD                :std_logic;     -- DEBUG rx DFE LF HOLD
     DFE_LPM_RESET              :std_logic;     -- DEBUG rx DFE LPM RESET
     LPM_EN                     :std_logic;     -- DEBUG rx LPM ENABLE
-    PCS_RESET                  :std_logic;     -- DEBUG rx pcs reset
-    PMA_RESET                  :std_logic;     -- DEBUG rx pma reset
-    PRBS_CNT_RST               :std_logic;     -- DEBUG rx PRBS counter reset
-    PRBS_SEL                   :std_logic_vector( 3 downto 0);  -- DEBUG rx PRBS select
-    RATE                       :std_logic_vector( 2 downto 0);  -- DEBUG rx rate
+    LPM_HF_OVERRIDE            :std_logic;     -- DEBUG rx LPM HF OVERRIDE enable
+    LPM_LFKL_OVERRIDE          :std_logic;     -- DEBUG rx LPM LFKL override
+    MON_SEL                    :std_logic_vector( 1 downto 0);  -- DEBUG rx monitor select
+    PCS_RESET                  :std_logic;                      -- DEBUG rx pcs reset
+    PMA_RESET                  :std_logic;                      -- DEBUG rx pma reset
+    PRBS_CNT_RST               :std_logic;                      -- DEBUG rx PRBS counter reset
+    PRBS_SEL                   :std_logic_vector( 2 downto 0);  -- DEBUG rx PRBS select
   end record CM_CM_C2C_LINK_DEBUG_RX_CTRL_t;
 
 
@@ -81,10 +87,15 @@ package CM_CTRL is
                                                                                        PRBS_SEL => (others => '0'),
                                                                                        LPM_EN => '0',
                                                                                        PRBS_CNT_RST => '0',
-                                                                                       RATE => (others => '0'),
-                                                                                       CDR_HOLD => '0',
+                                                                                       DFE_AGC_HOLD => '0',
+                                                                                       MON_SEL => (others => '0'),
+                                                                                       LPM_LFKL_OVERRIDE => '0',
+                                                                                       DFE_AGC_OVERRIDE => '0',
+                                                                                       DFE_LF_HOLD => '0',
                                                                                        BUF_RESET => '0',
                                                                                        PMA_RESET => '0',
+                                                                                       CDR_HOLD => '0',
+                                                                                       LPM_HF_OVERRIDE => '0',
                                                                                        PCS_RESET => '0'
                                                                                       );
   type CM_CM_C2C_LINK_DEBUG_TX_MON_t is record
@@ -94,15 +105,16 @@ package CM_CTRL is
 
 
   type CM_CM_C2C_LINK_DEBUG_TX_CTRL_t is record
-    INHIBIT                    :std_logic;     -- DEBUG tx inhibit
-    PCS_RESET                  :std_logic;     -- DEBUG tx pcs reset
-    PMA_RESET                  :std_logic;     -- DEBUG tx pma reset
-    POLARITY                   :std_logic;     -- DEBUG tx polarity
+    DIFF_CTRL                  :std_logic_vector( 3 downto 0);  -- DEBUG tx diff control
+    INHIBIT                    :std_logic;                      -- DEBUG tx inhibit
+    MAIN_CURSOR                :std_logic_vector( 6 downto 0);  -- DEBUG tx main cursor
+    PCS_RESET                  :std_logic;                      -- DEBUG tx pcs reset
+    PMA_RESET                  :std_logic;                      -- DEBUG tx pma reset
+    POLARITY                   :std_logic;                      -- DEBUG tx polarity
     POST_CURSOR                :std_logic_vector( 4 downto 0);  -- DEBUG post cursor
     PRBS_FORCE_ERR             :std_logic;                      -- DEBUG force PRBS error
+    PRBS_SEL                   :std_logic_vector( 2 downto 0);  -- DEBUG PRBS select
     PRE_CURSOR                 :std_logic_vector( 4 downto 0);  -- DEBUG pre cursor
-    PRBS_SEL                   :std_logic_vector( 3 downto 0);  -- DEBUG PRBS select
-    DIFF_CTRL                  :std_logic_vector( 4 downto 0);  -- DEBUG tx diff control
   end record CM_CM_C2C_LINK_DEBUG_TX_CTRL_t;
 
 
@@ -110,16 +122,16 @@ package CM_CTRL is
                                                                                        POLARITY => '0',
                                                                                        INHIBIT => '0',
                                                                                        POST_CURSOR => (others => '0'),
-                                                                                       PRE_CURSOR => (others => '0'),
+                                                                                       PRBS_SEL => (others => '0'),
                                                                                        PRBS_FORCE_ERR => '0',
                                                                                        DIFF_CTRL => (others => '0'),
+                                                                                       MAIN_CURSOR => (others => '0'),
                                                                                        PMA_RESET => '0',
-                                                                                       PRBS_SEL => (others => '0'),
+                                                                                       PRE_CURSOR => (others => '0'),
                                                                                        PCS_RESET => '0'
                                                                                       );
   type CM_CM_C2C_LINK_DEBUG_MON_t is record
-    DMONITOR                   :std_logic_vector(15 downto 0);  -- DEBUG d monitor
-    QPLL_LOCK                  :std_logic;                      -- DEBUG cplllock
+    DMONITOR                   :std_logic_vector( 7 downto 0);  -- DEBUG d monitor
     CPLL_LOCK                  :std_logic;                      -- DEBUG cplllock
     EYESCAN_DATA_ERROR         :std_logic;                      -- DEBUG eyescan data error
     RX                         :CM_CM_C2C_LINK_DEBUG_RX_MON_t;
@@ -130,18 +142,16 @@ package CM_CTRL is
   type CM_CM_C2C_LINK_DEBUG_CTRL_t is record
     EYESCAN_RESET              :std_logic;     -- DEBUG eyescan reset
     EYESCAN_TRIGGER            :std_logic;     -- DEBUG eyescan trigger
-    PCS_RSV_DIN                :std_logic_vector(15 downto 0);  -- bit 2 is DRP uber reset
     RX                         :CM_CM_C2C_LINK_DEBUG_RX_CTRL_t;
     TX                         :CM_CM_C2C_LINK_DEBUG_TX_CTRL_t;
   end record CM_CM_C2C_LINK_DEBUG_CTRL_t;
 
 
   constant DEFAULT_CM_CM_C2C_LINK_DEBUG_CTRL_t : CM_CM_C2C_LINK_DEBUG_CTRL_t := (
-                                                                                 TX => DEFAULT_CM_CM_C2C_LINK_DEBUG_TX_CTRL_t,
                                                                                  RX => DEFAULT_CM_CM_C2C_LINK_DEBUG_RX_CTRL_t,
                                                                                  EYESCAN_RESET => '0',
                                                                                  EYESCAN_TRIGGER => '0',
-                                                                                 PCS_RSV_DIN => (others => '0')
+                                                                                 TX => DEFAULT_CM_CM_C2C_LINK_DEBUG_TX_CTRL_t
                                                                                 );
   type CM_CM_C2C_CNT_MON_t is record
     INIT_ALLTIME               :std_logic_vector(31 downto 0);  -- Counter for every PHYLANEUP cycle
