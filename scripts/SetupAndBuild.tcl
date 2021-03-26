@@ -12,6 +12,8 @@ if { $argc == 2 } {
     set apollo_root_path ".."
 }
 
+set BD_PATH ${apollo_root_path}/bd
+
 puts "Using path: ${apollo_root_path}"
 puts "Building: ${build_name}"
 
