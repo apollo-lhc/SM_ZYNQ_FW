@@ -6,7 +6,7 @@ include mk/helpers.mk
 
 
 VIVADO_FLAGS=-notrace -mode batch
-BUILD_VIVADO_VERSION=2018.3
+BUILD_VIVADO_VERSION=2019.1
 BUILD_VIVADO_SHELL="/work/Xilinx/Vivado/"$(BUILD_VIVADO_VERSION)"/settings64.sh"
 #BUILD_VIVADO_VERSION=2018.2
 #BUILD_VIVADO_SHELL="/opt/Xilinx/Vivado/"$(BUILD_VIVADO_VERSION)"/settings64.sh"
