@@ -39,7 +39,6 @@ CONFIGS=$(filter-out configs/,$(patsubst configs/%/,%,$(dir $(wildcard configs/*
 define CONFIGS_template =
  $(1): clean_make_log
 	time $(MAKE) $(BIT_BASE)$$@.bit || $(MAKE) NOTIFY_DAN_BAD
-	date
 endef
 
 #################################################################################

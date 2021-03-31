@@ -98,6 +98,8 @@ begin  -- architecture behavioral
           localRdData(31 downto  0)  <=  Mon.CLOCKING.TTC_CLK_FREQ;       --Measured Freq of clock
         when 9 => --0x9
           localRdData(31 downto  0)  <=  Mon.CLOCKING.AXI_CLK_FREQ;       --Measured Freq of clock
+        when 10 => --0xa
+          localRdData(31 downto  0)  <=  Mon.CLOCKING.ETH1_CLK_FREQ;      --Measured Freq of clock
         when 16 => --0x10
           localRdData( 0)            <=  reg_data(16)( 0);                --reset FP LEDs
           localRdData( 1)            <=  reg_data(16)( 1);                --override FP LED page 0
