@@ -6,10 +6,10 @@ include mk/helpers.mk
 
 
 VIVADO_FLAGS=-notrace -mode batch
-#BUILD_VIVADO_VERSION=2018.3
-#BUILD_VIVADO_SHELL="/work/Xilinx/Vivado/"$(BUILD_VIVADO_VERSION)"/settings64.sh"
-BUILD_VIVADO_VERSION=2018.2
-BUILD_VIVADO_SHELL="/opt/Xilinx/Vivado/"$(BUILD_VIVADO_VERSION)"/settings64.sh"
+BUILD_VIVADO_VERSION=2018.3
+BUILD_VIVADO_SHELL="/work/Xilinx/Vivado/"$(BUILD_VIVADO_VERSION)"/settings64.sh"
+#BUILD_VIVADO_VERSION=2018.2
+#BUILD_VIVADO_SHELL="/opt/Xilinx/Vivado/"$(BUILD_VIVADO_VERSION)"/settings64.sh"
 
 
 #################################################################################
@@ -39,7 +39,6 @@ CONFIGS=$(filter-out configs/,$(patsubst configs/%/,%,$(dir $(wildcard configs/*
 define CONFIGS_template =
  $(1): clean_make_log
 	time $(MAKE) $(BIT_BASE)$$@.bit || $(MAKE) NOTIFY_DAN_BAD
-	date
 endef
 
 #################################################################################

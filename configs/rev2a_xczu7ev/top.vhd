@@ -735,7 +735,7 @@ begin  -- architecture structure
   reset_200Mhz <= not clk_200Mhz_locked ;
 
   SI_OUT_DIS <= not SI_OE_normal;
-  SI_TCDS_ENABLE <= not SI_OE_normal;
+  SI_TCDS_ENABLE <= not SI_TCDS_OE_normal;
 
 
 
@@ -768,12 +768,12 @@ begin  -- architecture structure
       SI5344_Ctrl.EN  => SI_ENABLE,
       SI5344_Ctrl.FPGA_PLL_RESET => SI_init_reset,
       TCDS_Mon.REFCLK_LOCKED     => clk_TCDS_locked,
-      TCDS_Mon.SI5344.LOL        => SI_TCDS_LOL,
-      TCDS_Mon.SI5344.LOS        => SI_TCDS_LOS_XAXB,
-      TCDS_Mon.SI5344.INT        => SI_TCDS_INT ,
+      TCDS_Mon.SI5344.LOL        => not SI_TCDS_LOL,
+      TCDS_Mon.SI5344.LOS        => not SI_TCDS_LOS_XAXB,
+      TCDS_Mon.SI5344.INT        => not SI_TCDS_INT ,
       TCDS_Ctrl.TTC_SOURCE       => TTC_SRC_SEL,
       TCDS_Ctrl.SI5344.OE        => SI_TCDS_OUT_DIS,
-      TCDS_Ctrl.SI5344.EN        => SI_OE_normal,
+      TCDS_Ctrl.SI5344.EN        => SI_TCDS_OE_normal,
       Clocking_Mon    => Clocking_Mon,
       Clocking_Ctrl   => Clocking_Ctrl,
       CM1_C2C_Mon     => CM_C2C_Mon.CM(1),

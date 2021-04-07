@@ -36,8 +36,8 @@ entity top is
     FIXED_IO_ps_srstb : inout STD_LOGIC;
     
     ETH1_CLK          : out  std_logic;      
---    ETH1_INT_PWDN_N   :     std_logic;
-    ETH1_MDC          : out std_logic;      
+    ETH1_INT_PWDN_N   : in   std_logic;
+    ETH1_MDC          : out  std_logic;      
     ETH1_MDIO         : inout std_logic;     
     ETH1_RESET_N      : out std_logic; 
     ETH1A_COL_PL      : in  std_logic;  
@@ -328,7 +328,7 @@ architecture structure of top is
   signal AXI_MSTR_WMISO : AXIWriteMISO;
   
   --Monitoring
-  
+  signal ETH1_CLK_local : std_logic;        
   signal onbloard_clk_n : std_logic;
   signal onbloard_clk_p : std_logic;
   signal clk_200Mhz : std_logic;
@@ -400,6 +400,10 @@ architecture structure of top is
 
 begin  -- architecture structure
 
+  ETH1_CLK <= ETH1_CLK_local;
+  
+  ETH1_RESET_N <= '1';
+  
   --debugging start
   FP_1V8_GPIO <= "000000";
   EEPROM_WE_N <= '1';
@@ -449,7 +453,8 @@ begin  -- architecture structure
       SI_sda_o                  => SDA_o_phy,--SDA_o_normal,
       SI_sda_t                  => SDA_t_phy,--SDA_t_normal,
 
-      FCLK_CLK1_0               => ETH1_CLK,
+      FCLK_CLK1_0               => ETH1_CLK_local,
+      ENET1_EXT_INTIN_0         => ETH1_INT_PWDN_N,
       GMII_ETHERNET_1_0_col     => ETH1A_COL_PL,
       GMII_ETHERNET_1_0_crs     => ETH1A_CRS_PL,
       GMII_ETHERNET_1_0_rx_dv   => ETH1A_RXDV,
@@ -1072,5 +1077,16 @@ begin  -- architecture structure
       reset_A_async => axi_reset,
       event_b       => '1',
       rate          => Clocking_Mon.AXI_CLK_FREQ);
+
+
+  rate_counter_ETH1: entity work.rate_counter
+    generic map (
+      CLK_A_1_SECOND => 200000000)
+    port map (
+      clk_A         => clk_200Mhz,
+      clk_B         => ETH1_CLK_local,
+      reset_A_async => axi_reset,
+      event_b       => '1',
+      rate          => Clocking_Mon.ETH1_CLK_FREQ);
 
 end architecture structure;

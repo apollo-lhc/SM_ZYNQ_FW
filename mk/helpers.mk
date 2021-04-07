@@ -23,6 +23,7 @@ NOTIFY_DAN_GOOD:
 	${SLACK_MESG} "FINISHED building FW!"
 NOTIFY_DAN_BAD:
 	${SLACK_MESG} "FAILED to build FW!"
+	false
 
 #################################################################################
 # Help 
@@ -38,7 +39,7 @@ endef
 list:
 	@echo
 	@echo Apollo SM config:
-	$(call LIST_template,rev[[:digit:]]_)
+	$(call LIST_template,rev[[:digit:]][[:alpha:]]*_)
 	@echo
 	@echo Prebuilds:
 	$(call LIST_template,prebuild_)
