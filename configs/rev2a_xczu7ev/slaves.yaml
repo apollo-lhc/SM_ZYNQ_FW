@@ -235,3 +235,19 @@ AXI_SLAVES:
     XML:
       - "address_table/modules/INT_AXI_FW.xml"
     UHAL_BASE: 0x20000000
+
+  TCDS2:
+    TCL_CALL:
+      command: "AXI_PL_DEV_CONNECT"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "0xA0017000"
+        range: "4K"
+    XML:
+      - "address_table/modules/TCDS.xml"
+      - "address_table/modules/top_secret/ipbus_tcds2_interface_accessor.xml"
+      - "address_table/modules/top_secret/tcds2_ttc2_spy.xml"
+      - "address_table/modules/top_secret/tcds2_frame_spy.xml"
+      - "address_table/modules/top_secret/tcds2_tts2_spy.xml"
+    UHAL_BASE: 0x30000000
+    HDL: "src/TCDS"

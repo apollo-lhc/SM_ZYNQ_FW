@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!-- Corresponds to version 0 of the TTS2 protocol. -->
+
+<node id="tcds2_tts2_spy" fwinfo="endpoint; width=3">
+
+  <!-- The actual TTS values. -->
+  <node id="value_0"  address="0x00000000" mask="0x000000ff" permission="r" />
+  <node id="value_1"  address="0x00000001" mask="0x000000ff" permission="r" />
+  <node id="value_2"  address="0x00000002" mask="0x000000ff" permission="r" />
+  <node id="value_3"  address="0x00000003" mask="0x000000ff" permission="r" />
+  <node id="value_4"  address="0x00000004" mask="0x000000ff" permission="r" />
+  <node id="value_5"  address="0x00000005" mask="0x000000ff" permission="r" />
+  <node id="value_6"  address="0x00000006" mask="0x000000ff" permission="r" />
+  <node id="value_7"  address="0x00000007" mask="0x000000ff" permission="r" />
+  <node id="value_8"  address="0x00000008" mask="0x000000ff" permission="r" />
+  <node id="value_9"  address="0x00000009" mask="0x000000ff" permission="r" />
+  <node id="value_10" address="0x0000000a" mask="0x000000ff" permission="r" />
+  <node id="value_11" address="0x0000000b" mask="0x000000ff" permission="r" />
+  <node id="value_12" address="0x0000000c" mask="0x000000ff" permission="r" />
+  <node id="value_13" address="0x0000000d" mask="0x000000ff" permission="r" />
+
+  <!-- <!-\- Left-overs. -\-> -->
+  <!-- <node id="reserved0" address="0x00000001" mask="0xffffffff" permission="r" /> -->
+  <!-- <node id="reserved1" address="0x00000002" mask="0xffffffff" permission="r" /> -->
+  <!-- <node id="reserved2" address="0x00000003" mask="0xffffffff" permission="r" /> -->
+  <!-- <node id="reserved3" address="0x00000004" mask="0x00000fff" permission="r" /> -->
+
+</node>

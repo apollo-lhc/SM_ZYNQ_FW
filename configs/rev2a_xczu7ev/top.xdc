@@ -138,11 +138,11 @@ set_property -dict {PACKAGE_PIN AA6  IOSTANDARD LVCMOS18}               [get_por
 set_property -dict {PACKAGE_PIN AA5  IOSTANDARD LVCMOS18}               [get_ports {SI_LOL}]
 set_property -dict {PACKAGE_PIN AC6  IOSTANDARD LVCMOS18}               [get_ports {SI_LOS_XAXB}]
 
-set_property -dict {PACKAGE_PIN AC1  IOSTANDARD LVCMOS18}               [get_ports {SI_TCDS_INT}]      #ConnB  74 (ZX1: E7, XU8: AC1)
-set_property -dict {PACKAGE_PIN AB6  IOSTANDARD LVCMOS18}               [get_ports {SI_TCDS_OUT_DIS}]  #ConnB 130 (ZX1: D6, XU8: AB6)
-set_property -dict {PACKAGE_PIN AB5  IOSTANDARD LVCMOS18}               [get_ports {SI_TCDS_ENABLE}]   #ConnB 132 (ZX1: C6, XU8: AB5)
-set_property -dict {PACKAGE_PIN AD1  IOSTANDARD LVCMOS18}               [get_ports {SI_TCDS_LOL}]      #ConnB  84 (ZX1: F9, XU8: AD1)
-set_property -dict {PACKAGE_PIN AB1  IOSTANDARD LVCMOS18}               [get_ports {SI_TCDS_LOS_XAXB}] #ConnB  72 (ZX1: F8, XU8: AB1)
+set_property -dict {PACKAGE_PIN AC1  IOSTANDARD LVCMOS18}               [get_ports {SI_TCDS_INT}];      #ConnB  74 (ZX1: E7, XU8: AC1)
+set_property -dict {PACKAGE_PIN AB6  IOSTANDARD LVCMOS18}               [get_ports {SI_TCDS_OUT_DIS}];  #ConnB 130 (ZX1: D6, XU8: AB6)
+set_property -dict {PACKAGE_PIN AB5  IOSTANDARD LVCMOS18}               [get_ports {SI_TCDS_ENABLE}];   #ConnB 132 (ZX1: C6, XU8: AB5)
+set_property -dict {PACKAGE_PIN AD1  IOSTANDARD LVCMOS18}               [get_ports {SI_TCDS_LOL}];      #ConnB  84 (ZX1: F9, XU8: AD1)
+set_property -dict {PACKAGE_PIN AB1  IOSTANDARD LVCMOS18}               [get_ports {SI_TCDS_LOS_XAXB}]; #ConnB  72 (ZX1: F8, XU8: AB1)
 
 set_property -dict {PACKAGE_PIN Y7   IOSTANDARD LVCMOS18}               [get_ports {IPMC_IN[0]}]
 set_property -dict {PACKAGE_PIN AA7  IOSTANDARD LVCMOS18}               [get_ports {IPMC_IN[1]}]

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<node id="tcds2_interface_csr" fwinfo="endpoint; width=8">
+
+  <!-- Main control and status registers. -->
+  <node id="csr" address="0x00000020" fwinfo="endpoint; width=4">
+
+    <!-- Control. -->
+    <node id="control" address="0x00000000">
+      <!-- MGT resets. -->
+      <node id="mgt_reset_all"  address="0x00000000" mask="0x00000001" permission="rw" />
+      <node id="mgt_reset_tx"   address="0x00000000" mask="0x00000002" permission="rw" />
+      <node id="mgt_reset_rx"   address="0x00000000" mask="0x00000004" permission="rw" />
+
+      <node id="link_test_mode" address="0x00000000" mask="0x00000008" permission="rw" />
+
+      <!-- PRBS generator/checker resets. -->
+      <node id="prbs_gen_reset"  address="0x00000001" mask="0x00000001" permission="rw" />
+      <node id="prbs_chk_reset"  address="0x00000001" mask="0x00000002" permission="rw" />
+    </node>
+
+    <!-- Status. -->
+    <node id="status" address="0x00000008">
+      <!-- Flags representing the implementation choices of the TCDS2
+           interface and the CSR. -->
+      <node id="has_spy_registers"  address="0x00000000" mask="0x00000001" permission="r" />
+      <node id="is_link_speed_10g"  address="0x00000000" mask="0x00000002" permission="r" />
+      <node id="has_link_test_mode" address="0x00000000" mask="0x00000004" permission="r" />
+
+      <!-- MGT status. -->
+      <node id="mgt_power_good"          address="0x00000001" mask="0x00000001" permission="r" />
+      <node id="mgt_tx_pll_lock"         address="0x00000001" mask="0x00000002" permission="r" />
+      <node id="mgt_rx_pll_lock"         address="0x00000001" mask="0x00000004" permission="r" />
+      <node id="mgt_reset_tx_done"       address="0x00000001" mask="0x00000008" permission="r" />
+      <node id="mgt_reset_rx_done"       address="0x00000001" mask="0x00000010" permission="r" />
+      <node id="mgt_tx_ready"            address="0x00000001" mask="0x00000020" permission="r" />
+      <node id="mgt_rx_ready"            address="0x00000001" mask="0x00000040" permission="r" />
+      <node id="rx_frame_locked"         address="0x00000001" mask="0x00000080" permission="r" />
+      <node id="rx_frame_unlock_counter" address="0x00000002" mask="0xffffffff" permission="r" />
+
+      <node id="prbs_chk_error"          address="0x00000003" mask="0x00000002" permission="r" />
+      <node id="prbs_chk_locked"         address="0x00000003" mask="0x00000004" permission="r" />
+      <node id="prbs_chk_unlock_counter" address="0x00000004" mask="0xffffffff" permission="r" />
+
+      <node id="prbs_gen_o_hint" address="0x00000005" mask="0x000000ff" permission="r" />
+      <node id="prbs_chk_i_hint" address="0x00000005" mask="0x0000ff00" permission="r" />
+      <node id="prbs_chk_o_hint" address="0x00000005" mask="0x00ff0000" permission="r" />
+    </node>
+
+  </node>
+
+  <!-- Spy access to the raw TX (TTS2) and RX (TTC2) channels. -->
+  <node id="spy_frame_tx"
+        module="file://tcds2_frame_spy.xml"
+        address="0x00000040" />
+  <node id="spy_frame_rx"
+        module="file://tcds2_frame_spy.xml"
+        address="0x00000050" />
+
+  <!-- Spy access to both TTC2 channels. -->
+  <node id="spy_ttc2_channel0"
+        module="file://tcds2_ttc2_spy.xml"
+        address="0x00000060" />
+  <node id="spy_ttc2_channel1"
+        module="file://tcds2_ttc2_spy.xml"
+        address="0x00000070" />
+
+  <!-- Spy access to both TTS2 channels. -->
+  <node id="spy_tts2_channel0"
+        module="file://tcds2_tts2_spy.xml"
+        address="0x00000090" />
+  <node id="spy_tts2_channel1"
+        module="file://tcds2_tts2_spy.xml"
+        address="0x000000a0" />
+
+</node>
