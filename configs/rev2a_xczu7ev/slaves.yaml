@@ -241,7 +241,7 @@ AXI_SLAVES:
       command: "AXI_PL_DEV_CONNECT"
       axi_control: "${::AXI_MASTER_CTRL}"
       addr:
-        offset: "0xA0017000"
+        offset: "0xA0170000"
         range: "4K"
     XML:
       - "address_table/modules/TCDS.xml"

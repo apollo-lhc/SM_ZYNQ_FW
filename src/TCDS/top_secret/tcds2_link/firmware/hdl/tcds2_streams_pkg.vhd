@@ -156,11 +156,12 @@ package tcds2_streams_pkg is
   -- TTS2 constants and types.
   --==================================================
 
-  constant C_TCDS2_TTS2_VALUE_WIDTH : integer := 8;
+  constant C_TCDS2_TTS2_VALUE_WIDTH : integer := 7;
 
   -- For the moment this is based on the number of backplane slots
-  -- (i.e., 13) plus the connection to the DTH DAQ FPGA.
-  constant C_TCDS2_TTS2_NUM_VALUES : integer := 14;
+  -- (i.e., 13) plus the connections to the DTH DAQ FPGA and the
+  -- front-panel SFP, and one 'spare' value.
+  constant C_TCDS2_TTS2_NUM_VALUES : integer := 16;
 
   constant C_TCDS2_TTS2_VALUES_WIDTH : integer := C_TCDS2_TTS2_NUM_VALUES * C_TCDS2_TTS2_VALUE_WIDTH;
 
@@ -183,9 +184,9 @@ package tcds2_streams_pkg is
   constant C_TCDS2_TTS2_VALUE_BUSY    : tcds2_tts2_value := 16#04#;
   constant C_TCDS2_TTS2_VALUE_READY   : tcds2_tts2_value := 16#08#;
   constant C_TCDS2_TTS2_VALUE_ERROR   : tcds2_tts2_value := 16#0c#;
-  constant C_TCDS2_TTS2_VALUE_IGNORED : tcds2_tts2_value := 16#98#;
-  constant C_TCDS2_TTS2_VALUE_FAILED  : tcds2_tts2_value := 16#ee#;
-  constant C_TCDS2_TTS2_VALUE_INVALID : tcds2_tts2_value := 16#ff#;
+  constant C_TCDS2_TTS2_VALUE_IGNORED : tcds2_tts2_value := 16#18#;
+  constant C_TCDS2_TTS2_VALUE_FAILED  : tcds2_tts2_value := 16#1e#;
+  constant C_TCDS2_TTS2_VALUE_INVALID : tcds2_tts2_value := 16#1f#;
 
   constant C_TCDS2_TTS2_NULL    : tcds2_tts2 := (others => C_TCDS2_TTS2_VALUE_IGNORED);
   constant C_TCDS2_TTS2_READY   : tcds2_tts2 := (others => C_TCDS2_TTS2_VALUE_READY);

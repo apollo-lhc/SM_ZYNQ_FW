@@ -7,10 +7,11 @@ library ieee;
 use ieee.std_logic_1164.all;
 -- use ieee.numeric_std.all;
 
-use work.tclink_lpgbt10G_pkg.all;
+use work.tclink_lpgbt_pkg.all;
 
 use work.tcds2_interface_pkg.all;
 use work.tcds2_link_pkg.all;
+use work.tcds2_link_medium_pkg.all;
 use work.tcds2_link_speed_pkg.all;
 use work.tcds2_streams_pkg.all;
 
@@ -20,6 +21,12 @@ entity tcds2_interface_with_mgt is
   generic (
     -- Choice of transceiver (US or USP, and GTH or GTY).
     G_MGT_TYPE : mgt_type_t;
+
+    -- Choice of link medium:
+    -- - TCDS2_LINK_MEDIUM_ELECTRICAL for optical links.
+    -- - TCDS2_LINK_MEDIUM_OPTICAL for electrical (e.g., backplane)
+    --   links.
+    G_LINK_MEDIUM : tcds2_link_medium_t := TCDS2_LINK_MEDIUM_ELECTRICAL;
 
     -- Choice of link line rate:
     -- - TCDS2_LINK_SPEED_10G for 10 Gb/s (i.e., the production
@@ -46,10 +53,11 @@ entity tcds2_interface_with_mgt is
     mgt_rx_p_i : in std_logic;
     mgt_rx_n_i : in std_logic;
 
-    -- MGT reference clock input.
+    -- MGT reference clock inputs.
     -- NOTE: This should come from an ibufds_gte3/4 compatible with
     -- the connected transceiver.
-    clk_320_mgt_ref_i : in std_logic;
+    clk_320_mgt_tx_ref_i : in std_logic;
+    clk_320_mgt_rx_ref_i : in std_logic;
 
     -- LHC bunch clock output.
     -- NOTE: This clock originates from a BUFGCE_DIV and is intended
@@ -88,6 +96,9 @@ architecture arch of tcds2_interface_with_mgt is
   signal mgt_clk_ctrl : tr_clk_to_mgt;
   signal mgt_clk_stat : tr_mgt_to_clk;
 
+  attribute mark_debug : string;
+  attribute mark_debug of mgt_stat : signal is "true";
+
 begin
 
   ------------------------------------------
@@ -96,6 +107,7 @@ begin
 
   tcds2_interface : entity work.tcds2_interface
     generic map (
+      G_LINK_MEDIUM            => G_LINK_MEDIUM,
       G_LINK_SPEED             => G_LINK_SPEED,
       G_INCLUDE_PRBS_LINK_TEST => G_INCLUDE_PRBS_LINK_TEST
     )
@@ -136,13 +148,15 @@ begin
     port map (
       -- Quad.
       gtwiz_reset_clk_freerun_in(0)         => clk_sys_125mhz,
-      gtwiz_reset_all_in(0)                 => mgt_ctrl.mgt_reset_all(0),
-      gtwiz_reset_tx_pll_and_datapath_in(0) => mgt_ctrl.mgt_reset_tx_pll_and_datapath(0),
-      gtwiz_reset_rx_pll_and_datapath_in(0) => mgt_ctrl.mgt_reset_rx_pll_and_datapath(0),
-      gtwiz_reset_tx_datapath_in(0)         => std_logic'('0'),
-      gtwiz_reset_rx_datapath_in(0)         => std_logic'('0'),
-      gtrefclk00_in(0)                      => clk_320_mgt_ref_i,
-      gtrefclk01_in(0)                      => clk_320_mgt_ref_i,
+
+      gtwiz_reset_all_in                    => mgt_ctrl.gtwiz_reset_all_in,
+      gtwiz_reset_tx_pll_and_datapath_in    => mgt_ctrl.gtwiz_reset_tx_pll_and_datapath_in,
+      gtwiz_reset_rx_pll_and_datapath_in    => mgt_ctrl.gtwiz_reset_rx_pll_and_datapath_in,
+      gtwiz_reset_tx_datapath_in            => mgt_ctrl.gtwiz_reset_tx_datapath_in,
+      gtwiz_reset_rx_datapath_in            => mgt_ctrl.gtwiz_reset_rx_datapath_in,
+
+      gtrefclk00_in(0)                      => clk_320_mgt_tx_ref_i,
+      gtrefclk01_in(0)                      => clk_320_mgt_rx_ref_i,
       qpll0outclk_out                       => open,
       qpll0outrefclk_out                    => open,
       qpll1outclk_out                       => open,

@@ -26,11 +26,13 @@ entity tcds2_interface_mgt is
   port (
     -- Quad.
     gtwiz_reset_clk_freerun_in         : in  std_logic_vector(0 downto 0);
+
     gtwiz_reset_all_in                 : in  std_logic_vector(0 downto 0);
     gtwiz_reset_tx_pll_and_datapath_in : in  std_logic_vector(0 downto 0);
     gtwiz_reset_rx_pll_and_datapath_in : in  std_logic_vector(0 downto 0);
     gtwiz_reset_tx_datapath_in         : in  std_logic_vector(0 downto 0);
     gtwiz_reset_rx_datapath_in         : in  std_logic_vector(0 downto 0);
+
     gtrefclk00_in                      : in  std_logic_vector(0 downto 0);
     gtrefclk01_in                      : in  std_logic_vector(0 downto 0);
     qpll0outclk_out                    : out std_logic_vector(0 downto 0);
@@ -117,11 +119,13 @@ begin
         port map (
           -- Quad.
           gtwiz_reset_clk_freerun_in         => gtwiz_reset_clk_freerun_in,
+
           gtwiz_reset_all_in                 => gtwiz_reset_all_in,
           gtwiz_reset_tx_pll_and_datapath_in => gtwiz_reset_tx_pll_and_datapath_in,
           gtwiz_reset_rx_pll_and_datapath_in => gtwiz_reset_rx_pll_and_datapath_in,
           gtwiz_reset_tx_datapath_in         => gtwiz_reset_tx_datapath_in,
           gtwiz_reset_rx_datapath_in         => gtwiz_reset_rx_datapath_in,
+
           gtrefclk00_in                      => gtrefclk00_in,
           gtrefclk01_in                      => gtrefclk01_in,
           qpll0outclk_out                    => qpll0outclk_out,
@@ -198,7 +202,7 @@ begin
     end generate;
 
     if_10g : if G_LINK_SPEED = TCDS2_LINK_SPEED_10G generate
-      mgt : entity work.gthe3_slave_timing
+      mgt : entity work.gthe3_slave_timing_10g
         port map (
           -- Quad.
           gtwiz_reset_clk_freerun_in         => gtwiz_reset_clk_freerun_in,
@@ -373,7 +377,7 @@ begin
     end generate;
 
     if_10g : if G_LINK_SPEED = TCDS2_LINK_SPEED_10G generate
-      mgt : entity work.gtye3_slave_timing
+      mgt : entity work.gtye3_slave_timing_10g
         port map (
           -- Quad.
           gtwiz_reset_clk_freerun_in         => gtwiz_reset_clk_freerun_in,
@@ -548,7 +552,7 @@ begin
     end generate;
 
     if_10g : if G_LINK_SPEED = TCDS2_LINK_SPEED_10G generate
-      mgt : entity work.gthe4_slave_timing
+      mgt : entity work.gthe4_slave_timing_10g
         port map (
           -- Quad.
           gtwiz_reset_clk_freerun_in         => gtwiz_reset_clk_freerun_in,
@@ -723,7 +727,7 @@ begin
     end generate;
 
     if_10g : if G_LINK_SPEED = TCDS2_LINK_SPEED_10G generate
-      mgt : entity work.gtye4_slave_timing
+      mgt : entity work.gtye4_slave_timing_10g
         port map (
           -- Quad.
           gtwiz_reset_clk_freerun_in         => gtwiz_reset_clk_freerun_in,

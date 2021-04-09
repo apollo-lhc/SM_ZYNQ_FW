@@ -58,6 +58,9 @@ entity top is
     CLK_TTC_P         : in  std_logic;
     CLK_TTC_N         : in  std_logic;
 
+    CLK_REC_OUT_P     : out std_logic;
+    CLK_REC_OUT_N     : out std_logic;
+    
 --    TTC_P             : in  std_logic;
 --    TTC_N             : in  std_logic;
 --    TTS_P             : out std_logic;
@@ -92,7 +95,7 @@ entity top is
 
     -------------------------------------
     -- GPIOs Zynq
-    GPIO              : out std_logic_vector(7 downto 0);
+    GPIO              : out std_logic_vector(7 downto 1); --0 is MIO
 
     -----------------------------------------------------------------------------
     -- CM interface
@@ -182,7 +185,22 @@ entity top is
  
     -------------------------------------------------------------------------------------------
     -- MGBT 2
-    -------------------------------------------------------------------------------------------
+    -----------------------------------------------------------------------------------------
+
+
+    REFCLK_CMS_P            : in std_logic_vector(1 downto 0);
+    REFCLK_CMS_N            : in std_logic_vector(1 downto 0);
+
+    REFCLK_REC_P            : in std_logic;
+    REFCLK_REC_N            : in std_logic;
+    
+    TCDS_TTC_P              : in  std_logic;
+    TCDS_TTC_N              : in  std_logic;
+    TCDS_TTS_P              : out std_logic;
+    TCDS_TTS_N              : out std_logic;
+
+    
+--
 --    AXI_C2C_CM1_Rx_P      : in    std_logic_vector(1 to 1);
 --    AXI_C2C_CM1_Rx_N      : in    std_logic_vector(1 to 1);
 --    AXI_C2C_CM1_Tx_P      : out   std_logic_vector(1 to 1);
@@ -228,6 +246,7 @@ architecture structure of top is
         -- Clock out ports
         clk_200Mhz          : out    std_logic;
         clk_50Mhz          : out    std_logic;
+        clk_125Mhz          : out    std_logic;
         -- Status and control signals
         reset             : in     std_logic;
         locked            : out    std_logic;
@@ -288,7 +307,7 @@ architecture structure of top is
   
 -- AXI BUS
   signal AXI_clk : std_logic;
-  constant PL_AXI_SLAVE_COUNT : integer := 7;
+  constant PL_AXI_SLAVE_COUNT : integer := 8;
   signal AXI_BUS_RMOSI :  AXIReadMOSI_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIReadMOSI);
   signal AXI_BUS_RMISO :  AXIReadMISO_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIReadMISO);
   signal AXI_BUS_WMOSI : AXIWriteMOSI_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIWriteMOSI);
@@ -306,7 +325,8 @@ architecture structure of top is
   signal clk_200Mhz : std_logic;
   signal reset_200Mhz : std_logic;
   signal clk_200Mhz_locked : std_logic;
-
+  signal clk_125Mhz : std_logic;
+  
   signal SDA_i_phy : std_logic;
   signal SDA_o_phy : std_logic;
   signal SDA_t_phy : std_logic;
@@ -383,7 +403,7 @@ begin  -- architecture structure
   FP_1V8_GPIO <= "000000";
   EEPROM_WE_N <= '1';
 
-  GPIO  <= x"00";
+  GPIO  <= "0000000";
   ZYNQ_BOOT_DONE <= linux_booted;
   IPMC_OUT <= "00";
   
@@ -568,6 +588,26 @@ begin  -- architecture structure
       PLXVC_wstrb                => AXI_BUS_WMOSI(6).data_write_strobe,
       PLXVC_wvalid               => AXI_BUS_WMOSI(6).data_valid,
 
+      TCDS2_araddr                => AXI_BUS_RMOSI(7).address,
+      TCDS2_arprot                => AXI_BUS_RMOSI(7).protection_type,
+      TCDS2_arready               => AXI_BUS_RMISO(7).ready_for_address,
+      TCDS2_arvalid               => AXI_BUS_RMOSI(7).address_valid,
+      TCDS2_awaddr                => AXI_BUS_WMOSI(7).address,
+      TCDS2_awprot                => AXI_BUS_WMOSI(7).protection_type,
+      TCDS2_awready               => AXI_BUS_WMISO(7).ready_for_address,
+      TCDS2_awvalid               => AXI_BUS_WMOSI(7).address_valid,
+      TCDS2_bready                => AXI_BUS_WMOSI(7).ready_for_response,
+      TCDS2_bresp                 => AXI_BUS_WMISO(7).response,
+      TCDS2_bvalid                => AXI_BUS_WMISO(7).response_valid,
+      TCDS2_rdata                 => AXI_BUS_RMISO(7).data,
+      TCDS2_rready                => AXI_BUS_RMOSI(7).ready_for_data,
+      TCDS2_rresp                 => AXI_BUS_RMISO(7).response,
+      TCDS2_rvalid                => AXI_BUS_RMISO(7).data_valid,
+      TCDS2_wdata                 => AXI_BUS_WMOSI(7).data,
+      TCDS2_wready                => AXI_BUS_WMISO(7).ready_for_data,
+      TCDS2_wstrb                 => AXI_BUS_WMOSI(7).data_write_strobe,
+      TCDS2_wvalid                => AXI_BUS_WMOSI(7).data_valid,
+
       init_clk        =>  AXI_C2C_aurora_init_clk,
       C2C1_phy_Rx_rxn =>  AXI_C2C_CM1_Rx_N(0 to 0),
       C2C1_phy_Rx_rxp =>  AXI_C2C_CM1_Rx_P(0 to 0),
@@ -728,6 +768,7 @@ begin  -- architecture structure
     port map (
       clk_200Mhz => clk_200Mhz,
       clk_50Mhz  => AXI_C2C_aurora_init_clk,
+      clk_125Mhz  => clk_125Mhz,
       reset      =>  SI_init_reset,--'0',
       locked     => clk_200Mhz_locked,
       clk_in1_n  => onboard_clk_n,
@@ -988,5 +1029,32 @@ begin  -- architecture structure
       reset_A_async => axi_reset,
       event_b       => '1',
       rate          => Clocking_Mon.AXI_CLK_FREQ);
+
+
+
+
+  
+  TCDS_1: entity work.TCDS
+    port map (
+      clk_axi           => axi_clk,
+      reset_axi_n       => pl_reset_n,
+      slave_readMOSI    => AXI_BUS_RMOSI(7),
+      slave_readMISO    => AXI_BUS_RMISO(7),
+      slave_writeMOSI   => AXI_BUS_WMOSI(7),
+      slave_writeMISO   => AXI_BUS_WMISO(7),
+      clk_sys_125mhz    => clk_125mhz,
+      mgt_tx_p_o        => TCDS_TTS_P,
+      mgt_tx_n_o        => TCDS_TTS_N,
+      mgt_rx_p_i        => TCDS_TTC_P,
+      mgt_rx_n_i        => TCDS_TTC_N,
+      clk_TCDS_REC_in_p  => REFCLK_REC_P,
+      clk_TCDS_REC_in_n  => REFCLK_REC_N,
+      clk_TCDS_320_in_p  => REFCLK_CMS_P,
+      clk_TCDS_320_in_n  => REFCLK_CMS_N,      
+      clk_TCDS_REC_out_p => CLK_REC_OUT_P,
+      clk_TCDS_REC_out_n => CLK_REC_OUT_N,
+      clk_TCDS           => open
+      );
+
 
 end architecture structure;

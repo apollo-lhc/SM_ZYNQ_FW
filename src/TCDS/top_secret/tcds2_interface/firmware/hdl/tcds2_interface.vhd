@@ -9,10 +9,11 @@ use ieee.numeric_std.all;
 library unisim;
 use unisim.vcomponents.all;
 
-use work.tclink_lpgbt10G_pkg.all;
+use work.tclink_lpgbt_pkg.all;
 
 use work.tcds2_interface_pkg.all;
 use work.tcds2_link_pkg.all;
+use work.tcds2_link_medium_pkg.all;
 use work.tcds2_link_speed_pkg.all;
 use work.tcds2_streams_pkg.all;
 
@@ -20,6 +21,12 @@ use work.tcds2_streams_pkg.all;
 
 entity tcds2_interface is
   generic (
+    -- Choice of link medium:
+    -- - TCDS2_LINK_MEDIUM_ELECTRICAL for optical links.
+    -- - TCDS2_LINK_MEDIUM_OPTICAL for electrical (e.g., backplane)
+    --   links.
+    G_LINK_MEDIUM : tcds2_link_medium_t := TCDS2_LINK_MEDIUM_ELECTRICAL;
+
     -- Choice of link line rate:
     -- - TCDS2_LINK_SPEED_10G for 10 Gb/s (i.e., the production
     --   version).
@@ -48,7 +55,7 @@ entity tcds2_interface is
 
     -- LHC bunch clock output.
     -- NOTE: This clock originates from a BUFGCE_DIV and is intended
-    -- for use in the FPGA clocking fabric.
+    -- for use in the FPGA logic.
     clk_40_o : out std_logic;
 
     -- LHC bunch clock ODDR outputs.
@@ -89,10 +96,11 @@ architecture arch of tcds2_interface is
   signal mgt_txoutclk : std_logic;
   signal mgt_rxoutclk : std_logic;
 
-  -- TCLink core control and status signals.
+  -- TCLink control and status signals.
   signal core_ctrl   : tr_core_control;
   signal core_stat   : tr_core_status;
   signal tclink_ctrl : tr_tclink_control;
+  signal tclink_stat : tr_tclink_status;
 
   -- TCDS2 TTC2/TTS2 frame signals.
   signal frame_ttc2 : tcds2_frame_t;
@@ -110,26 +118,29 @@ architecture arch of tcds2_interface is
 
   -- Misc.
   signal rx_frame_unlock_count : std_logic_vector(31 downto 0);
-  signal rx_frame_locked_40 : std_logic;
   signal rx_frame_locked_320 : std_logic;
   signal not_rx_frame_locked_320 : std_logic;
-  signal is_link_speed_10g : boolean;
-  signal has_link_test_mode : boolean;
+
+  -- The tcds2_interface is a follower, not a leader.
+  constant C_IS_LINK_LEADER : boolean := false;
+
+  -- The MGT connected to the tcds2_interface is expected to be in
+  -- control of its QUAD.
+  constant C_IS_QUAD_LEADER : boolean := true;
+
+  constant C_IS_LINK_MEDIUM_OPTICAL : boolean := is_link_medium_optical(G_LINK_MEDIUM);
+  constant C_IS_LINK_SPEED_10G : boolean := is_link_speed_10g(G_LINK_SPEED);
+
+  constant C_HAS_LINK_TEST_MODE : boolean := G_INCLUDE_PRBS_LINK_TEST;
   signal is_link_test_mode : boolean;
   signal is_link_test_mode_tmp : std_logic;
-
-  -- Control signals.
-  signal reset_all : std_logic;
-  signal reset_tx : std_logic;
-  signal reset_rx : std_logic;
-  -- signal force_loopback : std_logic;
 
   ------------------------------------------
   -- PRBS-related settings and signals.
   ------------------------------------------
 
-  constant C_TCDS2_INTERFACE_FRAME_WIDTH : natural := get_tcds2_frame_width(G_LINK_SPEED);
-  constant C_TCDS2_INTERFACE_DATA_RATE : natural := get_tcds2_tclink_data_rate(G_LINK_SPEED);
+  constant C_TCDS2_INTERFACE_FRAME_WIDTH : natural
+    := fcn_protocol_tx_width(get_tclink_protocol(G_LINK_SPEED));
 
   constant C_PRBS_FRAME_WIDTH : natural := C_TCDS2_INTERFACE_FRAME_WIDTH;
   subtype prbs_frame is std_logic_vector(C_PRBS_FRAME_WIDTH - 1 downto 0);
@@ -169,43 +180,47 @@ begin
   -- Control and status mapping.
   ------------------------------------------
 
-  reset_all <= ctrl_i.mgt_reset_all;
-  reset_tx  <= ctrl_i.mgt_reset_tx;
-  reset_rx  <= ctrl_i.mgt_reset_rx;
+  core_ctrl   <= ctrl_i.link_control.tclink_core_control;
+  tclink_ctrl <= ctrl_i.link_control.tclink_control;
 
   is_link_test_mode_tmp <= ctrl_i.link_test_mode;
 
   prbsgen_reset_manual <= ctrl_i.prbsgen_reset;
   prbschk_reset_manual <= ctrl_i.prbschk_reset;
 
-  stat_o.is_link_speed_10g <= '1' when is_link_speed_10g
-                              else '0';
-  stat_o.has_link_test_mode <= '1' when has_link_test_mode
+  ----------
+
+  stat_o.has_link_test_mode <= '1' when C_HAS_LINK_TEST_MODE
                                else '0';
 
-  stat_o.mgt_powergood         <= core_stat.mgt_powergood;
-  stat_o.mgt_txpll_lock        <= core_stat.mgt_txpll_lock;
-  stat_o.mgt_rxpll_lock        <= core_stat.mgt_rxpll_lock;
-  stat_o.mgt_reset_tx_done     <= core_stat.mgt_reset_tx_done;
-  stat_o.mgt_reset_rx_done     <= core_stat.mgt_reset_rx_done;
-  stat_o.mgt_tx_ready          <= core_stat.mgt_tx_ready;
-  stat_o.mgt_rx_ready          <= core_stat.mgt_rx_ready;
-  stat_o.rx_frame_locked       <= core_stat.rx_frame_locked;
-  stat_o.rx_frame_unlock_count <= rx_frame_unlock_count;
+  stat_o.link_status.is_link_medium_optical <= '1' when C_IS_LINK_MEDIUM_OPTICAL
+                                               else '0';
+  stat_o.link_status.is_link_speed_10g <= '1' when C_IS_LINK_SPEED_10G
+                                          else '0';
+  stat_o.link_status.is_leader <= '1' when C_IS_LINK_LEADER
+                                  else '0';
+  stat_o.link_status.is_quad_leader <= '1' when C_IS_QUAD_LEADER
+                                          else '0';
+  stat_o.link_status.is_mgt_mode_lpm <= core_ctrl.mgt_rxeq_rxlpmen;
 
-  stat_o.prbschk_error  <= prbschk_error when has_link_test_mode
+  stat_o.link_status.tclink_core_status <= core_stat;
+  stat_o.link_status.tclink_status      <= tclink_stat;
+
+  stat_o.link_status.channel_unlock_count <= rx_frame_unlock_count;
+
+  stat_o.prbschk_error  <= prbschk_error when C_HAS_LINK_TEST_MODE
                            else '0';
-  stat_o.prbschk_locked <= prbschk_locked when has_link_test_mode
+  stat_o.prbschk_locked <= prbschk_locked when C_HAS_LINK_TEST_MODE
                            else '0';
 
-  stat_o.prbschk_unlock_count <= prbschk_unlock_count when has_link_test_mode
+  stat_o.prbschk_unlock_count <= prbschk_unlock_count when C_HAS_LINK_TEST_MODE
                                  else (others => '0');
 
-  stat_o.prbsgen_o_hint <= prbsgen_frame(stat_o.prbsgen_o_hint'range) when has_link_test_mode
+  stat_o.prbsgen_o_hint <= prbsgen_frame(stat_o.prbsgen_o_hint'range) when C_HAS_LINK_TEST_MODE
                            else (others => '0');
-  stat_o.prbschk_i_hint <= prbschk_frame(stat_o.prbschk_i_hint'range) when has_link_test_mode
+  stat_o.prbschk_i_hint <= prbschk_frame(stat_o.prbschk_i_hint'range) when C_HAS_LINK_TEST_MODE
                            else (others => '0');
-  stat_o.prbschk_o_hint <= prbschk_gen(stat_o.prbschk_o_hint'range) when has_link_test_mode
+  stat_o.prbschk_o_hint <= prbschk_gen(stat_o.prbschk_o_hint'range) when C_HAS_LINK_TEST_MODE
                            else (others => '0');
 
   stat_o.frame_tx <= frame_tx;
@@ -216,11 +231,10 @@ begin
   stat_o.channel0_tts2 <= channel0_tts2;
   stat_o.channel1_tts2 <= channel1_tts2;
 
-  is_link_speed_10g <= true when G_LINK_SPEED = TCDS2_LINK_SPEED_10G
+  ----------
+
+  is_link_test_mode <= true when C_HAS_LINK_TEST_MODE and is_link_test_mode_tmp = '1'
                        else false;
-  has_link_test_mode <= G_INCLUDE_PRBS_LINK_TEST;
-  is_link_test_mode <= true when has_link_test_mode and is_link_test_mode_tmp = '1'
-                       else False;
 
   ------------------------------------------
   -- Transceiver user clock network.
@@ -245,55 +259,52 @@ begin
   mgt_rxoutclk <= mgt_clk_stat_i.rxoutclk;
 
   ------------------------------------------
-  -- The TCLink.
+  -- TCLink cores.
   ------------------------------------------
 
-  tclink : entity work.tclink_lpgbt10G
+  -- The TCLink.
+  tclink : entity work.tclink_lpgbt
     generic map (
-      G_MASTER_NSLAVE               => false,
+      -- The tcds2_interface is always on the receiving end of a TCDS2
+      -- link.
+      G_MASTER_NSLAVE               => C_IS_LINK_LEADER,
+      G_QUAD_LEADER                 => C_IS_QUAD_LEADER,
       G_MASTER_TCLINK_TESTER_ENABLE => false,
-      G_USER_DATA_WIDTH             => C_TCDS2_INTERFACE_FRAME_WIDTH,
-      G_DATA_RATE                   => C_TCDS2_INTERFACE_DATA_RATE
+      G_PROTOCOL                    => get_tclink_protocol(G_LINK_SPEED)
     )
     port map (
-      clk_sys_i                  => clk_sys_125mhz,
-      reset_all_i                => reset_rx,
-      core_ctrl_i                => core_ctrl,
-      core_stat_o                => core_stat,
+      -- System clock/resets.
+      clk_sys_i   => clk_sys_125mhz,
+
+      -- Core control/status. (Synchronous to clk_sys_i.)
+      core_ctrl_i => core_ctrl,
+      core_stat_o => core_stat,
+
+      -- TCLink business.
       master_tclink_clk_offset_i => '0',
       master_tclink_ctrl_i       => tclink_ctrl,
-      master_tclink_stat_o       => open,
-      slave_clk40_oddr_o         => clk_40_oddr_d,
-      tx_clk40_i                 => clk_40,
-      tx_clk40_stable_i          => '1',
-      tx_data_i                  => frame_tx,
-      rx_clk40_i                 => clk_40,
-      rx_clk40_stable_i          => '1',
-      rx_data_o                  => frame_rx,
-      mgt_txclk_i                => txusrclk,
-      mgt_rxclk_i                => rxusrclk,
-      mgt_ctrl_o                 => mgt_ctrl_o,
-      mgt_stat_i                 => mgt_stat_i
-    );
+      master_tclink_stat_o       => tclink_stat,
 
-  -- NOTE: The TX and RX resets follow different paths!
-  mgt_ctrl_o.mgt_reset_all <= (others => reset_all);
-  mgt_ctrl_o.mgt_reset_tx_pll_and_datapath  <= (others => reset_tx);
-  core_ctrl.mgt_slave_reset_rx_pll_and_datapath <= reset_rx;
+      -- Recovered clock.
+      slave_clk40_oddr_o => clk_40_oddr_d,
 
-  -- TODO TODO TODO
-  core_ctrl.mgt_rxeq_rxlpmen     <= '0';
-  core_ctrl.phase_cdc40_tx_calib <= (others => '0');
-  core_ctrl.phase_cdc40_tx_force <= '0';
-  core_ctrl.phase_cdc40_rx_calib <= (others => '0');
-  core_ctrl.phase_cdc40_rx_force <= '0';
-  -- TODO TODO TODO end
+      -- MMCM status (which only exists for the master).
+      mmcm_locked_i => '0',
 
-  rx_frame_locked_bit_sync_40 : entity work.bit_synchronizer
-    port map (
-      clk_in => clk_40,
-      i_in   => core_stat.rx_frame_locked,
-      o_out  => rx_frame_locked_40
+      -- User data.
+      tx_clk40_i        => clk_40,
+      tx_clk40_stable_i => '1',
+      tx_data_i         => frame_tx,
+
+      rx_clk40_i        => clk_40,
+      rx_clk40_stable_i => '1',
+      rx_data_o         => frame_rx,
+
+      -- MGT interface.
+      mgt_txclk_i => txusrclk,
+      mgt_rxclk_i => rxusrclk,
+      mgt_ctrl_o  => mgt_ctrl_o,
+      mgt_stat_i  => mgt_stat_i
     );
 
   ------------------------------------------
@@ -321,35 +332,23 @@ begin
     port map (
       i   => clk_320,
       o   => clk_40,
-      ce  => rx_frame_locked_320,
+      ce  => '1', --rx_frame_locked_320,
       clr => not_rx_frame_locked_320
     );
 
-  -- TODO TODO TODO
-  -- This still needs a bit of work.
-  -- bufgce_clk_40_tx : bufgce_div
-  --   generic map (
-  --     BUFGCE_DIVIDE => 8
-  --   )
-  --   port map (
-  --     i   => clk_320_tx,
-  --     o   => clk_40_tx,
-  --     ce  => '1', --rx_frame_locked_320,
-  --     clr => '0' --not_rx_frame_locked_320
-  --   );
-  -- clk_320_tx <= txusrclk;
-  -- TODO TODO TODO end
-
   -- Clock mapping.
   clk_320  <= rxusrclk;
-  clk_40_o <= clk_40;
+  -- BUG BUG BUG
+  -- clk_40_o <= clk_40;
+  clk_40_o <= clk_40_oddr_d;
+  -- BUG BUG BUG end
 
   clk_40_oddr_c_o  <= clk_320;
   clk_40_oddr_d1_o <= clk_40_oddr_d;
   clk_40_oddr_d2_o <= clk_40_oddr_d;
 
   ------------------------------------------
-  -- Link (i.e., frame) unlock counter.
+  -- Frame (i.e., link) unlock counter.
   ------------------------------------------
 
   rx_frame_unlock_cnt : entity work.unlock_counter
@@ -358,7 +357,7 @@ begin
     )
     port map (
       clk          => clk_sys_125mhz,
-      rst          => reset_rx,
+      rst          => core_ctrl.mgt_reset_rx_datapath,
       locked       => core_stat.rx_frame_locked,
       unlock_count => rx_frame_unlock_count
     );

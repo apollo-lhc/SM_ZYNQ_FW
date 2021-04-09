@@ -100,10 +100,6 @@ set_property -dict {PACKAGE_PIN G15  IOSTANDARD LVCMOS33}               [get_por
 # -------------------------------------------------------------------------------------------------
 # bank 33 & 34
 # -------------------------------------------------------------------------------------------------
-set_property -dict {PACKAGE_PIN AH6  IOSTANDARD LVDS}                   [get_ports {ONBOARD_CLK_P}]
-set_property -dict {PACKAGE_PIN AJ6  IOSTANDARD LVDS}                   [get_ports {ONBOARD_CLK_N}]
-create_clock -period 10.000 -name ONBOARD_CLK_P -add [get_ports ONBOARD_CLK_P]
-
 set_property -dict {PACKAGE_PIN AD7  IOSTANDARD LVDS}                   [get_ports {CLK_LHC_P}]
 set_property -dict {PACKAGE_PIN AE7  IOSTANDARD LVDS}                   [get_ports {CLK_LHC_N}]
 
@@ -151,10 +147,10 @@ set_property -dict {PACKAGE_PIN Y8   IOSTANDARD LVCMOS18}               [get_por
 set_property -dict {PACKAGE_PIN AC9  IOSTANDARD LVCMOS18}               [get_ports {IPMC_OUT[0]}]
 set_property -dict {PACKAGE_PIN AD9  IOSTANDARD LVCMOS18}               [get_ports {IPMC_OUT[1]}]
 
-set_property -dict {PACKAGE_PIN AA10 IOSTANDARD LVCMOS18}               [get_ports {GPIO[0]}]
-set_property -dict {PACKAGE_PIN Y1   IOSTANDARD LVCMOS18}               [get_ports {GPIO[1]}]
+#set_property -dict {PACKAGE_PIN   IOSTANDARD LVCMOS18}               [get_ports {GPIO[0]}]; # XU8: MIO41  ZX1: W19
+set_property -dict {PACKAGE_PIN AA10 IOSTANDARD LVCMOS18}               [get_ports {GPIO[1]}]
 set_property -dict {PACKAGE_PIN Y10  IOSTANDARD LVCMOS18}               [get_ports {GPIO[2]}]
-set_property -dict {PACKAGE_PIN AE3  IOSTANDARD LVCMOS18}               [get_ports {GPIO[3]}]
+set_property -dict {PACKAGE_PIN AD6  IOSTANDARD LVCMOS18}               [get_ports {GPIO[3]}];  #XU8: AD6  ZX1: B1
 set_property -dict {PACKAGE_PIN AD10 IOSTANDARD LVCMOS18}               [get_ports {GPIO[4]}]
 set_property -dict {PACKAGE_PIN AE4  IOSTANDARD LVCMOS18}               [get_ports {GPIO[5]}]
 set_property -dict {PACKAGE_PIN AD11 IOSTANDARD LVCMOS18}               [get_ports {GPIO[6]}]

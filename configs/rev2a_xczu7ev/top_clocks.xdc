@@ -14,6 +14,9 @@ set_property -dict {PACKAGE_PIN AB8  IOSTANDARD LVDS}                   [get_por
 set_property -dict {PACKAGE_PIN AC8  IOSTANDARD LVDS}                   [get_ports {CLK_TTC_P}]
 set_property -dict {PACKAGE_PIN AC7  IOSTANDARD LVDS}                   [get_ports {CLK_TTC_N}]
 
+set_property -dict {PACKAGE_PIN AE3  IOSTANDARD LVDS}                   [get_ports {CLK_REC_OUT_P}]; #XU8: AE3  ZX1: G4
+set_property -dict {PACKAGE_PIN  Y1  IOSTANDARD LVDS}                   [get_ports {CLK_REC_OUT_N}]; #XU8: Y1  ZX1: F4
+
 set_clock_groups -asynchronous												                                    \
 		 -group [get_clocks clk_pl_0      -include_generated_clocks]						                                    \
 		 -group [get_clocks clk_pl_1      -include_generated_clocks]						                                    \
