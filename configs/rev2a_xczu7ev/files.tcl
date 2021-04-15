@@ -91,6 +91,7 @@ set vhdl_files "\
      src/TCDS/tclink/firmware/source/tclink/tclink_controller/scaler.vhd \
      src/TCDS/tclink/firmware/source/tclink/tclink_controller/sigma_delta_modulator.vhd \
      src/TCDS/tclink/firmware/source/tclink/tclink_controller/tclink_controller.vhd \
+     src/TCDS/tclink/firmware/source/tclink/tclink_channel_controller.vhd \
      src/TCDS/tclink/firmware/source/tclink/tclink_phase_detector/dmtd_phase_meas.vhd \
      src/TCDS/tclink/firmware/source/tclink/tclink_phase_detector/dmtd_with_deglitcher.vhd \
      src/TCDS/tclink/firmware/source/tclink/tclink_phase_detector/gc_extend_pulse.vhd \
@@ -121,6 +122,11 @@ set vhdl_files "\
      src/TCDS/top_secret/tcds2_link/firmware/hdl/tcds2_streams_pkg.vhd \
      src/TCDS/top_secret/tcds2_link/firmware/hdl/tcds2_link_medium_pkg.vhd \
      src/TCDS/top_secret/tcds2_link/firmware/hdl/tcds2_link_csr_pkg.vhd \
+     src/TCDS/top_secret/constants/firmware/hdl/constants_tcds2.vhd \
+     src/TCDS/top_secret/board_and_fw_id/firmware/hdl/board_and_fw_id_pkg.vhd \
+     src/TCDS/TCDS_2_map.vhd \
+     src/TCDS/TCDS_2_PKG.vhd \
+     src/TCDS/TCDS.vhd \
      "
 
 set xdc_files "\

@@ -1,16 +1,20 @@
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
 use work.types.all;
+use work.AXIRegPkg.all; --for AXIReadMOSI, AXIReadMISO, AXIWriteMOSI, and AXIWriteMISO
 
-use work.tclink_lpgbt10G_pkg.all;
+--use work.tclink_lpgbt10G_pkg.all;
 
 use work.tcds2_interface_pkg.all;
 use work.tcds2_link_pkg.all;
 use work.tcds2_link_speed_pkg.all;
 use work.tcds2_streams_pkg.all;
 
-use work.TCDS2_CTRL.all;
+use work.TCDS_2_Ctrl.all;
+
+use work.tclink_lpgbt_pkg.all;
 
 entity TCDS is
   port (
@@ -46,35 +50,47 @@ entity TCDS is
 
     
     );
+end entity TCDS;
 
-  architecture behavioral of TCDS is
+architecture behavioral of TCDS is
 
-    signal Mon              :  TCDS2_Mon_t;
-    signal Ctrl             :  TCDS2_Ctrl_t;
+  signal Mon              :  TCDS_2_Mon_t;
+  signal Ctrl             :  TCDS_2_Ctrl_t;
 
-    -- Control and status interfaces.
-    signal ctrl_i : tcds2_interface_ctrl_t;
-    signal stat_o : tcds2_interface_stat_t;
-      
-    -- Transceiver control and status signals.
-    signal mgt_ctrl : tr_core_to_mgt;
-    signal mgt_stat : tr_mgt_to_core;
-    
-    -- User clock network control and status signals.
-    signal mgt_clk_ctrl : tr_clk_to_mgt;
-    signal mgt_clk_stat : tr_mgt_to_clk;
+  -- Control and status interfaces.
+  signal ctrl_i : tcds2_interface_ctrl_t;
+  signal stat_o : tcds2_interface_stat_t;
+  
+  -- Transceiver control and status signals.
+  signal mgt_ctrl : tr_core_to_mgt;
+  signal mgt_stat : tr_mgt_to_core;
+  
+  -- User clock network control and status signals.
+  signal mgt_clk_ctrl : tr_clk_to_mgt;
+  signal mgt_clk_stat : tr_mgt_to_clk;
 
-    -- LHC bunch clock ODDR outputs.
-    -- NOTE: These lines are intended to drive an ODDR1, in order to
-    -- extract the bunch clock from the FPGA.
-    signal clk_40_oddr_c  : std_logic;
-    signal clk_40_oddr_d1 : std_logic;
-    signal clk_40_oddr_d2 : std_logic;
+  -- LHC bunch clock ODDR outputs.
+  -- NOTE: These lines are intended to drive an ODDR1, in order to
+  -- extract the bunch clock from the FPGA.
+  signal clk_40_oddr_c  : std_logic;
+  signal clk_40_oddr_d1 : std_logic;
+  signal clk_40_oddr_d2 : std_logic;
+  signal clk_40_out     : std_logic;
 
-    signal clk_TCDS_320   : std_logic;
-    signal clk_TCDS_REC   : std_logic;
-      
-  begin
+  signal clk_TCDS_320   : std_logic;
+  signal clk_TCDS_REC   : std_logic;
+
+  -- TCDS2 channel 0 interface.
+  signal channel0_ttc2_o : tcds2_ttc2;
+  signal channel0_tts2_i : tcds2_tts2_value_array(0 downto 0);
+
+  -- TCDS2 channel 1 interface.
+  signal channel1_ttc2_o : tcds2_ttc2;
+  signal channel1_tts2_i : tcds2_tts2_value_array(0 downto 0);
+
+  constant zero : std_logic := '0';
+  
+begin
 
 
   ------------------------------------------
@@ -85,7 +101,7 @@ entity TCDS is
     generic map (
       G_LINK_SPEED             => TCDS2_LINK_SPEED_10G,
       G_INCLUDE_PRBS_LINK_TEST => true
-    )
+      )
     port map (
       ctrl_i => ctrl_i,
       stat_o => stat_o,
@@ -97,54 +113,56 @@ entity TCDS is
       mgt_clk_ctrl_o => mgt_clk_ctrl,
       mgt_clk_stat_i => mgt_clk_stat,
 
-      clk_40_o => clk_40_o,
+      clk_40_o => clk_TCDS,
 
-      clk_40_oddr_c_o  => clk_40_oddr_c_o,
-      clk_40_oddr_d1_o => clk_40_oddr_d1_o,
-      clk_40_oddr_d2_o => clk_40_oddr_d2_o,
+      clk_40_oddr_c_o  => clk_40_oddr_c,
+      clk_40_oddr_d1_o => clk_40_oddr_d1,
+      clk_40_oddr_d2_o => clk_40_oddr_d2,
 
-      orbit_o => orbit_o,
+      orbit_o => open,
 
       channel0_ttc2_o => channel0_ttc2_o,
       channel0_tts2_i => channel0_tts2_i,
 
       channel1_ttc2_o => channel1_ttc2_o,
       channel1_tts2_i => channel1_tts2_i
-    );
+      );
 
   ------------------------------------------
   -- The transceiver.
   ------------------------------------------
   TCDS_320 : ibufds_gte4
-      port map (
-          i   => clk_TCDS_320_in_p,
-          ib  => clk_TCDS_320_in_n,
-          o   => clk_TCDS_320,
-          ceb => '0'
-          );
+    port map (
+      i   => clk_TCDS_320_in_p,
+      ib  => clk_TCDS_320_in_n,
+      o   => clk_TCDS_320,
+      ceb => zero--'0'
+      );
   TCDS_REC : ibufds_gte4
-      port map (
-          i   => clk_TCDS_REC_in_p,
-          ib  => clk_TCDS_REC_in_n,
-          o   => clk_TCDS_REC,
-          ceb => '0'
-          );
+    port map (
+      i   => clk_TCDS_REC_in_p,
+      ib  => clk_TCDS_REC_in_n,
+      o   => clk_TCDS_REC,
+      ceb => zero--'0'
+      );
   
-    
+  
 
   mgt : entity work.tcds2_interface_mgt
     generic map (
       G_MGT_TYPE   => MGT_TYPE_GTHE3,
       G_LINK_SPEED => TCDS2_LINK_SPEED_10G
-    )
+      )
     port map (
       -- Quad.
       gtwiz_reset_clk_freerun_in(0)         => clk_sys_125mhz,
-      gtwiz_reset_all_in(0)                 => mgt_ctrl.mgt_reset_all(0),
-      gtwiz_reset_tx_pll_and_datapath_in(0) => mgt_ctrl.mgt_reset_tx_pll_and_datapath(0),
-      gtwiz_reset_rx_pll_and_datapath_in(0) => mgt_ctrl.mgt_reset_rx_pll_and_datapath(0),
-      gtwiz_reset_tx_datapath_in(0)         => std_logic('0'),
-      gtwiz_reset_rx_datapath_in(0)         => std_logic('0'),
+      gtwiz_reset_all_in                    => mgt_ctrl.gtwiz_reset_all_in,   
+      gtwiz_reset_tx_pll_and_datapath_in    => mgt_ctrl.gtwiz_reset_tx_pll_and_datapath_in,
+      gtwiz_reset_rx_pll_and_datapath_in    => mgt_ctrl.gtwiz_reset_rx_pll_and_datapath_in,
+      gtwiz_reset_tx_datapath_in            => mgt_ctrl.gtwiz_reset_tx_datapath_in,
+      gtwiz_reset_rx_datapath_in            => mgt_ctrl.gtwiz_reset_rx_datapath_in,
+
+
       gtrefclk00_in(0)                      => clk_TCDS_320,
       gtrefclk01_in(0)                      => clk_TCDS_REC,
       qpll0outclk_out                       => open,
@@ -217,178 +235,259 @@ entity TCDS is
       txn_out(0)                            => mgt_tx_n_o,
       rxn_in(0)                             => mgt_rx_p_i,
       rxp_in(0)                             => mgt_rx_n_i
-    );
+      );
 
 
-    -------------------------------------------------------------------------------
-    -- Recovered TCDS out
-    -------------------------------------------------------------------------------
-    -------------------------------------------------------------------------------
-    --Output LHC 40Mhz clock for Si chip input
-    --d1 & d2 for fancy phase work? 
-    oddr1_clk_40_out_pri : oddre1
-        generic map (
-            is_c_inverted  => '0',
-            is_d1_inverted => '0',
-            is_d2_inverted => '0',
-            srval          => '0'
-            )
-        port map (
-            sr => '0',
-            c  => clk_40_oddr_c,
-            d1 => clk_40_oddr_d1,
-            d2 => clk_40_oddr_d2,
-            q  => clk_40_out
-            );
-    obufds_clk_rec_out : obufds
-        port map (
-            I => clk_40_out,
-            O => clk_TCDS_REC_out_p,
-            OB => clk_TCDS_REC_out_n
-            );
+  -------------------------------------------------------------------------------
+  -- Recovered TCDS out
+  -------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------
+  --Output LHC 40Mhz clock for Si chip input
+  --d1 & d2 for fancy phase work? 
+  oddr1_clk_40_out_pri : oddre1
+    generic map (
+      is_c_inverted  => zero,--'0',
+      is_d1_inverted => zero,--'0',
+      is_d2_inverted => zero,--'0',
+      srval          => zero--'0'
+      )
+    port map (
+      sr => zero,--'0',
+      c  => clk_40_oddr_c,
+      d1 => clk_40_oddr_d1,
+      d2 => clk_40_oddr_d2,
+      q  => clk_40_out
+      );
+  obufds_clk_rec_out : obufds
+    port map (
+      I => clk_40_out,
+      O => clk_TCDS_REC_out_p,
+      OB => clk_TCDS_REC_out_n
+      );
 
 
 
-    
-    -------------------------------------------------------------------------------
-    -- AXI slave interface
-    -------------------------------------------------------------------------------
-    -------------------------------------------------------------------------------
-    TCDS2_interface_1: entity work.TCDS2_interface
-      port map (
-        clk_axi         => clk_axi,
-        reset_axi_n     => reset_axi_n,
-        slave_readMOSI  => slave_readMOSI,
-        slave_readMISO  => slave_readMISO,
-        slave_writeMOSI => slave_writeMOSI,
-        slave_writeMISO => slave_writeMISO,
-        Mon             => Mon,
-        Ctrl            => Ctrl);
-
-    
-    Mon.TCDS2.csr.status.has_spy_registers         <= stat_o.has_spy_registers;
-    Mon.TCDS2.csr.status.is_link_speed_10g         <= stat_o.is_link_speed_10g;
-    Mon.TCDS2.csr.status.has_link_test_mode        <= stat_o.has_link_test_mode;
-    Mon.TCDS2.csr.status.mgt_power_good            <= stat_o.mgt_powergood;
-    Mon.TCDS2.csr.status.mgt_tx_pll_lock           <= stat_o.mgt_txpll_lock;
-    Mon.TCDS2.csr.status.mgt_rx_pll_lock           <= stat_o.mgt_rxpll_lock;
-    Mon.TCDS2.csr.status.mgt_reset_tx_done         <= stat_o.mgt_reset_tx_done;
-    Mon.TCDS2.csr.status.mgt_reset_rx_done         <= stat_o.mgt_reset_rx_done;
-    Mon.TCDS2.csr.status.mgt_tx_ready              <= stat_o.mgt_tx_ready;
-    Mon.TCDS2.csr.status.mgt_rx_ready              <= stat_o.mgt_rx_ready;
-    Mon.TCDS2.csr.status.rx_frame_locked           <= stat_o.rx_frame_locked;
-    Mon.TCDS2.csr.status.rx_frame_unlock_counter   <= stat_o.rx_frame_unlock_count;
-    Mon.TCDS2.csr.status.prbs_chk_error            <= stat_o.prbschk_error;
-    Mon.TCDS2.csr.status.prbs_chk_locked           <= stat_o.prbschk_locked;
-    Mon.TCDS2.csr.status.prbs_chk_unlock_counter   <= stat_o.prbschk_unlock_count;
-    Mon.TCDS2.csr.status.prbs_gen_o_hint           <= stat_o.prbsgen_o_hint;
-    Mon.TCDS2.csr.status.prbs_chk_i_hint           <= stat_o.prbschk_i_hint;
-    Mon.TCDS2.csr.status.prbs_chk_o_hint           <= stat_o.prbschk_o_hint;
-        
-    Mon.TCDS2.spy_frame_tx.word0                   <= stat_o.frame_tx( 31 downto    0);
-    Mon.TCDS2.spy_frame_tx.word1                   <= stat_o.frame_tx( 63 downto   32);
-    Mon.TCDS2.spy_frame_tx.word2                   <= stat_o.frame_tx( 95 downto   64);
-    Mon.TCDS2.spy_frame_tx.word3                   <= stat_o.frame_tx(127 downto   96);
-    Mon.TCDS2.spy_frame_tx.word4                   <= stat_o.frame_tx(159 downto  128);
-    Mon.TCDS2.spy_frame_tx.word5                   <= stat_o.frame_tx(191 downto  160);
-    Mon.TCDS2.spy_frame_tx.word6                   <= stat_o.frame_tx(223 downto  192);
-    Mon.TCDS2.spy_frame_tx.word7                   <= stat_o.frame_tx(233 downto  224);
-
-    Mon.TCDS2.spy_frame_rx.word0                   <= stat_o.frame_rx( 31 downto    0);
-    Mon.TCDS2.spy_frame_rx.word1                   <= stat_o.frame_rx( 63 downto   32);
-    Mon.TCDS2.spy_frame_rx.word2                   <= stat_o.frame_rx( 95 downto   64);
-    Mon.TCDS2.spy_frame_rx.word3                   <= stat_o.frame_rx(127 downto   96);
-    Mon.TCDS2.spy_frame_rx.word4                   <= stat_o.frame_rx(159 downto  128);
-    Mon.TCDS2.spy_frame_rx.word5                   <= stat_o.frame_rx(191 downto  160);
-    Mon.TCDS2.spy_frame_rx.word6                   <= stat_o.frame_rx(223 downto  192);
-    Mon.TCDS2.spy_frame_rx.word7                   <= stat_o.frame_rx(233 downto  224);
-
-    Mon.TCDS2.spy_ttc2_channel0.l1a_info.physics        <= stat_o.channel0_ttc2.l1a_types.l1a_physics     ;
-    Mon.TCDS2.spy_ttc2_channel0.l1a_info.calibration    <= stat_o.channel0_ttc2.l1a_types.l1a_calibration ;
-    Mon.TCDS2.spy_ttc2_channel0.l1a_info.random         <= stat_o.channel0_ttc2.l1a_types.l1a_random      ;
-    Mon.TCDS2.spy_ttc2_channel0.l1a_info.software       <= stat_o.channel0_ttc2.l1a_types.l1a_software    ;
-    Mon.TCDS2.spy_ttc2_channel0.l1a_info.reserved_4     <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_4  ;
-    Mon.TCDS2.spy_ttc2_channel0.l1a_info.reserved_5     <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_5  ;
-    Mon.TCDS2.spy_ttc2_channel0.l1a_info.reserved_6     <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_6  ;
-    Mon.TCDS2.spy_ttc2_channel0.l1a_info.reserved_7     <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_7  ;
-    Mon.TCDS2.spy_ttc2_channel0.l1a_info.reserved_8     <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_8  ;
-    Mon.TCDS2.spy_ttc2_channel0.l1a_info.reserved_9     <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_9  ;
-    Mon.TCDS2.spy_ttc2_channel0.l1a_info.reserved_10    <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_10 ;
-    Mon.TCDS2.spy_ttc2_channel0.l1a_info.reserved_11    <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_11 ;
-    Mon.TCDS2.spy_ttc2_channel0.l1a_info.reserved_12    <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_12 ;
-    Mon.TCDS2.spy_ttc2_channel0.l1a_info.reserved_13    <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_13 ;
-    Mon.TCDS2.spy_ttc2_channel0.l1a_info.reserved_14    <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_14 ;
-    Mon.TCDS2.spy_ttc2_channel0.l1a_info.reserved_15    <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_15 ;
-    Mon.TCDS2.spy_ttc2_channel0.l1a_info.physics_subtype<= stat_o.channel0_ttc2.physics_l1a_subtypes;        
-    Mon.TCDS2.spy_ttc2_channel0.bril_trigger_info       <= stat_o.channel0_ttc2.bril_trigger_data;   
-    Mon.TCDS2.spy_ttc2_channel0.timing_and_sync_info.lo <= stat_o.channel0_ttc2.sync_flags_and_commands(31 downto  0);
-    Mon.TCDS2.spy_ttc2_channel0.timing_and_sync_info.hi <= stat_o.channel0_ttc2.sync_flags_and_commands(48 downto 32);
-    Mon.TCDS2.spy_ttc2_channel0.status_info             <= stat_o.channel0_ttc2.status;
-    Mon.TCDS2.spy_ttc2_channel0.reserved                <= stat_o.channel0_ttc2.reserved;
-
-    Mon.TCDS2.spy_ttc2_channel1.l1a_info.physics        <= stat_o.channel1_ttc2.l1a_types.l1a_physics     ;
-    Mon.TCDS2.spy_ttc2_channel1.l1a_info.calibration    <= stat_o.channel1_ttc2.l1a_types.l1a_calibration ;
-    Mon.TCDS2.spy_ttc2_channel1.l1a_info.random         <= stat_o.channel1_ttc2.l1a_types.l1a_random      ;
-    Mon.TCDS2.spy_ttc2_channel1.l1a_info.software       <= stat_o.channel1_ttc2.l1a_types.l1a_software    ;
-    Mon.TCDS2.spy_ttc2_channel1.l1a_info.reserved_4     <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_4  ;
-    Mon.TCDS2.spy_ttc2_channel1.l1a_info.reserved_5     <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_5  ;
-    Mon.TCDS2.spy_ttc2_channel1.l1a_info.reserved_6     <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_6  ;
-    Mon.TCDS2.spy_ttc2_channel1.l1a_info.reserved_7     <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_7  ;
-    Mon.TCDS2.spy_ttc2_channel1.l1a_info.reserved_8     <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_8  ;
-    Mon.TCDS2.spy_ttc2_channel1.l1a_info.reserved_9     <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_9  ;
-    Mon.TCDS2.spy_ttc2_channel1.l1a_info.reserved_10    <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_10 ;
-    Mon.TCDS2.spy_ttc2_channel1.l1a_info.reserved_11    <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_11 ;
-    Mon.TCDS2.spy_ttc2_channel1.l1a_info.reserved_12    <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_12 ;
-    Mon.TCDS2.spy_ttc2_channel1.l1a_info.reserved_13    <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_13 ;
-    Mon.TCDS2.spy_ttc2_channel1.l1a_info.reserved_14    <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_14 ;
-    Mon.TCDS2.spy_ttc2_channel1.l1a_info.reserved_15    <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_15 ;
-    Mon.TCDS2.spy_ttc2_channel1.l1a_info.physics_subtype<= stat_o.channel1_ttc2.physics_l1a_subtypes;        
-    Mon.TCDS2.spy_ttc2_channel1.bril_trigger_info       <= stat_o.channel1_ttc2.bril_trigger_data;   
-    Mon.TCDS2.spy_ttc2_channel1.timing_and_sync_info.lo <= stat_o.channel1_ttc2.sync_flags_and_commands(31 downto  0);
-    Mon.TCDS2.spy_ttc2_channel1.timing_and_sync_info.hi <= stat_o.channel1_ttc2.sync_flags_and_commands(48 downto 32);
-    Mon.TCDS2.spy_ttc2_channel1.status_info             <= stat_o.channel1_ttc2.status;
-    Mon.TCDS2.spy_ttc2_channel1.reserved                <= stat_o.channel1_ttc2.reserved;
-        
-    Mon.TCDS2.spy_tts2_channel0.value_0                 <= stat_o.channel0_tts2(0);  
-    Mon.TCDS2.spy_tts2_channel0.value_1                 <= stat_o.channel0_tts2(1);
-    Mon.TCDS2.spy_tts2_channel0.value_2                 <= stat_o.channel0_tts2(2);
-    Mon.TCDS2.spy_tts2_channel0.value_3                 <= stat_o.channel0_tts2(3);
-    Mon.TCDS2.spy_tts2_channel0.value_4                 <= stat_o.channel0_tts2(4);
-    Mon.TCDS2.spy_tts2_channel0.value_5                 <= stat_o.channel0_tts2(5);
-    Mon.TCDS2.spy_tts2_channel0.value_6                 <= stat_o.channel0_tts2(6);
-    Mon.TCDS2.spy_tts2_channel0.value_7                 <= stat_o.channel0_tts2(7);
-    Mon.TCDS2.spy_tts2_channel0.value_8                 <= stat_o.channel0_tts2(8);
-    Mon.TCDS2.spy_tts2_channel0.value_9                 <= stat_o.channel0_tts2(9);
-    Mon.TCDS2.spy_tts2_channel0.value_10                <= stat_o.channel0_tts2(10);
-    Mon.TCDS2.spy_tts2_channel0.value_11                <= stat_o.channel0_tts2(11);
-    Mon.TCDS2.spy_tts2_channel0.value_12                <= stat_o.channel0_tts2(12);
-    Mon.TCDS2.spy_tts2_channel0.value_13                <= stat_o.channel0_tts2(13);
-
-    Mon.TCDS2.spy_tts2_channel1.value_0                 <= stat_o.channel1_tts2(0);  
-    Mon.TCDS2.spy_tts2_channel1.value_1                 <= stat_o.channel1_tts2(1);
-    Mon.TCDS2.spy_tts2_channel1.value_2                 <= stat_o.channel1_tts2(2);
-    Mon.TCDS2.spy_tts2_channel1.value_3                 <= stat_o.channel1_tts2(3);
-    Mon.TCDS2.spy_tts2_channel1.value_4                 <= stat_o.channel1_tts2(4);
-    Mon.TCDS2.spy_tts2_channel1.value_5                 <= stat_o.channel1_tts2(5);
-    Mon.TCDS2.spy_tts2_channel1.value_6                 <= stat_o.channel1_tts2(6);
-    Mon.TCDS2.spy_tts2_channel1.value_7                 <= stat_o.channel1_tts2(7);
-    Mon.TCDS2.spy_tts2_channel1.value_8                 <= stat_o.channel1_tts2(8);
-    Mon.TCDS2.spy_tts2_channel1.value_9                 <= stat_o.channel1_tts2(9);
-    Mon.TCDS2.spy_tts2_channel1.value_10                <= stat_o.channel1_tts2(10);
-    Mon.TCDS2.spy_tts2_channel1.value_11                <= stat_o.channel1_tts2(11);
-    Mon.TCDS2.spy_tts2_channel1.value_12                <= stat_o.channel1_tts2(12);
-    Mon.TCDS2.spy_tts2_channel1.value_13                <= stat_o.channel1_tts2(13);
-
-    
-    Ctrl.TCDS2.csr.control.mgt_reset_all                <= ctrl_i.mgt_reset_all;
-    Ctrl.TCDS2.csr.control.mgt_reset_tx                 <= ctrl_i.mgt_reset_tx;
-    Ctrl.TCDS2.csr.control.mgt_reset_rx                 <= ctrl_i.mgt_reset_rx;
-    Ctrl.TCDS2.csr.control.link_test_mode               <= ctrl_i.link_test_mode;
-    Ctrl.TCDS2.csr.control.prbs_gen_reset               <= ctrl_i.prbsgen_reset;
-    Ctrl.TCDS2.csr.control.prbs_chk_reset               <= ctrl_i.prbschk_reset;
-        
-    
-
-    
-  end behavioral;
   
+  -------------------------------------------------------------------------------
+  -- AXI slave interface
+  -------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------
+  TCDS_2_interface_1: entity work.TCDS_2_interface
+    port map (
+      clk_axi         => clk_axi,
+      reset_axi_n     => reset_axi_n,
+      slave_readMOSI  => slave_readMOSI,
+      slave_readMISO  => slave_readMISO,
+      slave_writeMOSI => slave_writeMOSI,
+      slave_writeMISO => slave_writeMISO,
+      Mon             => Mon,
+      Ctrl            => Ctrl);
+
+
+
+  --
+
+
+  Mon.TCDS_2.hw_cfg.has_spy_registers                  <= stat_o.has_spy_registers;
+  Mon.TCDS_2.hw_cfg.has_link_test_mode                 <= stat_o.has_link_test_mode;
+  Mon.TCDS_2.link_test.status.prbs_chk_error           <= stat_o.prbschk_error;
+  Mon.TCDS_2.link_test.status.prbs_chk_locked          <= stat_o.prbschk_locked;
+  Mon.TCDS_2.link_test.status.prbs_chk_unlock_counter  <= stat_o.prbschk_unlock_count;
+  Mon.TCDS_2.link_test.status.prbs_gen_o_hint          <= stat_o.prbsgen_o_hint;
+  Mon.TCDS_2.link_test.status.prbs_chk_i_hint          <= stat_o.prbschk_i_hint;
+  Mon.TCDS_2.link_test.status.prbs_chk_o_hint          <= stat_o.prbschk_o_hint;
+
+  
+  Mon.TCDS_2.csr.status.is_link_optical                <= stat_o.link_status.is_link_medium_optical;
+  Mon.TCDS_2.csr.status.is_link_speed_10g              <= stat_o.link_status.is_link_speed_10g;
+  Mon.TCDS_2.csr.status.is_leader                      <= stat_o.link_status.is_leader;
+  Mon.TCDS_2.csr.status.is_quad_leader                 <= stat_o.link_status.is_quad_leader;
+  Mon.TCDS_2.csr.status.is_mgt_rx_mode_lpm             <= stat_o.link_status.is_mgt_mode_lpm;
+  Mon.TCDS_2.csr.status.mmcm_locked                    <= stat_o.link_status.tclink_core_status.mmcm_locked;
+  Mon.TCDS_2.csr.status.mgt_power_good                 <= stat_o.link_status.tclink_core_status.mgt_powergood;
+  Mon.TCDS_2.csr.status.mgt_tx_pll_locked              <= stat_o.link_status.tclink_core_status.mgt_txpll_lock;
+  Mon.TCDS_2.csr.status.mgt_rx_pll_locked              <= stat_o.link_status.tclink_core_status.mgt_rxpll_lock;
+  Mon.TCDS_2.csr.status.mgt_reset_tx_done              <= stat_o.link_status.tclink_core_status.mgt_reset_tx_done;
+  Mon.TCDS_2.csr.status.mgt_reset_rx_done              <= stat_o.link_status.tclink_core_status.mgt_reset_rx_done;
+  Mon.TCDS_2.csr.status.mgt_tx_ready                   <= stat_o.link_status.tclink_core_status.mgt_tx_ready;
+  Mon.TCDS_2.csr.status.mgt_rx_ready                   <= stat_o.link_status.tclink_core_status.mgt_rx_ready;
+  Mon.TCDS_2.csr.status.cdc40_tx_ready                 <= stat_o.link_status.tclink_core_status.cdc_40_tx_ready;
+  Mon.TCDS_2.csr.status.cdc40_rx_ready                 <= stat_o.link_status.tclink_core_status.cdc_40_rx_ready;
+  Mon.TCDS_2.csr.status.rx_data_not_idle               <= stat_o.link_status.tclink_core_status.rx_data_not_idle;
+  Mon.TCDS_2.csr.status.rx_frame_locked                <= stat_o.link_status.tclink_core_status.rx_frame_locked;
+  Mon.TCDS_2.csr.status.tx_user_data_ready             <= stat_o.link_status.tclink_core_status.tx_user_data_ready;
+  Mon.TCDS_2.csr.status.rx_user_data_ready             <= stat_o.link_status.tclink_core_status.rx_user_data_ready;
+  Mon.TCDS_2.csr.status.tclink_ready                   <= stat_o.link_status.tclink_core_status.channel_ready;
+  Mon.TCDS_2.csr.status.initializer_fsm_state(16 downto 0 ) <= stat_o.link_status.tclink_core_status.channel_controller_state;
+  Mon.TCDS_2.csr.status.initializer_fsm_state(30 downto 17) <= (others  => '0');
+  Mon.TCDS_2.csr.status.initializer_fsm_running        <= stat_o.link_status.tclink_core_status.channel_controller_running;
+  Mon.TCDS_2.csr.status.rx_frame_unlock_counter        <= stat_o.link_status.channel_unlock_count;
+  Mon.TCDS_2.csr.status.phase_cdc40_tx_measured        <= stat_o.link_status.tclink_core_status.phase_cdc40_tx;
+  Mon.TCDS_2.csr.status.phase_cdc40_rx_measured        <= stat_o.link_status.tclink_core_status.phase_cdc40_rx;
+  Mon.TCDS_2.csr.status.phase_pi_tx_measured           <= stat_o.link_status.tclink_core_status.mgt_hptd_tx_pi_phase;
+  Mon.TCDS_2.csr.status.fec_correction_applied         <= stat_o.link_status.tclink_core_status.rx_fec_corrected_latched;
+  Mon.TCDS_2.csr.status.tclink_loop_closed             <= stat_o.link_status.tclink_status.tclink_loop_closed;
+  Mon.TCDS_2.csr.status.tclink_operation_error         <= stat_o.link_status.tclink_status.tclink_operation_error;
+  Mon.TCDS_2.csr.status.tclink_phase_measured          <= stat_o.link_status.tclink_status.tclink_phase_detector;
+  Mon.TCDS_2.csr.status.tclink_phase_error.lo          <= stat_o.link_status.tclink_status.tclink_error_controller(31 downto  0);
+  Mon.TCDS_2.csr.status.tclink_phase_error.hi          <= stat_o.link_status.tclink_status.tclink_error_controller(47 downto 32);
+  Mon.TCDS_2.spy_frame_tx.word0                        <= stat_o.frame_tx( 31 downto    0);
+  Mon.TCDS_2.spy_frame_tx.word1                        <= stat_o.frame_tx( 63 downto   32);
+  Mon.TCDS_2.spy_frame_tx.word2                        <= stat_o.frame_tx( 95 downto   64);
+  Mon.TCDS_2.spy_frame_tx.word3                        <= stat_o.frame_tx(127 downto   96);
+  Mon.TCDS_2.spy_frame_tx.word4                        <= stat_o.frame_tx(159 downto  128);
+  Mon.TCDS_2.spy_frame_tx.word5                        <= stat_o.frame_tx(191 downto  160);
+  Mon.TCDS_2.spy_frame_tx.word6                        <= stat_o.frame_tx(223 downto  192);
+  Mon.TCDS_2.spy_frame_tx.word7                        <= stat_o.frame_tx(233 downto  224);
+  Mon.TCDS_2.spy_frame_rx.word0                        <= stat_o.frame_rx( 31 downto    0);
+  Mon.TCDS_2.spy_frame_rx.word1                        <= stat_o.frame_rx( 63 downto   32);
+  Mon.TCDS_2.spy_frame_rx.word2                        <= stat_o.frame_rx( 95 downto   64);
+  Mon.TCDS_2.spy_frame_rx.word3                        <= stat_o.frame_rx(127 downto   96);
+  Mon.TCDS_2.spy_frame_rx.word4                        <= stat_o.frame_rx(159 downto  128);
+  Mon.TCDS_2.spy_frame_rx.word5                        <= stat_o.frame_rx(191 downto  160);
+  Mon.TCDS_2.spy_frame_rx.word6                        <= stat_o.frame_rx(223 downto  192);
+  Mon.TCDS_2.spy_frame_rx.word7                        <= stat_o.frame_rx(233 downto  224);
+  
+
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.physics        <= stat_o.channel0_ttc2.l1a_types.l1a_physics ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.calibration    <= stat_o.channel0_ttc2.l1a_types.l1a_calibration ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.random         <= stat_o.channel0_ttc2.l1a_types.l1a_random ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.software       <= stat_o.channel0_ttc2.l1a_types.l1a_software ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_4     <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_4 ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_5     <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_5 ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_6     <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_6 ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_7     <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_7 ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_8     <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_8 ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_9     <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_9 ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_10    <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_10 ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_11    <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_11 ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_12    <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_12 ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_13    <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_13 ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_14    <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_14 ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_15    <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_15 ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.physics_subtype<= stat_o.channel0_ttc2.physics_l1a_subtypes;        
+  Mon.TCDS_2.spy_ttc2_channel0.bril_trigger_info       <= stat_o.channel0_ttc2.bril_trigger_data;   
+  Mon.TCDS_2.spy_ttc2_channel0.timing_and_sync_info.lo <= stat_o.channel0_ttc2.sync_flags_and_commands(31 downto  0);
+  Mon.TCDS_2.spy_ttc2_channel0.timing_and_sync_info.hi <= stat_o.channel0_ttc2.sync_flags_and_commands(48 downto 32);
+  Mon.TCDS_2.spy_ttc2_channel0.status_info             <= stat_o.channel0_ttc2.status;
+  Mon.TCDS_2.spy_ttc2_channel0.reserved                <= stat_o.channel0_ttc2.reserved;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.physics        <= stat_o.channel1_ttc2.l1a_types.l1a_physics ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.calibration    <= stat_o.channel1_ttc2.l1a_types.l1a_calibration ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.random         <= stat_o.channel1_ttc2.l1a_types.l1a_random ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.software       <= stat_o.channel1_ttc2.l1a_types.l1a_software ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_4     <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_4 ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_5     <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_5 ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_6     <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_6 ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_7     <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_7 ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_8     <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_8 ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_9     <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_9 ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_10    <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_10 ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_11    <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_11 ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_12    <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_12 ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_13    <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_13 ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_14    <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_14 ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_15    <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_15 ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.physics_subtype<= stat_o.channel1_ttc2.physics_l1a_subtypes;        
+  Mon.TCDS_2.spy_ttc2_channel1.bril_trigger_info       <= stat_o.channel1_ttc2.bril_trigger_data;   
+  Mon.TCDS_2.spy_ttc2_channel1.timing_and_sync_info.lo <= stat_o.channel1_ttc2.sync_flags_and_commands(31 downto  0);
+  Mon.TCDS_2.spy_ttc2_channel1.timing_and_sync_info.hi <= stat_o.channel1_ttc2.sync_flags_and_commands(48 downto 32);
+  Mon.TCDS_2.spy_ttc2_channel1.status_info             <= stat_o.channel1_ttc2.status;
+  Mon.TCDS_2.spy_ttc2_channel1.reserved                <= stat_o.channel1_ttc2.reserved;
+  
+  Mon.TCDS_2.spy_tts2_channel0.value_0                 <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(0) ,8));  
+  Mon.TCDS_2.spy_tts2_channel0.value_1                 <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(1) ,8));
+  Mon.TCDS_2.spy_tts2_channel0.value_2                 <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(2) ,8));
+  Mon.TCDS_2.spy_tts2_channel0.value_3                 <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(3) ,8));
+  Mon.TCDS_2.spy_tts2_channel0.value_4                 <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(4) ,8));
+  Mon.TCDS_2.spy_tts2_channel0.value_5                 <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(5) ,8));
+  Mon.TCDS_2.spy_tts2_channel0.value_6                 <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(6) ,8));
+  Mon.TCDS_2.spy_tts2_channel0.value_7                 <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(7) ,8));
+  Mon.TCDS_2.spy_tts2_channel0.value_8                 <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(8) ,8));
+  Mon.TCDS_2.spy_tts2_channel0.value_9                 <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(9) ,8));
+  Mon.TCDS_2.spy_tts2_channel0.value_10                <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(10),8));
+  Mon.TCDS_2.spy_tts2_channel0.value_11                <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(11),8));
+  Mon.TCDS_2.spy_tts2_channel0.value_12                <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(12),8));
+  Mon.TCDS_2.spy_tts2_channel0.value_13                <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(13),8));
+
+  Mon.TCDS_2.spy_tts2_channel1.value_0                 <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(0) ,8));  
+  Mon.TCDS_2.spy_tts2_channel1.value_1                 <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(1) ,8));
+  Mon.TCDS_2.spy_tts2_channel1.value_2                 <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(2) ,8));
+  Mon.TCDS_2.spy_tts2_channel1.value_3                 <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(3) ,8));
+  Mon.TCDS_2.spy_tts2_channel1.value_4                 <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(4) ,8));
+  Mon.TCDS_2.spy_tts2_channel1.value_5                 <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(5) ,8));
+  Mon.TCDS_2.spy_tts2_channel1.value_6                 <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(6) ,8));
+  Mon.TCDS_2.spy_tts2_channel1.value_7                 <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(7) ,8));
+  Mon.TCDS_2.spy_tts2_channel1.value_8                 <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(8) ,8));
+  Mon.TCDS_2.spy_tts2_channel1.value_9                 <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(9) ,8));
+  Mon.TCDS_2.spy_tts2_channel1.value_10                <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(10),8));
+  Mon.TCDS_2.spy_tts2_channel1.value_11                <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(11),8));
+  Mon.TCDS_2.spy_tts2_channel1.value_12                <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(12),8));
+  Mon.TCDS_2.spy_tts2_channel1.value_13                <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(13),8));
+
+
+  ctrl_i.link_test_mode  <=  Ctrl.TCDS_2.link_test.control.link_test_mode;
+  ctrl_i.prbsgen_reset   <=  Ctrl.TCDS_2.link_test.control.prbs_gen_reset;
+  ctrl_i.prbschk_reset   <=  Ctrl.TCDS_2.link_test.control.prbs_chk_reset;
+
+
+  ctrl_i.link_control.tclink_core_control.reset_all                             <= Ctrl.TCDS_2.csr.control.reset_all;
+  ctrl_i.link_control.tclink_core_control.mgt_reset_all                         <= Ctrl.TCDS_2.csr.control.mgt_reset_all ;
+  ctrl_i.link_control.tclink_core_control.mgt_reset_tx_pll_and_datapath         <= Ctrl.TCDS_2.csr.control.mgt_reset_tx_pll_and_datapath ;
+  ctrl_i.link_control.tclink_core_control.mgt_reset_tx_datapath                 <= Ctrl.TCDS_2.csr.control.mgt_reset_tx_datapath ;
+  ctrl_i.link_control.tclink_core_control.mgt_reset_rx_pll_and_datapath         <= Ctrl.TCDS_2.csr.control.mgt_reset_rx_pll_and_datapath ;
+  ctrl_i.link_control.tclink_core_control.mgt_reset_rx_datapath                 <= Ctrl.TCDS_2.csr.control.mgt_reset_rx_datapath ;
+  ctrl_i.link_control.tclink_core_control.channel_controller_reset              <= Ctrl.TCDS_2.csr.control.tclink_channel_ctrl_reset ;
+  ctrl_i.link_control.tclink_core_control.channel_controller_enable             <= Ctrl.TCDS_2.csr.control.tclink_channel_ctrl_enable ;
+  ctrl_i.link_control.tclink_core_control.channel_controller_gentle             <= Ctrl.TCDS_2.csr.control.tclink_channel_ctrl_gentle ;
+  ctrl_i.link_control.tclink_control.tclink_close_loop                          <= Ctrl.TCDS_2.csr.control.tclink_close_loop ;
+  ctrl_i.link_control.tclink_control.tclink_offset_error(31 downto  0)          <= Ctrl.TCDS_2.csr.control.tclink_phase_offset.lo ;
+  ctrl_i.link_control.tclink_control.tclink_offset_error(47 downto 32)          <= Ctrl.TCDS_2.csr.control.tclink_phase_offset.hi ;
+  ctrl_i.link_control.tclink_core_control.phase_cdc40_tx_calib                 <= Ctrl.TCDS_2.csr.control.phase_cdc40_tx_calib ;
+  ctrl_i.link_control.tclink_core_control.phase_cdc40_tx_force                 <= Ctrl.TCDS_2.csr.control.phase_cdc40_tx_force ;
+  ctrl_i.link_control.tclink_core_control.phase_cdc40_rx_calib                 <= Ctrl.TCDS_2.csr.control.phase_cdc40_rx_calib ;
+  ctrl_i.link_control.tclink_core_control.phase_cdc40_rx_force                 <= Ctrl.TCDS_2.csr.control.phase_cdc40_rx_force ;
+  ctrl_i.link_control.tclink_core_control.mgt_hptd_tx_pi_phase_calib            <= Ctrl.TCDS_2.csr.control.phase_pi_tx_calib ;
+  ctrl_i.link_control.tclink_core_control.mgt_hptd_tx_ui_align_calib            <= Ctrl.TCDS_2.csr.control.phase_pi_tx_force ;
+  ctrl_i.link_control.tclink_core_control.mgt_rxeq_rxlpmen                           <= Ctrl.TCDS_2.csr.control.mgt_rx_dfe_vs_lpm ;
+  ctrl_i.link_control.tclink_core_control.mgt_rxprbscntreset                    <= Ctrl.TCDS_2.csr.control.mgt_rx_dfe_vs_lpm_reset ;
+  ctrl_i.link_control.tclink_core_control.mgt_rxeq_rxlpmgcovrden                <= Ctrl.TCDS_2.csr.control.mgt_rxeq_params.lpm.rxlpmgcovrden ;
+  ctrl_i.link_control.tclink_core_control.mgt_rxeq_rxlpmhfovrden                <= Ctrl.TCDS_2.csr.control.mgt_rxeq_params.lpm.rxlpmhfovrden ;
+  ctrl_i.link_control.tclink_core_control.mgt_rxeq_rxlpmlfklovrden              <= Ctrl.TCDS_2.csr.control.mgt_rxeq_params.lpm.rxlpmlfklovrden;
+  ctrl_i.link_control.tclink_core_control.mgt_rxeq_rxlpmosovrden                <= Ctrl.TCDS_2.csr.control.mgt_rxeq_params.lpm.rxlpmosovrden ;
+  ctrl_i.link_control.tclink_core_control.mgt_rxeq_rxosovrden                   <= Ctrl.TCDS_2.csr.control.mgt_rxeq_params.dfe.rxosovrden ;
+  ctrl_i.link_control.tclink_core_control.mgt_rxeq_rxdfeagcovrden               <= Ctrl.TCDS_2.csr.control.mgt_rxeq_params.dfe.rxdfeagcovrden;
+  ctrl_i.link_control.tclink_core_control.mgt_rxeq_rxdfelfovrden                <= Ctrl.TCDS_2.csr.control.mgt_rxeq_params.dfe.rxdfelfovrden ;
+  ctrl_i.link_control.tclink_core_control.mgt_rxeq_rxdfeutovrden                <= Ctrl.TCDS_2.csr.control.mgt_rxeq_params.dfe.rxdfeutovrden ;
+  ctrl_i.link_control.tclink_core_control.mgt_rxeq_rxdfevpovrden                <= Ctrl.TCDS_2.csr.control.mgt_rxeq_params.dfe.rxdfevpovrden ;
+  ctrl_i.link_control.tclink_core_control.rx_fec_corrected_clear                <= Ctrl.TCDS_2.csr.control.fec_monitor_reset ;
+  ctrl_i.link_control.tclink_control.tclink_metastability_deglitch              <= Ctrl.TCDS_2.csr.control.tclink_param_metastability_deglitch ;
+  ctrl_i.link_control.tclink_control.tclink_phase_detector_navg                 <= Ctrl.TCDS_2.csr.control.tclink_param_phase_detector_navg ;
+  ctrl_i.link_control.tclink_control.tclink_modulo_carrier_period(31 downto  0) <= Ctrl.TCDS_2.csr.control.tclink_param_modulo_carrier_period.lo ;
+  ctrl_i.link_control.tclink_control.tclink_modulo_carrier_period(47 downto 32) <= Ctrl.TCDS_2.csr.control.tclink_param_modulo_carrier_period.hi ;
+  ctrl_i.link_control.tclink_control.tclink_master_rx_ui_period(31 downto  0)   <= Ctrl.TCDS_2.csr.control.tclink_param_master_rx_ui_period.lo ;
+  ctrl_i.link_control.tclink_control.tclink_master_rx_ui_period(47 downto 32)   <= Ctrl.TCDS_2.csr.control.tclink_param_master_rx_ui_period.hi ;
+  ctrl_i.link_control.tclink_control.tclink_aie                                 <= Ctrl.TCDS_2.csr.control.tclink_param_aie ;
+  ctrl_i.link_control.tclink_control.tclink_aie_enable                          <= Ctrl.TCDS_2.csr.control.tclink_param_aie_enable ;
+  ctrl_i.link_control.tclink_control.tclink_ape                                 <= Ctrl.TCDS_2.csr.control.tclink_param_ape ;
+  ctrl_i.link_control.tclink_control.tclink_sigma_delta_clk_div                 <= Ctrl.TCDS_2.csr.control.tclink_param_sigma_delta_clk_div ;
+  ctrl_i.link_control.tclink_control.tclink_enable_mirror                       <= Ctrl.TCDS_2.csr.control.tclink_param_enable_mirror ;
+  ctrl_i.link_control.tclink_control.tclink_adco(31 downto  0)                  <= Ctrl.TCDS_2.csr.control.tclink_param_adco.lo ;
+  ctrl_i.link_control.tclink_control.tclink_adco(47 downto 32)                  <= Ctrl.TCDS_2.csr.control.tclink_param_adco.hi ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+end behavioral;
+

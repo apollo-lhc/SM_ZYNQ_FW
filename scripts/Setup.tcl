@@ -42,9 +42,21 @@ read_vhdl ${timestamp_file}
 puts "Adding ${timestamp_file}"
 for {set j 0} {$j < [llength $vhdl_files ] } {incr j} {
     set filename "${apollo_root_path}/[lindex $vhdl_files $j]"
-    read_vhdl $filename
-    puts "Adding $filename"
+    if { [file extension $filename] == ".vhd" } {
+	read_vhdl $filename
+	puts "Adding $filename"
+    }
 }
+
+#add verilog files
+for {set j 0} {$j < [llength $vhdl_files ] } {incr j} {
+    set filename "${apollo_root_path}/[lindex $vhdl_files $j]"
+    if { [file extension $filename] == ".v" } {
+	read_verilog $filename
+	puts "Adding $filename"
+    }
+}
+
 
 #Add xdc files
 for {set j 0} {$j < [llength $xdc_files ] } {incr j} {

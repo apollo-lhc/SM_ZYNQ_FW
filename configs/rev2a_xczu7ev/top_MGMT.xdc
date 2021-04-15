@@ -7,8 +7,8 @@ set_property -dict {PACKAGE_PIN M24 }  [get_ports REFCLK_SSD_N];     #ConnB  6 (
 set_property -dict {PACKAGE_PIN L25 }  [get_ports REFCLK_C2C1_P[0]]; #ConnB  7 (ZX1:  M7 , XU8:  L25)
 set_property -dict {PACKAGE_PIN L26 }  [get_ports REFCLK_C2C1_N[0]]; #ConnB  9 (ZX1:  L7 , XU8:  L26)
 
-set_property -dict {PACKAGE_PIN B10 }  [get_ports REFCLK_CMS_P[0]];  #ConnB 10 (ZX1:  U6 , XU8:  D10)
-set_property -dict {PACKAGE_PIN B9  }  [get_ports REFCLK_CMS_N[0]];  #ConnB 12 (ZX1:  U5 , XU8:  D9 )
+set_property -dict {PACKAGE_PIN D10 }  [get_ports REFCLK_CMS_P[0]];  #ConnB 10 (ZX1:  U6 , XU8:  D10)
+set_property -dict {PACKAGE_PIN D9  }  [get_ports REFCLK_CMS_N[0]];  #ConnB 12 (ZX1:  U5 , XU8:  D9 )
 
 set_property -dict {PACKAGE_PIN B10 }  [get_ports REFCLK_REC_P];     #ConnB  3 (ZX1:  J8 , XU8:  B10)
 set_property -dict {PACKAGE_PIN B9  }  [get_ports REFCLK_REC_N];     #ConnB  5 (ZX1:  H8 , XU8:  B9 )
@@ -20,8 +20,8 @@ set_property -dict {PACKAGE_PIN F9  }  [get_ports REFCLK_C2C1_N[1]]; #ConnC 12 (
 set_property -dict {PACKAGE_PIN H10 }  [get_ports REFCLK_C2C2_P];    #ConnC  4 (ZX1:  -- , XU8:  H10)
 set_property -dict {PACKAGE_PIN H9  }  [get_ports REFCLK_C2C2_N];    #ConnC  6 (ZX1:  -- , XU8:  H9)
 
-set_property -dict {PACKAGE_PIN B10 }  [get_ports REFCLK_CMS_P[1]];  #ConnC  7 (ZX1:  -- , XU8:  J8)
-set_property -dict {PACKAGE_PIN B9  }  [get_ports REFCLK_CMS_N[1]];  #ConnC  9 (ZX1:  -- , XU8:  J7 )
+set_property -dict {PACKAGE_PIN J8  }  [get_ports REFCLK_CMS_P[1]];  #ConnC  7 (ZX1:  -- , XU8:  J8)
+set_property -dict {PACKAGE_PIN J7  }  [get_ports REFCLK_CMS_N[1]];  #ConnC  9 (ZX1:  -- , XU8:  J7 )
 
 
 
@@ -92,6 +92,8 @@ set_property -dict {PACKAGE_PIN  L4 }  [get_ports AXI_C2C_CM1_TX_N[1]];    #Conn
 								        
 set_property -dict {PACKAGE_PIN  N4 }  [get_ports AXI_C2C_CM2_RX_P[0]];    #ConnC 48 (ZX1:  -- , XU8:  N4 )
 set_property -dict {PACKAGE_PIN  N3 }  [get_ports AXI_C2C_CM2_RX_N[0]];    #ConnC 50 (ZX1:  -- , XU8:  N3 )
-set_property -dict {PACKAGE_PIN  P5 }  [get_ports AXI_C2C_CM2_TX_P[0]];    #ConnC 47 (ZX1:  -- , XU8:  P5 )
-set_property -dict {PACKAGE_PIN  P6 }  [get_ports AXI_C2C_CM2_TX_N[0]];    #ConnC 45 (ZX1:  -- , XU8:  P6 )
+#set_property -dict {PACKAGE_PIN  P5 }  [get_ports AXI_C2C_CM2_TX_P[0]];    #ConnC 47 (ZX1:  -- , XU8:  P5 )
+#set_property -dict {PACKAGE_PIN  P6 }  [get_ports AXI_C2C_CM2_TX_N[0]];    #ConnC 45 (ZX1:  -- , XU8:  P6 )
+set_property -dict {PACKAGE_PIN  P5 }  [get_ports AXI_C2C_CM2_TX_N[0]];    #ConnC 47 (ZX1:  -- , XU8:  P5 )
+set_property -dict {PACKAGE_PIN  P6 }  [get_ports AXI_C2C_CM2_TX_P[0]];    #ConnC 45 (ZX1:  -- , XU8:  P6 )
 

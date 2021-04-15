@@ -151,9 +151,9 @@ set_property -dict {PACKAGE_PIN AD9  IOSTANDARD LVCMOS18}               [get_por
 set_property -dict {PACKAGE_PIN AA10 IOSTANDARD LVCMOS18}               [get_ports {GPIO[1]}]
 set_property -dict {PACKAGE_PIN Y10  IOSTANDARD LVCMOS18}               [get_ports {GPIO[2]}]
 set_property -dict {PACKAGE_PIN AD6  IOSTANDARD LVCMOS18}               [get_ports {GPIO[3]}];  #XU8: AD6  ZX1: B1
-set_property -dict {PACKAGE_PIN AD10 IOSTANDARD LVCMOS18}               [get_ports {GPIO[4]}]
+set_property -dict {PACKAGE_PIN  Y1  IOSTANDARD LVCMOS18}               [get_ports {GPIO[4]}];  #XU8: Y1  ZX1: F4
 set_property -dict {PACKAGE_PIN AE4  IOSTANDARD LVCMOS18}               [get_ports {GPIO[5]}]
-set_property -dict {PACKAGE_PIN AD11 IOSTANDARD LVCMOS18}               [get_ports {GPIO[6]}]
+set_property -dict {PACKAGE_PIN AE3  IOSTANDARD LVCMOS18}               [get_ports {GPIO[6]}]; #XU8: AE3  ZX1: G4
 set_property -dict {PACKAGE_PIN AD4  IOSTANDARD LVCMOS18}               [get_ports {GPIO[7]}]
 
 set_property -dict {PACKAGE_PIN AA12 IOSTANDARD LVCMOS18 PULLDOWN TRUE} [get_ports {FP_1V8_GPIO[0]}]

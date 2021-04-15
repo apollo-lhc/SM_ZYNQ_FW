@@ -236,7 +236,7 @@ AXI_SLAVES:
       - "address_table/modules/INT_AXI_FW.xml"
     UHAL_BASE: 0x20000000
 
-  TCDS2:
+  TCDS_2:
     TCL_CALL:
       command: "AXI_PL_DEV_CONNECT"
       axi_control: "${::AXI_MASTER_CTRL}"
