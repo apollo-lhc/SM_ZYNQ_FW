@@ -121,13 +121,6 @@ AXI_SLAVES:
     UHAL_BASE: 0x06000000
     HDL: "src/plXVC"
 
-  XVC_LOCAL:
-    TCL_CALL:
-      command: "AXI_IP_LOCAL_XVC"
-      axi_control: "${::AXI_MASTER_CTRL}"
-    XML:
-      - "address_table/modules/XVC.xml"
-    UHAL_BASE: 0x08000000
 
   SLAVE_I2C:
     TCL_CALL:
