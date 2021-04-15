@@ -4,10 +4,8 @@ include ../mk/helpers.mk
 #################################################################################
 # VIVADO stuff
 #################################################################################
-BUILD_VIVADO_VERSION=2019.1
-BUILD_VIVADO_PETALINUX="/work/Xilinx/petalinux/"$(BUILD_VIVADO_VERSION)"/settings.sh"
-#BUILD_VIVADO_VERSION=2018.2
-#BUILD_VIVADO_PETALINUX="/opt/Xilinx/petalinux/"$(BUILD_VIVADO_VERSION)"/settings.sh"
+BUILD_VIVADO_VERSION=2020.2
+BUILD_VIVADO_PETALINUX="/work/Xilinx/PetaLinux/"$(BUILD_VIVADO_VERSION)"/tool/settings.sh"
 
 ifeq ($(BUILD_VIVADO_VERSION),2018.2)
 	PETALINUX_OLD_CONFIG_OPTION=--oldconfig
@@ -98,8 +96,8 @@ define copy_configs =
 	@echo "adding boot mods" $(OUTPUT_MARKUP)
 #	@mkdir -p $(dir $(BUILD_BOOT)) $(OUTPUT_MARKUP)
 	@echo $(CONFIGS_BASE)/$$@/$(USER_MOD_BOOT_PATH)  $(BUILD_BOOT)
-	@cp $(CONFIGS_BASE)/$$@/$(USER_MOD_BOOT_PATH)  $(BUILD_BOOT)
-	@cp $(CONFIGS_BASE)/$$@/$(USER_MOD_BOOT_PATH)  $(BUILD_BOOT).old
+	@cp $(CONFIGS_BASE)/$$@/$(USER_MOD_BOOT_PATH)  $(BUILD_BOOT) || :
+	@cp $(CONFIGS_BASE)/$$@/$(USER_MOD_BOOT_PATH)  $(BUILD_BOOT).old || :
 	@echo "adding u-boot files" $(OUTPUT_MARKUP)
 	@mkdir -p $(dir $(BUILD_UBOOT)) $(OUTPUT_MARKUP)
 	@cp -r $(CONFIGS_BASE)/$$@/$(USER_MOD_UBOOT_PATH)/*  $(BUILD_UBOOT) || :

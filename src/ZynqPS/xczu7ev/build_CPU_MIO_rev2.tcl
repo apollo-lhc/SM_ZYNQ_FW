@@ -21,6 +21,8 @@ set_property CONFIG.PSU__CRL_APB__QSPI_REF_CTRL__FREQMHZ {50}	    [get_bd_cells 
 set_property CONFIG.PSU__ENET0__PERIPHERAL__ENABLE {1} 		    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU__ENET0__GRP_MDIO__ENABLE {1} 		    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU__ENET0__GRP_MDIO__IO {MIO 76 .. 77}         [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU_MIO_76_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}] 
+set_property CONFIG.PSU_MIO_77_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU_MIO_26_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU_MIO_27_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU_MIO_28_PULLUPDOWN {disable}		    [get_bd_cells ${ZYNQ_NAME}]

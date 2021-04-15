@@ -2,6 +2,7 @@
 # Automatically generated file; DO NOT EDIT.
 # Configuration
 #
+CONFIG_system-zynq=y
 
 #
 # Filesystem Packages 
@@ -49,7 +50,7 @@
 #
 # CONFIG_busybox is not set
 # CONFIG_busybox-udhcpd is not set
- CONFIG_busybox-httpd is not set
+# CONFIG_busybox-httpd is not set
 # CONFIG_busybox-dbg is not set
 # CONFIG_busybox-inetd is not set
 # CONFIG_busybox-dev is not set
@@ -431,7 +432,7 @@ CONFIG_canutils=y
 #
 # ethtool 
 #
-CONFIG_ethtool=y
+# CONFIG_ethtool is not set
 # CONFIG_ethtool-dbg is not set
 # CONFIG_ethtool-dev is not set
 
@@ -452,7 +453,7 @@ CONFIG_ethtool=y
 #
 # minicom 
 #
-CONFIG_minicom=y
+# CONFIG_minicom is not set
 # CONFIG_minicom-dbg is not set
 # CONFIG_minicom-dev is not set
 
@@ -547,13 +548,6 @@ CONFIG_openssh-sftp-server=y
 # CONFIG_parted is not set
 # CONFIG_parted-dbg is not set
 # CONFIG_parted-dev is not set
-
-#
-# protobuf 
-#
-# CONFIG_protobuf is not set
-# CONFIG_protobuf-dev is not set
-# CONFIG_protobuf-dbg is not set
 
 #
 # utils 
@@ -726,7 +720,7 @@ CONFIG_pciutils=y
 #
 # screen 
 #
-CONFIG_screen=y
+# CONFIG_screen is not set
 # CONFIG_screen-dbg is not set
 # CONFIG_screen-dev is not set
 
@@ -740,7 +734,7 @@ CONFIG_screen=y
 #
 # setserial 
 #
-CONFIG_setserial=y
+# CONFIG_setserial is not set
 # CONFIG_setserial-dev is not set
 # CONFIG_setserial-dbg is not set
 
@@ -761,7 +755,7 @@ CONFIG_setserial=y
 #
 # strace 
 #
-CONFIG_strace=y
+# CONFIG_strace is not set
 # CONFIG_strace-dev is not set
 # CONFIG_strace-dbg is not set
 
@@ -970,78 +964,6 @@ CONFIG_strace=y
 #
 # python 
 #
-CONFIG_python=y
-CONFIG_python-dbg=y
-CONFIG_python-mailbox=y
-CONFIG_python-resource=y
-CONFIG_python-compile=y
-CONFIG_python-math=y
-CONFIG_python-difflib=y
-CONFIG_python-gdbm=y
-CONFIG_python-man=y
-CONFIG_python-image=y
-CONFIG_python-fcntl=y
-CONFIG_python-2to3=y
-CONFIG_python-distutils=y
-CONFIG_python-readline=y
-CONFIG_python-terminal=y
-CONFIG_python-profile=y
-CONFIG_python-mmap=y
-CONFIG_python-robotparser=y
-CONFIG_python-threading=y
-CONFIG_python-zlib=y
-CONFIG_python-pickle=y
-CONFIG_python-xml=y
-CONFIG_python-lang=y
-CONFIG_python-email=y
-CONFIG_python-contextlib=y
-CONFIG_python-netclient=y
-CONFIG_python-dev=y
-CONFIG_python-idle=y
-CONFIG_python-modules=y
-CONFIG_python-logging=y
-CONFIG_python-xmlrpc=y
-CONFIG_python-codecs=y
-CONFIG_python-stringold=y
-CONFIG_python-argparse=y
-CONFIG_python-numbers=y
-CONFIG_python-debugger=y
-CONFIG_python-html=y
-CONFIG_python-shell=y
-CONFIG_python-tkinter=y
-CONFIG_python-textutils=y
-CONFIG_python-compression=y
-CONFIG_python-hotshot=y
-CONFIG_python-core=y
-CONFIG_python-importlib=y
-CONFIG_python-json=y
-CONFIG_python-sqlite3=y
-CONFIG_python-plistlib=y
-CONFIG_python-curses=y
-CONFIG_python-misc=y
-CONFIG_python-tests=y
-CONFIG_python-netserver=y
-CONFIG_python-multiprocessing=y
-CONFIG_python-syslog=y
-CONFIG_python-pprint=y
-CONFIG_python-pkgutil=y
-CONFIG_python-mime=y
-CONFIG_libpython2=y
-CONFIG_python-smtpd=y
-CONFIG_python-pydoc=y
-CONFIG_python-bsddb=y
-CONFIG_python-re=y
-CONFIG_python-ctypes=y
-CONFIG_python-sqlite3-tests=y
-CONFIG_python-compiler=y
-CONFIG_python-unittest=y
-CONFIG_python-db=y
-CONFIG_python-io=y
-CONFIG_python-unixadmin=y
-CONFIG_python-datetime=y
-CONFIG_python-subprocess=y
-CONFIG_python-audio=y
-CONFIG_python-crypt=y
 # CONFIG_python is not set
 # CONFIG_python-dbg is not set
 # CONFIG_python-mailbox is not set
@@ -1114,7 +1036,6 @@ CONFIG_python-crypt=y
 # CONFIG_python-subprocess is not set
 # CONFIG_python-audio is not set
 # CONFIG_python-crypt is not set
-
 
 #
 # python-nose 
@@ -1280,24 +1201,24 @@ CONFIG_run-postinsts=y
 #
 # boost 
 #
-CONFIG_boost=y
+# CONFIG_boost is not set
 # CONFIG_boost-random is not set
-CONFIG_boost-regex=y
+# CONFIG_boost-regex is not set
 # CONFIG_boost-atomic is not set
-CONFIG_boost-thread=y
+# CONFIG_boost-thread is not set
 # CONFIG_boost-serialization is not set
-CONFIG_boost-filesystem=y
+# CONFIG_boost-filesystem is not set
 # CONFIG_boost-test is not set
-CONFIG_boost-system=y
+# CONFIG_boost-system is not set
 # CONFIG_boost-graph is not set
 # CONFIG_boost-container is not set
 # CONFIG_boost-date-time is not set
 # CONFIG_boost-math is not set
 # CONFIG_boost-signals is not set
 # CONFIG_boost-wave is not set
-CONFIG_boost-chrono=y
+# CONFIG_boost-chrono is not set
 # CONFIG_boost-timer is not set
-CONFIG_boost-dev=y
+# CONFIG_boost-dev is not set
 # CONFIG_boost-program-options is not set
 # CONFIG_boost-iostreams is not set
 # CONFIG_boost-dbg is not set
@@ -1653,9 +1574,9 @@ CONFIG_boost-dev=y
 #
 # libnotify 
 #
-CONFIG_libnotify is not set
+# CONFIG_libnotify is not set
 # CONFIG_libnotify-dbg is not set
-CONFIG_libnotify-dev is not set
+# CONFIG_libnotify-dev is not set
 
 #
 # libnss-mdns 
@@ -2036,11 +1957,11 @@ CONFIG_libnotify-dev is not set
 #
 # ncurses 
 #
-CONFIG_ncurses=y
-CONFIG_ncurses-terminfo-base=y
-CONFIG_ncurses-dev=y
+# CONFIG_ncurses is not set
+# CONFIG_ncurses-terminfo-base is not set
+# CONFIG_ncurses-dev is not set
 # CONFIG_ncurses-tools is not set
-CONFIG_ncurses-terminfo=y
+# CONFIG_ncurses-terminfo is not set
 # CONFIG_ncurses-dbg is not set
 
 #
@@ -2148,8 +2069,8 @@ CONFIG_ncurses-terminfo=y
 #
 # readline 
 #
-CONFIG_readline=y
-CONFIG_readline-dev=y
+# CONFIG_readline is not set
+# CONFIG_readline-dev is not set
 # CONFIG_readline-dbg is not set
 
 #
@@ -2379,8 +2300,8 @@ CONFIG_udev-extraconf=y
 #
 # gcc-runtime 
 #
-CONFIG_libstdcPLUSPLUS=y
-CONFIG_libstdcPLUSPLUS-dev=y
+# CONFIG_libstdcPLUSPLUS is not set
+# CONFIG_libstdcPLUSPLUS-dev is not set
 
 #
 # gcc-sanitizers 
@@ -2410,9 +2331,9 @@ CONFIG_libstdcPLUSPLUS-dev=y
 #
 # glib-2.0 
 #
-CONFIG_glib-2.0=y
+# CONFIG_glib-2.0 is not set
 # CONFIG_glib-2.0-codegen is not set
-CONFIG_glib-2.0-utils=y
+# CONFIG_glib-2.0-utils is not set
 # CONFIG_glib-2.0-dbg is not set
 # CONFIG_glib-2.0-bash-completion is not set
 # CONFIG_glib-2.0-dev is not set
@@ -2420,10 +2341,10 @@ CONFIG_glib-2.0-utils=y
 #
 # glibc 
 #
-CONFIG_glibc=y
+# CONFIG_glibc is not set
 # CONFIG_glibc-dev is not set
 # CONFIG_glibc-dbg is not set
-CONFIG_ldd=y
+# CONFIG_ldd is not set
 
 #
 # gnome-desktop-testing 
@@ -2669,7 +2590,7 @@ CONFIG_packagegroup-core-boot=y
 #
 # packagegroup-core-buildessential 
 #
-CONFIG_packagegroup-core-buildessential=y
+# CONFIG_packagegroup-core-buildessential is not set
 # CONFIG_packagegroup-core-buildessential-dev is not set
 # CONFIG_packagegroup-core-buildessential-dbg is not set
 
@@ -3081,7 +3002,6 @@ CONFIG_packagegroup-core-ssh-dropbear=y
 # CONFIG_qttranslations-assistant is not set
 # CONFIG_qttranslations-qtwebsockets is not set
 # CONFIG_qttranslations-qtquickcontrols2 is not set
-# CONFIG_qttranslations-qtconfig is not set
 # CONFIG_qttranslations-qtquick1 is not set
 # CONFIG_qttranslations-qtdeclarative is not set
 # CONFIG_qttranslations-qtxmlpatterns is not set
@@ -3198,13 +3118,6 @@ CONFIG_packagegroup-core-ssh-dropbear=y
 # CONFIG_rpmsg-proxy-app is not set
 # CONFIG_rpmsg-proxy-app-dev is not set
 # CONFIG_rpmsg-proxy-app-dbg is not set
-
-#
-# rpmsg-proxy-module 
-#
-# CONFIG_kernel-module-rpmsg-proxy is not set
-# CONFIG_kernel-module-rpmsg-proxy-dev is not set
-# CONFIG_kernel-module-rpmsg-proxy-dbg is not set
 
 #
 # rpmsg-user-module 
@@ -3639,14 +3552,14 @@ CONFIG_bridge-utils=y
 #
 # netcat 
 #
-CONFIG_netcat=y
+# CONFIG_netcat is not set
 # CONFIG_netcat-dbg is not set
 # CONFIG_netcat-dev is not set
 
 #
 # tcpdump 
 #
-CONFIG_tcpdump=y
+# CONFIG_tcpdump is not set
 # CONFIG_tcpdump-dbg is not set
 # CONFIG_tcpdump-dev is not set
 
@@ -4157,6 +4070,7 @@ CONFIG_tcpdump=y
 # CONFIG_packagegroup-petalinux-qt is not set
 # CONFIG_packagegroup-petalinux-qt-dbg is not set
 # CONFIG_packagegroup-petalinux-qt-dev is not set
+# CONFIG_inherit-populate-sdk-qt5 is not set
 
 #
 # packagegroup-petalinux-qt-extended 
@@ -4201,16 +4115,19 @@ CONFIG_tcpdump=y
 # CONFIG_packagegroup-petalinux-xfce-dev is not set
 
 #
+# Image Features
+#
+CONFIG_imagefeature-ssh-server-dropbear=y
+# CONFIG_imagefeature-ssh-server-openssh is not set
+CONFIG_imagefeature-hwcodecs=y
+# CONFIG_imagefeature-package-management is not set
+# CONFIG_imagefeature-debug-tweaks is not set
+
+#
 # apps 
 #
-CONFIG_bootscript=y
-CONFIG_smboot=y
-CONFIG_heartbeat=y
 # CONFIG_gpio-demo is not set
-CONFIG_peekpoke=y
-CONFIG_startup-script=y
-CONFIG_uio.rules=y
-CONFIG_arm-monitor=y
+# CONFIG_peekpoke is not set
 
 #
 # user packages 
