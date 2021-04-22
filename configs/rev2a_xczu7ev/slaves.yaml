@@ -56,7 +56,7 @@ AXI_SLAVES:
         axi_rstn: "${::AXI_MASTER_RSTN}"
         axi_freq: "${::AXI_MASTER_CLK_FREQ}"
       addr:
-        offset: "0xBA000000"
+        offset: "0xB8000000"
         range: "32M"
       addr_lite:
         lite_offset: "0xB3c40000"
@@ -65,16 +65,49 @@ AXI_SLAVES:
     SUB_SLAVES:
       1_AXI_FW:
         XML:
-          - "address_table/modules/C2C1_AXI_FW.xml"
+          - "address_table/modules/C2C_AXI_FW.xml"
         UHAL_BASE: 0x0D000000
       1_AXILITE_FW:
         XML:
-          - "address_table/modules/C2C1_AXILITE_FW.xml"
+          - "address_table/modules/C2C_AXILITE_FW.xml"
         UHAL_BASE: 0x0E000000
       1_PHY:
         XML:
-          - "address_table/modules/DRP_7_GTX.xml"
+          - "address_table/modules/DRP_USP_GTH.xml"
         UHAL_BASE: 0x19000000
+      1b:
+        TCL_CALL:
+          command: "AXI_C2C_MASTER"
+          device_name: "C2C1b"
+          axi_control:
+            axi_interconnect: "${::AXI_C2C_INTERCONNECT_NAME}"
+            axi_clk: "${::AXI_MASTER_CLK}"
+            axi_rstn: "${::AXI_MASTER_RSTN}"
+            axi_freq: "${::AXI_MASTER_CLK_FREQ}"
+          primary_serdes: "C2C1_PHY"
+          init_clk: "${::INIT_CLK}"
+          refclk_freq: "100"
+          addr:
+            offset: "0xBA000000"
+            range: "32M"
+          addr_lite:
+            lite_offset: "0xB3d40000"
+            lite_range: "64K"
+
+        SUB_SLAVES:
+          _AXI_FW:
+            XML:
+              - "address_table/modules/C2C_AXI_FW.xml"
+            UHAL_BASE: 0x13000000
+          _AXILITE_FW:
+            XML:
+              - "address_table/modules/C2C_AXILITE_FW.xml"
+            UHAL_BASE: 0x14000000
+          _PHY:
+            XML:
+              - "address_table/modules/DRP_USP_GTH.xml"
+            UHAL_BASE: 0x1B000000
+
       2:
         TCL_CALL:
           command: "AXI_C2C_MASTER"
@@ -91,22 +124,55 @@ AXI_SLAVES:
             offset: "0xBC000000"
             range: "32M"
           addr_lite:
-            lite_offset: "0xB3d40000"
+            lite_offset: "0xB3e40000"
             lite_range: "64K"
 
         SUB_SLAVES:
           _AXI_FW:
             XML:
-              - "address_table/modules/C2C2_AXI_FW.xml"
+              - "address_table/modules/C2C_AXI_FW.xml"
             UHAL_BASE: 0x13000000
           _AXILITE_FW:
             XML:
-              - "address_table/modules/C2C2_AXILITE_FW.xml"
+              - "address_table/modules/C2C_AXILITE_FW.xml"
             UHAL_BASE: 0x14000000
           _PHY:
             XML:
-              - "address_table/modules/DRP_7_GTX.xml"
+              - "address_table/modules/DRP_USP_GTH.xml"
             UHAL_BASE: 0x1B000000
+          2b:
+            TCL_CALL:
+              command: "AXI_C2C_MASTER"
+              device_name: "C2C2b"
+              axi_control:
+                axi_interconnect: "${::AXI_C2C_INTERCONNECT_NAME}"
+                axi_clk: "${::AXI_MASTER_CLK}"
+                axi_rstn: "${::AXI_MASTER_RSTN}"
+                axi_freq: "${::AXI_MASTER_CLK_FREQ}"
+              primary_serdes: "C2C1_PHY"
+              init_clk: "${::INIT_CLK}"
+              refclk_freq: "100"
+              addr:
+                offset: "0xBE000000"
+                range: "32M"
+              addr_lite:
+                lite_offset: "0xB3f40000"
+                lite_range: "64K"
+    
+            SUB_SLAVES:
+              _AXI_FW:
+                XML:
+                  - "address_table/modules/C2C_AXI_FW.xml"
+                UHAL_BASE: 0x13000000
+              _AXILITE_FW:
+                XML:
+                  - "address_table/modules/C2C_AXILITE_FW.xml"
+                UHAL_BASE: 0x14000000
+              _PHY:
+                XML:
+                  - "address_table/modules/DRP_USP_GTH.xml"
+                UHAL_BASE: 0x1B000000
+
 
   PLXVC:
     TCL_CALL:
@@ -251,3 +317,15 @@ AXI_SLAVES:
       - "address_table/modules/top_secret/tcds2_tts2_spy.xml"
     UHAL_BASE: 0x30000000
     HDL: "src/TCDS"
+  
+  LDAQ:
+    TCL_CALL:
+      command: "AXI_PL_DEV_CONNECT"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "0xA0180000"
+        range: "4K"
+    XML:
+      - "address_table/modules/LDAQ.xml"
+    UHAL_BASE: 0x40000000
+    HDL: "src/LDAQ"

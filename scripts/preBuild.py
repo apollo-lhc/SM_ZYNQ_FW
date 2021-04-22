@@ -49,7 +49,8 @@ def GenerateHDL(name,XMLFile,HDLPath):
   #generate the HDL
   try:
     device = uhal.getDevice("dummy","ipbusudp-1.3://localhost:12345","file://" + topXMLFile)
-  except Exception:
+  except Exception as err:
+    print("uHAL error: {0}".format(err))
     raise Exception("File '%s' does not exist or has incorrect format" % topXMLFile)
   for i in device.getNodes():
     if i.count('.') == 0:

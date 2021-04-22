@@ -1,6 +1,6 @@
 set bd_path proj/
 
-array set bd_files [list {zynq_bd} {src/ZynqPS/build_Zynq_rev2_xczu7ev.tcl} \
+array set bd_files [list {zynq_bd} {src/ZynqPS/build_Zynq_rev2a_xczu7ev.tcl} \
 		       ]
 
 set vhdl_files "\
@@ -127,6 +127,9 @@ set vhdl_files "\
      src/TCDS/TCDS_2_map.vhd \
      src/TCDS/TCDS_2_PKG.vhd \
      src/TCDS/TCDS.vhd \
+     src/LDAQ/LDAQ_map.vhd \
+     src/LDAQ/LDAQ_PKG.vhd \
+     src/LDAQ/LDAQ.vhd \
      "
 
 set xdc_files "\
@@ -138,5 +141,6 @@ set xdc_files "\
 set xci_files "\
     	      cores/onboard_CLK_USP/onboard_CLK.xci \
               src/TCDS/tclink/firmware/source/transceiver/ip_mgt_timing/gthe3_slave_timing_10g.xcix \
+              configs/rev2a_xczu7ev/cores/LDAQ_MGBT.tcl \
               "
 
