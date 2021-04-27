@@ -198,3 +198,8 @@ reconfig_kernel:
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
 	source $(BUILD_VIVADO_PETALINUX) && \
 	petalinux-config -c kernel
+
+reconfig:
+	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
+	source $(BUILD_VIVADO_PETALINUX) && \
+	petalinux-config
