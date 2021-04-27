@@ -24,6 +24,11 @@ if { [file exists ${output_path}/${name}/${name}.xci] && ([file mtime ${output_p
 
     #modify the properties
     set_property -dict [list \
+			    CONFIG.CHANNEL_ENABLE {X0Y12}             \
+			    CONFIG.TX_MASTER_CHANNEL {X0Y12}          \
+			    CONFIG.RX_MASTER_CHANNEL {X0Y12}          \
+			    CONFIG.RX_REFCLK_SOURCE {}                \
+			    CONFIG.TX_REFCLK_SOURCE {}                \
 			    CONFIG.LOCATE_COMMON {CORE}               \
 			    CONFIG.LOCATE_TX_USER_CLOCKING {CORE}     \
 			    CONFIG.LOCATE_RX_USER_CLOCKING {CORE}     \
@@ -43,11 +48,17 @@ if { [file exists ${output_path}/${name}/${name}.xci] && ([file mtime ${output_p
 			    CONFIG.RX_COMMA_M_ENABLE {true}           \
 			    CONFIG.RX_COMMA_MASK {1111111111}         \
 			    CONFIG.RX_COMMA_ALIGN_WORD {4}            \
-			    CONFIG.RX_REFCLK_SOURCE {X0Y4 clk0+2}     \
-			    CONFIG.TX_REFCLK_SOURCE {X0Y4 clk0+2}     \
 			    CONFIG.TXPROGDIV_FREQ_SOURCE {QPLL0}      \
 			    CONFIG.TXPROGDIV_FREQ_VAL {256.5056}      \
 			    CONFIG.FREERUN_FREQUENCY {50}             \
 			    CONFIG.Component_Name ${name}             \
+			    CONFIG.RX_REFCLK_SOURCE {X0Y12 clk1}      \
+			    CONFIG.TX_REFCLK_SOURCE {X0Y12 clk1}      \
 			   ] [get_ips ${name}]
 }
+
+
+
+
+#			    CONFIG.RX_REFCLK_SOURCE {X0Y4 clk0+2}     \
+#			    CONFIG.TX_REFCLK_SOURCE {X0Y4 clk0+2}     \

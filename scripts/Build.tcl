@@ -1,5 +1,6 @@
 #source ${apollo_root_path}/scripts/settings_${build_name}.tcl
 #source ${apollo_root_path}/scripts/settings.tcl
+source ${apollo_root_path}/scripts/printQuads.tcl
 
 #################################################################################
 # STEP#2: run synthesis, report utilization and timing estimates, write checkpoint design
@@ -67,6 +68,12 @@ write_xdc -no_fixed_only -force $outputDir/bft_impl.xdc
 #set pass [expr {[get_property SLACK [get_timing_paths]] >= 0}]
 write_checkpoint -force $outputDir/post_route
 
+set quad_file [open "Quads.txt" "w+"]
+print_QUADs ${quad_file} 0
+close ${quad_file}
+set quad_file [open "Quads_all.txt" "w+"]
+print_QUADs ${quad_file} 1
+close ${quad_file}
 
 #################################################################################
 # STEP#5: Generate files for os build

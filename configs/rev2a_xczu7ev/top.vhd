@@ -179,8 +179,8 @@ entity top is
 --    refclk_SSD_P   : in    std_logic; 
 --    refclk_SSD_N   : in    std_logic; 
 --    
---    refclk_C2C1_P          : in    std_logic_vector(0 downto 0);
---    refclk_C2C1_N          : in    std_logic_vector(0 downto 0);
+    REFCLK_C2C1_P          : in    std_logic_vector(1 downto 0);
+    REFCLK_C2C1_N          : in    std_logic_vector(1 downto 0);
 
  
     -------------------------------------------------------------------------------------------
@@ -222,14 +222,14 @@ entity top is
 --    refclk_CMS_P      : in    std_logic; 
 --    refclk_CMS_N      : in    std_logic; 
 
-    REFCLK_C2C2_P          : in    std_logic_vector(1 downto 1);
-    REFCLK_C2C2_N          : in    std_logic_vector(1 downto 1);
+    REFCLK_C2C2_P          : in    std_logic;
+    REFCLK_C2C2_N          : in    std_logic;
 
 
     LDAQ_RX_P              : in    std_logic;
     LDAQ_RX_N              : in    std_logic;
-    LDAQ_TX_P              : in    std_logic;
-    LDAQ_TX_N              : in    std_logic;
+    LDAQ_TX_P              : out   std_logic;
+    LDAQ_TX_N              : out   std_logic;
     -------------------------------------------------------------------------------------------
     -- IPMC Interface
     -------------------------------------------------------------------------------------------
@@ -599,8 +599,8 @@ begin  -- architecture structure
       C2C1_phy_Rx_rxp =>  AXI_C2C_CM1_Rx_P(0 to 0),
       C2C1_phy_Tx_txn =>  AXI_C2C_CM1_Tx_N(0 to 0),
       C2C1_phy_Tx_txp =>  AXI_C2C_CM1_Tx_P(0 to 0),
-      C2C1_phy_refclk_clk_n => refclk_C2C2_N(1),
-      C2C1_phy_refclk_clk_p => refclk_C2C2_P(1),
+      C2C1_phy_refclk_clk_n => refclk_C2C1_N(1),
+      C2C1_phy_refclk_clk_p => refclk_C2C1_P(1),
       C2C1_phy_power_down   => AXI_C2C_powerdown(0),
 
       C2C1_aurora_do_cc                 => CM_C2C_Mon.Link(1).status.do_cc                ,

@@ -116,7 +116,7 @@ begin  -- architecture behavioral
       reg_data(17)( 7 downto  0)  <= DEFAULT_LDAQ_CTRL_t.TX.CTRL2;
 
     elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
-      Ctrl.RESET.ALL <= '0';
+      Ctrl.RESET.RESET_ALL <= '0';
       Ctrl.RESET.TX_PLL_AND_DATAPATH <= '0';
       Ctrl.RESET.TX_DATAPATH <= '0';
       Ctrl.RESET.RX_PLL_AND_DATAPATH <= '0';
@@ -129,7 +129,7 @@ begin  -- architecture behavioral
       if localWrEn = '1' then
         case to_integer(unsigned(localAddress(4 downto 0))) is
         when 0 => --0x0
-          Ctrl.RESET.ALL                  <=  localWrData( 0);               
+          Ctrl.RESET.RESET_ALL            <=  localWrData( 0);               
           Ctrl.RESET.TX_PLL_AND_DATAPATH  <=  localWrData( 4);               
           Ctrl.RESET.TX_DATAPATH          <=  localWrData( 5);               
           Ctrl.RESET.RX_PLL_AND_DATAPATH  <=  localWrData( 6);               

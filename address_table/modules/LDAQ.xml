@@ -1,6 +1,6 @@
 <node id="LDAQ">
   <node id="RESET" address="0x0">
-    <node id="ALL"                 permission="w" mask="0X00000001"/>
+    <node id="RESET_ALL"           permission="w" mask="0X00000001"/>
     <node id="TX_PLL_AND_DATAPATH" permission="w" mask="0X00000010"/>
     <node id="TX_DATAPATH"         permission="w" mask="0X00000020"/>
     <node id="RX_PLL_AND_DATAPATH" permission="w" mask="0X00000040"/>

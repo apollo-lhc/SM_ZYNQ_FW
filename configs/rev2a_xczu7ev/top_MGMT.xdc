@@ -16,12 +16,16 @@ set_property -dict {PACKAGE_PIN B9  }  [get_ports REFCLK_REC_N];     #ConnB  5 (
 
 set_property -dict {PACKAGE_PIN F10 }  [get_ports REFCLK_C2C1_P[1]]; #ConnC 10 (ZX1:  -- , XU8:  F10)
 set_property -dict {PACKAGE_PIN F9  }  [get_ports REFCLK_C2C1_N[1]]; #ConnC 12 (ZX1:  -- , XU8:  F9)
+#set_property -dict {PACKAGE_PIN J8  }  [get_ports REFCLK_C2C1_P[1]]; #ConnC 10 (ZX1:  -- , XU8:  F10)
+#set_property -dict {PACKAGE_PIN J7  }  [get_ports REFCLK_C2C1_N[1]]; #ConnC 12 (ZX1:  -- , XU8:  F9)
 
 set_property -dict {PACKAGE_PIN H10 }  [get_ports REFCLK_C2C2_P];    #ConnC  4 (ZX1:  -- , XU8:  H10)
 set_property -dict {PACKAGE_PIN H9  }  [get_ports REFCLK_C2C2_N];    #ConnC  6 (ZX1:  -- , XU8:  H9)
 
 set_property -dict {PACKAGE_PIN J8  }  [get_ports REFCLK_CMS_P[1]];  #ConnC  7 (ZX1:  -- , XU8:  J8)
 set_property -dict {PACKAGE_PIN J7  }  [get_ports REFCLK_CMS_N[1]];  #ConnC  9 (ZX1:  -- , XU8:  J7 )
+#set_property -dict {PACKAGE_PIN  F10 }  [get_ports REFCLK_CMS_P[1]];  #ConnC  7 (ZX1:  -- , XU8:  J8)
+#set_property -dict {PACKAGE_PIN  F9  }  [get_ports REFCLK_CMS_N[1]];  #ConnC  9 (ZX1:  -- , XU8:  J7 )
 
 
 
@@ -76,8 +80,8 @@ set_property -dict {PACKAGE_PIN  A7 }  [get_ports CM2_TCDS_TTC_N];      #ConnB 7
 
 set_property -dict {PACKAGE_PIN  H2 }  [get_ports LDAQ_RX_P];           #ConnC 16 (ZX1:  -- , XU8:  H2 )
 set_property -dict {PACKAGE_PIN  H1 }  [get_ports LDAQ_RX_N];           #ConnC 20 (ZX1:  -- , XU8:  H1 )
-set_property -dict {PACKAGE_PIN  A8 }  [get_ports LDAQ_TX_P];           #ConnC 13 (ZX1:  -- , XU8:  H6 )
-set_property -dict {PACKAGE_PIN  A7 }  [get_ports LDAQ_TX_N];           #ConnC 17 (ZX1:  -- , XU8:  H5 )
+set_property -dict {PACKAGE_PIN  H6 }  [get_ports LDAQ_TX_P];           #ConnC 13 (ZX1:  -- , XU8:  H6 )
+set_property -dict {PACKAGE_PIN  H5 }  [get_ports LDAQ_TX_N];           #ConnC 17 (ZX1:  -- , XU8:  H5 )
 
 
 set_property -dict {PACKAGE_PIN  J4 }  [get_ports AXI_C2C_CM1_RX_P[0]];    #ConnC 66 (ZX1:  -- , XU8:  J4 )
