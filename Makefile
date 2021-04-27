@@ -176,5 +176,5 @@ endif
 
 init:
 	git submodule update --init --recursive 
-	git remote -v | grep push | sed 's/https:\/\//git@/g' | awk '{print "git remote set-url --push " $1 " " $2}' | bash
+	$(git remote -v | grep push | sed 's/https:\/\//git@/g' | sed 's/.com\//.com:/g' | awk '{print "git remote set-url --push " $1 " " $2}')
 
