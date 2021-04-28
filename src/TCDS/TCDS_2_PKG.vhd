@@ -1,7 +1,9 @@
 --This file was auto-generated.
 --Modifications might be lost.
+-- Created : 2021-04-28 10:02:46.416010.
 library IEEE;
 use IEEE.std_logic_1164.all;
+
 
 
 package TCDS_2_CTRL is
@@ -403,18 +405,92 @@ package TCDS_2_CTRL is
                                                                    link_test => DEFAULT_TCDS_2_TCDS_2_link_test_CTRL_t,
                                                                    csr => DEFAULT_TCDS_2_TCDS_2_csr_CTRL_t
                                                                   );
+  type TCDS_2_LTCDS_RESET_CTRL_t is record
+    RESET_ALL                  :std_logic;   
+    TX_PLL_AND_DATAPATH        :std_logic;   
+    TX_DATAPATH                :std_logic;   
+    RX_PLL_AND_DATAPATH        :std_logic;   
+    RX_DATAPATH                :std_logic;   
+    USERCLK_TX                 :std_logic;   
+    USERCLK_RX                 :std_logic;   
+  end record TCDS_2_LTCDS_RESET_CTRL_t;
+
+
+  constant DEFAULT_TCDS_2_LTCDS_RESET_CTRL_t : TCDS_2_LTCDS_RESET_CTRL_t := (
+                                                                             USERCLK_TX => '0',
+                                                                             RX_PLL_AND_DATAPATH => '0',
+                                                                             RX_DATAPATH => '0',
+                                                                             TX_PLL_AND_DATAPATH => '0',
+                                                                             USERCLK_RX => '0',
+                                                                             RESET_ALL => '0',
+                                                                             TX_DATAPATH => '0'
+                                                                            );
+  type TCDS_2_LTCDS_STATUS_MON_t is record
+    RESET_RX_CDR_STABLE        :std_logic;   
+    RESET_TX_DONE              :std_logic;   
+    RESET_RX_DONE              :std_logic;   
+    USERCLK_TX_ACTIVE          :std_logic;   
+    USERCLK_RX_ACTIVE          :std_logic;   
+    GT_POWER_GOOD              :std_logic;   
+    RX_BYTE_ISALIGNED          :std_logic;   
+    RX_BYTE_REALIGN            :std_logic;   
+    RX_COMMADET                :std_logic;   
+    RX_PMA_RESET_DONE          :std_logic;   
+    TX_PMA_RESET_DONE          :std_logic;   
+  end record TCDS_2_LTCDS_STATUS_MON_t;
+
+
+  type TCDS_2_LTCDS_TX_CTRL_t is record
+    CTRL0                      :std_logic_vector(15 downto 0);
+    CTRL1                      :std_logic_vector(15 downto 0);
+    CTRL2                      :std_logic_vector( 7 downto 0);
+  end record TCDS_2_LTCDS_TX_CTRL_t;
+
+
+  constant DEFAULT_TCDS_2_LTCDS_TX_CTRL_t : TCDS_2_LTCDS_TX_CTRL_t := (
+                                                                       CTRL0 => (others => '0'),
+                                                                       CTRL1 => (others => '0'),
+                                                                       CTRL2 => (others => '0')
+                                                                      );
+  type TCDS_2_LTCDS_RX_MON_t is record
+    CTRL0                      :std_logic_vector(15 downto 0);
+    CTRL1                      :std_logic_vector(15 downto 0);
+    CTRL2                      :std_logic_vector( 7 downto 0);
+    CTRL3                      :std_logic_vector( 7 downto 0);
+  end record TCDS_2_LTCDS_RX_MON_t;
+
+
+  type TCDS_2_LTCDS_MON_t is record
+    STATUS                     :TCDS_2_LTCDS_STATUS_MON_t;
+    RX                         :TCDS_2_LTCDS_RX_MON_t;    
+  end record TCDS_2_LTCDS_MON_t;
+  type TCDS_2_LTCDS_MON_t_ARRAY is array(1 to 2) of TCDS_2_LTCDS_MON_t;
+
+  type TCDS_2_LTCDS_CTRL_t is record
+    RESET                      :TCDS_2_LTCDS_RESET_CTRL_t;
+    TX                         :TCDS_2_LTCDS_TX_CTRL_t;   
+  end record TCDS_2_LTCDS_CTRL_t;
+  type TCDS_2_LTCDS_CTRL_t_ARRAY is array(1 to 2) of TCDS_2_LTCDS_CTRL_t;
+
+  constant DEFAULT_TCDS_2_LTCDS_CTRL_t : TCDS_2_LTCDS_CTRL_t := (
+                                                                 RESET => DEFAULT_TCDS_2_LTCDS_RESET_CTRL_t,
+                                                                 TX => DEFAULT_TCDS_2_LTCDS_TX_CTRL_t
+                                                                );
   type TCDS_2_MON_t is record
     TCDS_2                     :TCDS_2_TCDS_2_MON_t;
+    LTCDS                      :TCDS_2_LTCDS_MON_t_ARRAY;
   end record TCDS_2_MON_t;
 
 
   type TCDS_2_CTRL_t is record
     TCDS_2                     :TCDS_2_TCDS_2_CTRL_t;
+    LTCDS                      :TCDS_2_LTCDS_CTRL_t_ARRAY;
   end record TCDS_2_CTRL_t;
 
 
   constant DEFAULT_TCDS_2_CTRL_t : TCDS_2_CTRL_t := (
-                                                     TCDS_2 => DEFAULT_TCDS_2_TCDS_2_CTRL_t
+                                                     TCDS_2 => DEFAULT_TCDS_2_TCDS_2_CTRL_t,
+                                                     LTCDS => (others => DEFAULT_TCDS_2_LTCDS_CTRL_t )
                                                     );
 
 

@@ -200,24 +200,16 @@ entity top is
     TCDS_TTS_N              : out std_logic;
 
     
---
---    AXI_C2C_CM1_Rx_P      : in    std_logic_vector(1 to 1);
---    AXI_C2C_CM1_Rx_N      : in    std_logic_vector(1 to 1);
---    AXI_C2C_CM1_Tx_P      : out   std_logic_vector(1 to 1);
---    AXI_C2C_CM1_Tx_N      : out   std_logic_vector(1 to 1);
---                                                   1 to 1
---    AXI_C2C_CM2_Rx_P      : in    std_logic_vector(1 to 1);
---    AXI_C2C_CM2_Rx_N      : in    std_logic_vector(1 to 1);
---    AXI_C2C_CM2_Tx_P      : out   std_logic_vector(1 to 1);
---    AXI_C2C_CM2_Tx_N      : out   std_logic_vector(1 to 1);
+    CM1_TCDS_TTS_P          : in    std_logic; 
+    CM1_TCDS_TTS_N          : in    std_logic;
+    CM1_TCDS_TTC_P          : out   std_logic; 
+    CM1_TCDS_TTC_N          : out   std_logic;
+    CM2_TCDS_TTS_P          : in    std_logic; 
+    CM2_TCDS_TTS_N          : in    std_logic;
+    CM2_TCDS_TTC_P          : out   std_logic; 
+    CM2_TCDS_TTC_N          : out   std_logic;
+    
 
---    TCDS_TTC_P             : in    std_logic; 
---    TCDS_TTC_N             : in    std_logic; 
---                              
---    LOCAL_TCDS_TTC_P        : out   std_logic; 
---    LOCAL_TCDS_TTC_N        : out   std_logic; 
---    CM2_TCDS_TTS_P          : in    std_logic; 
---    CM2_TCDS_TTS_N          : in    std_logic;
 --
 --    refclk_CMS_P      : in    std_logic; 
 --    refclk_CMS_N      : in    std_logic; 
@@ -1142,7 +1134,15 @@ begin  -- architecture structure
       clk_TCDS_320_in_n  => REFCLK_CMS_N(0),      
       clk_TCDS_REC_out_p => CLK_REC_OUT_P,
       clk_TCDS_REC_out_n => CLK_REC_OUT_N,
-      clk_TCDS           => open
+      clk_TCDS           => open,
+      LTTC_P(0)          => CM1_TCDS_TTC_P,
+      LTTC_P(1)          => CM2_TCDS_TTC_P,
+      LTTC_N(0)          => CM1_TCDS_TTC_N,
+      LTTC_N(1)          => CM2_TCDS_TTC_N,
+      LTTS_P(0)          => CM1_TCDS_TTS_P,
+      LTTS_P(1)          => CM2_TCDS_TTS_P,
+      LTTS_N(0)          => CM1_TCDS_TTS_N,
+      LTTS_N(1)          => CM2_TCDS_TTS_N
       );
 
   LDAQ_1: entity work.LDAQ

@@ -46,9 +46,14 @@ entity TCDS is
     -- LHC bunch clock output.
     -- NOTE: This clock originates from a BUFGCE_DIV and is intended
     -- for use in the FPGA clocking fabric.
-    clk_TCDS : out std_logic
+    clk_TCDS : out std_logic;
 
-    
+    LTTC_P   : out std_logic_vector(1 downto 0);
+    LTTC_N   : out std_logic_vector(1 downto 0);
+
+    LTTS_P   : in  std_logic_vector(1 downto 0);
+    LTTS_N   : in  std_logic_vector(1 downto 0)
+
     );
 end entity TCDS;
 
@@ -89,9 +94,18 @@ architecture behavioral of TCDS is
   signal channel1_tts2_i : tcds2_tts2_value_array(0 downto 0);
 
   constant zero : std_logic := '0';
+
+  signal local_TCDS_clk1 : std_logic;
+  signal local_TCDS_clk2 : std_logic;
+  signal local_TCDS_refclk1 : std_logic;
+  signal local_TCDS_refclk2 : std_logic;
+
+  signal ttc_data : slv_32_t;
+  signal tts_data : slv32_array_t(1 downto 0);
   
 begin
 
+  
 
   ------------------------------------------
   -- The core TCDS2 interface.
@@ -165,10 +179,10 @@ begin
 
       gtrefclk00_in(0)                      => clk_TCDS_320,
       gtrefclk01_in(0)                      => clk_TCDS_REC,
-      qpll0outclk_out                       => open,
-      qpll0outrefclk_out                    => open,
-      qpll1outclk_out                       => open,
-      qpll1outrefclk_out                    => open,
+      qpll0outclk_out(0)                    => local_TCDS_clk1,
+      qpll0outrefclk_out(0)                 => local_TCDS_refclk1,
+      qpll1outclk_out(0)                    => local_TCDS_clk2,
+      qpll1outrefclk_out(0)                 => local_TCDS_refclk2,
 
       -- User clocking.
       txusrclk_in(0)                        => mgt_clk_ctrl.txusrclk,
@@ -481,6 +495,87 @@ begin
 
 
 
+
+
+  ttc_data( 0) <= channel0_ttc2_o.l1a_types.l1a_physics;
+  ttc_data( 1) <= channel0_ttc2_o.l1a_types.l1a_calibration;
+  ttc_data( 2) <= channel0_ttc2_o.l1a_types.l1a_random;     
+  ttc_data( 3) <= channel0_ttc2_o.l1a_types.l1a_software;   
+  ttc_data( 4) <= channel0_ttc2_o.l1a_types.l1a_reserved_4; 
+  ttc_data( 5) <= channel0_ttc2_o.l1a_types.l1a_reserved_5; 
+  ttc_data( 6) <= channel0_ttc2_o.l1a_types.l1a_reserved_6; 
+  ttc_data( 7) <= channel0_ttc2_o.l1a_types.l1a_reserved_7; 
+  ttc_data( 8) <= channel0_ttc2_o.l1a_types.l1a_reserved_8; 
+  ttc_data( 9) <= channel0_ttc2_o.l1a_types.l1a_reserved_9; 
+  ttc_data(10) <= channel0_ttc2_o.l1a_types.l1a_reserved_10;
+  ttc_data(11) <= channel0_ttc2_o.l1a_types.l1a_reserved_11;
+  ttc_data(12) <= channel0_ttc2_o.l1a_types.l1a_reserved_12;
+  ttc_data(13) <= channel0_ttc2_o.l1a_types.l1a_reserved_13;
+  ttc_data(14) <= channel0_ttc2_o.l1a_types.l1a_reserved_14;
+  ttc_data(15) <= channel0_ttc2_o.l1a_types.l1a_reserved_15;
+  ttc_data(26 downto 16) <= channel0_ttc2_o.sync_flags_and_commands(10 downto 0);
+  ttc_data(31 downto 27) <= channel0_ttc2_o.status;
+
+
+  channel0_tts2_i(0) <=
+      to_integer(unsigned(tts_data(0)(6 downto 0) or
+                          tts_data(1)(6 downto 0)));
+
+  
+  local_TCDS: for iCM in 1 to 2 generate
+
+    local_TCDS_MGBT_1: entity work.LOCAL_TCDS2
+    port map (
+      gtwiz_userclk_tx_reset_in(0)          => Ctrl.LTCDS(iCM).RESET.USERCLK_TX,
+      gtwiz_userclk_tx_srcclk_out(0)        => open,
+      gtwiz_userclk_tx_usrclk_out(0)        => open,
+      gtwiz_userclk_tx_usrclk2_out(0)       => open,
+      gtwiz_userclk_tx_active_out(0)        => Mon.LTCDS(iCM).STATUS.userclk_tx_active,
+      gtwiz_userclk_rx_reset_in(0)          => Ctrl.LTCDS(iCM).RESET.USERCLK_RX,
+      gtwiz_userclk_rx_srcclk_out(0)        => open,
+      gtwiz_userclk_rx_usrclk_out(0)        => open,
+      gtwiz_userclk_rx_usrclk2_out(0)       => open,
+      gtwiz_userclk_rx_active_out(0)        => Mon.LTCDS(iCM).STATUS.userclk_rx_active,
+      gtwiz_reset_clk_freerun_in(0)         => '0',
+      gtwiz_reset_all_in(0)                 => Ctrl.LTCDS(iCM).RESET.RESET_ALL,
+      gtwiz_reset_tx_pll_and_datapath_in(0) => Ctrl.LTCDS(iCM).RESET.TX_PLL_AND_DATAPATH,
+      gtwiz_reset_tx_datapath_in(0)         => Ctrl.LTCDS(iCM).RESET.TX_DATAPATH,
+      gtwiz_reset_rx_pll_and_datapath_in(0) => Ctrl.LTCDS(iCM).RESET.RX_PLL_AND_DATAPATH,
+      gtwiz_reset_rx_datapath_in(0)         => Ctrl.LTCDS(iCM).RESET.RX_DATAPATH,
+      gtwiz_reset_qpll0lock_in(0)           => mgt_stat.txplllock_out(0),
+      gtwiz_reset_rx_cdr_stable_out(0)      => Mon.LTCDS(iCM).STATUS.reset_rx_cdr_stable,
+      gtwiz_reset_tx_done_out(0)            => Mon.LTCDS(iCM).STATUS.reset_tx_done,
+      gtwiz_reset_rx_done_out(0)            => Mon.LTCDS(iCM).STATUS.reset_rx_done,
+      gtwiz_reset_qpll0reset_out(0)         => open,
+      gtwiz_userdata_tx_in                  => ttc_data,
+      gtwiz_userdata_rx_out                 => tts_data(iCM-1),
+      qpll0clk_in(0)                        => local_TCDS_clk1,   
+      qpll0refclk_in(0)                     => local_TCDS_refclk1,
+      qpll1clk_in(0)                        => local_TCDS_clk2,   
+      qpll1refclk_in(0)                     => local_TCDS_refclk2,
+      gthrxn_in(0)                          => LTTS_N(iCM-1),
+      gthrxp_in(0)                          => LTTS_P(iCM-1),
+      rx8b10ben_in(0)                       => '1',
+      rxcommadeten_in(0)                    => '1',
+      rxmcommaalignen_in(0)                 => '1',
+      rxpcommaalignen_in(0)                 => '1',
+      tx8b10ben_in(0)                       => '1',
+      txctrl0_in                            => Ctrl.LTCDS(iCM).tx.ctrl0,
+      txctrl1_in                            => Ctrl.LTCDS(iCM).tx.ctrl1,
+      txctrl2_in                            => Ctrl.LTCDS(iCM).tx.ctrl2,
+      gthtxn_out(0)                         => LTTC_N(iCM-1),
+      gthtxp_out(0)                         => LTTC_P(iCM-1),
+      gtpowergood_out(0)                    => Mon.LTCDS(iCM).STATUS.gt_power_good,
+      rxbyteisaligned_out(0)                => Mon.LTCDS(iCM).STATUS.rx_byte_isaligned,
+      rxbyterealign_out(0)                  => Mon.LTCDS(iCM).STATUS.rx_byte_realign,
+      rxcommadet_out(0)                     => Mon.LTCDS(iCM).STATUS.rx_commadet,
+      rxctrl0_out                           => Mon.LTCDS(iCM).RX.ctrl0,
+      rxctrl1_out                           => Mon.LTCDS(iCM).RX.ctrl1,
+      rxctrl2_out                           => Mon.LTCDS(iCM).RX.ctrl2,
+      rxctrl3_out                           => Mon.LTCDS(iCM).RX.ctrl3,
+      rxpmaresetdone_out(0)                 => Mon.LTCDS(iCM).STATUS.rx_pma_reset_done,
+      txpmaresetdone_out(0)                 => Mon.LTCDS(iCM).STATUS.tx_pma_reset_done);
+  end generate local_TCDS;
 
 
 

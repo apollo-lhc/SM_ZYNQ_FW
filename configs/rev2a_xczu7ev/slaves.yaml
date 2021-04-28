@@ -307,6 +307,7 @@ AXI_SLAVES:
       - "address_table/modules/top_secret/tcds2_ttc2_spy.xml"
       - "address_table/modules/top_secret/tcds2_frame_spy.xml"
       - "address_table/modules/top_secret/tcds2_tts2_spy.xml"
+      - "address_table/modules/LTCDS.xml"
     UHAL_BASE: 0x30000000
     HDL: "src/TCDS"
   
