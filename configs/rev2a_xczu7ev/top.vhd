@@ -412,6 +412,7 @@ begin  -- architecture structure
   CM_C2C_Mon.Link(2).link_debug.cpll_lock <= '0';
   zynq_bd_wrapper_1: entity work.zynq_bd_wrapper
     port map (
+      clk_125              => clk_125Mhz,
       AXI_RST_N(0)         => axi_reset_n,
       AXI_CLK              => AXI_clk,
       SI_scl_i                  => SCL_i_phy,--SCL_i_normal,
@@ -1117,7 +1118,7 @@ begin  -- architecture structure
   
   TCDS_1: entity work.TCDS
     port map (
-      clk_axi           => axi_clk,
+      clk_axi           => clk_125Mhz,
       reset_axi_n       => pl_reset_n,
       slave_readMOSI    => AXI_BUS_RMOSI(7),
       slave_readMISO    => AXI_BUS_RMISO(7),

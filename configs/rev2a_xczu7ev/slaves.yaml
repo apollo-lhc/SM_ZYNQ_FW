@@ -297,7 +297,11 @@ AXI_SLAVES:
   TCDS_2:
     TCL_CALL:
       command: "AXI_PL_DEV_CONNECT"
-      axi_control: "${::AXI_MASTER_CTRL}"
+      axi_control: 
+        axi_interconnect: "${::AXI_INTERCONNECT_NAME}"
+        axi_clk: "clk_125"
+        axi_rstn: "${::AXI_MASTER_RSTN}"
+        axi_freq: "125000000"
       addr:
         offset: "0xA0170000"
         range: "4K"

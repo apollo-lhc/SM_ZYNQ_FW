@@ -18,7 +18,7 @@
 {'mon_axi': ['${::ZYNQ_NAME}/M_AXI_HPM0_FPD', '${::ZYNQ_NAME}/M_AXI_HPM1_FPD'], 'axi_control': '${::AXI_C2C_CTRL}', 'mon_axi_clk': ['${::AXI_MASTER_CLK}', '${::AXI_MASTER_CLK}'], 'command': 'AXI_IP_AXI_MONITOR', 'core_rstn': '${::AXI_MASTER_RSTN}', 'mon_axi_rstn': '${::AXI_MASTER_RSTN} ${::AXI_MASTER_RSTN}', 'core_clk': '${::AXI_MASTER_CLK}'}
 
 #TCDS_2
-{'axi_control': '${::AXI_MASTER_CTRL}', 'command': 'AXI_PL_DEV_CONNECT', 'addr': {'range': '4K', 'offset': '0xA0170000'}}
+{'axi_control': {'axi_rstn': '${::AXI_MASTER_RSTN}', 'axi_freq': '125000000', 'axi_clk': 'clk_125', 'axi_interconnect': '${::AXI_INTERCONNECT_NAME}'}, 'command': 'AXI_PL_DEV_CONNECT', 'addr': {'range': '4K', 'offset': '0xA0170000'}}
 
 #ESM_UART
 {'baud_rate': '115200', 'command': 'AXI_IP_UART', 'irq_port': '${::IRQ_ORR}/in2', 'addr': {'range': '8K', 'offset': '0xA0160000'}, 'axi_control': '${::AXI_MASTER_CTRL}'}
