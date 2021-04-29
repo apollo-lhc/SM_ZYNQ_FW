@@ -3,6 +3,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.AXIRegWidthPkg.all;
 use work.AXIRegPkg.all;
 use work.types.all;
 use work.LDAQ_Ctrl.all;
@@ -19,7 +20,7 @@ entity LDAQ_interface is
     );
 end entity LDAQ_interface;
 architecture behavioral of LDAQ_interface is
-  signal localAddress       : slv_32_t;
+  signal localAddress       : std_logic_vector(AXI_ADDR_WIDTH-1 downto 0);
   signal localRdData        : slv_32_t;
   signal localRdData_latch  : slv_32_t;
   signal localWrData        : slv_32_t;
@@ -68,28 +69,28 @@ begin  -- architecture behavioral
       case to_integer(unsigned(localAddress(4 downto 0))) is
 
         when 16 => --0x10
-          localRdData(15 downto  0)  <=  reg_data(16)(15 downto  0);          -- 
-          localRdData(31 downto 16)  <=  reg_data(16)(31 downto 16);          -- 
+          localRdData(15 downto  0)  <=  reg_data(16)(15 downto  0);          --
+          localRdData(31 downto 16)  <=  reg_data(16)(31 downto 16);          --
         when 17 => --0x11
-          localRdData( 7 downto  0)  <=  reg_data(17)( 7 downto  0);          -- 
+          localRdData( 7 downto  0)  <=  reg_data(17)( 7 downto  0);          --
         when 2 => --0x2
-          localRdData( 0)            <=  Mon.STATUS.RESET_RX_CDR_STABLE;      -- 
-          localRdData( 1)            <=  Mon.STATUS.RESET_TX_DONE;            -- 
-          localRdData( 2)            <=  Mon.STATUS.RESET_RX_DONE;            -- 
-          localRdData( 8)            <=  Mon.STATUS.USERCLK_TX_ACTIVE;        -- 
-          localRdData( 9)            <=  Mon.STATUS.USERCLK_RX_ACTIVE;        -- 
-          localRdData(16)            <=  Mon.STATUS.GT_POWER_GOOD;            -- 
-          localRdData(17)            <=  Mon.STATUS.RX_BYTE_ISALIGNED;        -- 
-          localRdData(18)            <=  Mon.STATUS.RX_BYTE_REALIGN;          -- 
-          localRdData(19)            <=  Mon.STATUS.RX_COMMADET;              -- 
-          localRdData(20)            <=  Mon.STATUS.RX_PMA_RESET_DONE;        -- 
-          localRdData(21)            <=  Mon.STATUS.TX_PMA_RESET_DONE;        -- 
+          localRdData( 0)            <=  Mon.STATUS.RESET_RX_CDR_STABLE;      --
+          localRdData( 1)            <=  Mon.STATUS.RESET_TX_DONE;            --
+          localRdData( 2)            <=  Mon.STATUS.RESET_RX_DONE;            --
+          localRdData( 8)            <=  Mon.STATUS.USERCLK_TX_ACTIVE;        --
+          localRdData( 9)            <=  Mon.STATUS.USERCLK_RX_ACTIVE;        --
+          localRdData(16)            <=  Mon.STATUS.GT_POWER_GOOD;            --
+          localRdData(17)            <=  Mon.STATUS.RX_BYTE_ISALIGNED;        --
+          localRdData(18)            <=  Mon.STATUS.RX_BYTE_REALIGN;          --
+          localRdData(19)            <=  Mon.STATUS.RX_COMMADET;              --
+          localRdData(20)            <=  Mon.STATUS.RX_PMA_RESET_DONE;        --
+          localRdData(21)            <=  Mon.STATUS.TX_PMA_RESET_DONE;        --
         when 19 => --0x13
-          localRdData( 7 downto  0)  <=  Mon.RX.CTRL2;                        -- 
-          localRdData(15 downto  8)  <=  Mon.RX.CTRL3;                        -- 
+          localRdData( 7 downto  0)  <=  Mon.RX.CTRL2;                        --
+          localRdData(15 downto  8)  <=  Mon.RX.CTRL3;                        --
         when 18 => --0x12
-          localRdData(15 downto  0)  <=  Mon.RX.CTRL0;                        -- 
-          localRdData(31 downto 16)  <=  Mon.RX.CTRL1;                        -- 
+          localRdData(15 downto  0)  <=  Mon.RX.CTRL0;                        --
+          localRdData(31 downto 16)  <=  Mon.RX.CTRL1;                        --
 
 
         when others =>
@@ -136,10 +137,10 @@ begin  -- architecture behavioral
           Ctrl.RESET.USERCLK_TX           <=  localWrData( 8);               
           Ctrl.RESET.USERCLK_RX           <=  localWrData( 9);               
         when 16 => --0x10
-          reg_data(16)(15 downto  0)      <=  localWrData(15 downto  0);      -- 
-          reg_data(16)(31 downto 16)      <=  localWrData(31 downto 16);      -- 
+          reg_data(16)(15 downto  0)      <=  localWrData(15 downto  0);      --
+          reg_data(16)(31 downto 16)      <=  localWrData(31 downto 16);      --
         when 17 => --0x11
-          reg_data(17)( 7 downto  0)      <=  localWrData( 7 downto  0);      -- 
+          reg_data(17)( 7 downto  0)      <=  localWrData( 7 downto  0);      --
 
           when others => null;
         end case;

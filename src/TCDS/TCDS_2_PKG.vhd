@@ -1,9 +1,7 @@
 --This file was auto-generated.
 --Modifications might be lost.
--- Created : 2021-04-28 13:42:25.932161.
 library IEEE;
 use IEEE.std_logic_1164.all;
-
 
 
 package TCDS_2_CTRL is
@@ -164,25 +162,25 @@ package TCDS_2_CTRL is
 
 
   constant DEFAULT_TCDS_2_TCDS_2_csr_control_CTRL_t : TCDS_2_TCDS_2_csr_control_CTRL_t := (
-                                                                                           tclink_param_modulo_carrier_period => DEFAULT_TCDS_2_TCDS_2_csr_control_tclink_param_modulo_carrier_period_CTRL_t,
                                                                                            phase_cdc40_tx_calib => (others => '0'),
                                                                                            phase_cdc40_rx_force => '0',
-                                                                                           phase_pi_tx_calib => (others => '0'),
+                                                                                           mgt_rxeq_params => DEFAULT_TCDS_2_TCDS_2_csr_control_mgt_rxeq_params_CTRL_t,
                                                                                            fec_monitor_reset => '0',
                                                                                            phase_pi_tx_force => '0',
                                                                                            tclink_param_ape => (others => '0'),
                                                                                            tclink_close_loop => '0',
                                                                                            tclink_param_adco => DEFAULT_TCDS_2_TCDS_2_csr_control_tclink_param_adco_CTRL_t,
-                                                                                           mgt_rxeq_params => DEFAULT_TCDS_2_TCDS_2_csr_control_mgt_rxeq_params_CTRL_t,
+                                                                                           tclink_param_modulo_carrier_period => DEFAULT_TCDS_2_TCDS_2_csr_control_tclink_param_modulo_carrier_period_CTRL_t,
                                                                                            mgt_rx_dfe_vs_lpm => '0',
                                                                                            tclink_param_master_rx_ui_period => DEFAULT_TCDS_2_TCDS_2_csr_control_tclink_param_master_rx_ui_period_CTRL_t,
-                                                                                           tclink_param_phase_detector_navg => (others => '0'),
+                                                                                           phase_cdc40_tx_force => '0',
                                                                                            tclink_param_metastability_deglitch => (others => '0'),
                                                                                            mgt_reset_rx_datapath => '0',
-                                                                                           mgt_reset_tx_pll_and_datapath => '0',
-                                                                                           tclink_param_aie_enable => '0',
-                                                                                           phase_cdc40_tx_force => '0',
+                                                                                           tclink_channel_ctrl_enable => '0',
+                                                                                           phase_pi_tx_calib => (others => '0'),
+                                                                                           tclink_param_phase_detector_navg => (others => '0'),
                                                                                            tclink_phase_offset => DEFAULT_TCDS_2_TCDS_2_csr_control_tclink_phase_offset_CTRL_t,
+                                                                                           tclink_param_aie_enable => '0',
                                                                                            reset_all => '0',
                                                                                            tclink_channel_ctrl_reset => '0',
                                                                                            mgt_rx_dfe_vs_lpm_reset => '0',
@@ -192,7 +190,7 @@ package TCDS_2_CTRL is
                                                                                            mgt_reset_tx_datapath => '0',
                                                                                            mgt_reset_all => '0',
                                                                                            phase_cdc40_rx_calib => (others => '0'),
-                                                                                           tclink_channel_ctrl_enable => '0',
+                                                                                           mgt_reset_tx_pll_and_datapath => '0',
                                                                                            mgt_reset_rx_pll_and_datapath => '0',
                                                                                            tclink_param_aie => (others => '0')
                                                                                           );

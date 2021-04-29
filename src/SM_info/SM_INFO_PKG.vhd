@@ -1,9 +1,7 @@
 --This file was auto-generated.
 --Modifications might be lost.
--- Created : 2021-04-28 13:42:13.337550.
 library IEEE;
 use IEEE.std_logic_1164.all;
-
 
 
 package SM_INFO_CTRL is

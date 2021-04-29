@@ -4,12 +4,19 @@ import argparse
 import sys
 import os
 import yaml
-import uhal
+
+#if os.environ.get('CACTUS_ROOT') != None :
+#import uhal
 #from regmap_helper/tree import * # import node,arraynode,tree
 #from tree import * # import node,arraynode,tree
 #import regmap_helper/node
 sys.path.append("./regmap_helper")
-from tree import *
+from node import node
+from tree import tree
+
+from parserNode import ParserNode
+from build_vhdl_packages_parserNode import buildTree
+
 
 def represent_none(self, _):
     return self.represent_scalar('tag:yaml.org,2002:null', '')
@@ -46,18 +53,31 @@ def GenerateHDL(name,XMLFile,HDLPath):
   outXMLFile.close()
   
 
-  #generate the HDL
-  try:
-    device = uhal.getDevice("dummy","ipbusudp-1.3://localhost:12345","file://" + topXMLFile)
-  except Exception as err:
-    print("uHAL error: {0}".format(err))
-    raise Exception("File '%s' does not exist or has incorrect format" % topXMLFile)
-  for i in device.getNodes():
-    if i.count('.') == 0:
-      mytree = tree(device.getNode(i), log)
+#####  #generate the HDL
+#####  try:
+#####    device = uhal.getDevice("dummy","ipbusudp-1.3://localhost:12345","file://" + topXMLFile)
+#####  except Exception as err:
+#####    print("uHAL error: {0}".format(err))
+#####    raise Exception("File '%s' does not exist or has incorrect format" % topXMLFile)
+#####  for i in device.getNodes():
+#####    if i.count('.') == 0:
+#####      mytree = tree(device.getNode(i), log)
+#####      mytree.generatePkg()
+#####      mytree.generateRegMap(regMapTemplate=wd+"/regmap_helper/template_map.vhd")
+
+  root = ParserNode(name='Root')
+
+  buildTree(root,topXMLFile)
+  ParserNode.writeNode(root, path="temp.txt")
+  for child in root.getChildren():
+      child.setParent(None)
+      print("Generating:", child.getName())
+      mytree = tree(child)
       mytree.generatePkg()
-      mytree.generateRegMap(regMapTemplate=wd+"/regmap_helper/template_map.vhd")
-  
+      mytree.generateRegMap(regMapTemplate="../regmap_helper/template_map.vhd")
+      child.setParent(root)
+
+
   #cleanup
   os.remove(topXMLFile)
   os.chdir(wd)           #go back to original path
@@ -115,15 +135,15 @@ def LoadSlave(name,slave,tclFile,dtsiYAML,aTableYAML,parentName):
 def main():
   # configure logger
   global log
-  log = logging.getLogger("main")
-  formatter = logging.Formatter('%(name)s %(levelname)s: %(message)s')
-  handler = logging.StreamHandler(sys.stdout)
-  handler.setFormatter(formatter)
-  log.addHandler(handler)
-  log.setLevel(logging.WARNING)
+#  log = logging.getLogger("main")
+#  formatter = logging.Formatter('%(name)s %(levelname)s: %(message)s')
+#  handler = logging.StreamHandler(sys.stdout)
+#  handler.setFormatter(formatter)
+#  log.addHandler(handler)
+#  log.setLevel(logging.WARNING)
 
   #tell uHAL to calm down. 
-  uhal.setLogLevelTo(uhal.LogLevel.WARNING)
+#  uhal.setLogLevelTo(uhal.LogLevel.WARNING)
 
   #command line
   parser = argparse.ArgumentParser(description="Create auto-generated files for the build system.")

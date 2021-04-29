@@ -1,9 +1,7 @@
 --This file was auto-generated.
 --Modifications might be lost.
--- Created : 2021-04-28 13:42:33.081588.
 library IEEE;
 use IEEE.std_logic_1164.all;
-
 
 
 package PLXVC_CTRL is

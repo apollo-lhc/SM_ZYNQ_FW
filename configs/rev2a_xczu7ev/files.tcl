@@ -139,9 +139,10 @@ set xdc_files "\
      "
 
 set xci_files "\
-    	      cores/onboard_CLK_USP/onboard_CLK.xci \
               src/TCDS/tclink/firmware/source/transceiver/ip_mgt_timing/gthe3_slave_timing_10g.xcix \
               configs/rev2a_xczu7ev/cores/LDAQ_MGBT.tcl \
               configs/rev2a_xczu7ev/cores/LOCAL_TCDS2.tcl \
+              configs/rev2a_xczu7ev/cores/onboardClk.tcl \
               "
 
+#    	      cores/onboard_CLK_USP/onboard_CLK.xci \
