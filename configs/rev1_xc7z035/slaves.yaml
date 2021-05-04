@@ -153,11 +153,11 @@ AXI_SLAVES:
     XML:
       - "address_table/modules/CM_7s.xml"
       - "address_table/modules/CM_single_7s.xml"
-      - "address_table/modules/address_table/modules/CM_C2C_7s.xml"
-      - "address_table/modules/address_table/modules/CM_CTRL.xml"
-      - "address_table/modules/address_table/modules/CM_C2C_Status.xml"
+      - "address_table/modules/CM_C2C_7s.xml"
+      - "address_table/modules/CM_CTRL.xml"
+      - "address_table/modules/CM_C2C_Status.xml"
       - "address_table/modules/CM_C2C_DEBUG_7s.xml"
-      - "address_table/modules/address_table/modules/CM_Mon.xml"
+      - "address_table/modules/CM_Mon.xml"
     UHAL_BASE: 0x03000000
     HDL: "src/CM_interface"
 
