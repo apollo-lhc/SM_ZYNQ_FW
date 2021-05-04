@@ -55,3 +55,9 @@ set xci_files "\
     	      cores/onboard_CLK_USP/onboard_CLK.xci \
               "
 
+set yaml_files "\
+               configs/common/rev2/axi_base.yaml \
+               configs/common/rev2/c2c_base_2CM_1Lane.yaml \
+               configs/common/rev2/services.yaml \
+               "
+                

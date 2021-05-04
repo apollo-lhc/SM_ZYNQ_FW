@@ -1,0 +1,36 @@
+AXI_CONTROL_SETS:
+  AXI_MASTER_CTRL:
+      axi_interconnect: "${::AXI_INTERCONNECT_NAME}"
+      axi_clk: "${::AXI_MASTER_CLK}"
+      axi_rstn: "${::AXI_MASTER_RSTN}"
+      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
+  AXI_C2C_CTRL:
+      axi_interconnect: "${::AXI_C2C_INTERCONNECT_NAME}"
+      axi_clk: "${::AXI_MASTER_CLK}"
+      axi_rstn: "${::AXI_MASTER_RSTN}"
+      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
+
+AXI_SLAVES:
+  AXI_MON:
+    TCL_CALL:
+      command: "AXI_IP_AXI_MONITOR"
+      axi_control: "${::AXI_C2C_CTRL}"
+      core_clk: "${::AXI_MASTER_CLK}"
+      core_rstn: "${::AXI_MASTER_RSTN}"
+      mon_axi:
+       - "${::ZYNQ_NAME}/M_AXI_HPM0_FPD"
+       - "${::ZYNQ_NAME}/M_AXI_HPM1_FPD"
+      mon_axi_clk:
+       - ${::AXI_MASTER_CLK}
+       - ${::AXI_MASTER_CLK}
+      mon_axi_rstn: "${::AXI_MASTER_RSTN} ${::AXI_MASTER_RSTN}"
+
+    XML:
+      - "address_table/modules/AXI_MONITOR.xml"
+      - "address_table/modules/AXI_MONITOR_COUNTER.xml"
+    UHAL_BASE: 0x1F000000
+
+  INT_AXI_FW:
+    XML:
+      - "address_table/modules/INT_AXI_FW.xml"
+    UHAL_BASE: 0x20000000
