@@ -6,9 +6,9 @@ array set bd_files [list {zynq_bd} {src/ZynqPS/build_Zynq_rev2_xczu7ev_testing.t
 set vhdl_files "\
      configs/rev2_xczu7ev_testing//top.vhd \
      src/misc/types.vhd \
-     src/axiReg/axiRegWidthPkg_40.vhd \
-     src/axiReg/axiRegPkg.vhd \
-     src/axiReg/axiReg.vhd \
+     regmap_helper/axiReg/axiRegWidthPkg_40.vhd \
+     regmap_helper/axiReg/axiRegPkg.vhd \
+     regmap_helper/axiReg/axiReg.vhd \
      src/SM_info/SM_INFO_map.vhd \
      src/SM_info/SM_INFO_PKG.vhd \
      src/SM_info/SM_info.vhd \
