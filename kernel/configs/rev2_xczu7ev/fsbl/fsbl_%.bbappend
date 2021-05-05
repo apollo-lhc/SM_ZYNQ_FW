@@ -5,7 +5,7 @@ SRC_URI_append = " \
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
 #Add debug for FSBL(optional)
-XSCTH_BUILD_DEBUG = "1"
+#XSCTH_BUILD_DEBUG = "1"
 
 
 EXTERNALXSCTSRC = ""
