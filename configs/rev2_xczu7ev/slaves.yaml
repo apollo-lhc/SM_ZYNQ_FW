@@ -11,38 +11,6 @@ AXI_CONTROL_SETS:
       axi_freq: "${::AXI_MASTER_CLK_FREQ}"
 
 AXI_SLAVES:
-  PL_MEM:
-    TCL_CALL:
-      command: "AXI_IP_BRAM"
-      axi_control: "${::AXI_MASTER_CTRL}"
-      addr:
-        offset: "0xA0000000"
-        range: "8K"
-    XML:
-      - "address_table/modules/PL_MEM.xml"
-      - "address_table/modules/I2C_REGULATOR_MONITOR.xml"
-    UHAL_BASE: 0x15000000
-
-  SI:
-    TCL_CALL:
-      command: "AXI_IP_I2C"
-      axi_control: "${::AXI_MASTER_CTRL}"
-      addr:
-        offset: "0xA1600000"
-        range: "8K"
-
-  SERV:
-    TCL_CALL:
-      command: "AXI_PL_DEV_CONNECT"
-      axi_control: "${::AXI_MASTER_CTRL}"
-      addr:
-        offset: "0xA3C20000"
-        range: "8K"
-    XML:
-      - "address_table/modules/SERV_rev2.xml"
-    UHAL_BASE: 0x04000000
-    HDL: "src/services"
-
   C2C:
     TCL_CALL:
       command: "AXI_C2C_MASTER"
@@ -56,11 +24,11 @@ AXI_SLAVES:
         axi_rstn: "${::AXI_MASTER_RSTN}"
         axi_freq: "${::AXI_MASTER_CLK_FREQ}"
       addr:
-        offset: "0xBA000000"
+        offset: 0xBA000000
         range: "32M"
       addr_lite:
-        lite_offset: "0xB3c40000"
-        lite_range: "64K"
+        offset: 0xBE000000
+        range: "64K"
 
     SUB_SLAVES:
       1_AXI_FW:
@@ -88,11 +56,11 @@ AXI_SLAVES:
           init_clk: "${::INIT_CLK}"
           refclk_freq: "100"
           addr:
-            offset: "0xBC000000"
+            offset: 0xBC000000
             range: "32M"
           addr_lite:
-            lite_offset: "0xB3d40000"
-            lite_range: "64K"
+            offset: 0xBE010000
+            range: "64K"
 
         SUB_SLAVES:
           _AXI_FW:
@@ -108,12 +76,44 @@ AXI_SLAVES:
               - "address_table/modules/DRP_7_GTX.xml"
             UHAL_BASE: 0x1B000000
 
+  PL_MEM:
+    TCL_CALL:
+      command: "AXI_IP_BRAM"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: -1
+        range: "8K"
+    XML:
+      - "address_table/modules/PL_MEM.xml"
+      - "address_table/modules/I2C_REGULATOR_MONITOR.xml"
+    UHAL_BASE: 0x15000000
+
+  SI:
+    TCL_CALL:
+      command: "AXI_IP_I2C"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: -1
+        range: "8K"
+
+  SERV:
+    TCL_CALL:
+      command: "AXI_PL_DEV_CONNECT"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: -1
+        range: "8K"
+    XML:
+      - "address_table/modules/SERV_rev2.xml"
+    UHAL_BASE: 0x04000000
+    HDL: "src/services"
+
   PLXVC:
     TCL_CALL:
       command: "AXI_PL_DEV_CONNECT"
       axi_control: "${::AXI_MASTER_CTRL}"
       addr:
-        offset: "0xA0010000"
+        offset: -1
         range: "64K"
     XML:
       - "address_table/modules/plXVC_rev2.xml"
@@ -127,7 +127,7 @@ AXI_SLAVES:
       command: "AXI_PL_DEV_CONNECT"
       axi_control: "${::AXI_MASTER_CTRL}"
       addr:
-        offset: "0xA0008000"
+        offset: -1
         range: "8K"
     XML:
       - "address_table/modules/SLAVE_I2C.xml"
@@ -138,7 +138,7 @@ AXI_SLAVES:
       command: "AXI_PL_DEV_CONNECT"
       axi_control: "${::AXI_MASTER_CTRL}"
       addr:
-        offset: "0xA000A000"
+        offset: -1
         range: "8K"
     XML:
       - "address_table/modules/CM_USP.xml"
@@ -156,7 +156,7 @@ AXI_SLAVES:
       command: "AXI_PL_DEV_CONNECT"
       axi_control: "${::AXI_MASTER_CTRL}"
       addr:
-        offset: "0xA000C000"
+        offset: -1
         range: "8K"
     XML:
       - "address_table/modules/FW_INFO.xml"
@@ -169,7 +169,7 @@ AXI_SLAVES:
       axi_control: "${::AXI_MASTER_CTRL}"
       enable_i2c_pins: 0
       addr:
-        offset: "0xA0040000"
+        offset: -1
         range: "64K"
     XML:
       - "address_table/modules/MONITOR_USP.xml"
@@ -182,7 +182,7 @@ AXI_SLAVES:
       irq_port: "${::IRQ_ORR}/in0"
       axi_control: "${::AXI_MASTER_CTRL}"
       addr:
-        offset: "0xA0140000"
+        offset: -1
         range: "8K"
 
   CM2_UART:
@@ -192,7 +192,7 @@ AXI_SLAVES:
       irq_port: "${::IRQ_ORR}/in1"
       axi_control: "${::AXI_MASTER_CTRL}"
       addr:
-        offset: "0xA0150000"
+        offset: -1
         range: "8K"
 
   ESM_UART:
@@ -202,7 +202,7 @@ AXI_SLAVES:
       irq_port: "${::IRQ_ORR}/in2"
       axi_control: "${::AXI_MASTER_CTRL}"
       addr:
-        offset: "0xA0160000"
+        offset: -1
         range: "8K"
 
   AXI_MON:

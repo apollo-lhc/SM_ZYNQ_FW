@@ -7,6 +7,7 @@ use work.AXIRegPkg.all;
 use work.types.all;
 use work.CM_package.all;
 use work.CM_Ctrl.all;
+use work.AXISlaveAddrPkg.all;
 
 Library UNISIM;
 use UNISIM.vcomponents.all;
@@ -130,7 +131,7 @@ begin
     generic map (
       BAUD_COUNT_BITS                => 8,
       INACTIVE_COUNT                 => INACTIVE_COUNT,
-      BASE_ADDRESS                   => PL_MEM_ADDR)
+      BASE_ADDRESS                   => AXI_ADDR_PL_MEM)--PL_MEM_ADDR)
     port map (
       clk                            => clk_axi,
       reset                          => reset,

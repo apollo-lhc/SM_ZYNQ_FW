@@ -15,7 +15,7 @@ pokeUIO SLAVE_I2C 0 1
 mkdir -p /fw
 mount /dev/mmcblk0p1 /fw
 
-ethtool -s eth0 speed 10 duplex half autoneg off
+#ethtool -s eth0 speed 10 duplex half autoneg off
 
 if [ -f "/fw/mac.dat" ]; then
     ifconfig eth0 down
