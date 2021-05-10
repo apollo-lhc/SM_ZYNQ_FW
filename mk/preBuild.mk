@@ -31,8 +31,8 @@ $(SLAVE_DTSI_PATH)/slaves_%.yaml $(ADDRESS_TABLE_CREATION_PATH)/slaves_%.yaml : 
 			                     -s $^ \
 				             -t $(ADDSLAVE_TCL_PATH) \
 				             -a $(ADDRESS_TABLE_CREATION_PATH) \
-				             -d $(SLAVE_DTSI_PATH)
-
+				             -d $(SLAVE_DTSI_PATH) \
+                                             -m $(MAP_TEMPLATE_FILE)
 
 $(foreach prebuild,$(CONFIGS),$(eval $(call PREBUILD_template,$(prebuild))))
 
