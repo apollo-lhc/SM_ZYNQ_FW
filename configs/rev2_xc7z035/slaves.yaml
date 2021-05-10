@@ -59,8 +59,8 @@ AXI_SLAVES:
         offset: "0x8A000000"
         range: "32M"
       addr_lite:
-        lite_offset: "0x83c40000"
-        lite_range: "64K"
+        offset: "0x83c40000"
+        range: "64K"
 
     SUB_SLAVES:
       1_AXI_FW:
@@ -91,8 +91,8 @@ AXI_SLAVES:
             offset: "0x8C000000"
             range: "32M"
           addr_lite:
-            lite_offset: "0x83d40000"
-            lite_range: "64K"
+            offset: "0x83d40000"
+            range: "64K"
 
         SUB_SLAVES:
           _AXI_FW:
@@ -153,11 +153,11 @@ AXI_SLAVES:
     XML:
       - "address_table/modules/CM_7s.xml"
       - "address_table/modules/CM_single_7s.xml"
-      - "address_table/modules/address_table/modules/CM_C2C_7s.xml"
-      - "address_table/modules/address_table/modules/CM_CTRL.xml"
-      - "address_table/modules/address_table/modules/CM_C2C_Status.xml"
+      - "address_table/modules/CM_C2C_7s.xml"
+      - "address_table/modules/CM_CTRL.xml"
+      - "address_table/modules/CM_C2C_Status.xml"
       - "address_table/modules/CM_C2C_DEBUG_7s.xml"
-      - "address_table/modules/address_table/modules/CM_Mon.xml"
+      - "address_table/modules/CM_Mon.xml"
     UHAL_BASE: 0x03000000
     HDL: "src/CM_interface"
 

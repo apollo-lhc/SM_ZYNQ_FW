@@ -2,7 +2,7 @@ UHAL_TAG=v2.7.4
 #UHAL_TAG=v2.8.0
 #UIO_UHAL_TAG=v1.0.1
 #UIO_UHAL_TAG=feature-zynqmp_issues
-#UIO_HAL_URI=https://github.com/dgastler/UIOuHAL.git
+#UIO_UHAL_URI=https://github.com/dgastler/UIOuHAL.git
 UIO_UHAL_URI=https://github.com/ammitra/UIOuHAL.git
 UIO_UHAL_TAG=feature-kernelPatch
 ${OPT_PATH}/cactus: | ${OPT_PATH} ${TMP_PATH}

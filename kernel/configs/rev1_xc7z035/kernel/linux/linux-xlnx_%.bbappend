@@ -6,7 +6,7 @@ SRC_URI += "file://user_2020-02-09.cfg"
 SRC_URI += "file://user_2020-05-12-containers.cfg"
 SRC_URI += "file://user_2020-05-27-containers2.cfg"
 #SRC_URI += "file://fsr-2level.patch"
-
+SRC_URI += "file://phys.cfg"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 

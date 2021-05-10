@@ -12,9 +12,9 @@
 #    fi
 #}
  
-SRC_URI_append = " \
-        file://0001-fsbl.patch \
-        "
+#SRC_URI_append = " \
+#        file://0001-fsbl.patch \
+#        "
  
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
