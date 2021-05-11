@@ -39,16 +39,16 @@
 {'axi_control': '${::AXI_MASTER_CTRL}', 'command': 'AXI_PL_DEV_CONNECT', 'addr': {'range': '64K', 'offset': '0xA0010000'}}
 
 #C2C
-{'axi_control': {'axi_rstn': '${::AXI_MASTER_RSTN}', 'axi_freq': '${::AXI_MASTER_CLK_FREQ}', 'axi_clk': '${::AXI_MASTER_CLK}', 'axi_interconnect': '${::AXI_C2C_INTERCONNECT_NAME}'}, 'addr': {'range': '32M', 'offset': '0xB8000000'}, 'addr_lite': {'lite_range': '64K', 'lite_offset': '0xB3c40000'}, 'device_name': 'C2C1', 'init_clk': '${::INIT_CLK}', 'command': 'AXI_C2C_MASTER', 'primary_serdes': '1', 'refclk_freq': '100'}
+{'axi_control': {'axi_rstn': '${::AXI_MASTER_RSTN}', 'axi_freq': '${::AXI_MASTER_CLK_FREQ}', 'axi_clk': '${::AXI_MASTER_CLK}', 'axi_interconnect': '${::AXI_C2C_INTERCONNECT_NAME}'}, 'addr': {'range': '32M', 'offset': '0xB8000000'}, 'addr_lite': {'range': '64K', 'offset': '0xB3c40000'}, 'device_name': 'C2C1', 'init_clk': '${::INIT_CLK}', 'command': 'AXI_C2C_MASTER', 'primary_serdes': '1', 'refclk_freq': '100'}
 
 #C2C2
-{'axi_control': {'axi_rstn': '${::AXI_MASTER_RSTN}', 'axi_freq': '${::AXI_MASTER_CLK_FREQ}', 'axi_clk': '${::AXI_MASTER_CLK}', 'axi_interconnect': '${::AXI_C2C_INTERCONNECT_NAME}'}, 'addr': {'range': '32M', 'offset': '0xBC000000'}, 'addr_lite': {'lite_range': '64K', 'lite_offset': '0xB3e40000'}, 'device_name': 'C2C2', 'init_clk': '${::INIT_CLK}', 'command': 'AXI_C2C_MASTER', 'primary_serdes': 'C2C1_PHY', 'refclk_freq': '100'}
+{'axi_control': {'axi_rstn': '${::AXI_MASTER_RSTN}', 'axi_freq': '${::AXI_MASTER_CLK_FREQ}', 'axi_clk': '${::AXI_MASTER_CLK}', 'axi_interconnect': '${::AXI_C2C_INTERCONNECT_NAME}'}, 'addr': {'range': '32M', 'offset': '0xBC000000'}, 'addr_lite': {'range': '64K', 'offset': '0xB3e40000'}, 'device_name': 'C2C2', 'init_clk': '${::INIT_CLK}', 'command': 'AXI_C2C_MASTER', 'primary_serdes': 'C2C1_PHY', 'refclk_freq': '100'}
 
 #C2C22b
-{'axi_control': {'axi_rstn': '${::AXI_MASTER_RSTN}', 'axi_freq': '${::AXI_MASTER_CLK_FREQ}', 'axi_clk': '${::AXI_MASTER_CLK}', 'axi_interconnect': '${::AXI_C2C_INTERCONNECT_NAME}'}, 'addr': {'range': '32M', 'offset': '0xBE000000'}, 'addr_lite': {'lite_range': '64K', 'lite_offset': '0xB3f40000'}, 'device_name': 'C2C2b', 'init_clk': '${::INIT_CLK}', 'command': 'AXI_C2C_MASTER', 'primary_serdes': 'C2C1_PHY', 'refclk_freq': '100'}
+{'axi_control': {'axi_rstn': '${::AXI_MASTER_RSTN}', 'axi_freq': '${::AXI_MASTER_CLK_FREQ}', 'axi_clk': '${::AXI_MASTER_CLK}', 'axi_interconnect': '${::AXI_C2C_INTERCONNECT_NAME}'}, 'addr': {'range': '32M', 'offset': '0xBE000000'}, 'addr_lite': {'range': '64K', 'offset': '0xB3f40000'}, 'device_name': 'C2C2b', 'init_clk': '${::INIT_CLK}', 'command': 'AXI_C2C_MASTER', 'primary_serdes': 'C2C1_PHY', 'refclk_freq': '100'}
 
 #C2C1b
-{'axi_control': {'axi_rstn': '${::AXI_MASTER_RSTN}', 'axi_freq': '${::AXI_MASTER_CLK_FREQ}', 'axi_clk': '${::AXI_MASTER_CLK}', 'axi_interconnect': '${::AXI_C2C_INTERCONNECT_NAME}'}, 'addr': {'range': '32M', 'offset': '0xBA000000'}, 'addr_lite': {'lite_range': '64K', 'lite_offset': '0xB3d40000'}, 'device_name': 'C2C1b', 'init_clk': '${::INIT_CLK}', 'command': 'AXI_C2C_MASTER', 'primary_serdes': 'C2C1_PHY', 'refclk_freq': '100'}
+{'axi_control': {'axi_rstn': '${::AXI_MASTER_RSTN}', 'axi_freq': '${::AXI_MASTER_CLK_FREQ}', 'axi_clk': '${::AXI_MASTER_CLK}', 'axi_interconnect': '${::AXI_C2C_INTERCONNECT_NAME}'}, 'addr': {'range': '32M', 'offset': '0xBA000000'}, 'addr_lite': {'range': '64K', 'offset': '0xB3d40000'}, 'device_name': 'C2C1b', 'init_clk': '${::INIT_CLK}', 'command': 'AXI_C2C_MASTER', 'primary_serdes': 'C2C1_PHY', 'refclk_freq': '100'}
 
 #SI
 {'axi_control': '${::AXI_MASTER_CTRL}', 'command': 'AXI_IP_I2C', 'addr': {'range': '8K', 'offset': '0xA1600000'}}

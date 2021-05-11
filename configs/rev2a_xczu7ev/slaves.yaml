@@ -59,8 +59,8 @@ AXI_SLAVES:
         offset: "0xB8000000"
         range: "32M"
       addr_lite:
-        lite_offset: "0xB3c40000"
-        lite_range: "64K"
+        offset: "0xB3c40000"
+        range: "64K"
 
     SUB_SLAVES:
       1_AXI_FW:
@@ -91,8 +91,8 @@ AXI_SLAVES:
             offset: "0xBA000000"
             range: "32M"
           addr_lite:
-            lite_offset: "0xB3d40000"
-            lite_range: "64K"
+            offset: "0xB3d40000"
+            range: "64K"
 
         SUB_SLAVES:
           _AXI_FW:
@@ -124,8 +124,8 @@ AXI_SLAVES:
             offset: "0xBC000000"
             range: "32M"
           addr_lite:
-            lite_offset: "0xB3e40000"
-            lite_range: "64K"
+            offset: "0xB3e40000"
+            range: "64K"
 
         SUB_SLAVES:
           _AXI_FW:
@@ -156,8 +156,8 @@ AXI_SLAVES:
                 offset: "0xBE000000"
                 range: "32M"
               addr_lite:
-                lite_offset: "0xB3f40000"
-                lite_range: "64K"
+                offset: "0xB3f40000"
+                range: "64K"
     
             SUB_SLAVES:
               _AXI_FW:
