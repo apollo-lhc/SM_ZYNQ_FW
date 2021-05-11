@@ -1,0 +1,328 @@
+AXI_CONTROL_SETS:
+  AXI_MASTER_CTRL:
+      axi_interconnect: "${::AXI_INTERCONNECT_NAME}"
+      axi_clk: "${::AXI_MASTER_CLK}"
+      axi_rstn: "${::AXI_MASTER_RSTN}"
+      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
+  AXI_C2C_CTRL:
+      axi_interconnect: "${::AXI_C2C_INTERCONNECT_NAME}"
+      axi_clk: "${::AXI_MASTER_CLK}"
+      axi_rstn: "${::AXI_MASTER_RSTN}"
+      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
+
+AXI_SLAVES:
+  PL_MEM:
+    TCL_CALL:
+      command: "AXI_IP_BRAM"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "0xA0000000"
+        range: "8K"
+    XML:
+      - "address_table/modules/PL_MEM.xml"
+      - "address_table/modules/I2C_REGULATOR_MONITOR.xml"
+    UHAL_BASE: 0x15000000
+
+  SI:
+    TCL_CALL:
+      command: "AXI_IP_I2C"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "0xA1600000"
+        range: "8K"
+
+  SERV:
+    TCL_CALL:
+      command: "AXI_PL_DEV_CONNECT"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "0xA3C20000"
+        range: "8K"
+    XML:
+      - "address_table/modules/SERV_rev2a.xml"
+    UHAL_BASE: 0x04000000
+    HDL: "src/services"
+
+  C2C:
+    TCL_CALL:
+      command: "AXI_C2C_MASTER"
+      device_name: "C2C1"
+      primary_serdes: "1"
+      init_clk: "${::INIT_CLK}"
+      refclk_freq: "100"
+      axi_control:
+        axi_interconnect: "${::AXI_C2C_INTERCONNECT_NAME}"
+        axi_clk: "${::AXI_MASTER_CLK}"
+        axi_rstn: "${::AXI_MASTER_RSTN}"
+        axi_freq: "${::AXI_MASTER_CLK_FREQ}"
+      addr:
+        offset: "0xB8000000"
+        range: "32M"
+      addr_lite:
+        offset: "0xB3c40000"
+        range: "64K"
+
+    SUB_SLAVES:
+      1_AXI_FW:
+        XML:
+          - "address_table/modules/C2C_AXI_FW.xml"
+        UHAL_BASE: 0x0D000000
+      1_AXILITE_FW:
+        XML:
+          - "address_table/modules/C2C_AXILITE_FW.xml"
+        UHAL_BASE: 0x0E000000
+      1_PHY:
+        XML:
+          - "address_table/modules/DRP_USP_GTH.xml"
+        UHAL_BASE: 0x19000000
+      1b:
+        TCL_CALL:
+          command: "AXI_C2C_MASTER"
+          device_name: "C2C1b"
+          axi_control:
+            axi_interconnect: "${::AXI_C2C_INTERCONNECT_NAME}"
+            axi_clk: "${::AXI_MASTER_CLK}"
+            axi_rstn: "${::AXI_MASTER_RSTN}"
+            axi_freq: "${::AXI_MASTER_CLK_FREQ}"
+          primary_serdes: "C2C1_PHY"
+          init_clk: "${::INIT_CLK}"
+          refclk_freq: "100"
+          addr:
+            offset: "0xBA000000"
+            range: "32M"
+          addr_lite:
+            offset: "0xB3d40000"
+            range: "64K"
+
+        SUB_SLAVES:
+          _AXI_FW:
+            XML:
+              - "address_table/modules/C2C_AXI_FW.xml"
+            UHAL_BASE: 0x13000000
+          _AXILITE_FW:
+            XML:
+              - "address_table/modules/C2C_AXILITE_FW.xml"
+            UHAL_BASE: 0x14000000
+          _PHY:
+            XML:
+              - "address_table/modules/DRP_USP_GTH.xml"
+            UHAL_BASE: 0x1B000000
+
+      2:
+        TCL_CALL:
+          command: "AXI_C2C_MASTER"
+          device_name: "C2C2"
+          axi_control:
+            axi_interconnect: "${::AXI_C2C_INTERCONNECT_NAME}"
+            axi_clk: "${::AXI_MASTER_CLK}"
+            axi_rstn: "${::AXI_MASTER_RSTN}"
+            axi_freq: "${::AXI_MASTER_CLK_FREQ}"
+          primary_serdes: "C2C1_PHY"
+          init_clk: "${::INIT_CLK}"
+          refclk_freq: "100"
+          addr:
+            offset: "0xBC000000"
+            range: "32M"
+          addr_lite:
+            offset: "0xB3e40000"
+            range: "64K"
+
+        SUB_SLAVES:
+          _AXI_FW:
+            XML:
+              - "address_table/modules/C2C_AXI_FW.xml"
+            UHAL_BASE: 0x13000000
+          _AXILITE_FW:
+            XML:
+              - "address_table/modules/C2C_AXILITE_FW.xml"
+            UHAL_BASE: 0x14000000
+          _PHY:
+            XML:
+              - "address_table/modules/DRP_USP_GTH.xml"
+            UHAL_BASE: 0x1B000000
+          2b:
+            TCL_CALL:
+              command: "AXI_C2C_MASTER"
+              device_name: "C2C2b"
+              axi_control:
+                axi_interconnect: "${::AXI_C2C_INTERCONNECT_NAME}"
+                axi_clk: "${::AXI_MASTER_CLK}"
+                axi_rstn: "${::AXI_MASTER_RSTN}"
+                axi_freq: "${::AXI_MASTER_CLK_FREQ}"
+              primary_serdes: "C2C1_PHY"
+              init_clk: "${::INIT_CLK}"
+              refclk_freq: "100"
+              addr:
+                offset: "0xBE000000"
+                range: "32M"
+              addr_lite:
+                offset: "0xB3f40000"
+                range: "64K"
+    
+            SUB_SLAVES:
+              _AXI_FW:
+                XML:
+                  - "address_table/modules/C2C_AXI_FW.xml"
+                UHAL_BASE: 0x13000000
+              _AXILITE_FW:
+                XML:
+                  - "address_table/modules/C2C_AXILITE_FW.xml"
+                UHAL_BASE: 0x14000000
+              _PHY:
+                XML:
+                  - "address_table/modules/DRP_USP_GTH.xml"
+                UHAL_BASE: 0x1B000000
+
+
+  PLXVC:
+    TCL_CALL:
+      command: "AXI_PL_DEV_CONNECT"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "0xA0010000"
+        range: "64K"
+    XML:
+      - "address_table/modules/plXVC_rev2.xml"
+      - "address_table/modules/plXVC_single.xml"
+    UHAL_BASE: 0x06000000
+    HDL: "src/plXVC"
+
+  SLAVE_I2C:
+    TCL_CALL:
+      command: "AXI_PL_DEV_CONNECT"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "0xA0008000"
+        range: "8K"
+    XML:
+      - "address_table/modules/SLAVE_I2C.xml"
+    UHAL_BASE: 0x05000000
+
+  CM:
+    TCL_CALL:
+      command: "AXI_PL_DEV_CONNECT"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "0xA000A000"
+        range: "8K"
+    XML:
+      - "address_table/modules/CM_USP.xml"
+      - "address_table/modules/CM_single_USP.xml"
+      - "address_table/modules/address_table/modules/CM_C2C_USP.xml"
+      - "address_table/modules/address_table/modules/CM_CTRL.xml"
+      - "address_table/modules/address_table/modules/CM_C2C_Status.xml"
+      - "address_table/modules/CM_C2C_DEBUG_USP.xml"
+      - "address_table/modules/address_table/modules/CM_Mon.xml"
+    UHAL_BASE: 0x03000000
+    HDL: "src/CM_interface"
+
+  SM_INFO:
+    TCL_CALL:
+      command: "AXI_PL_DEV_CONNECT"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "0xA000C000"
+        range: "8K"
+    XML:
+      - "address_table/modules/FW_INFO.xml"
+    UHAL_BASE: 0x0A000000
+    HDL: "src/SM_info"
+
+  MONITOR:
+    TCL_CALL:
+      command: "AXI_IP_SYS_MGMT"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      enable_i2c_pins: 0
+      addr:
+        offset: "0xA0040000"
+        range: "64K"
+    XML:
+      - "address_table/modules/MONITOR_USP.xml"
+    UHAL_BASE: 0x0B000000
+
+  CM1_UART:
+    TCL_CALL:
+      command: "AXI_IP_UART"
+      baud_rate: "115200"
+      irq_port: "${::IRQ_ORR}/in0"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "0xA0140000"
+        range: "8K"
+
+  CM2_UART:
+    TCL_CALL:
+      command: "AXI_IP_UART"
+      baud_rate: "115200"
+      irq_port: "${::IRQ_ORR}/in1"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "0xA0150000"
+        range: "8K"
+
+  ESM_UART:
+    TCL_CALL:
+      command: "AXI_IP_UART"
+      baud_rate: "115200"
+      irq_port: "${::IRQ_ORR}/in2"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "0xA0160000"
+        range: "8K"
+
+  AXI_MON:
+    TCL_CALL:
+      command: "AXI_IP_AXI_MONITOR"
+      axi_control: "${::AXI_C2C_CTRL}"
+      core_clk: "${::AXI_MASTER_CLK}"
+      core_rstn: "${::AXI_MASTER_RSTN}"
+      mon_axi:
+       - "${::ZYNQ_NAME}/M_AXI_HPM0_FPD"
+       - "${::ZYNQ_NAME}/M_AXI_HPM1_FPD"
+      mon_axi_clk:
+       - ${::AXI_MASTER_CLK}
+       - ${::AXI_MASTER_CLK}
+      mon_axi_rstn: "${::AXI_MASTER_RSTN} ${::AXI_MASTER_RSTN}"
+
+    XML:
+      - "address_table/modules/AXI_MONITOR.xml"
+      - "address_table/modules/AXI_MONITOR_COUNTER.xml"
+    UHAL_BASE: 0x1F000000
+
+  INT_AXI_FW:
+    XML:
+      - "address_table/modules/INT_AXI_FW.xml"
+    UHAL_BASE: 0x20000000
+
+  TCDS_2:
+    TCL_CALL:
+      command: "AXI_PL_DEV_CONNECT"
+      axi_control: 
+        axi_interconnect: "${::AXI_INTERCONNECT_NAME}"
+        axi_clk: "clk_125"
+        axi_rstn: "${::AXI_MASTER_RSTN}"
+        axi_freq: "125000000"
+      addr:
+        offset: "0xA0170000"
+        range: "4K"
+    XML:
+      - "address_table/modules/TCDS.xml"
+      - "address_table/modules/top_secret/ipbus_tcds2_interface_accessor.xml"
+      - "address_table/modules/top_secret/tcds2_ttc2_spy.xml"
+      - "address_table/modules/top_secret/tcds2_frame_spy.xml"
+      - "address_table/modules/top_secret/tcds2_tts2_spy.xml"
+      - "address_table/modules/LTCDS.xml"
+    UHAL_BASE: 0x30000000
+    HDL: "src/TCDS"
+  
+  LDAQ:
+    TCL_CALL:
+      command: "AXI_PL_DEV_CONNECT"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "0xA0180000"
+        range: "4K"
+    XML:
+      - "address_table/modules/LDAQ.xml"
+    UHAL_BASE: 0x40000000
+    HDL: "src/LDAQ"

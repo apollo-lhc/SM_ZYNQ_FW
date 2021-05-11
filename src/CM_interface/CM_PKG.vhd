@@ -18,20 +18,14 @@ package CM_CTRL is
     ENABLE_PWR                 :std_logic;     -- Tell CM uC to power-up the rest of the CM
     OVERRIDE_PWR_GOOD          :std_logic;     -- Ignore power good from CM
     ERROR_STATE_RESET          :std_logic;     -- CM power is good
-    ENABLE_PHY_CTRL            :std_logic;     -- phy_lane_control is enabled
-    PHY_LANE_STABLE            :std_logic_vector(31 downto 0);  -- Contious phy_lane_up signals required to lock phylane control
-    PHY_READ_TIME              :std_logic_vector(23 downto 0);  -- Time spent waiting for phylane to stabilize
   end record CM_CM_CTRL_CTRL_t;
 
 
   constant DEFAULT_CM_CM_CTRL_CTRL_t : CM_CM_CTRL_CTRL_t := (
-                                                             ENABLE_PHY_CTRL => '1',
-                                                             PHY_READ_TIME => x"4c4b40",
-                                                             PHY_LANE_STABLE => x"000000ff",
-                                                             ENABLE_UC => '0',
                                                              OVERRIDE_PWR_GOOD => '0',
-                                                             ENABLE_PWR => '0',
-                                                             ERROR_STATE_RESET => '0'
+                                                             ERROR_STATE_RESET => '0',
+                                                             ENABLE_UC => '0',
+                                                             ENABLE_PWR => '0'
                                                             );
   type CM_CM_C2C_STATUS_MON_t is record
     CONFIG_ERROR               :std_logic;     -- C2C config error
@@ -45,6 +39,7 @@ package CM_CTRL is
     PHY_LANE_UP                :std_logic_vector( 1 downto 0);  -- Aurora phy lanes up
     PHY_HARD_ERR               :std_logic;                      -- Aurora phy hard error
     PHY_SOFT_ERR               :std_logic;                      -- Aurora phy soft error
+    LINK_IN_FW                 :std_logic;                      -- FW includes this link
   end record CM_CM_C2C_STATUS_MON_t;
 
 
@@ -170,19 +165,25 @@ package CM_CTRL is
     LINK_DEBUG                 :CM_CM_C2C_LINK_DEBUG_MON_t;
     CNT                        :CM_CM_C2C_CNT_MON_t;       
   end record CM_CM_C2C_MON_t;
-
+  type CM_CM_C2C_MON_t_ARRAY is array(0 to 1) of CM_CM_C2C_MON_t;
 
   type CM_CM_C2C_CTRL_t is record
-    STATUS                     :CM_CM_C2C_STATUS_CTRL_t;
-    LINK_DEBUG                 :CM_CM_C2C_LINK_DEBUG_CTRL_t;
-    CNT                        :CM_CM_C2C_CNT_CTRL_t;       
+    ENABLE_PHY_CTRL            :std_logic;     -- phy_lane_control is enabled
+    PHY_LANE_STABLE            :std_logic_vector(31 downto 0);  -- Contious phy_lane_up signals required to lock phylane control
+    PHY_READ_TIME              :std_logic_vector(23 downto 0);  -- Time spent waiting for phylane to stabilize
+    STATUS                     :CM_CM_C2C_STATUS_CTRL_t;      
+    LINK_DEBUG                 :CM_CM_C2C_LINK_DEBUG_CTRL_t;  
+    CNT                        :CM_CM_C2C_CNT_CTRL_t;         
   end record CM_CM_C2C_CTRL_t;
-
+  type CM_CM_C2C_CTRL_t_ARRAY is array(0 to 1) of CM_CM_C2C_CTRL_t;
 
   constant DEFAULT_CM_CM_C2C_CTRL_t : CM_CM_C2C_CTRL_t := (
+                                                           ENABLE_PHY_CTRL => '1',
+                                                           PHY_READ_TIME => x"4c4b40",
+                                                           CNT => DEFAULT_CM_CM_C2C_CNT_CTRL_t,
+                                                           PHY_LANE_STABLE => x"000000ff",
                                                            STATUS => DEFAULT_CM_CM_C2C_STATUS_CTRL_t,
-                                                           LINK_DEBUG => DEFAULT_CM_CM_C2C_LINK_DEBUG_CTRL_t,
-                                                           CNT => DEFAULT_CM_CM_C2C_CNT_CTRL_t
+                                                           LINK_DEBUG => DEFAULT_CM_CM_C2C_LINK_DEBUG_CTRL_t
                                                           );
   type CM_CM_MONITOR_BAD_TRANS_MON_t is record
     ADDR                       :std_logic_vector( 7 downto 0);  -- Sensor addr bits
@@ -242,20 +243,20 @@ package CM_CTRL is
                                                                   );
   type CM_CM_MON_t is record
     CTRL                       :CM_CM_CTRL_MON_t;
-    C2C                        :CM_CM_C2C_MON_t; 
-    MONITOR                    :CM_CM_MONITOR_MON_t;
+    C2C                        :CM_CM_C2C_MON_t_ARRAY;
+    MONITOR                    :CM_CM_MONITOR_MON_t;  
   end record CM_CM_MON_t;
   type CM_CM_MON_t_ARRAY is array(1 to 2) of CM_CM_MON_t;
 
   type CM_CM_CTRL_t is record
     CTRL                       :CM_CM_CTRL_CTRL_t;
-    C2C                        :CM_CM_C2C_CTRL_t; 
-    MONITOR                    :CM_CM_MONITOR_CTRL_t;
+    C2C                        :CM_CM_C2C_CTRL_t_ARRAY;
+    MONITOR                    :CM_CM_MONITOR_CTRL_t;  
   end record CM_CM_CTRL_t;
   type CM_CM_CTRL_t_ARRAY is array(1 to 2) of CM_CM_CTRL_t;
 
   constant DEFAULT_CM_CM_CTRL_t : CM_CM_CTRL_t := (
-                                                   C2C => DEFAULT_CM_CM_C2C_CTRL_t,
+                                                   C2C => (others => DEFAULT_CM_CM_C2C_CTRL_t ),
                                                    MONITOR => DEFAULT_CM_CM_MONITOR_CTRL_t,
                                                    CTRL => DEFAULT_CM_CM_CTRL_CTRL_t
                                                   );

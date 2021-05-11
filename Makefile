@@ -92,7 +92,7 @@ clean_remote:
 	@rm -f ${MAKE_PATH}/kernel/*_slaves.yaml
 clean_ip:
 	@echo "Cleaning up ip dcps"
-	@find ${MAKE_PATH}/cores -type f | grep -v xci | awk '{print "rm " $$1}' | bash
+	@find ${MAKE_PATH}/cores -type f | { grep -v xci || true; } | awk '{print "rm " $$1}' | bash
 #	@find ${MAKE_PATH}/cores -type f -name '*.dcp' -delete
 clean_bd:
 	@echo "Cleaning up bd generated files"

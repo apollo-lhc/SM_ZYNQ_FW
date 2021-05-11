@@ -39,7 +39,7 @@ endef
 list:
 	@echo
 	@echo Apollo SM config:
-	$(call LIST_template,rev[[:digit:]]_)
+	$(call LIST_template,rev[[:digit:]][[:alpha:]]*_)
 	@echo
 	@echo Prebuilds:
 	$(call LIST_template,prebuild_)

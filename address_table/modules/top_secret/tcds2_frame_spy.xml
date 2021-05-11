@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!-- Spy on the raw TCDS2 TTC2/TTS2 serial stream frame. -->
+
+<node id="tcds2_frame_spy" fwinfo="endpoint; width=3">
+
+  <node id="word0" address="0x00000000" mask="0xffffffff" permission="r" />
+  <node id="word1" address="0x00000001" mask="0xffffffff" permission="r" />
+  <node id="word2" address="0x00000002" mask="0xffffffff" permission="r" />
+  <node id="word3" address="0x00000003" mask="0xffffffff" permission="r" />
+  <node id="word4" address="0x00000004" mask="0xffffffff" permission="r" />
+  <node id="word5" address="0x00000005" mask="0xffffffff" permission="r" />
+  <node id="word6" address="0x00000006" mask="0xffffffff" permission="r" />
+  <node id="word7" address="0x00000007" mask="0x000003ff" permission="r" />
+
+</node>
