@@ -2,10 +2,12 @@
 --Modifications might be lost.
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.std_logic_misc.all;
 use ieee.numeric_std.all;
 use work.AXIRegWidthPkg.all;
 use work.AXIRegPkg.all;
 use work.types.all;
+
 use work.SM_INFO_Ctrl.all;
 entity SM_INFO_interface is
   port (
@@ -53,6 +55,11 @@ begin  -- architecture behavioral
       write_en    => localWrEn,
       read_req    => localRdReq,
       read_ack    => localRdAck);
+
+  -------------------------------------------------------------------------------
+  -- Record read decoding
+  -------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------
 
   latch_reads: process (clk_axi) is
   begin  -- process latch_reads
@@ -123,6 +130,7 @@ begin  -- architecture behavioral
 
     end if;
   end process reads;
+
 
 
 

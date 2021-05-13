@@ -94,5 +94,13 @@ begin  -- architecture behavioral
   Mon.FPGA.WORD_07(15 downto  8)    <= std_logic_vector(to_unsigned(character'pos(FPGA_TYPE(30)),8)); 
   Mon.FPGA.WORD_07( 7 downto  0)    <= std_logic_vector(to_unsigned(character'pos(FPGA_TYPE(29)),8));
 
+  blockram: entity work.blk_mem_gen_0
+    port map(
+      clka => Ctrl.MEM1.clk,
+      ena => Ctrl.MEM1.enable,
+      wea(0) => Ctrl.MEM1.wr_enable,
+      addra => Ctrl.MEM1.address,
+      douta  => Mon.MEM1.rd_data,
+      dina  => Ctrl.MEM1.wr_data);
   
 end architecture behavioral;

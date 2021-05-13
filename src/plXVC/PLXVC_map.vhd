@@ -2,10 +2,12 @@
 --Modifications might be lost.
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.std_logic_misc.all;
 use ieee.numeric_std.all;
 use work.AXIRegWidthPkg.all;
 use work.AXIRegPkg.all;
 use work.types.all;
+
 use work.PLXVC_Ctrl.all;
 entity PLXVC_interface is
   port (
@@ -55,6 +57,11 @@ begin  -- architecture behavioral
       write_en    => localWrEn,
       read_req    => localRdReq,
       read_ack    => localRdAck);
+
+  -------------------------------------------------------------------------------
+  -- Record read decoding
+  -------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------
 
   latch_reads: process (clk_axi) is
   begin  -- process latch_reads
@@ -143,7 +150,10 @@ begin  -- architecture behavioral
   end process reads;
 
 
-
+  -------------------------------------------------------------------------------
+  -- Record write decoding
+  -------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------
 
   -- Register mapping to ctrl structures
   Ctrl.XVC(1).LENGTH              <=  reg_data( 0)(31 downto  0);     
@@ -257,6 +267,9 @@ begin  -- architecture behavioral
       end if;
     end if;
   end process reg_writes;
+
+
+
 
 
 

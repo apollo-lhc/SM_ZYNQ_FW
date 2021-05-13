@@ -20,6 +20,7 @@ set vhdl_files "\
      regmap_helper/axiReg/axiRegPkg.vhd \
      regmap_helper/axiReg/axiReg.vhd \
      regmap_helper/axiReg/axiRegMaster.vhd \
+     regmap_helper/axiReg/bramPortPkg.vhd \
      src/services/services_rev2.vhd \
      src/services/SERV_map.vhd \
      src/services/SERV_PKG.vhd \
@@ -45,6 +46,9 @@ set vhdl_files "\
      src/plXVC/PLXVC_PKG.vhd \
      src/plXVC/plXVC_intf.vhd \
      src/plXVC/virtualJTAG.vhd \
+     src/MEM_TEST/Mem_test.vhd \
+     src/MEM_TEST/MEM_TEST_map.vhd \
+     src/MEM_TEST/MEM_TEST_PKG.vhd \
      "
 
 set xdc_files "\
@@ -53,5 +57,6 @@ set xdc_files "\
 
 set xci_files "\
     	      cores/onboard_CLK_USP/onboard_CLK.xci \
+              configs/rev2_xczu7ev/cores/blk_mem_gen_0/blk_mem_gen_0.xci \
               "
 
