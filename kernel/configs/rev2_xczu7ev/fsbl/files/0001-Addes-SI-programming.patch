@@ -37,7 +37,8 @@ index 0000000..4d743b8
 --- /dev/null
 +++ b/lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c
 @@ -0,0 +1,172 @@
-+#define SI_CONFIG_BASE_ADDR 0xA1600000
++#include "AXI_slave_addrs.h"
++#define SI_CONFIG_BASE_ADDR AXI_ADDR_SI
 +
 +u32 FsblHookAfterBitstreamDload(void)
 +{

@@ -215,19 +215,6 @@ end entity top;
 
 architecture structure of top is
 
-  component onboard_CLK
-    port
-      (-- Clock in ports
-        -- Clock out ports
-        clk_200Mhz          : out    std_logic;
-        clk_50Mhz          : out    std_logic;
-        -- Status and control signals
-        reset             : in     std_logic;
-        locked            : out    std_logic;
-        clk_in1_p         : in     std_logic;
-        clk_in1_n         : in     std_logic
-        );
-  end component;
 
 
   
@@ -711,7 +698,7 @@ begin  -- architecture structure
       T  => SCL_t_phy,
       O  => SCL_i_phy);
 
-  onboard_CLK_1: onboard_CLK
+  onboardCLK_1: entity work.onboardCLK
     port map (
       clk_200Mhz => clk_200Mhz,
       clk_50Mhz  => AXI_C2C_aurora_init_clk,

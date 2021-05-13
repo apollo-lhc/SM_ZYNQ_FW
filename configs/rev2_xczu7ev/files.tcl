@@ -52,6 +52,6 @@ set xdc_files "\
      "
 
 set xci_files "\
-    	      cores/onboard_CLK_USP/onboard_CLK.xci \
+              configs/rev2_xczu7ev/cores/onboardClk.tcl \
               "
 

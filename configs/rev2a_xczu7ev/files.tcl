@@ -145,4 +145,3 @@ set xci_files "\
               configs/rev2a_xczu7ev/cores/onboardClk.tcl \
               "
 
-#    	      cores/onboard_CLK_USP/onboard_CLK.xci \

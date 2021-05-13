@@ -112,6 +112,7 @@ define copy_configs =
 	@echo "Modify FSBL" $(OUTPUT_MARKUP)
 	@mkdir -p $(FSBL_BASE)
 	@cp -r $(CONFIGS_BASE)/$$@/fsbl/* $(FSBL_BASE)
+	@cp    ../$(CONFIGS_BASE)/$$@/AXI_slave_addrs.h $(FSBL_BASE)/files
 	@echo "layer config (if needed)"
 	@cp ./configs/$$@/configs/layer.conf $(ZYNQ_OS_PROJECT_PATH)/project-spec/meta-user/conf/ || :
 	@echo "End of mods"
