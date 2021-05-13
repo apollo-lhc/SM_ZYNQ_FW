@@ -55,7 +55,9 @@ def GenerateHDL(name,XMLFile,HDLPath):
     if i.count('.') == 0:
       mytree = tree(device.getNode(i), log)
       mytree.generatePkg()
-      mytree.generateRegMap(regMapTemplate=wd+"/regmap_helper/template_map.vhd")
+#      mytree.generateRegMap(regMapTemplate=wd+"/regmap_helper/template_map.vhd")
+#/work/dan/Apollo/SM_ZYNQ_FW_yet_another/regmap_helper/templates/axi_generic/template_map_withbram.vhd
+      mytree.generateRegMap(regMapTemplate=wd+"/regmap_helper/templates/axi_generic/template_map_withbram.vhd")
   
   #cleanup
   os.remove(topXMLFile)

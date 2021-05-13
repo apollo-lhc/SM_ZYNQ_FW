@@ -15,7 +15,8 @@ entity SM_INFO_interface is
     slave_readMISO   : out AXIReadMISO  := DefaultAXIReadMISO;
     slave_writeMOSI  : in  AXIWriteMOSI;
     slave_writeMISO  : out AXIWriteMISO := DefaultAXIWriteMISO;
-    Mon              : in  SM_INFO_Mon_t
+    
+    Mon              : in  SM_INFO_Mon_t    
     );
 end entity SM_INFO_interface;
 architecture behavioral of SM_INFO_interface is
@@ -26,8 +27,10 @@ architecture behavioral of SM_INFO_interface is
   signal localWrEn          : std_logic;
   signal localRdReq         : std_logic;
   signal localRdAck         : std_logic;
+  signal regRdAck           : std_logic;
 
-
+  
+  
   signal reg_data :  slv32_array_t(integer range 0 to 26);
   constant Default_reg_data : slv32_array_t(integer range 0 to 26) := (others => x"00000000");
 begin  -- architecture behavioral
@@ -55,16 +58,22 @@ begin  -- architecture behavioral
   begin  -- process latch_reads
     if clk_axi'event and clk_axi = '1' then  -- rising clock edge
       if localRdReq = '1' then
-        localRdData_latch <= localRdData;        
+        localRdData_latch <= localRdData;
+
+        
+          
       end if;
     end if;
   end process latch_reads;
+
+  
+  localRdAck <= regRdAck ;  
   reads: process (localRdReq,localAddress,reg_data) is
   begin  -- process reads
-    localRdAck  <= '0';
+    regRdAck  <= '0';
     localRdData <= x"00000000";
     if localRdReq = '1' then
-      localRdAck  <= '1';
+      regRdAck  <= '1';
       case to_integer(unsigned(localAddress(4 downto 0))) is
 
         when 0 => --0x0
@@ -110,6 +119,8 @@ begin  -- architecture behavioral
         when others =>
           localRdData <= x"00000000";
       end case;
+      
+
     end if;
   end process reads;
 
@@ -117,4 +128,7 @@ begin  -- architecture behavioral
 
 
 
+
+
+  
 end architecture behavioral;
