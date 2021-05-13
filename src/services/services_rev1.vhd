@@ -22,22 +22,6 @@ entity services is
     SGMII_MON          : in  SGMII_MONITOR_t;
     SGMII_CTRL         : out SGMII_CONTROL_t;
                        
-    SI_INT             : in  std_logic;
-    SI_LOL             : in  std_logic;
-    SI_LOS             : in  std_logic;
-    SI_OUT_EN          : out std_logic;
-    SI_ENABLE          : out std_logic;
-    SI_init_reset      : out std_logic;
-                       
-    TTC_SRC_SEL        : out std_logic;
-    TCDS_REFCLK_LOCKED :  in std_logic;
-
-    LHC_CLK_CMS_LOS    : in  std_logic;
-    LHC_CLK_OSC_LOS    : in  std_logic;
-    LHC_SRC_SEL        : out std_logic;
-    HQ_CLK_CMS_LOS     : in  std_logic;
-    HQ_CLK_OSC_LOS     : in  std_logic;
-    HQ_SRC_SEL         : out std_logic;
     FP_LED_RST         : out std_logic;
     FP_LED_CLK         : out std_logic;
     FP_LED_SDA         : out std_logic;
@@ -46,6 +30,12 @@ entity services is
                        
     ESM_LED_CLK        : in  std_logic;
     ESM_LED_SDA        : in  std_logic;
+    SI5344_Mon         : in  SERV_SI5344_MON_t;
+    SI5344_Ctrl        : out SERV_SI5344_CTRL_t;
+    TCDS_Mon           : in  SERV_TCDS_MON_t;
+    TCDS_Ctrl          : out SERV_TCDS_CTRL_t;
+    CLOCKING_Mon       : in  SERV_CLOCKING_MON_t;
+    CLOCKING_Ctrl      : out SERV_CLOCKING_CTRL_t;
     CM1_C2C_Mon        : in  single_C2C_Monitor_t;
     CM2_C2C_Mon        : in  single_C2C_Monitor_t);
 end entity services;
@@ -175,14 +165,9 @@ begin  -- architecture behavioral
       Mon             => Mon,
       Ctrl            => Ctrl);
  
-  Mon.SI5344.INT               <= not SI_INT;
-  Mon.SI5344.LOL               <= not SI_LOL;
-  Mon.SI5344.LOS               <= not SI_LOS;
-  Mon.TCDS.REFCLK_LOCKED       <= TCDS_REFCLK_LOCKED;
-  Mon.CLOCKING.HQ_LOS_BP       <= HQ_CLK_CMS_LOS;
-  Mon.CLOCKING.HQ_LOS_OSC      <= HQ_CLK_OSC_LOS;
-  Mon.CLOCKING.LHC_LOS_BP      <= LHC_CLK_CMS_LOS;
-  Mon.CLOCKING.LHC_LOS_OSC     <= LHC_CLK_OSC_LOS;
+  Mon.SI5344                   <= SI5344_Mon;
+  Mon.TCDS                     <= TCDS_Mon;
+  Mon.CLOCKING                 <= CLOCKING_Mon;
   Mon.FP_LEDS.BUTTON           <= FP_switch;
   Mon.FP_LEDS.FP_SHDWN_REQ     <= FP_shutdown;
   Mon.SWITCH.STATUS            <= ESM_LEDs;
@@ -202,12 +187,9 @@ begin  -- architecture behavioral
   Mon.SGMII.SV_DUPLEX          <= SGMII_MON_buf2.status_vector(12);
   Mon.SGMII.SV_REMOTE_FAULT    <= SGMII_MON_buf2.status_vector(13);
 
-  SI_OUT_EN     <= Ctrl.SI5344.OE;
-  SI_ENABLE     <= Ctrl.SI5344.EN; 
-  SI_init_reset <= Ctrl.SI5344.FPGA_PLL_RESET;
-  TTC_SRC_SEL   <= Ctrl.TCDS.TTC_SOURCE;
-  LHC_SRC_SEL   <= Ctrl.CLOCKING.LHC_SEL;
-  HQ_SRC_SEL    <= Ctrl.CLOCKING.HQ_SEL;
+  SI5344_Ctrl   <= Ctrl.SI5344;
+  TCDS_Ctrl     <= Ctrl.TCDS;
+  CLOCKING_Ctrl <= Ctrl.CLOCKING;
   FP_LED_RST    <= not Ctrl.FP_LEDS.RESET;
   SGMII_CTRL.reset <= Ctrl.SGMII.RESET;
 

@@ -158,6 +158,7 @@ AXI_SLAVES:
       - "address_table/modules/CM_C2C_Status.xml"
       - "address_table/modules/CM_C2C_DEBUG_7s.xml"
       - "address_table/modules/CM_Mon.xml"
+      - "address_table/modules/CM_C2C_CNT.xml"
     UHAL_BASE: 0x03000000
     HDL: "src/CM_interface"
 
@@ -236,4 +237,4 @@ AXI_SLAVES:
   INT_AXI_FW:
     XML:
       - "address_table/modules/INT_AXI_FW.xml"
-#    UHAL_BASE: 0x20000000
+    UHAL_BASE: 0x20000000

@@ -25,8 +25,8 @@ echo "        bootargs = \"earlycon clk_ignore_unused earlyprintk uio_pdrv_genir
 echo "        };"                     >> $filename
 ##add lines for amba_pl in case there are no xilinx IPs to add them
 #echo "	amba_pl: amba_pl {"           >> $filename
-#echo "		#address-cells = <1>;" >> $filename
-#echo "		#size-cells = <1>;" >> $filename
+#echo "		#address-cells = <2>;" >> $filename
+#echo "		#size-cells = <2>;" >> $filename
 #echo "		compatible = \"simple-bus\";" >> $filename
 #echo "		ranges ;" >> $filename
 #echo "  };" >> $filename
