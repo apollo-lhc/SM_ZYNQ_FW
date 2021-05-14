@@ -27,7 +27,12 @@
     <node id="WORD_08" address="0x8" permission="r" mask="0xFFFFFFFF"/>
   </node>
 
+  <node id="THING"  address="0x20" permission="rw"/>
   <node id="MEM1" address="0x100" mode="incremental" size="0x100" permission="rw" fwinfo="type=mem13"/>
 
+  <node id="LEVEL_TEST" address="0x300">
+    <node id="THING"  address="0x0" permission="rw"/>
+    <node id="MEM" address="0x100" mode="incremental" size="0x100" permission="rw" fwinfo="type=mem13"/>
+  </node>
   
 </node>

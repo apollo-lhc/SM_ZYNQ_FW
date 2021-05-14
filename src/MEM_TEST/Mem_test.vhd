@@ -102,5 +102,14 @@ begin  -- architecture behavioral
       addra => Ctrl.MEM1.address,
       douta  => Mon.MEM1.rd_data,
       dina  => Ctrl.MEM1.wr_data);
-  
+
+  other_blockram: entity work.blk_mem_gen_0
+    port map(
+      clka   => Ctrl.LEVEL_TEST.MEM.clk,
+      ena    => Ctrl.LEVEL_TEST.MEM.enable,
+      wea(0) => Ctrl.LEVEL_TEST.MEM.wr_enable,
+      addra  => Ctrl.LEVEL_TEST.MEM.address,
+      douta  => Mon.LEVEL_TEST.MEM.rd_data,
+      dina   => Ctrl.LEVEL_TEST.MEM.wr_data);
+
 end architecture behavioral;
