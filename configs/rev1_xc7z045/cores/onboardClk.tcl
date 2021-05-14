@@ -29,7 +29,6 @@ if { [file exists ${output_path}/${name}/${name}.xci] && ([file mtime ${output_p
 			    CONFIG.PRIMARY_PORT {clk_in} \
 			    CONFIG.NUM_OUT_CLKS {2} \
 			    CONFIG.CLKOUT2_USED {true} \
-			    CONFIG.CLKOUT3_USED {true} \
 			    CONFIG.CLK_OUT1_PORT {clk_50Mhz} \
 			    CONFIG.CLK_OUT2_PORT {clk_200Mhz} \
 			    CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {50} \
