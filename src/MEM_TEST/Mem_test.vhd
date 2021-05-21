@@ -99,7 +99,7 @@ begin  -- architecture behavioral
       RAM_WIDTH => 13,
       RAM_DEPTH => 256)
     port map (
-      clk   => clk_axi,
+      clk   => Ctrl.MEM1.clk,
       ena   => Ctrl.MEM1.enable,
       enb   => Ctrl.MEM1.enable,
       wea   => Ctrl.MEM1.wr_enable,
@@ -113,7 +113,7 @@ begin  -- architecture behavioral
       RAM_WIDTH => 13,
       RAM_DEPTH => 256)
     port map (
-      clk   => clk_axi,--Ctrl.LEVEL_TEST.MEM.clk,
+      clk   => Ctrl.LEVEL_TEST.MEM.clk,
       ena   => Ctrl.LEVEL_TEST.MEM.enable,
       enb   => Ctrl.LEVEL_TEST.MEM.enable,
       wea   => Ctrl.LEVEL_TEST.MEM.wr_enable,

@@ -60,6 +60,18 @@ begin  -- architecture behavioral
   -- Record read decoding
   -------------------------------------------------------------------------------
   -------------------------------------------------------------------------------
+  read_mux: process (latchBRAM) is
+  begin  -- process read_mux
+    if or_reduce(latchBRAM) = '1' then
+      for iBRAM in 0 to BRAM_COUNT-1 loop
+        if (latchBRAM(iBRAM) = '1') then
+          activeBRAM_index <= iBRAM;
+        end if;
+      end loop;
+    else
+      activeBRAM_index <= BRAM_COUNT;
+    end if;
+  end process read_mux;
 
   latch_reads: process (clk_axi,reset_axi_n) is
   begin  -- process latch_reads
@@ -69,10 +81,8 @@ begin  -- architecture behavioral
       localRdAck <= regRdAck or ;
 
       if regRdAck = '1' then
-        localRdData_latch <= localRdData;
+        localRdData_latch <= localRdData;          
       end if;
-
-      
           
     end if;
   end process latch_reads;
