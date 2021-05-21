@@ -46,6 +46,10 @@ package types is
   type int8_array_t is array (integer range <>) of integer range 0 to 7;
 
   type int_array_t  is array (integer range <>) of integer;
+
+  function log2 (val: INTEGER) return natural;
+    
+
 end package types;
 
 package body types is

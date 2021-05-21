@@ -8,14 +8,17 @@ use work.types.all;
 use work.axiRegPkg.all;
 
 
+
 entity tb_bram_regmap is
-  port (
-    clk     : in std_logic;
-    reset   : in std_logic);
+
+--    clk     : in std_logic;
+--    reset   : in std_logic);
 
 end entity tb_bram_regmap;
 
 architecture behavioral of tb_bram_regmap is
+  signal clk : std_logic := '0';
+  signal reset : std_logic := '1';
   signal counter : integer;
 
   signal reset_axi_n  : std_logic;
@@ -33,6 +36,9 @@ architecture behavioral of tb_bram_regmap is
 
 begin  -- architecture behavioral
 
+  clk <= not clk after 10 ns;
+  reset <= '0' after 100 ns;
+  
   tb: process (clk, reset) is
   file out_file_status : text is out "tb_out.txt";
   variable test_result       : line;  
@@ -61,9 +67,9 @@ begin  -- architecture behavioral
 --        when 175 =>
 --          master_address <= x"00000000";
 --          master_rd_en   <= '1';
---        when 200 =>
---          master_address <= x"00000004";
---          master_rd_en   <= '1';
+        when 200 =>
+          master_address <= x"00000004";
+          master_rd_en   <= '1';
 --        when 250 =>
 --          master_address <= x"00000004";
 --          master_wr_data  <= x"abadcafe";

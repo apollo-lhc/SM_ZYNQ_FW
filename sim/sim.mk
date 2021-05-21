@@ -44,6 +44,17 @@ sim/vhdl/%.vdb : src/%.vhd
 	@cd sim && mkdir -p $(subst src,vhdl,$(dir $<))     
 	@cd sim && ln -f -s $(PWD)/sim/xsim.dir/work/$(notdir $@) $(subst src,vhdl,$(dir $<))     
 
+#build the vdb file from a vhd file     
+sim/vhdl/%.vdb : regmap_helper/%.vhd    
+	@echo "Building $@ from $<"     
+	@rm -rf $@
+	@mkdir -p sim/vhdl && \
+	source $(VIVADO_SHELL) && \
+	cd sim &&\
+	xvhdl ../$< $(OUTPUT_MARKUP)    
+	@cd sim && mkdir -p $(subst regmap_helper,vhdl,$(dir $<))     
+	@cd sim && ln -f -s $(PWD)/sim/xsim.dir/work/$(notdir $@) $(subst regmap_helper,vhdl,$(dir $<))     
+
 IPCORES=$(foreach  file,$(shell find ./cores | grep "netlist.vhdl"),../$(file))
 
 TB_IPCORES :
@@ -102,3 +113,22 @@ tb_phy_lane_control : $(TB_PHY_LANE_CONTROL_VDBS)
 test_phy_lane_control : $(TB_PHY_LANE_CONTROL_VDBS)
 	$(MAKE) tb_phy_lane_control USE_GUI="-onfinish quit -t ./quit.tcl"
 
+
+TB_BRAM_REGMAP_VDBS=$(call build_vdb_list, src/misc/types.vhd \
+			 		   src/misc/counter.vhd \
+                                           src/fw_version.vhd \
+                                           src/misc/simple_dual_one_clock_ram.vhd \
+                                           sim/vhdl/axiReg/axiRegWidthPkg_32.vdb \
+                                           sim/vhdl/axiReg/axiRegPkg.vdb \
+                                           sim/vhdl/axiReg/axiReg.vdb \
+                                           sim/vhdl/axiReg/axiRegMaster.vdb \
+                                           sim/vhdl/axiReg/axiRegBlocking.vdb \
+                                           sim/vhdl/axiReg/bramPortPkg.vdb \
+                                           src/MEM_TEST/MEM_TEST_PKG.vhd \
+                                           src/MEM_TEST/MEM_TEST_map.vhd \
+                                           src/MEM_TEST/Mem_test.vhd \
+                                           )
+tb_bram_regmap : $(TB_BRAM_REGMAP_VDBS)
+	$(TB_RULE)
+test_bram_regmap : $(TB_BRAM_REGMAP_VDBS)
+	$(MAKE) tb_bram_regmap USE_GUI="-onfinish quit -t ./quit.tcl"

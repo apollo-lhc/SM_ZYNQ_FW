@@ -31,7 +31,7 @@ end simple_dual_one_clock;
 architecture syn of simple_dual_one_clock is
 
   type ram_type is array (RAM_DEPTH-1 downto 0) of std_logic_vector(RAM_WIDTH-1 downto 0);
-  shared variable RAM : ram_type;
+  shared variable RAM : ram_type := (others => (others => '0'));
 
 begin
 

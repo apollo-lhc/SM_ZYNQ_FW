@@ -11,8 +11,8 @@ use work.FW_FPGA.all;
 use work.MEM_TEST_Ctrl.all;
 
 
-Library UNISIM;
-use UNISIM.vcomponents.all;
+--Library UNISIM;
+--use UNISIM.vcomponents.all;
 
 
 entity mem_test is
@@ -99,7 +99,7 @@ begin  -- architecture behavioral
       RAM_WIDTH => 13,
       RAM_DEPTH => 256)
     port map (
-      clk   => Ctrl.MEM1.clk,
+      clk   => clk_axi,
       ena   => Ctrl.MEM1.enable,
       enb   => Ctrl.MEM1.enable,
       wea   => Ctrl.MEM1.wr_enable,
@@ -113,7 +113,7 @@ begin  -- architecture behavioral
       RAM_WIDTH => 13,
       RAM_DEPTH => 256)
     port map (
-      clk   => Ctrl.LEVEL_TEST.MEM.clk,
+      clk   => clk_axi,--Ctrl.LEVEL_TEST.MEM.clk,
       ena   => Ctrl.LEVEL_TEST.MEM.enable,
       enb   => Ctrl.LEVEL_TEST.MEM.enable,
       wea   => Ctrl.LEVEL_TEST.MEM.wr_enable,
