@@ -94,22 +94,32 @@ begin  -- architecture behavioral
   Mon.FPGA.WORD_07(15 downto  8)    <= std_logic_vector(to_unsigned(character'pos(FPGA_TYPE(30)),8)); 
   Mon.FPGA.WORD_07( 7 downto  0)    <= std_logic_vector(to_unsigned(character'pos(FPGA_TYPE(29)),8));
 
-  blockram: entity work.blk_mem_gen_0
-    port map(
-      clka => Ctrl.MEM1.clk,
-      ena => Ctrl.MEM1.enable,
-      wea(0) => Ctrl.MEM1.wr_enable,
+  blockram: entity work.simple_dual_one_clock
+    generic map (
+      RAM_WIDTH => 13,
+      RAM_DEPTH => 256)
+    port map (
+      clk   => Ctrl.MEM1.clk,
+      ena   => Ctrl.MEM1.enable,
+      enb   => Ctrl.MEM1.enable,
+      wea   => Ctrl.MEM1.wr_enable,
       addra => Ctrl.MEM1.address,
-      douta  => Mon.MEM1.rd_data,
-      dina  => Ctrl.MEM1.wr_data);
+      addrb => Ctrl.MEM1.address,
+      dia   => Ctrl.MEM1.wr_data,
+      dob   => Mon.MEM1.rd_data);
 
-  other_blockram: entity work.blk_mem_gen_0
-    port map(
-      clka   => Ctrl.LEVEL_TEST.MEM.clk,
-      ena    => Ctrl.LEVEL_TEST.MEM.enable,
-      wea(0) => Ctrl.LEVEL_TEST.MEM.wr_enable,
-      addra  => Ctrl.LEVEL_TEST.MEM.address,
-      douta  => Mon.LEVEL_TEST.MEM.rd_data,
-      dina   => Ctrl.LEVEL_TEST.MEM.wr_data);
+  other_blockram: entity work.simple_dual_one_clock
+    generic map (
+      RAM_WIDTH => 13,
+      RAM_DEPTH => 256)
+    port map (
+      clk   => Ctrl.LEVEL_TEST.MEM.clk,
+      ena   => Ctrl.LEVEL_TEST.MEM.enable,
+      enb   => Ctrl.LEVEL_TEST.MEM.enable,
+      wea   => Ctrl.LEVEL_TEST.MEM.wr_enable,
+      addra => Ctrl.LEVEL_TEST.MEM.address,
+      addrb => Ctrl.LEVEL_TEST.MEM.address,
+      dia   => Ctrl.LEVEL_TEST.MEM.wr_data,
+      dob   => Mon.LEVEL_TEST.MEM.rd_data);
 
 end architecture behavioral;
