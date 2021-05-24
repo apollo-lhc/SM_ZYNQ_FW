@@ -258,13 +258,14 @@ architecture structure of top is
   
 -- AXI BUS
   signal AXI_clk : std_logic;
+
   signal axi_reset_n : std_logic;
   signal axi_reset : std_logic;
 
   signal pl_clk : std_logic;
   signal pl_reset_n : std_logic;
 
-  constant PL_AXI_SLAVE_COUNT : integer := 7;
+  constant PL_AXI_SLAVE_COUNT : integer := 8;
   signal AXI_BUS_RMOSI :  AXIReadMOSI_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIReadMOSI);
   signal AXI_BUS_RMISO :  AXIReadMISO_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIReadMISO);
   signal AXI_BUS_WMOSI : AXIWriteMOSI_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIWriteMOSI);
@@ -610,6 +611,26 @@ begin  -- architecture structure
       C2C2_PHY_DEBUG_txprbssel          => CM_C2C_Ctrl.Link(3).link_debug.tx.prbs_sel,       
       C2C2_PHY_DEBUG_txprecursor        => CM_C2C_Ctrl.Link(3).link_debug.tx.pre_cursor,     
       C2C2_PHY_DEBUG_txresetdone(0)     => CM_C2C_Mon.Link(3).link_debug.tx.reset_done,
+      
+      MEM_TEST_araddr               => AXI_BUS_RMOSI(7).address,
+      MEM_TEST_arprot               => AXI_BUS_RMOSI(7).protection_type,
+      MEM_TEST_arready              => AXI_BUS_RMISO(7).ready_for_address,
+      MEM_TEST_arvalid              => AXI_BUS_RMOSI(7).address_valid,
+      MEM_TEST_awaddr               => AXI_BUS_WMOSI(7).address,
+      MEM_TEST_awprot               => AXI_BUS_WMOSI(7).protection_type,
+      MEM_TEST_awready              => AXI_BUS_WMISO(7).ready_for_address,
+      MEM_TEST_awvalid              => AXI_BUS_WMOSI(7).address_valid,
+      MEM_TEST_bready               => AXI_BUS_WMOSI(7).ready_for_response,
+      MEM_TEST_bresp                => AXI_BUS_WMISO(7).response,
+      MEM_TEST_bvalid               => AXI_BUS_WMISO(7).response_valid,
+      MEM_TEST_rdata                => AXI_BUS_RMISO(7).data,
+      MEM_TEST_rready               => AXI_BUS_RMOSI(7).ready_for_data,
+      MEM_TEST_rresp                => AXI_BUS_RMISO(7).response,
+      MEM_TEST_rvalid               => AXI_BUS_RMISO(7).data_valid,
+      MEM_TEST_wdata                => AXI_BUS_WMOSI(7).data,
+      MEM_TEST_wready               => AXI_BUS_WMISO(7).ready_for_data,
+      MEM_TEST_wstrb                => AXI_BUS_WMOSI(7).data_write_strobe,
+      MEM_TEST_wvalid               => AXI_BUS_WMOSI(7).data_valid,
 
 
 
@@ -935,4 +956,15 @@ begin  -- architecture structure
       event_b       => '1',
       rate          => Clocking_Mon.AXI_CLK_FREQ);
 
+
+  mem_test_1: entity work.mem_test
+    port map (
+      clk_axi     => axi_clk,
+      reset_axi_n => pl_reset_n,
+      readMOSI    => AXI_BUS_RMOSI(7),
+      readMISO    => AXI_BUS_RMISO(7),
+      writeMOSI   => AXI_BUS_WMOSI(7),
+      writeMISO   => AXI_BUS_WMISO(7));
+
+  
 end architecture structure;

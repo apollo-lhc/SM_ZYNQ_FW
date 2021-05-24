@@ -229,3 +229,15 @@ AXI_SLAVES:
     XML:
       - "address_table/modules/INT_AXI_FW.xml"
     UHAL_BASE: 0x20000000
+
+  MEM_TEST:
+    TCL_CALL:
+      command: "AXI_PL_DEV_CONNECT"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: "-1"
+        range: "8K"
+    XML:
+      - "address_table/modules/MEM_TEST.xml"
+    UHAL_BASE: 0x0B000000
+    HDL: "src/MEM_TEST"

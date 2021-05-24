@@ -16,10 +16,13 @@ set vhdl_files "\
      src/misc/pacd.vhd \
      src/misc/capture_CDC.vhd \
      src/misc/rate_counter.vhd \
+     src/misc/simple_dual_one_clock_ram.vhd \
      regmap_helper/axiReg/axiRegWidthPkg_32.vhd \
      regmap_helper/axiReg/axiRegPkg.vhd \
      regmap_helper/axiReg/axiReg.vhd \
      regmap_helper/axiReg/axiRegMaster.vhd \
+     regmap_helper/axiReg/bramPortPkg.vhd \
+     regmap_helper/axiReg/axiRegBlocking.vhd \
      src/services/services_rev2.vhd \
      src/services/SERV_map.vhd \
      src/services/SERV_PKG.vhd \
@@ -45,6 +48,9 @@ set vhdl_files "\
      src/plXVC/PLXVC_PKG.vhd \
      src/plXVC/plXVC_intf.vhd \
      src/plXVC/virtualJTAG.vhd \
+     src/MEM_TEST/Mem_test.vhd \
+     src/MEM_TEST/MEM_TEST_map.vhd \
+     src/MEM_TEST/MEM_TEST_PKG.vhd \
      "
 
 set xdc_files "\
