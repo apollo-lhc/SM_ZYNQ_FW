@@ -57,9 +57,9 @@ begin  -- architecture behavioral
       case counter is
         when 10 =>
           reset_axi_n <= '1';
---        when 100 =>
---          master_address <= x"00000000";
---          master_rd_en   <= '1';
+        when 100 =>
+          master_address <= x"A00B0088";
+          master_rd_en   <= '1';
 --        when 150 =>
 --          master_address <= x"00000000";
 --          master_wr_data  <= x"badc0ffe";
@@ -68,7 +68,7 @@ begin  -- architecture behavioral
 --          master_address <= x"00000000";
 --          master_rd_en   <= '1';
         when 200 =>
-          master_address <= x"00000004";
+          master_address <= x"A00B0004";
           master_rd_en   <= '1';
 --        when 250 =>
 --          master_address <= x"00000004";
@@ -85,16 +85,16 @@ begin  -- architecture behavioral
 --          master_wr_data  <= x"deadbeef";
 --          master_wr_en   <= '1';
         when 375 =>
-          master_address <= x"00000400";
+          master_address <= x"A00B0400";
           master_rd_en   <= '1';
 
         when 400 =>
-          master_address <= x"00000408";
+          master_address <= x"A00B0408";
           master_wr_data  <= x"badc0ffe";
           master_wr_en   <= '1';
 
         when 425 =>
-          master_address <= x"00000408";
+          master_address <= x"A00B0408";
           master_rd_en   <= '1';
 
 --        when 450 =>
