@@ -104,7 +104,7 @@ if args['extra'] is not None:
 print ("Running dnf: remove")
 run_dnf(rootdir,"remove",["selinux","NetworkManager","firewalld","iptables","iw*firmware*","alsa*","linux-firmware","--setopt=tsflags=noscripts","--enable centos-sclo-rh-testing"])
 #I guess network manager also removes this? 
-run_dnf(rootdir,"install",["dhclient","emacs"])
+run_dnf(rootdir,"install",["dhclient","emacs","makefile"])
 			    
 rootpwd=crypt.crypt("centos", crypt.mksalt(crypt.METHOD_SHA512))
 aug=augeas.Augeas(root=rootdir)

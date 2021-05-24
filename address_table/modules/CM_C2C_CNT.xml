@@ -9,6 +9,7 @@
   <node id="PHYLANE_STATE"        address="0x7" permission="r"  description="Current state of phy_lane_control module" parameters="Table=CM;Column=PHYLANE_STATE;Row=_2;Status=1;Format=t_0_IDLE_1_INITIALIZING_2_WAITING_7_LOCKED_6_errorWAITING" mask="0x7"/>
   <node id="RESET_COUNTERS"       address="0x8" permission="w" description="Reset counters in Monitor" mask="0x1"/>
   <node id="PHY_ERRORSTATE_COUNT" address="0x9" permission="r"  description="Count for phylane in error state"         parameters="Table=CM;Column=PHYLANE_ERROR_COUNT;Row=_2;Status=1;Show=nz;Format=u"/>
-  <node id="USER_CLK_FREQ"        address="0xA" permission="r"  description="Frequency of the user C2C clk"            parameters="Table=CM;Column=C2C_FREQ;Row=_2;Status=2;Show=nz;Format=m_1_1_1000000_1_0_1"/>
+  <node id="USER_CLK_FREQ"        address="0xA" permission="r"  description="Frequency of the user C2C clk"            parameters="Table=CM;Column=C2C_FREQ;Row=_2._3;Status=2;Show=nz;Format=m_1_1_1000000_1_0_1"/>
+
 </node>
   
