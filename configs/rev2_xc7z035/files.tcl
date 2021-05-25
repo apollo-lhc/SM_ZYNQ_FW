@@ -20,6 +20,8 @@ set vhdl_files "\
      regmap_helper/axiReg/axiRegPkg.vhd \
      regmap_helper/axiReg/axiReg.vhd \
      regmap_helper/axiReg/axiRegMaster.vhd \
+     regmap_helper/axiReg/bramPortPkg.vhd \
+     regmap_helper/axiReg/axiRegBlocking.vhd \
      src/services/services_rev2.vhd \
      src/services/SGMII_MON_pkg.vhd \
      src/services/SERV_map.vhd \

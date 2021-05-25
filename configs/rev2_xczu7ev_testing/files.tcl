@@ -9,6 +9,8 @@ set vhdl_files "\
      regmap_helper/axiReg/axiRegWidthPkg_40.vhd \
      regmap_helper/axiReg/axiRegPkg.vhd \
      regmap_helper/axiReg/axiReg.vhd \
+     regmap_helper/axiReg/bramPortPkg.vhd \
+     regmap_helper/axiReg/axiRegBlocking.vhd \
      src/SM_info/SM_INFO_map.vhd \
      src/SM_info/SM_INFO_PKG.vhd \
      src/SM_info/SM_info.vhd \
