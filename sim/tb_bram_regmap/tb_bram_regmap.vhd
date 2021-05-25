@@ -34,6 +34,8 @@ architecture behavioral of tb_bram_regmap is
   signal master_wr_data       : slv_32_t;
   signal master_wr_en         : std_logic;
 
+  signal read_allow           : std_logic;
+  
 begin  -- architecture behavioral
 
   clk <= not clk after 10 ns;
@@ -105,10 +107,18 @@ begin  -- architecture behavioral
 --          master_address <= x"00000008";
 --          master_rd_en   <= '1';
 --
---        when 500 =>
---          master_address <= x"00000000";
---          master_wr_data  <= x"badc0ffe";
---          master_wr_en   <= '1';
+        when 511 =>
+          read_allow <= '1';  
+        when 512 to 640 =>
+          master_address <= x"A00B04" & std_logic_vector(to_unsigned(counter,8));
+          master_rd_en   <= read_allow;
+          if master_rd_data_valid = '0' then
+            counter <= counter;
+            read_allow <= '0';
+          else
+            read_allow <= '1';
+            counter <= counter + 4;
+          end if;
 --        when 502 =>
 --          master_address <= x"00000008";
 --          master_rd_en   <= '1';

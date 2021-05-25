@@ -3,7 +3,7 @@
 rm work-obj93.cf
 ghdl -a --ieee=synopsys ../../src/misc/types.vhd
 ghdl -a --ieee=synopsys ../../src/fw_version.vhd
-ghdl -a --ieee=synopsys ../../src/misc/simple_dual_one_clock_ram.vhd 
+ghdl -a --ieee=synopsys ../../src/misc/Xilinx/rams_sp_wf.vhd
 ghdl -a --ieee=synopsys ../../regmap_helper/axiReg/axiRegWidthPkg_32.vhd 
 ghdl -a --ieee=synopsys ../../regmap_helper/axiReg/axiRegPkg.vhd 
 ghdl -a --ieee=synopsys ../../regmap_helper/axiReg/axiReg.vhd 
