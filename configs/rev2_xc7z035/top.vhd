@@ -590,7 +590,7 @@ begin  -- architecture structure
       C2C1_phy_Tx_txp =>  AXI_C2C_CM1_Tx_P(0 to 0),
       C2C1_phy_refclk_clk_n => refclk_C2C1_N(0),
       C2C1_phy_refclk_clk_p => refclk_C2C1_P(0),
-      C2C1_phy_power_down   => AXI_C2C_powerdown(0),
+      C2C1_phy_power_down   => AXI_C2C_powerdown(1),
       C2C1_aurora_do_cc                 => CM_C2C_Mon.Link(1).status.do_cc                ,
       C2C1_aurora_pma_init_in           => CM_C2C_Ctrl.Link(1).status.initialize,
       C2C1_axi_c2c_config_error_out     => CM_C2C_Mon.Link(1).status.config_error    ,
