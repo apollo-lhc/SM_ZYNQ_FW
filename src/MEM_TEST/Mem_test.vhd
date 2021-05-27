@@ -94,8 +94,6 @@ begin  -- architecture behavioral
   Mon.FPGA.WORD_07(15 downto  8)    <= std_logic_vector(to_unsigned(character'pos(FPGA_TYPE(30)),8)); 
   Mon.FPGA.WORD_07( 7 downto  0)    <= std_logic_vector(to_unsigned(character'pos(FPGA_TYPE(29)),8));
 
-
-
   blockram: entity work.rams_sp_wf
     generic map (
       RAM_WIDTH => 13,

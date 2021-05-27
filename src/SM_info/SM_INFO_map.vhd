@@ -66,12 +66,14 @@ begin  -- architecture behavioral
     if reset_axi_n = '0' then
       localRdAck <= '0';
     elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
-      localRdAck <= regRdAck;
-
+      localRdAck <= '0';
+      
+      
       if regRdAck = '1' then
-        localRdData_latch <= localRdData;          
+        localRdData_latch <= localRdData;
+        localRdAck <= '1';
+      
       end if;
-          
     end if;
   end process latch_reads;
 

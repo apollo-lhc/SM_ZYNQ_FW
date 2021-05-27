@@ -296,7 +296,7 @@ architecture structure of top is
   signal C2C_gt_qpllclk_quad4 : std_logic;
   signal C2C_gt_qpllrefclk_quad4 : std_logic;
 
-  signal AXI_C2C_powerdown : std_logic_vector(1 downto 0);
+  signal AXI_C2C_powerdown : std_logic_vector(4 downto 1);
 
 
   
@@ -351,6 +351,7 @@ architecture structure of top is
   signal plXVC_TCK      : std_logic_vector((XVC_COUNT -1) downto 0);
   signal plXVC_PS_RST   : std_logic_vector((XVC_COUNT -1) downto 0);
 
+  constant CM_COUNT           : integer := 1;
   signal CM1_UART_Tx_internal : std_logic;
   signal CM2_UART_Tx_internal : std_logic;
   signal CM_C2C_Mon     : C2C_Monitor_t;
@@ -386,25 +387,28 @@ architecture structure of top is
 
 begin  -- architecture structure
 
-  ETH1_CLK <= ETH1_CLK_local;
-  
-  ETH1_RESET_N <= '1';
-  
-  --debugging start
-  FP_1V8_GPIO <= "000000";
-  EEPROM_WE_N <= '1';
+  --Zynq axi signals  
+  axi_reset <= not axi_reset_n;
 
-  GPIO  <= x"00";
-  ZYNQ_BOOT_DONE <= linux_booted;
-  IPMC_OUT <= "00";
-  
-  
+  --Other master clocks  
   pl_reset_n <= axi_reset_n ;
   pl_clk <= axi_clk;
-  AXI_C2C_powerdown(0) <= not CM_enable_IOs(0);
-  AXI_C2C_powerdown(1) <= not CM_enable_IOs(0); --CM_enable_IOs(1) when (CM_COUNT = 1) else (not CM_enable_IOs(0)); --case for having only 1 CM
-  CM_C2C_Mon.Link(2).status.phy_mmcm_lol  <= '0';
-  CM_C2C_Mon.Link(2).link_debug.cpll_lock <= '0';
+
+  SI_OUT_DIS <= not SI_OE_normal;
+  SI_ENABLE  <= SI_EN_normal;
+  SI_i2c_SDA : IOBUF
+    port map (
+      IO => SI_sda,
+      I  => SDA_o_phy,
+      T  => SDA_t_phy,
+      O  => SDA_i_phy);
+  SI_i2c_SCL : IOBUF
+    port map (
+      IO => SI_scl,
+      I  => SCL_o_phy,
+      T  => SCL_t_phy,
+      O  => SCL_i_phy);
+
   zynq_bd_wrapper_1: entity work.zynq_bd_wrapper
     port map (
       AXI_RST_N(0)         => axi_reset_n,
@@ -557,46 +561,6 @@ begin  -- architecture structure
       SM_INFO_wready          => AXI_BUS_WMISO(3).ready_for_data,
       SM_INFO_wstrb           => AXI_BUS_WMOSI(3).data_write_strobe,
       SM_INFO_wvalid          => AXI_BUS_WMOSI(3).data_valid,
-
---            TCDS_DRP_araddr          => AXI_BUS_RMOSI(4).address,
---      TCDS_DRP_arprot          => AXI_BUS_RMOSI(4).protection_type,
---      TCDS_DRP_arready         => AXI_BUS_RMISO(4).ready_for_address,
---      TCDS_DRP_arvalid         => AXI_BUS_RMOSI(4).address_valid,
---      TCDS_DRP_awaddr          => AXI_BUS_WMOSI(4).address,
---      TCDS_DRP_awprot          => AXI_BUS_WMOSI(4).protection_type,
---      TCDS_DRP_awready         => AXI_BUS_WMISO(4).ready_for_address,
---      TCDS_DRP_awvalid         => AXI_BUS_WMOSI(4).address_valid,
---      TCDS_DRP_bready          => AXI_BUS_WMOSI(4).ready_for_response,
---      TCDS_DRP_bresp           => AXI_BUS_WMISO(4).response,
---      TCDS_DRP_bvalid          => AXI_BUS_WMISO(4).response_valid,
---      TCDS_DRP_rdata           => AXI_BUS_RMISO(4).data,
---      TCDS_DRP_rready          => AXI_BUS_RMOSI(4).ready_for_data,
---      TCDS_DRP_rresp           => AXI_BUS_RMISO(4).response,
---      TCDS_DRP_rvalid          => AXI_BUS_RMISO(4).data_valid,
---      TCDS_DRP_wdata           => AXI_BUS_WMOSI(4).data,
---      TCDS_DRP_wready          => AXI_BUS_WMISO(4).ready_for_data,
---      TCDS_DRP_wstrb           => AXI_BUS_WMOSI(4).data_write_strobe,
---      TCDS_DRP_wvalid          => AXI_BUS_WMOSI(4).data_valid,
---
---      TCDS_araddr              => AXI_BUS_RMOSI(5).address,
---      TCDS_arprot              => AXI_BUS_RMOSI(5).protection_type,
---      TCDS_arready             => AXI_BUS_RMISO(5).ready_for_address,
---      TCDS_arvalid             => AXI_BUS_RMOSI(5).address_valid,
---      TCDS_awaddr              => AXI_BUS_WMOSI(5).address,
---      TCDS_awprot              => AXI_BUS_WMOSI(5).protection_type,
---      TCDS_awready             => AXI_BUS_WMISO(5).ready_for_address,
---      TCDS_awvalid             => AXI_BUS_WMOSI(5).address_valid,
---      TCDS_bready              => AXI_BUS_WMOSI(5).ready_for_response,
---      TCDS_bresp               => AXI_BUS_WMISO(5).response,
---      TCDS_bvalid              => AXI_BUS_WMISO(5).response_valid,
---      TCDS_rdata               => AXI_BUS_RMISO(5).data,
---      TCDS_rready              => AXI_BUS_RMOSI(5).ready_for_data,
---      TCDS_rresp               => AXI_BUS_RMISO(5).response,
---      TCDS_rvalid              => AXI_BUS_RMISO(5).data_valid,
---      TCDS_wdata               => AXI_BUS_WMOSI(5).data,
---      TCDS_wready              => AXI_BUS_WMISO(5).ready_for_data,
---      TCDS_wstrb               => AXI_BUS_WMOSI(5).data_write_strobe,
---      TCDS_wvalid              => AXI_BUS_WMOSI(5).data_valid,
 
 
       PLXVC_araddr               => AXI_BUS_RMOSI(6).address,
@@ -752,45 +716,29 @@ begin  -- architecture structure
 
 
 
-  axi_reset <= not axi_reset_n;
 
 
-  SI_i2c_SDA : IOBUF
-    port map (
-      IO => SI_sda,
-      I  => SDA_o_phy,
-      T  => SDA_t_phy,
-      O  => SDA_i_phy);
-  SI_i2c_SCL : IOBUF
-    port map (
-      IO => SI_scl,
-      I  => SCL_o_phy,
-      T  => SCL_t_phy,
-      O  => SCL_i_phy);
+  -------------------------------------------------------------------------------
+  -- Service module
+  -------------------------------------------------------------------------------
 
-  onboardCLK_1: entity work.onboardCLK
-    port map (
-      clk_200Mhz => clk_200Mhz,
-      clk_50Mhz  => AXI_C2C_aurora_init_clk,
-      reset      =>  SI_init_reset,--'0',
-      locked     => clk_200Mhz_locked,
-      clk_in1_n  => onboard_clk_n,
-      clk_in1_p  => onboard_clk_p);
-  reset_200Mhz <= not clk_200Mhz_locked ;
+  --Clock control
 
-  SI_OUT_DIS <= not SI_OE_normal;
-  SI_ENABLE  <= SI_EN_normal;
-
-
-
-
-  CM_TTC_SEL(1 downto 0) <= (others => TTC_SRC_SEL);
+  CM_TTC_SEL(1 downto 0)   <= (others => TTC_SRC_SEL);
   Clocking_Mon.LHC_LOS_BP  <= LHC_CLK_BP_LOS;
   Clocking_Mon.LHC_LOS_OSC <= LHC_CLK_OSC_LOS;
   Clocking_Mon.HQ_LOS_BP   <= HQ_CLK_BP_LOS;
   Clocking_Mon.HQ_LOS_OSC  <= HQ_CLK_OSC_LOS;
   LHC_SRC_SEL                   <= Clocking_Ctrl.LHC_SEL;
-  HQ_SRC_SEL                    <= Clocking_Ctrl.HQ_SEL;      
+  HQ_SRC_SEL                    <= Clocking_Ctrl.HQ_SEL;
+
+  FP_1V8_GPIO <= "000000";
+  EEPROM_WE_N <= '1';
+
+  GPIO  <= x"00";
+  ZYNQ_BOOT_DONE <= linux_booted;
+  IPMC_OUT <= "00";
+
   services_1: entity work.services
     port map (
       clk_axi         => axi_clk,
@@ -849,6 +797,26 @@ begin  -- architecture structure
       I  => IPMC_SDA_o,
       T  => IPMC_SDA_t,
       O  => IPMC_SDA_i);
+  -------------------------------------------------------------------------------
+  -- Command modules and C2C links
+  -------------------------------------------------------------------------------
+  AXI_C2C_powerdown(1) <= not CM_enable_IOs(1);
+  AXI_C2C_powerdown(2) <= not CM_enable_IOs(1);
+
+  CM_COUNT_IS_1_ASSIGNMENTS: if CM_COUNT = 1 generate
+    AXI_C2C_powerdown(3) <= not CM_enable_IOs(1);
+    AXI_C2C_powerdown(4) <= not CM_enable_IOs(1);
+    CM_C2C_Mon.Link(3).status.phy_mmcm_lol  <= '0';
+    CM_C2C_Mon.Link(3).link_debug.cpll_lock <= '0';
+    CM_C2C_Mon.Link(4).status.phy_mmcm_lol  <= '0';
+    CM_C2C_Mon.Link(4).link_debug.cpll_lock <= '0';
+  end generate CM_COUNT_IS_1_ASSIGNMENTS;
+  
+  CM_COUNT_IS_2_ASSIGNMENTS: if CM_COUNT = 2 generate
+    AXI_C2C_powerdown(3) <= not CM_enable_IOs(2);
+    AXI_C2C_powerdown(4) <= not CM_enable_IOs(2);
+  end generate CM_COUNT_IS_2_ASSIGNMENTS;
+  
 
   CM_interface_1: entity work.CM_intf
     generic map (
@@ -868,10 +836,10 @@ begin  -- architecture structure
       master_writeMOSI     => AXI_MSTR_WMOSI,
       master_writeMISO     => AXI_MSTR_WMISO,
       CM_mon_uart          => CM1_MON_RX,
-      enableCM(0)            => CM1_EN,
-      enableCM(1)            => CM2_EN,
-      enableCM_PWR(0)        => CM1_PWR_EN,
-      enableCM_PWR(1)        => CM2_PWR_EN,
+      enableCM(1)            => CM1_EN,
+      enableCM(2)            => CM2_EN,
+      enableCM_PWR(1)        => CM1_PWR_EN,
+      enableCM_PWR(2)        => CM2_PWR_EN,
       enableCM_IOs           => CM_enable_IOs,
       from_CM.CM(1).PWR_good    => CM1_PWR_good,
       from_CM.CM(1).TDO         => '0',
@@ -897,55 +865,19 @@ begin  -- architecture structure
       to_CM_out.CM(2).TMS       => CM2_TMS,
       to_CM_out.CM(2).TDI       => CM2_TDI,
       to_CM_out.CM(2).TCK       => CM2_TCK,
-      clk_C2C(0)                => clk_C2C1_PHY,
       clk_C2C(1)                => clk_C2C1_PHY,
-      clk_C2C(3 downto 2)       => "00",
+      clk_C2C(2)                => '0',
+      clk_C2C(3)                => clk_C2C1_PHY,
+      clk_C2C(4)                => '0',
       CM_C2C_Mon                => CM_C2C_Mon,
       CM_C2C_Ctrl               => CM_C2C_Ctrl);
-  plXVC_TDO(0) <= CM1_TDO;
-  plXVC_TDO(1) <= CM2_TDO;
   CM1_PS_RST   <= plXVC_PS_RST(0);
   CM2_PS_RST   <= plXVC_PS_RST(1);
 
   
---  TCDS_2: entity work.TCDS
---    port map (
---      clk_axi            => pl_clk,--axi_clk,--clk_TCDS,
---      reset_axi_n        => pl_reset_n,--axi_reset_n,--pl_reset_n,--clk_TCDS_reset_n,--pl_reset_n,
---      clk_axi_DRP        => pl_clk,--axi_clk,
---      reset_axi_DRP_n    => pl_reset_n,--axi_reset_n,--pl_reset_n,
---      readMOSI           => AXI_BUS_RMOSI(5),
---      readMISO           => AXI_BUS_RMISO(5),
---      writeMOSI          => AXI_BUS_WMOSI(5),
---      writeMISO          => AXI_BUS_WMISO(5),
---      DRP_readMOSI       => AXI_BUS_RMOSI(4),
---      DRP_readMISO       => AXI_BUS_RMISO(4),
---      DRP_writeMOSI      => AXI_BUS_WMOSI(4),
---      DRP_writeMISO      => AXI_BUS_WMISO(4),
---      --sysclk        => pl_clk,
---      refclk_p      => refclk_CMS_P,
---      refclk_n      => refclk_CMS_N,
---      QPLL_CLK        => QPLL_CLK,    
---      QPLL_REF_CLK    => QPLL_REF_CLK,        
-----      reset         => axi_reset,
---      clk_TCDS    => clk_TCDS,
---      clk_TCDS_reset_n => clk_TCDS_locked,--open,--clk_TCDS_reset_n,
---      tx_P(0)     => TCDS_TTS_P,
---      tx_P(1)     => LOCAL_TCDS_TTC_P,  
---      tx_P(2)     => open, 
---      tx_N(0)     => TCDS_TTS_N,
---      tx_N(1)     => LOCAL_TCDS_TTC_N,  
---      tx_N(2)     => open, 
---      rx_P(0)     => TCDS_TTC_P,
---      rx_P(1)     => CM1_TCDS_TTS_P,    
---      rx_P(2)     => CM2_TCDS_TTS_P,    
---      rx_N(0)     => TCDS_TTC_N,
---      rx_N(1)     => CM1_TCDS_TTS_N,    
---      rx_N(2)     => CM2_TCDS_TTS_N);
 
-  --Adding CPLD JTAG Chain
   -------------------------------------------------------------------------------
-  -- CPLD JTAG
+  -- JTAG
   -------------------------------------------------------------------------------
   CPLD_JTAG_BUF_TMS : OBUFT
     port map (
@@ -962,6 +894,8 @@ begin  -- architecture structure
       T => not CPLD_Ctrl.ENABLE_JTAG,
       I => plXVC_TCK(2),
       O => CPLD_TCK);
+  plXVC_TDO(0) <= CM1_TDO;
+  plXVC_TDO(1) <= CM2_TDO;
   plXVC_TDO(2) <= CPLD_TDO;
 
   plXVC_1: entity work.plXVC_intf
@@ -982,6 +916,18 @@ begin  -- architecture structure
       TCK             => plXVC_TCK,
       PS_RST          => plXVC_PS_RST);
 
+  -------------------------------------------------------------------------------
+  -- Clocking
+  -------------------------------------------------------------------------------
+  onboardCLK_1: entity work.onboardCLK
+    port map (
+      clk_200Mhz => clk_200Mhz,
+      clk_50Mhz  => AXI_C2C_aurora_init_clk,
+      reset      =>  SI_init_reset,--'0',
+      locked     => clk_200Mhz_locked,
+      clk_in1_n  => onboard_clk_n,
+      clk_in1_p  => onboard_clk_p);
+  reset_200Mhz <= not clk_200Mhz_locked ;
 
   -------------------------------------------------------------------------------
   -- extra clock monitoring
@@ -1065,7 +1011,8 @@ begin  -- architecture structure
       event_b       => '1',
       rate          => Clocking_Mon.AXI_CLK_FREQ);
 
-
+  ETH1_CLK <= ETH1_CLK_local;  
+  ETH1_RESET_N <= '1';
   rate_counter_ETH1: entity work.rate_counter
     generic map (
       CLK_A_1_SECOND => 200000000)

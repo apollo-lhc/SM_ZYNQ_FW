@@ -57,7 +57,7 @@ def GenerateHDL(name,XMLFile,HDLPath,map_template_file,pkg_template_file):
       mytree.generatePkg()
 #      mytree.generateRegMap(regMapTemplate=wd+"/regmap_helper/template_map.vhd")
 #/work/dan/Apollo/SM_ZYNQ_FW_yet_another/regmap_helper/templates/axi_generic/template_map_withbram.vhd
-      mytree.generateRegMap(regMapTemplate=wd+"/regmap_helper/templates/axi_generic/template_map_withbram.vhd")
+      mytree.generateRegMap(regMapTemplate=wd+"/"+map_template_file)
   
   #cleanup
   os.remove(topXMLFile)
@@ -76,8 +76,15 @@ def LoadSlave(name,slave,dtsiYAML,aTableYAML,parentName,map_template_file,pkg_te
   #Build HDL for this file
   if 'HDL' in slave:
     if 'XML' not in slave:
-      raise RuntimeError(fullName+" has HDL tag, but no XML tag\n")
-    GenerateHDL(fullName,slave['XML'][0],slave['HDL'],map_template_file,pkg_template_file)
+        raise RuntimeError(fullName+" has HDL tag, but no XML tag\n")
+    if 'out_dir' not in slave['HDL']:
+        raise RuntimeError(fullName+" has HDL tag, but no out_dir tag\n")
+    if 'map_template' in slave['HDL']:
+        map_template_file = "regmap_helper/templates/"+slave['HDL']['map_template']
+    if 'pkg_template' in slave['HDL']:
+        pkg_template_file = "regmap_helper/templates/"+slave['HDL']['pkg_template']
+    print map_template_file
+    GenerateHDL(fullName,slave['XML'][0],slave['HDL']['out_dir'],map_template_file,pkg_template_file)
 
   #generate yaml for the kernel and centos build
   if 'UHAL_BASE' in slave:
