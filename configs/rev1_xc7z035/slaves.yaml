@@ -41,7 +41,9 @@ AXI_SLAVES:
     XML:
       - "address_table/modules/SERV_rev1.xml"
     UHAL_BASE: 0x04000000
-    HDL: "src/services"
+    HDL: 
+      out_dir: "src/services"
+      map_template: "axi_generic/template_map.vhd"
 
   C2C:
     TCL_CALL:
@@ -119,7 +121,9 @@ AXI_SLAVES:
       - "address_table/modules/plXVC_rev1.xml"
       - "address_table/modules/plXVC_single.xml"
     UHAL_BASE: 0x06000000
-    HDL: "src/plXVC"
+    HDL: 
+      out_dir: "src/plXVC"
+      map_template: "axi_generic/template_map.vhd"
 
   XVC_LOCAL:
     TCL_CALL:
@@ -160,7 +164,9 @@ AXI_SLAVES:
       - "address_table/modules/CM_Mon.xml"
       - "address_table/modules/CM_C2C_CNT.xml"
     UHAL_BASE: 0x03000000
-    HDL: "src/CM_interface"
+    HDL: 
+      out_dir: "src/CM_interface"
+      map_template: "axi_generic/template_map.vhd"
 
   SM_INFO:
     TCL_CALL:
@@ -172,7 +178,9 @@ AXI_SLAVES:
     XML:
       - "address_table/modules/FW_INFO.xml"
     UHAL_BASE: 0x0A000000
-    HDL: "src/SM_info"
+    HDL: 
+      out_dir: "src/SM_info"
+      map_template: "axi_generic/template_map.vhd"
 
   MONITOR:
     TCL_CALL:

@@ -230,7 +230,7 @@ architecture structure of top is
   signal C2C_gt_qpllclk_quad4 : std_logic;
   signal C2C_gt_qpllrefclk_quad4 : std_logic;
 
-  signal AXI_C2C_powerdown : std_logic_vector(1 downto 0);
+  signal AXI_C2C_powerdown : std_logic_vector(4 downto 1);
     
 -- AXI BUS
   signal AXI_clk : std_logic;
@@ -286,6 +286,7 @@ architecture structure of top is
   signal plXVC_TCK      : std_logic_vector((XVC_COUNT -1) downto 0);
   signal plXVC_PS_RST   : std_logic_vector((XVC_COUNT -1) downto 0);
 
+  constant CM_COUNT           : integer := 1;
   signal CM1_UART_Tx_internal : std_logic;
   signal CM2_UART_Tx_internal : std_logic;
   signal CM_C2C_Mon     : C2C_Monitor_t;
@@ -319,10 +320,6 @@ begin  -- architecture structure
 
   pl_reset_n <= axi_reset_n ;
   pl_clk <= axi_clk;
-  AXI_C2C_powerdown(0) <= not CM_enable_IOs(0);
-  AXI_C2C_powerdown(1) <= not CM_enable_IOs(0); --CM_enable_IOs(1) when (CM_COUNT = 1) else (not CM_enable_IOs(0)); --case for having only 1 CM
-  CM_C2C_Mon.Link(2).status.phy_mmcm_lol  <= '0';
-  CM_C2C_Mon.Link(2).link_debug.cpll_lock <= '0';
   zynq_bd_wrapper_1: entity work.zynq_bd_wrapper
     port map (
       AXI_RST_N(0)         => axi_reset_n,
@@ -500,7 +497,7 @@ begin  -- architecture structure
       C2C1_phy_Tx_txp =>  AXI_C2C_CM1_Tx_P(0 to 0),
       C2C1_phy_refclk_clk_n => refclk_C2C_N(0),
       C2C1_phy_refclk_clk_p => refclk_C2C_P(0),
-      C2C1_phy_power_down   => AXI_C2C_powerdown(0),
+      C2C1_phy_power_down   => AXI_C2C_powerdown(1),
       C2C1_aurora_do_cc                 => CM_C2C_Mon.Link(1).status.do_cc                ,
       C2C1_aurora_pma_init_in           => CM_C2C_Ctrl.Link(1).aurora_pma_init_in,
       C2C1_axi_c2c_config_error_out     => CM_C2C_Mon.Link(1).status.config_error    ,
@@ -554,7 +551,7 @@ begin  -- architecture structure
       C2C2_phy_Rx_rxp =>  AXI_C2C_CM2_Rx_P(0 to 0),
       C2C2_phy_Tx_txn =>  AXI_C2C_CM2_Tx_N(0 to 0),
       C2C2_phy_Tx_txp =>  AXI_C2C_CM2_Tx_P(0 to 0),
-      C2C2_phy_power_down   => AXI_C2C_powerdown(1),
+      C2C2_phy_power_down   => AXI_C2C_powerdown(2),
       C2C2_aurora_do_cc                 => CM_C2C_Mon.Link(2).status.do_cc                ,
       C2C2_aurora_pma_init_in           => CM_C2C_Ctrl.Link(2).aurora_pma_init_in,
       C2C2_axi_c2c_config_error_out     => CM_C2C_Mon.Link(2).status.config_error    ,
@@ -623,57 +620,6 @@ begin  -- architecture structure
       TCDS_reset_n      => clk_TCDS_locked--clk_TCDS_reset_n
       );
 
---  DC_data_CDC_1: entity work.DC_data_CDC
---    generic map (
---      DATA_WIDTH => 22)
---    port map (
---      clk_in   => GMII_ETHERNET_tx_clk,--clk_user2_SGMII,--clk_SGMII_tx,
---      clk_out  => axi_clk,
---      reset    => '0',
---      pass_in(0)  => SGMII_MON.reset_done,   
---      pass_in(1)  => SGMII_MON.cpll_lock,    
---      pass_in(2)  => SGMII_MON.mmcm_reset,   
---      pass_in(3)  => SGMII_MON.pma_reset,    
---      pass_in(4)  => SGMII_MON.mmcm_locked,  
---      pass_in(20 downto 5)  => SGMII_MON.status_vector,
---      pass_in(21)  => SGMII_MON.reset,              
---      pass_out(0)   => SGMII_MON_CDC.reset_done,   
---      pass_out(1)  => SGMII_MON_CDC.cpll_lock,    
---      pass_out(2)  => SGMII_MON_CDC.mmcm_reset,   
---      pass_out(3)  => SGMII_MON_CDC.pma_reset,    
---      pass_out(4)  => SGMII_MON_CDC.mmcm_locked,  
---      pass_out(20 downto 5)  => SGMII_MON_CDC.status_vector,
---      pass_out(21)  => SGMII_MON_CDC.reset);
-
-
---  SGMII_MON_CDC <= SGMII_MON;
---  SGMII_1: entity work.SGMII
---    port map (
---      sys_clk               => axi_clk,
---      refclk_125Mhz_P       => refclk_125Mhz_P,
---      refclk_125Mhz_N       => refclk_125Mhz_N,
---      sgmii_tx_P            => sgmii_tx_P,
---      sgmii_tx_N            => sgmii_tx_N,
---      sgmii_rx_P            => sgmii_rx_P,
---      sgmii_rx_N            => sgmii_rx_N,
---      QPLL_CLK              => QPLL_CLK,              
---      QPLL_REF_CLK          => QPLL_REF_CLK,         
---      ENET1_EXT_INTIN_0     => ENET1_EXT_INTIN_0,
---      GMII_ETHERNET_col     => GMII_ETHERNET_col,
---      GMII_ETHERNET_crs     => GMII_ETHERNET_crs,
---      GMII_ETHERNET_rx_clk  => GMII_ETHERNET_rx_clk,
---      GMII_ETHERNET_rx_dv   => GMII_ETHERNET_rx_dv,
---      GMII_ETHERNET_rx_er   => GMII_ETHERNET_rx_er,
---      GMII_ETHERNET_rxd     => GMII_ETHERNET_rxd,
---      GMII_ETHERNET_tx_clk  => GMII_ETHERNET_tx_clk,
---      GMII_ETHERNET_tx_en   => GMII_ETHERNET_tx_en,
---      GMII_ETHERNET_tx_er   => GMII_ETHERNET_tx_er,
---      GMII_ETHERNET_txd     => GMII_ETHERNET_txd,
---      MDIO_ETHERNET_mdc     => MDIO_ETHERNET_mdc,
---      MDIO_ETHERNET_mdio_i  => MDIO_ETHERNET_mdio_i,
---      MDIO_ETHERNET_mdio_o  => MDIO_ETHERNET_mdio_o,  
---      SGMII_MON             => SGMII_MON,
---      SGMII_CTRL            => SGMII_CTRL);
 
 
   axi_reset <= not axi_reset_n;
@@ -769,6 +715,25 @@ begin  -- architecture structure
       I  => IPMC_SDA_o,
       T  => IPMC_SDA_t,
       O  => IPMC_SDA_i);
+  -------------------------------------------------------------------------------
+  -- Command modules and C2C links
+  -------------------------------------------------------------------------------
+  AXI_C2C_powerdown(1) <= not CM_enable_IOs(1);
+  AXI_C2C_powerdown(2) <= not CM_enable_IOs(1);
+
+  CM_COUNT_IS_1_ASSIGNMENTS: if CM_COUNT = 1 generate
+    AXI_C2C_powerdown(3) <= not CM_enable_IOs(1);
+    AXI_C2C_powerdown(4) <= not CM_enable_IOs(1);
+    CM_C2C_Mon.Link(3).status.phy_mmcm_lol  <= '0';
+    CM_C2C_Mon.Link(3).link_debug.cpll_lock <= '0';
+    CM_C2C_Mon.Link(4).status.phy_mmcm_lol  <= '0';
+    CM_C2C_Mon.Link(4).link_debug.cpll_lock <= '0';
+  end generate CM_COUNT_IS_1_ASSIGNMENTS;
+  
+  CM_COUNT_IS_2_ASSIGNMENTS: if CM_COUNT = 2 generate
+    AXI_C2C_powerdown(3) <= not CM_enable_IOs(2);
+    AXI_C2C_powerdown(4) <= not CM_enable_IOs(2);
+  end generate CM_COUNT_IS_2_ASSIGNMENTS;
 
   CM_interface_1: entity work.CM_intf
     generic map (
@@ -788,10 +753,10 @@ begin  -- architecture structure
       master_writeMOSI     => AXI_MSTR_WMOSI,
       master_writeMISO     => AXI_MSTR_WMISO,
       CM_mon_uart          => CM1_GPIO(0),
-      enableCM(0)            => CM1_enable,
-      enableCM(1)            => CM2_enable,
-      enableCM_PWR(0)        => CM1_PWR_enable,
-      enableCM_PWR(1)        => CM2_PWR_enable,
+      enableCM(1)            => CM1_enable,
+      enableCM(2)            => CM2_enable,
+      enableCM_PWR(1)        => CM1_PWR_enable,
+      enableCM_PWR(2)        => CM2_PWR_enable,
       enableCM_IOs           => CM_enable_IOs,
       from_CM.CM(1).PWR_good    => CM1_PWR_good,
       from_CM.CM(1).TDO         => '0',
@@ -817,9 +782,10 @@ begin  -- architecture structure
       to_CM_out.CM(2).TMS       => CM2_TMS,
       to_CM_out.CM(2).TDI       => CM2_TDI,
       to_CM_out.CM(2).TCK       => CM2_TCK,
-      clk_C2C(0)                => clk_C2C1_PHY,
       clk_C2C(1)                => clk_C2C1_PHY,
-      clk_C2C(3 downto 2)       => "00",
+      clk_C2C(2)                => '0',
+      clk_C2C(3)                => clk_C2C1_PHY,
+      clk_C2C(4)                => '0',
       CM_C2C_Mon                => CM_C2C_Mon,
       CM_C2C_Ctrl               => CM_C2C_Ctrl);
   plXVC_TDO(0) <= CM1_TDO;
