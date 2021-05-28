@@ -17,13 +17,22 @@ entity rams_sp_wf is
     en : in std_logic;
     addr : in std_logic_vector(log2(RAM_DEPTH)-1 downto 0);
     di : in std_logic_vector(RAM_WIDTH-1 downto 0);
-    do : out std_logic_vector(RAM_WIDTH-1 downto 0)
+    do : out std_logic_vector(RAM_WIDTH-1 downto 0);
+    do_valid : out std_logic
     );
 end rams_sp_wf;
 architecture syn of rams_sp_wf is
   type ram_type is array (RAM_DEPTH-1 downto 0) of std_logic_vector(RAM_WIDTH-1 downto 0);
   signal RAM : ram_type;
 begin
+
+  process(clk)
+  begin
+    if clk'event and clk = '1' then
+      do_valid <= en;
+    end if;
+  end process;
+    
   process(clk)
   begin
     if clk'event and clk = '1' then

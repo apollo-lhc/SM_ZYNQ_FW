@@ -104,7 +104,8 @@ begin  -- architecture behavioral
       en    => Ctrl.MEM1.enable,
       addr  => Ctrl.MEM1.address,
       di    => Ctrl.MEM1.wr_data,
-      do    => Mon.MEM1.rd_data);
+      do    => Mon.MEM1.rd_data,
+      do_valid => Mon.MEM1.rd_data_valid);
 
   other_blockram: entity work.rams_sp_wf
     generic map (
@@ -116,6 +117,7 @@ begin  -- architecture behavioral
       we    => Ctrl.LEVEL_TEST.MEM.wr_enable,
       addr  => Ctrl.LEVEL_TEST.MEM.address,
       di    => Ctrl.LEVEL_TEST.MEM.wr_data,
-      do    => Mon.LEVEL_TEST.MEM.rd_data);
+      do    => Mon.LEVEL_TEST.MEM.rd_data,
+      do_valid => Mon.LEVEL_TEST.MEM.rd_data_valid);
 
 end architecture behavioral;
