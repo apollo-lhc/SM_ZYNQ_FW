@@ -4,7 +4,6 @@ use ieee.numeric_std.all;
 
 use work.types.all;
 use work.AXIRegPKG.all;
-use work.SGMII_MONITOR.all;
 use work.CM_package.all;
 use work.SERV_CTRL.all;
 
@@ -143,10 +142,6 @@ entity top is
 --    refclk_TCDS_P     : in    std_logic; 
 --    refclk_TCDS_N     : in    std_logic; 
 --                              
---    sgmii_tx_P        : out   std_logic; 
---    sgmii_tx_N        : out   std_logic; 
---    sgmii_rx_P        : in    std_logic; 
---    sgmii_rx_N        : in    std_logic;
 ----                              
 --    tts_P             : out   std_logic; 
 --    tts_N             : out   std_logic; 
@@ -246,9 +241,6 @@ architecture structure of top is
   signal AXI_MSTR_WMISO : AXIWriteMISO;
   
   --Monitoring
-  signal SGMII_MON : SGMII_MONITOR_t;
-  signal SGMII_MON_CDC : SGMII_MONITOR_t;
-  signal SGMII_CTRL : SGMII_CONTROL_t;
   
   signal onbloard_clk_n : std_logic;
   signal onbloard_clk_p : std_logic;
@@ -665,8 +657,6 @@ begin  -- architecture structure
       readMISO        => AXI_BUS_RMISO(0),
       writeMOSI       => AXI_BUS_WMOSI(0),
       writeMISO       => AXI_BUS_WMISO(0),
-      SGMII_MON       => SGMII_MON_CDC,
-      SGMII_CTRL      => SGMII_CTRL,
       FP_LED_RST      => FP_LED_RST,
       FP_LED_CLK      => FP_LED_CLK,
       FP_LED_SDA      => FP_LED_SDA,

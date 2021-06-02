@@ -5,7 +5,6 @@ use ieee.numeric_std.all;
 use work.AXIRegPkg.all;
 
 use work.types.all;
-use work.SGMII_MONITOR.all;
 use work.CM_package.all;
 use work.SERV_Ctrl.all;
 
@@ -19,8 +18,6 @@ entity services is
     writeMOSI          : in  AXIWriteMOSI;
     writeMISO          : out AXIWriteMISO := DefaultAXIWriteMISO;
                        
-    SGMII_MON          : in  SGMII_MONITOR_t;
-    SGMII_CTRL         : out SGMII_CONTROL_t;
                        
     FP_LED_RST         : out std_logic;
     FP_LED_CLK         : out std_logic;
@@ -48,8 +45,6 @@ architecture behavioral of services is
   signal ESM_LEDs : slv_16_t;
   signal ESM_clk_last : std_logic;
 
-  signal SGMII_MON_buf1 : SGMII_MONITOR_t;
-  signal SGMII_MON_buf2 : SGMII_MONITOR_t;
 
   constant FP_REG_COUNT : integer := 6;
   signal FP_regs : slv8_array_t(0 to (FP_REG_COUNT - 1)) := (others => (others => '0'));
@@ -75,10 +70,10 @@ begin  -- architecture behavioral
   end process ESM_LED_CAP;
 
 
-  FP_regs(1)(0) <= SGMII_MON.mmcm_locked;
-  FP_regs(1)(1) <= SGMII_MON.pma_reset;
-  FP_regs(1)(2) <= SGMII_MON.reset_done;
-  FP_regs(1)(3) <= SGMII_MON.cpll_lock ;
+  FP_regs(1)(0) <= '1';
+  FP_regs(1)(1) <= '1';
+  FP_regs(1)(2) <= '1';
+  FP_regs(1)(3) <= '1';
 
   FP_regs(2)(0)          <= CM1_C2C_Mon.STATUS.config_error   ;
   FP_regs(2)(1)          <= CM1_C2C_Mon.STATUS.link_error     ;
@@ -145,13 +140,6 @@ begin  -- architecture behavioral
       SDA           => FP_LED_SDA,
       shutdownout   => FP_shutdown);
 
-  latch_SGMII_domain: process (clk_axi) is
-  begin  -- process latch_SGMII_domain
-    if clk_axi'event and clk_axi = '1' then  -- rising clock edge
-      SGMII_MON_buf1 <= SGMII_MON;
-      SGMII_MON_buf2 <= SGMII_MON_buf1;
-    end if;
-  end process latch_SGMII_domain;
 
   
   SERV_interface_1: entity work.SERV_interface
@@ -171,27 +159,11 @@ begin  -- architecture behavioral
   Mon.FP_LEDS.BUTTON           <= FP_switch;
   Mon.FP_LEDS.FP_SHDWN_REQ     <= FP_shutdown;
   Mon.SWITCH.STATUS            <= ESM_LEDs;
-  Mon.SGMII.PMA_RESET          <= SGMII_MON_buf2.pma_reset;
-  Mon.SGMII.MMCM_RESET         <= SGMII_MON_buf2.mmcm_reset;
-  Mon.SGMII.RESET_DONE         <= SGMII_MON_buf2.reset_done;
-  Mon.SGMII.CPLL_LOCK          <= SGMII_MON_buf2.cpll_lock;
-  Mon.SGMII.MMCM_LOCK          <= SGMII_MON_buf2.mmcm_locked;
-  Mon.SGMII.SV_LINK_STATUS     <= SGMII_MON_buf2.status_vector(0);
-  Mon.SGMII.SV_LINK_SYNC       <= SGMII_MON_buf2.status_vector(1);
-  Mon.SGMII.SV_RUDI_AUTONEG    <= SGMII_MON_buf2.status_vector(2);
-  Mon.SGMII.SV_RUDI_IDLE       <= SGMII_MON_buf2.status_vector(3);
-  Mon.SGMII.SV_RUDI_INVALID    <= SGMII_MON_buf2.status_vector(4);
-  Mon.SGMII.SV_RX_DISP_ERR     <= SGMII_MON_buf2.status_vector(5);
-  Mon.SGMII.SV_RX_NOT_IN_TABLE <= SGMII_MON_buf2.status_vector(6);
-  Mon.SGMII.SV_PHY_LINK_STATUS <= SGMII_MON_buf2.status_vector(7);
-  Mon.SGMII.SV_DUPLEX          <= SGMII_MON_buf2.status_vector(12);
-  Mon.SGMII.SV_REMOTE_FAULT    <= SGMII_MON_buf2.status_vector(13);
 
   SI5344_Ctrl   <= Ctrl.SI5344;
   TCDS_Ctrl     <= Ctrl.TCDS;
   CLOCKING_Ctrl <= Ctrl.CLOCKING;
   FP_LED_RST    <= not Ctrl.FP_LEDS.RESET;
-  SGMII_CTRL.reset <= Ctrl.SGMII.RESET;
 
 
   
