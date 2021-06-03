@@ -1,4 +1,5 @@
-SRC_URI += "file://user_test.cfg "
+SRC_URI += "file://user_working.cfg \
+            file://user_uarts.cfg"
 
 
 

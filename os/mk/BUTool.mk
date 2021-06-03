@@ -1,13 +1,10 @@
 #Build BUTool from ApolloTool meta repo
-#APOLLO_TOOL_TAG=v1.6.2
-APOLLO_TOOL_TAG=feature-USP_addrs
+APOLLO_TOOL_TAG=master
 ${OPT_PATH}/BUTool: ${OPT_PATH}/cactus | ${OPT_PATH} ${TMP_PATH} 
 	cd ${TMP_PATH} && \
 		git clone --branch ${APOLLO_TOOL_TAG} https://github.com/apollo-lhc/ApolloTool.git
 	cd ${TMP_PATH}/ApolloTool && \
 		make init
-#	cd ${TMP_PATH}/ApolloTool/plugins/ApolloSM_plugin && \
-#		git checkout b0a03be618cc0a58d0cae66a259bc3da8589b7e0
 	cp ${MODS_PATH}/build_BUTool.sh ${TMP_PATH}/ApolloTool/
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/ApolloTool/build_BUTool.sh
 	(find address_table/ -xtype f -exec sudo install -Dm 666 "{}" "${OPT_PATH}/{}" \;)
@@ -28,6 +25,7 @@ ${OPT_PATH}/BUTool: ${OPT_PATH}/cactus | ${OPT_PATH} ${TMP_PATH}
 	sudo ln -s /etc/systemd/system/htmlStatus.service  ${ETC_PATH}/systemd/system/basic.target.wants/htmlStatus.service
 	sudo ln -s /etc/systemd/system/xvc_cm1.service     ${ETC_PATH}/systemd/system/basic.target.wants/xvc_cm1.service
 	sudo ln -s /etc/systemd/system/xvc_cm2.service     ${ETC_PATH}/systemd/system/basic.target.wants/xvc_cm2.service
+	sudo ln -s /etc/systemd/system/xvc_CPLD.service    ${ETC_PATH}/systemd/system/basic.target.wants/xvc_CPLD.service
 	sudo ln -s /etc/systemd/system/xvc_local.service   ${ETC_PATH}/systemd/system/basic.target.wants/xvc_local.service
 	sudo install -m 777 ${MODS_PATH}/rc.local ${ETC_PATH}/rc.d/rc.local
 	sudo rm ${ETC_PATH}/systemd/system/multi-user.target.wants/auditd.service
