@@ -257,7 +257,7 @@ AXI_SLAVES:
         range: "8K"
     XML:
       - "address_table/modules/MEM_TEST.xml"
-    UHAL_BASE: 0x0B000000
+    UHAL_BASE: 0x0F000000
     HDL: 
       out_dir: "src/MEM_TEST"
       map_template: "axi_generic/template_map_withbram.vhd"

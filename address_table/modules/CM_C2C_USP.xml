@@ -6,7 +6,7 @@
   <!-- STATUS 0x0 -> 0x0 mapped to 0x04 -> 0x04 -->
   <node id="STATUS"                 address="0x4" module="file://CM_C2C_Status.xml"/>
 
-  <!-- CTRL 0x0 -> 0x2 mapped to 0x05 -> 0x06 -->
+  <!-- CTRL 0x0 -> 0x2 mapped to 0x05 -> 0x07 -->
   <node id="LINK_DEBUG"             address="0x5" module="file://CM_C2C_DEBUG_USP.xml"/>
 
   <!-- CTRL 0x0 -> 0x9 mapped to 0x10 -> 0x19 -->
