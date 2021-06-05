@@ -282,7 +282,7 @@ architecture structure of top is
   signal C2C_gt_qpllclk_quad4 : std_logic;
   signal C2C_gt_qpllrefclk_quad4 : std_logic;
 
-  signal AXI_C2C_powerdown : std_logic_vector(3 downto 0);
+  signal AXI_C2C_powerdown : std_logic_vector(4 downto 1);
 
 
   
@@ -320,6 +320,8 @@ architecture structure of top is
   signal SCL_t_normal : std_logic;
 
   signal SI_OE_normal : std_logic;
+  signal SI_EN_normal : std_logic;
+  signal SI_init_reset : std_logic;
   signal SI_TCDS_OE_normal : std_logic;
  
   
@@ -327,7 +329,6 @@ architecture structure of top is
   signal IPMC_SDA_t : std_logic;
   signal IPMC_SDA_i : std_logic;
 
-  signal  SI_init_reset : std_logic;
 
   --For plXVC
   constant XVC_COUNT    : integer := 3;
@@ -339,6 +340,7 @@ architecture structure of top is
 
   signal CM1_UART_Tx_internal : std_logic;
   signal CM2_UART_Tx_internal : std_logic;
+  constant CM_COUNT           : integer := 1;
   signal CM_C2C_Mon     : C2C_Monitor_t;
 
   signal CPLD_Mon       : SERV_CPLD_Mon_t;
@@ -379,20 +381,30 @@ architecture structure of top is
 begin  -- architecture structure
 
   --debugging start
-  FP_1V8_GPIO <= "000000";
-  EEPROM_WE_N <= '1';
 
-  GPIO  <= "0000000";
-  ZYNQ_BOOT_DONE <= linux_booted;
-  IPMC_OUT <= "00";
-  
-  
+  --Zynq axi signals
+  axi_reset <= not axi_reset_n;
+
+  --Other master clocks
   pl_reset_n <= axi_reset_n ;
   pl_clk <= axi_clk;
-  AXI_C2C_powerdown(0) <= not CM_enable_IOs(0);
-  AXI_C2C_powerdown(1) <= not CM_enable_IOs(0); --CM_enable_IOs(1) when (CM_COUNT = 1) else (not CM_enable_IOs(0)); --case for having only 1 CM
-  CM_C2C_Mon.Link(2).status.phy_mmcm_lol  <= '0';
-  CM_C2C_Mon.Link(2).link_debug.cpll_lock <= '0';
+
+
+  SI_OUT_DIS <= not SI_OE_normal;
+  SI_ENABLE  <= SI_EN_normal;
+  SI_i2c_SDA : IOBUF
+    port map (
+      IO => SI_sda,
+      I  => SDA_o_phy,
+      T  => SDA_t_phy,
+      O  => SDA_i_phy);
+  SI_i2c_SCL : IOBUF
+    port map (
+      IO => SI_scl,
+      I  => SCL_o_phy,
+      T  => SCL_t_phy,
+      O  => SCL_i_phy);
+
   zynq_bd_wrapper_1: entity work.zynq_bd_wrapper
     port map (
       clk_125              => clk_125Mhz,
@@ -577,7 +589,7 @@ begin  -- architecture structure
       C2C1_phy_Tx_txp =>  AXI_C2C_CM1_Tx_P(0 to 0),
       C2C1_phy_refclk_clk_n => refclk_C2C1_N(1),
       C2C1_phy_refclk_clk_p => refclk_C2C1_P(1),
-      C2C1_phy_power_down   => AXI_C2C_powerdown(0),
+      C2C1_phy_power_down   => AXI_C2C_powerdown(1),
 
       C2C1_aurora_do_cc                 => CM_C2C_Mon.Link(1).status.do_cc                ,
       C2C1_aurora_pma_init_in           => CM_C2C_Ctrl.Link(1).aurora_pma_init_in,
@@ -635,7 +647,7 @@ begin  -- architecture structure
       C2C1b_phy_Rx_rxp =>  AXI_C2C_CM1_Rx_P(1 to 1),
       C2C1b_phy_Tx_txn =>  AXI_C2C_CM1_Tx_N(1 to 1),
       C2C1b_phy_Tx_txp =>  AXI_C2C_CM1_Tx_P(1 to 1),
-      C2C1b_phy_power_down               => AXI_C2C_powerdown(1),
+      C2C1b_phy_power_down               => AXI_C2C_powerdown(3),
       C2C1b_aurora_do_cc                 => CM_C2C_Mon.Link(2).status.do_cc                ,
       C2C1b_aurora_pma_init_in           => CM_C2C_Ctrl.Link(2).aurora_pma_init_in,
       C2C1b_axi_c2c_config_error_out     => CM_C2C_Mon.Link(2).status.config_error    ,
@@ -810,46 +822,27 @@ begin  -- architecture structure
 
 
 
+  -------------------------------------------------------------------------------
+  -- Service module
+  -------------------------------------------------------------------------------
 
-  axi_reset <= not axi_reset_n;
-
-
-  SI_i2c_SDA : IOBUF
-    port map (
-      IO => SI_sda,
-      I  => SDA_o_phy,
-      T  => SDA_t_phy,
-      O  => SDA_i_phy);
-  SI_i2c_SCL : IOBUF
-    port map (
-      IO => SI_scl,
-      I  => SCL_o_phy,
-      T  => SCL_t_phy,
-      O  => SCL_i_phy);
-
-  onboard_CLK_1: entity work.onboardClk
-    port map (
-      clk_200Mhz => clk_200Mhz,
-      clk_50Mhz  => AXI_C2C_aurora_init_clk,
-      clk_125Mhz  => clk_125Mhz,
-      reset      =>  SI_init_reset,--'0',
-      locked     => clk_200Mhz_locked,
-      clk_in1_n  => onboard_clk_n,
-      clk_in1_p  => onboard_clk_p);
-  reset_200Mhz <= not clk_200Mhz_locked ;
-
-  SI_OUT_DIS <= not SI_OE_normal;
-  SI_TCDS_ENABLE <= not SI_TCDS_OE_normal;
-
-
-
+  --Clock control
   CM_TTC_SEL(1 downto 0)   <= (others => TTC_SRC_SEL);
   Clocking_Mon.LHC_LOS_BP  <= LHC_CLK_BP_LOS;
   Clocking_Mon.LHC_LOS_OSC <= LHC_CLK_OSC_LOS;
   Clocking_Mon.HQ_LOS_BP   <= HQ_CLK_BP_LOS;
   Clocking_Mon.HQ_LOS_OSC  <= HQ_CLK_OSC_LOS;
-  LHC_SRC_SEL                   <= Clocking_Ctrl.LHC_SEL;
-  HQ_SRC_SEL                    <= Clocking_Ctrl.HQ_SEL;      
+  LHC_SRC_SEL              <= Clocking_Ctrl.LHC_SEL;
+  HQ_SRC_SEL               <= Clocking_Ctrl.HQ_SEL;      
+
+  
+  FP_1V8_GPIO <= "000000";
+  EEPROM_WE_N <= '1';
+
+  GPIO  <= "0000000";
+  ZYNQ_BOOT_DONE <= linux_booted;
+  IPMC_OUT <= "00";
+  
   services_1: entity work.services
     port map (
       clk_axi         => axi_clk,
@@ -914,6 +907,27 @@ begin  -- architecture structure
       T  => IPMC_SDA_t,
       O  => IPMC_SDA_i);
 
+  
+  -------------------------------------------------------------------------------
+  -- Command modules and C2C links
+  -------------------------------------------------------------------------------
+  AXI_C2C_powerdown(1) <= not CM_enable_IOs(1);
+  AXI_C2C_powerdown(2) <= not CM_enable_IOs(1);
+
+  CM_COUNT_IS_1_ASSIGNMENTS: if CM_COUNT = 1 generate
+    AXI_C2C_powerdown(3) <= not CM_enable_IOs(1);
+    AXI_C2C_powerdown(4) <= not CM_enable_IOs(1);
+    CM_C2C_Mon.Link(3).status.phy_mmcm_lol  <= '0';
+    CM_C2C_Mon.Link(3).link_debug.cpll_lock <= '0';
+    CM_C2C_Mon.Link(4).status.phy_mmcm_lol  <= '0';
+    CM_C2C_Mon.Link(4).link_debug.cpll_lock <= '0';
+  end generate CM_COUNT_IS_1_ASSIGNMENTS;
+  
+  CM_COUNT_IS_2_ASSIGNMENTS: if CM_COUNT = 2 generate
+    AXI_C2C_powerdown(3) <= not CM_enable_IOs(2);
+    AXI_C2C_powerdown(4) <= not CM_enable_IOs(2);
+  end generate CM_COUNT_IS_2_ASSIGNMENTS;
+
   CM_interface_1: entity work.CM_intf
     generic map (
       CM_COUNT             => 1,
@@ -932,10 +946,10 @@ begin  -- architecture structure
       master_writeMOSI     => AXI_MSTR_WMOSI,
       master_writeMISO     => AXI_MSTR_WMISO,
       CM_mon_uart          => CM1_MON_RX,
-      enableCM(0)            => CM1_EN,
-      enableCM(1)            => CM2_EN,
-      enableCM_PWR(0)        => CM1_PWR_EN,
-      enableCM_PWR(1)        => CM2_PWR_EN,
+      enableCM(1)            => CM1_EN,
+      enableCM(2)            => CM2_EN,
+      enableCM_PWR(1)        => CM1_PWR_EN,
+      enableCM_PWR(2)        => CM2_PWR_EN,
       enableCM_IOs           => CM_enable_IOs,
       from_CM.CM(1).PWR_good    => CM1_PWR_good,
       from_CM.CM(1).TDO         => '0',
@@ -961,22 +975,19 @@ begin  -- architecture structure
       to_CM_out.CM(2).TMS       => CM2_TMS,
       to_CM_out.CM(2).TDI       => CM2_TDI,
       to_CM_out.CM(2).TCK       => CM2_TCK,
-      clk_C2C(0)                => clk_C2C1_PHY,
       clk_C2C(1)                => clk_C2C1_PHY,
       clk_C2C(2)                => clk_C2C1_PHY,
       clk_C2C(3)                => clk_C2C1_PHY,
+      clk_C2C(4)                => clk_C2C1_PHY,
       CM_C2C_Mon                => CM_C2C_Mon,
       CM_C2C_Ctrl               => CM_C2C_Ctrl);
-  plXVC_TDO(0) <= CM1_TDO;
-  plXVC_TDO(1) <= CM2_TDO;
   CM1_PS_RST   <= plXVC_PS_RST(0);
   CM2_PS_RST   <= plXVC_PS_RST(1);
 
   
 
-  --Adding CPLD JTAG Chain
   -------------------------------------------------------------------------------
-  -- CPLD JTAG
+  -- JTAG
   -------------------------------------------------------------------------------
   CPLD_JTAG_BUF_TMS : OBUFT
     port map (
@@ -993,6 +1004,8 @@ begin  -- architecture structure
       T => not CPLD_Ctrl.ENABLE_JTAG,
       I => plXVC_TCK(2),
       O => CPLD_TCK);
+  plXVC_TDO(0) <= CM1_TDO;
+  plXVC_TDO(1) <= CM2_TDO;
   plXVC_TDO(2) <= CPLD_TDO;
 
   plXVC_1: entity work.plXVC_intf
@@ -1012,6 +1025,19 @@ begin  -- architecture structure
       TDO             => plXVC_TDO,
       TCK             => plXVC_TCK,
       PS_RST          => plXVC_PS_RST);
+
+  -------------------------------------------------------------------------------
+  -- Clocking
+  -------------------------------------------------------------------------------
+  onboardCLK_1: entity work.onboardCLK
+    port map (
+      clk_200Mhz => clk_200Mhz,
+      clk_50Mhz  => AXI_C2C_aurora_init_clk,
+      reset      =>  SI_init_reset,--'0',
+      locked     => clk_200Mhz_locked,
+      clk_in1_n  => onboard_clk_n,
+      clk_in1_p  => onboard_clk_p);
+  reset_200Mhz <= not clk_200Mhz_locked ;
 
   -------------------------------------------------------------------------------
   -- extra clock monitoring

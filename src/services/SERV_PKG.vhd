@@ -24,17 +24,37 @@ package SERV_CTRL is
                                                                OE => '1',
                                                                EN => '1'
                                                               );
+  type SERV_TCDS_SI5344_MON_t is record
+    INT                        :std_logic;     -- Si5344 i2c interrupt
+    LOL                        :std_logic;     -- Si5344 Loss of lock
+    LOS                        :std_logic;     -- Si5344 Loss of signal
+  end record SERV_TCDS_SI5344_MON_t;
+
+
+  type SERV_TCDS_SI5344_CTRL_t is record
+    OE                         :std_logic;     -- Enable Si5344 outputs
+    EN                         :std_logic;     -- Power on Si5344
+  end record SERV_TCDS_SI5344_CTRL_t;
+
+
+  constant DEFAULT_SERV_TCDS_SI5344_CTRL_t : SERV_TCDS_SI5344_CTRL_t := (
+                                                                         OE => '1',
+                                                                         EN => '1'
+                                                                        );
   type SERV_TCDS_MON_t is record
     REFCLK_LOCKED              :std_logic;     -- TCDS refclk locked
+    SI5344                     :SERV_TCDS_SI5344_MON_t;
   end record SERV_TCDS_MON_t;
 
 
   type SERV_TCDS_CTRL_t is record
     TTC_SOURCE                 :std_logic;     -- TTC source select (0:TCDS,1:TTC_FAKE
+    SI5344                     :SERV_TCDS_SI5344_CTRL_t;
   end record SERV_TCDS_CTRL_t;
 
 
   constant DEFAULT_SERV_TCDS_CTRL_t : SERV_TCDS_CTRL_t := (
+                                                           SI5344 => DEFAULT_SERV_TCDS_SI5344_CTRL_t,
                                                            TTC_SOURCE => '1'
                                                           );
   type SERV_CLOCKING_MON_t is record
@@ -46,7 +66,6 @@ package SERV_CTRL is
     HQ_CLK_FREQ                :std_logic_vector(31 downto 0);  -- Measured Freq of clock
     TTC_CLK_FREQ               :std_logic_vector(31 downto 0);  -- Measured Freq of clock
     AXI_CLK_FREQ               :std_logic_vector(31 downto 0);  -- Measured Freq of clock
-    ETH1_CLK_FREQ              :std_logic_vector(31 downto 0);  -- Measured Freq of clock
   end record SERV_CLOCKING_MON_t;
 
 

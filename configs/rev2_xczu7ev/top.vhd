@@ -291,6 +291,7 @@ architecture structure of top is
   signal SI_OE_normal : std_logic;
   signal SI_EN_normal : std_logic;
   signal SI_init_reset : std_logic;
+  signal SI_TCDS_OE_normal : std_logic;
 
   -- IPMC i2c slave
   signal IPMC_SDA_o : std_logic;
