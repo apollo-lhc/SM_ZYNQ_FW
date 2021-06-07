@@ -1,0 +1,1 @@
+../../../regmap_helper/templates/axi_generic/map_withbram_ila.tcl
