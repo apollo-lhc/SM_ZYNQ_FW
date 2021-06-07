@@ -155,9 +155,10 @@ def main(localSlavesYAML,remoteSlavesYAML,CMyaml,outputDir):
       if type(CMyaml) == type('  '):
         CMFile=open(CMyaml)
         remotes=yaml.load(CMFile)
-        for remote in remotes:
-          filename="os/"+remote+"_slaves.yaml"
-          remoteSlaves.append(filename)
+        if remotes:
+          for remote in remotes:
+            filename="os/"+remote+"_slaves.yaml"
+            remoteSlaves.append(filename)
     except IOError:
       pass
     #remote slaves (explicit)

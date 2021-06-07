@@ -44,7 +44,12 @@ package types is
   type u16_array_t is array (integer range <>) of unsigned(47 downto 0);
 
   type int8_array_t is array (integer range <>) of integer range 0 to 7;
-  
+
+  type int_array_t  is array (integer range <>) of integer;
+
+  function log2 (val: INTEGER) return natural;
+    
+
 end package types;
 
 package body types is

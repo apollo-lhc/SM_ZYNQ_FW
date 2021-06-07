@@ -5,15 +5,14 @@ use work.types.all;
 use work.CM_CTRL.all;
 
 package CM_package is
-
   type single_C2C_Monitor_t is record
     status             : CM_CM_C2C_STATUS_MON_t;     -- from address table via CM_PKG
     link_debug         : CM_CM_C2C_LINK_DEBUG_MON_t; -- from address table via CM_PKG
     user_clk_freq      : std_logic_vector(31 downto 0);
   end record single_C2C_Monitor_t;
-  type C2C_Monitor_t_ARRAY is array (1 to 2) of single_C2C_Monitor_t;
+  type C2C_Monitor_t_ARRAY is array (1 to 4) of single_C2C_Monitor_t;
   type C2C_Monitor_t is record
-    CM : C2C_Monitor_t_ARRAY;
+    Link : C2C_Monitor_t_ARRAY;
   end record C2C_Monitor_t;
   
 
@@ -27,11 +26,11 @@ package CM_package is
     status             => DEFAULT_CM_CM_C2C_STATUS_CTRL_t,     -- from address table via CM_PKG
     link_debug         => DEFAULT_CM_CM_C2C_LINK_DEBUG_CTRL_t -- from address table via CM_PKG
     );
-  type C2C_Control_t_ARRAY is array (1 to 2) of single_C2C_Control_t;
+  type C2C_Control_t_ARRAY is array (1 to 4) of single_C2C_Control_t;
   type C2C_Control_t is record
-    CM : C2C_Control_t_ARRAY;
+    Link : C2C_Control_t_ARRAY;
   end record C2C_Control_t;
-  constant DEFAULT_C2C_Control_t : C2C_Control_t := (CM => (others => DEFAULT_single_C2C_Control_t));
+  constant DEFAULT_C2C_Control_t : C2C_Control_t := (Link => (others => DEFAULT_single_C2C_Control_t));
 
 
 

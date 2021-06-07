@@ -108,6 +108,14 @@ set_property -dict {PACKAGE_PIN L4  IOSTANDARD LVDS}     [get_ports {onboard_CLK
 set_property -dict {PACKAGE_PIN L5  IOSTANDARD LVDS}     [get_ports {onboard_CLK_P}]
 create_clock -period 5.000 -name onboard_CLK_P -add [get_ports onboard_CLK_P]
 
+set_property -dict {PACKAGE_PIN M6   IOSTANDARD LVDS}                   [get_ports {CLK_LHC_P}]
+set_property -dict {PACKAGE_PIN M5   IOSTANDARD LVDS}                   [get_ports {CLK_LHC_N}]
+create_clock -period 24.95 -name CLK_LHC_P -add [get_ports CLK_LHC_P]
+
+set_property -dict {PACKAGE_PIN C8   IOSTANDARD LVDS}                   [get_ports {CLK_HQ_P}]
+set_property -dict {PACKAGE_PIN C7   IOSTANDARD LVDS}                   [get_ports {CLK_HQ_N}]
+create_clock -period 6.238 -name CLK_HQ_P -add [get_ports CLK_HQ_P]
+
 # -------------------------------------------------------------------------------------------------
 # bank 34
 # -------------------------------------------------------------------------------------------------

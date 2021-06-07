@@ -39,7 +39,7 @@ endef
 list:
 	@echo
 	@echo Apollo SM config:
-	$(call LIST_template,rev[[:digit:]]_)
+	$(call LIST_template,rev[[:digit:]][[:alpha:]]*_)
 	@echo
 	@echo Prebuilds:
 	$(call LIST_template,prebuild_)
@@ -58,3 +58,7 @@ list:
 
 full_list:
 	$(call LIST_template,.)
+
+
+git_log:
+	git log --graph --full-history --all --color --pretty=format:"%x1b[31m%h%x09%x1b[32m%d%x1b[0m%x20%s"

@@ -15,10 +15,13 @@ set vhdl_files "\
      src/misc/capture_CDC.vhd \
      src/misc/pacd.vhd \
      src/misc/capture_CDC.vhd \
-     src/axiReg/axiRegWidthPkg_32.vhd \
-     src/axiReg/axiRegPkg.vhd \
-     src/axiReg/axiReg.vhd \
-     src/axiReg/axiRegMaster.vhd \
+     src/misc/rate_counter.vhd \
+     regmap_helper/axiReg/axiRegWidthPkg_32.vhd \
+     regmap_helper/axiReg/axiRegPkg.vhd \
+     regmap_helper/axiReg/axiReg.vhd \
+     regmap_helper/axiReg/axiRegMaster.vhd \
+     regmap_helper/axiReg/bramPortPkg.vhd \
+     regmap_helper/axiReg/axiRegBlocking.vhd \
      src/services/services_rev1.vhd \
      src/services/SGMII_MON_pkg.vhd \
      src/services/SERV_map.vhd \
@@ -52,6 +55,6 @@ set xdc_files "\
      "
 
 set xci_files "\
-    	      cores/onboard_CLK/onboard_CLK.xci \
+     configs/rev1_xc7z035/cores/onboardClk.tcl \
     	      "
 

@@ -112,6 +112,12 @@ define copy_configs =
 	@echo "Modify FSBL" $(OUTPUT_MARKUP)
 	@mkdir -p $(FSBL_BASE)
 	@cp -r $(CONFIGS_BASE)/$$@/fsbl/* $(FSBL_BASE)
+	#copy files for zynqmp fsbl
+	@mkdir -p $(FSBL_BASE)/files/git/lib/sw_apps/zynqmp_fsbl/src/
+	@cp    ../$(CONFIGS_BASE)/$$@/AXI_slave_addrs.h $(FSBL_BASE)/files/git/lib/sw_apps/zynqmp_fsbl/src/
+	#copy files for zynq fsbl
+	@mkdir -p $(FSBL_BASE)/files/git/lib/sw_apps/zynq_fsbl/src/
+	@cp    ../$(CONFIGS_BASE)/$$@/AXI_slave_addrs.h $(FSBL_BASE)/files/git/lib/sw_apps/zynq_fsbl/src/
 	@echo "layer config (if needed)"
 	@cp ./configs/$$@/configs/layer.conf $(ZYNQ_OS_PROJECT_PATH)/project-spec/meta-user/conf/ || :
 	@echo "End of mods"

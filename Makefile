@@ -55,6 +55,7 @@ SLAVE_DEF_FILE_BASE=${MAKE_PATH}/configs/
 ADDSLAVE_TCL_PATH=${MAKE_PATH}/src/ZynqPS/
 ADDRESS_TABLE_CREATION_PATH=${MAKE_PATH}/os/
 SLAVE_DTSI_PATH=${MAKE_PATH}/kernel/
+MAP_TEMPLATE_FILE=${MAKE_PATH}/regmap_helper/templates/axi_generic/template_map.vhd
 
 ifneq ("$(wildcard ${MAKE_PATH}/mk/preBuild.mk)","")
   include ${MAKE_PATH}/mk/preBuild.mk
@@ -91,7 +92,7 @@ clean_remote:
 	@rm -f ${MAKE_PATH}/kernel/*_slaves.yaml
 clean_ip:
 	@echo "Cleaning up ip dcps"
-	@find ${MAKE_PATH}/cores -type f | grep -v xci | awk '{print "rm " $$1}' | bash
+	@find ${MAKE_PATH}/cores -type f | { grep -v xci || true; } | awk '{print "rm " $$1}' | bash
 #	@find ${MAKE_PATH}/cores -type f -name '*.dcp' -delete
 clean_bd:
 	@echo "Cleaning up bd generated files"

@@ -1,495 +1,588 @@
 library ieee;
 use ieee.std_logic_1164.all;
-use work.types.all;
-use work.AXIRegPKG.all;
-use work.TCDS_Ctrl.all;
+use ieee.numeric_std.all;
 
-use ieee.std_logic_misc.all;
+use work.types.all;
+use work.AXIRegPkg.all; --for AXIReadMOSI, AXIReadMISO, AXIWriteMOSI, and AXIWriteMISO
+
+--use work.tclink_lpgbt10G_pkg.all;
+
+use work.tcds2_interface_pkg.all;
+use work.tcds2_link_pkg.all;
+use work.tcds2_link_speed_pkg.all;
+use work.tcds2_streams_pkg.all;
+
+use work.TCDS_2_Ctrl.all;
+
+use work.tclink_lpgbt_pkg.all;
 
 entity TCDS is
-  
   port (
-    clk_axi              : in  std_logic;
-    reset_axi_n          : in  std_logic;
-    clk_axi_DRP          : in  std_logic;
-    reset_axi_DRP_n      : in  std_logic;
-    readMOSI             : in  AXIreadMOSI;
-    readMISO             : out AXIreadMISO;
-    writeMOSI            : in  AXIwriteMOSI;
-    writeMISO            : out AXIwriteMISO;
-    DRP_readMOSI         : in  AXIreadMOSI;
-    DRP_readMISO         : out AXIreadMISO;
-    DRP_writeMOSI        : in  AXIwriteMOSI;
-    DRP_writeMISO        : out AXIwriteMISO;
-    refclk_p             : in  std_logic;
-    refclk_n             : in  std_logic;
-    QPLL_CLK             : in  std_logic;
-    QPLL_REF_CLK         : in  std_logic;
-    clk_TCDS             : out std_logic;
-    clk_TCDS_reset_n     : out std_logic;
-    tx_P                 : out std_logic_vector(2 downto 0);
-    tx_N                 : out std_logic_vector(2 downto 0);
-    rx_P                 : in  std_logic_vector(2 downto 0);
-    rx_N                 : in  std_logic_vector(2 downto 0)
-    );  
+    -- AXI interface
+    clk_axi          : in  std_logic;
+    reset_axi_n      : in  std_logic;
+    slave_readMOSI   : in  AXIReadMOSI;
+    slave_readMISO   : out AXIReadMISO  := DefaultAXIReadMISO;
+    slave_writeMOSI  : in  AXIWriteMOSI;
+    slave_writeMISO  : out AXIWriteMISO := DefaultAXIWriteMISO;
+
+
+    -- System clock at 125 MHz.
+    clk_sys_125mhz : in std_logic;
+
+    -- MGT data interface.
+    mgt_tx_p_o : out std_logic;
+    mgt_tx_n_o : out std_logic;
+    mgt_rx_p_i : in std_logic;
+    mgt_rx_n_i : in std_logic;
+
+    clk_TCDS_REC_in_p  : in  std_logic;
+    clk_TCDS_REC_in_n  : in  std_logic;
+    clk_TCDS_320_in_p  : in  std_logic;
+    clk_TCDS_320_in_n  : in  std_logic;
+
+    clk_TCDS_REC_out_p : out std_logic;
+    clk_TCDS_REC_out_n : out std_logic;
+    -- LHC bunch clock output.
+    -- NOTE: This clock originates from a BUFGCE_DIV and is intended
+    -- for use in the FPGA clocking fabric.
+    clk_TCDS : out std_logic;
+
+    LTTC_P   : out std_logic_vector(1 downto 0);
+    LTTC_N   : out std_logic_vector(1 downto 0);
+
+    LTTS_P   : in  std_logic_vector(1 downto 0);
+    LTTS_N   : in  std_logic_vector(1 downto 0)
+
+    );
 end entity TCDS;
 
-architecture Behavioral of TCDS is
+architecture behavioral of TCDS is
 
-  signal tx_data : slv32_array_t(0 to 2);
-  signal rx_data : slv32_array_t(0 to 2);
-  signal tx_kdata : slv4_array_t(0 to 2);
-  signal rx_kdata : slv4_array_t(0 to 2);
-  signal tx_dv : std_logic_vector(2 downto 0);
-  signal rx_dv : std_logic_vector(2 downto 0);
-  signal reset : std_logic;
+  signal Mon              :  TCDS_2_Mon_t;
+  signal Ctrl             :  TCDS_2_Ctrl_t;
+
+  -- Control and status interfaces.
+  signal ctrl_i : tcds2_interface_ctrl_t;
+  signal stat_o : tcds2_interface_stat_t;
   
-  type GT_Mon_t is record
-    cpllfbclklost    : std_logic; --ro
-    cplllock         : std_logic; --ro
-    dmonitorout      : slv_8_t; --ro
-    eyescandataerror : std_logic; --ro
-    rxprbserr        : STD_LOGIC; --ro
-    rxdisperr        : slv_4_t;  --ro
-    rxnotintable     : slv_4_t; --ro
-    rxmonitor        : slv_7_t; --ro
-    rxoutclkfabric   : std_logic;
-    rxresetdone      : std_logic; --ro
-    txoutclkfabric   : std_logic;
-    txoutclkpcs      : std_logic;
-    txresetdone      : std_logic; --ro  
-  end record GT_Mon_t;
-  type GT_Mon_array_t is array (integer range <>) of GT_Mon_t;
-  signal gt_mon : GT_Mon_array_t(2 downto 0);  
+  -- Transceiver control and status signals.
+  signal mgt_ctrl : tr_core_to_mgt;
+  signal mgt_stat : tr_mgt_to_core;
   
-  type GT_Ctrl_t is record
-    cpllreset         : std_logic;    --rw
-    eyescanreset      : std_logic;    --rw
-    rxuserrdy         : std_logic;    --rw
-    loopback          : slv_3_t;      --rw
-    eyescantrigger    : std_logic;    --w
-    rxprbssel         : slv_3_t;      --rw
-    rxprbscntreset    : STD_LOGIC;    --w
-    rxdfelpmreset     : std_logic;    --rw
-    rxmonitorsel      : slv_2_t;      --rw
-    gtrxreset         : std_logic;    --rw
-    rxpmareset        : std_logic;    --rw
-    gttxreset         : std_logic;    --rw
-    txuserrdy         : std_logic;    --rw
-    prbsforceerr      : std_logic;    --w
-    txinhibit         : std_logic;    --rw
-    txprbssel         : slv_3_t;      --rw
-  end record GT_Ctrl_t;  
-  constant DEFAULT_GT_Ctrl_t : GT_Ctrl_t := (
-                                             cpllreset      => '0',
-                                             eyescanreset   => '0',
-                                             rxuserrdy      => '1',
-                                             loopback       => "000",
-                                             eyescantrigger => '0',
-                                             rxprbssel      => "000",
-                                             rxprbscntreset => '1',
-                                             rxdfelpmreset  => '0',
-                                             rxmonitorsel   => "00",
-                                             gtrxreset      => '0',
-                                             rxpmareset     => '0',
-                                             gttxreset      => '0',
-                                             txuserrdy      => '1',
-                                             prbsforceerr   => '0',
-                                             txinhibit      => '0',
-                                             txprbssel      => "000"
-  );
-  type GT_Ctrl_array_t is array (integer range <>) of GT_Ctrl_t;  
-  signal gt_ctrl : GT_Ctrl_array_t(2 downto 0) := (others => DEFAULT_GT_Ctrl_t);
+  -- User clock network control and status signals.
+  signal mgt_clk_ctrl : tr_clk_to_mgt;
+  signal mgt_clk_stat : tr_mgt_to_clk;
 
-  type DRP_t is record
-    en   : STD_LOGIC;
-    we   : STD_LOGIC;
-    addr : STD_LOGIC_VECTOR ( 8 downto 0 );
-    di   : STD_LOGIC_VECTOR ( 15 downto 0 );
-    do   : STD_LOGIC_VECTOR ( 15 downto 0 );
-    rdy  : STD_LOGIC;
-  end record DRP_t;
-  type DRP_array_t is array (integer range <>) of DRP_t;
-  signal drp_intf : DRP_array_t(0 to 2);
+  -- LHC bunch clock ODDR outputs.
+  -- NOTE: These lines are intended to drive an ODDR1, in order to
+  -- extract the bunch clock from the FPGA.
+  signal clk_40_oddr_c  : std_logic;
+  signal clk_40_oddr_d1 : std_logic;
+  signal clk_40_oddr_d2 : std_logic;
+  signal clk_40_out     : std_logic;
 
-  signal  gt0_cpll_lock_out : std_logic;
-  signal tx_reset_done : slv_3_t;
-  signal rx_reset_done : slv_3_t;
+  signal clk_TCDS_320   : std_logic;
+  signal clk_TCDS_REC   : std_logic;
 
-  signal refclk : std_logic;
+  -- TCDS2 channel 0 interface.
+  signal channel0_ttc2_o : tcds2_ttc2;
+  signal channel0_tts2_i : tcds2_tts2_value_array(0 downto 0);
+
+  -- TCDS2 channel 1 interface.
+  signal channel1_ttc2_o : tcds2_ttc2;
+  signal channel1_tts2_i : tcds2_tts2_value_array(0 downto 0);
+
+  constant zero : std_logic := '0';
+
+  signal local_TCDS_clk1 : std_logic;
+  signal local_TCDS_clk2 : std_logic;
+  signal local_TCDS_refclk1 : std_logic;
+  signal local_TCDS_refclk2 : std_logic;
+
+  signal ttc_data : slv_32_t;
+  signal tts_data : slv32_array_t(1 downto 0);
   
-  signal tx_user_clk : slv_3_t;
-  signal tx_user_clk2 : slv_3_t;
-  signal tx_clk : slv_3_t;
-  signal rx_user_clk : slv_3_t;
-  signal rx_user_clk2 : slv_3_t;
-  signal rx_prbs_error : slv_3_t;
-  signal rx_prbs_error_buf : slv_3_t;
-  signal rx_bad_char : slv4_array_t(2 downto 0);
-  signal rx_bad_char_buf : slv4_array_t(2 downto 0);
-  signal rx_disp_error : slv4_array_t(2 downto 0);
-  signal rx_disp_error_buf : slv4_array_t(2 downto 0);
-  signal rx_counter_reset : slv_3_t;
+begin
 
-  signal Mon              : TCDS_Mon_t;
-  signal Ctrl             : TCDS_Ctrl_t;
+  
 
-  signal local_clk_TCDS : std_logic;
-begin  -- architecture Behavioral
+  ------------------------------------------
+  -- The core TCDS2 interface.
+  ------------------------------------------
+
+  tcds2_interface : entity work.tcds2_interface
+    generic map (
+      G_LINK_SPEED             => TCDS2_LINK_SPEED_10G,
+      G_INCLUDE_PRBS_LINK_TEST => true
+      )
+    port map (
+      ctrl_i => ctrl_i,
+      stat_o => stat_o,
+
+      clk_sys_125mhz => clk_sys_125mhz,
+
+      mgt_ctrl_o     => mgt_ctrl,
+      mgt_stat_i     => mgt_stat,
+      mgt_clk_ctrl_o => mgt_clk_ctrl,
+      mgt_clk_stat_i => mgt_clk_stat,
+
+      clk_40_o => clk_TCDS,
+
+      clk_40_oddr_c_o  => clk_40_oddr_c,
+      clk_40_oddr_d1_o => clk_40_oddr_d1,
+      clk_40_oddr_d2_o => clk_40_oddr_d2,
+
+      orbit_o => open,
+
+      channel0_ttc2_o => channel0_ttc2_o,
+      channel0_tts2_i => channel0_tts2_i,
+
+      channel1_ttc2_o => channel1_ttc2_o,
+      channel1_tts2_i => channel1_tts2_i
+      );
+
+  ------------------------------------------
+  -- The transceiver.
+  ------------------------------------------
+  TCDS_320 : ibufds_gte4
+    port map (
+      i   => clk_TCDS_320_in_p,
+      ib  => clk_TCDS_320_in_n,
+      o   => clk_TCDS_320,
+      ceb => zero--'0'
+      );
+  TCDS_REC : ibufds_gte4
+    port map (
+      i   => clk_TCDS_REC_in_p,
+      ib  => clk_TCDS_REC_in_n,
+      o   => clk_TCDS_REC,
+      ceb => zero--'0'
+      );
+  
+  
+
+  mgt : entity work.tcds2_interface_mgt
+    generic map (
+      G_MGT_TYPE   => MGT_TYPE_GTHE3,
+      G_LINK_SPEED => TCDS2_LINK_SPEED_10G
+      )
+    port map (
+      -- Quad.
+      gtwiz_reset_clk_freerun_in(0)         => clk_sys_125mhz,
+      gtwiz_reset_all_in                    => mgt_ctrl.gtwiz_reset_all_in,   
+      gtwiz_reset_tx_pll_and_datapath_in    => mgt_ctrl.gtwiz_reset_tx_pll_and_datapath_in,
+      gtwiz_reset_rx_pll_and_datapath_in    => mgt_ctrl.gtwiz_reset_rx_pll_and_datapath_in,
+      gtwiz_reset_tx_datapath_in            => mgt_ctrl.gtwiz_reset_tx_datapath_in,
+      gtwiz_reset_rx_datapath_in            => mgt_ctrl.gtwiz_reset_rx_datapath_in,
+
+
+      gtrefclk00_in(0)                      => clk_TCDS_320,
+      gtrefclk01_in(0)                      => clk_TCDS_REC,
+      qpll0outclk_out(0)                    => local_TCDS_clk1,
+      qpll0outrefclk_out(0)                 => local_TCDS_refclk1,
+      qpll1outclk_out(0)                    => local_TCDS_clk2,
+      qpll1outrefclk_out(0)                 => local_TCDS_refclk2,
+
+      -- User clocking.
+      txusrclk_in(0)                        => mgt_clk_ctrl.txusrclk,
+      txusrclk2_in(0)                       => mgt_clk_ctrl.txusrclk,
+      rxusrclk_in(0)                        => mgt_clk_ctrl.rxusrclk,
+      rxusrclk2_in(0)                       => mgt_clk_ctrl.rxusrclk,
+      txoutclk_out(0)                       => mgt_clk_stat.txoutclk,
+      rxoutclk_out(0)                       => mgt_clk_stat.rxoutclk,
+
+      -- Channel.
+      gtwiz_userclk_tx_active_in            => mgt_ctrl.gtwiz_userclk_tx_active_in,
+      gtwiz_userclk_rx_active_in            => mgt_ctrl.gtwiz_userclk_rx_active_in,
+      gtwiz_buffbypass_rx_reset_in          => mgt_ctrl.gtwiz_buffbypass_rx_reset_in,
+      gtwiz_buffbypass_rx_start_user_in     => mgt_ctrl.gtwiz_buffbypass_rx_start_user_in,
+      gtwiz_buffbypass_rx_done_out          => mgt_stat.gtwiz_buffbypass_rx_done_out,
+      gtwiz_buffbypass_rx_error_out         => mgt_stat.gtwiz_buffbypass_rx_error_out,
+      gtwiz_reset_rx_cdr_stable_out         => mgt_stat.gtwiz_reset_rx_cdr_stable_out,
+      gtwiz_reset_tx_done_out               => mgt_stat.gtwiz_reset_tx_done_out,
+      gtwiz_reset_rx_done_out               => mgt_stat.gtwiz_reset_rx_done_out,
+      qpll0lock_out                         => mgt_stat.txplllock_out,
+      qpll1lock_out                         => mgt_stat.rxplllock_out,
+      loopback_in                           => mgt_ctrl.loopback_in,
+      rxdfeagcovrden_in                     => mgt_ctrl.rxdfeagcovrden_in,
+      rxdfelfovrden_in                      => mgt_ctrl.rxdfelfovrden_in,
+      rxdfelpmreset_in                      => mgt_ctrl.rxdfelpmreset_in,
+      rxdfeutovrden_in                      => mgt_ctrl.rxdfeutovrden_in,
+      rxdfevpovrden_in                      => mgt_ctrl.rxdfevpovrden_in,
+      rxlpmen_in                            => mgt_ctrl.rxlpmen_in,
+      rxosovrden_in                         => mgt_ctrl.rxosovrden_in,
+      rxlpmgcovrden_in                      => mgt_ctrl.rxlpmgcovrden_in,
+      rxlpmhfovrden_in                      => mgt_ctrl.rxlpmhfovrden_in,
+      rxlpmlfklovrden_in                    => mgt_ctrl.rxlpmlfklovrden_in,
+      rxlpmosovrden_in                      => mgt_ctrl.rxlpmosovrden_in,
+      rxslide_in                            => mgt_ctrl.rxslide_in,
+      dmonitorclk_in                        => mgt_ctrl.dmonitorclk_in,
+      drpaddr_in                            => mgt_ctrl.drpaddr_in,
+      drpclk_in                             => mgt_ctrl.drpclk_in,
+      drpdi_in                              => mgt_ctrl.drpdi_in,
+      drpen_in                              => mgt_ctrl.drpen_in,
+      drpwe_in                              => mgt_ctrl.drpwe_in,
+      rxpolarity_in                         => mgt_ctrl.rxpolarity_in,
+      rxprbscntreset_in                     => mgt_ctrl.rxprbscntreset_in,
+      rxprbssel_in                          => mgt_ctrl.rxprbssel_in,
+      txpippmen_in                          => mgt_ctrl.txpippmen_in,
+      txpippmovrden_in                      => mgt_ctrl.txpippmovrden_in,
+      txpippmpd_in                          => mgt_ctrl.txpippmpd_in,
+      txpippmsel_in                         => mgt_ctrl.txpippmsel_in,
+      txpippmstepsize_in                    => mgt_ctrl.txpippmstepsize_in,
+      txpolarity_in                         => mgt_ctrl.txpolarity_in,
+      txprbsforceerr_in                     => mgt_ctrl.txprbsforceerr_in,
+      txprbssel_in                          => mgt_ctrl.txprbssel_in,
+      dmonitorout_out                       => mgt_stat.dmonitorout_out,
+      drpdo_out                             => mgt_stat.drpdo_out,
+      drprdy_out                            => mgt_stat.drprdy_out,
+      rxprbserr_out                         => mgt_stat.rxprbserr_out,
+      rxprbslocked_out                      => mgt_stat.rxprbslocked_out,
+      txbufstatus_out                       => mgt_stat.txbufstatus_out,
+      txpmaresetdone_out                    => mgt_stat.txpmaresetdone_out,
+      rxpmaresetdone_out                    => mgt_stat.rxpmaresetdone_out,
+      gtpowergood_out                       => mgt_stat.gtpowergood_out,
+      gtwiz_userdata_tx_in                  => mgt_ctrl.txdata_in,
+      gtwiz_userdata_rx_out                 => mgt_stat.rxdata_out,
+      txp_out(0)                            => mgt_tx_p_o,
+      txn_out(0)                            => mgt_tx_n_o,
+      rxn_in(0)                             => mgt_rx_p_i,
+      rxp_in(0)                             => mgt_rx_n_i
+      );
+
+
+  -------------------------------------------------------------------------------
+  -- Recovered TCDS out
+  -------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------
+  --Output LHC 40Mhz clock for Si chip input
+  --d1 & d2 for fancy phase work? 
+  oddr1_clk_40_out_pri : oddre1
+    generic map (
+      is_c_inverted  => zero,--'0',
+      is_d1_inverted => zero,--'0',
+      is_d2_inverted => zero,--'0',
+      srval          => zero--'0'
+      )
+    port map (
+      sr => zero,--'0',
+      c  => clk_40_oddr_c,
+      d1 => clk_40_oddr_d1,
+      d2 => clk_40_oddr_d2,
+      q  => clk_40_out
+      );
+  obufds_clk_rec_out : obufds
+    port map (
+      I => clk_40_out,
+      O => clk_TCDS_REC_out_p,
+      OB => clk_TCDS_REC_out_n
+      );
 
 
 
-  TCDS_interface_1: entity work.TCDS_interface
+  
+  -------------------------------------------------------------------------------
+  -- AXI slave interface
+  -------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------
+  TCDS_2_interface_1: entity work.TCDS_2_interface
     port map (
       clk_axi         => clk_axi,
       reset_axi_n     => reset_axi_n,
-      slave_readMOSI  => readMOSI,
-      slave_readMISO  => readMISO,
-      slave_writeMOSI => writeMOSI,
-      slave_writeMISO => writeMISO,
+      slave_readMOSI  => slave_readMOSI,
+      slave_readMISO  => slave_readMISO,
+      slave_writeMOSI => slave_writeMOSI,
+      slave_writeMISO => slave_writeMISO,
       Mon             => Mon,
       Ctrl            => Ctrl);
+
+
+
+  --
+
+
+  Mon.TCDS_2.hw_cfg.has_spy_registers                  <= stat_o.has_spy_registers;
+  Mon.TCDS_2.hw_cfg.has_link_test_mode                 <= stat_o.has_link_test_mode;
+  Mon.TCDS_2.link_test.status.prbs_chk_error           <= stat_o.prbschk_error;
+  Mon.TCDS_2.link_test.status.prbs_chk_locked          <= stat_o.prbschk_locked;
+  Mon.TCDS_2.link_test.status.prbs_chk_unlock_counter  <= stat_o.prbschk_unlock_count;
+  Mon.TCDS_2.link_test.status.prbs_gen_o_hint          <= stat_o.prbsgen_o_hint;
+  Mon.TCDS_2.link_test.status.prbs_chk_i_hint          <= stat_o.prbschk_i_hint;
+  Mon.TCDS_2.link_test.status.prbs_chk_o_hint          <= stat_o.prbschk_o_hint;
+
+  
+  Mon.TCDS_2.csr.status.is_link_optical                <= stat_o.link_status.is_link_medium_optical;
+  Mon.TCDS_2.csr.status.is_link_speed_10g              <= stat_o.link_status.is_link_speed_10g;
+  Mon.TCDS_2.csr.status.is_leader                      <= stat_o.link_status.is_leader;
+  Mon.TCDS_2.csr.status.is_quad_leader                 <= stat_o.link_status.is_quad_leader;
+  Mon.TCDS_2.csr.status.is_mgt_rx_mode_lpm             <= stat_o.link_status.is_mgt_mode_lpm;
+  Mon.TCDS_2.csr.status.mmcm_locked                    <= stat_o.link_status.tclink_core_status.mmcm_locked;
+  Mon.TCDS_2.csr.status.mgt_power_good                 <= stat_o.link_status.tclink_core_status.mgt_powergood;
+  Mon.TCDS_2.csr.status.mgt_tx_pll_locked              <= stat_o.link_status.tclink_core_status.mgt_txpll_lock;
+  Mon.TCDS_2.csr.status.mgt_rx_pll_locked              <= stat_o.link_status.tclink_core_status.mgt_rxpll_lock;
+  Mon.TCDS_2.csr.status.mgt_reset_tx_done              <= stat_o.link_status.tclink_core_status.mgt_reset_tx_done;
+  Mon.TCDS_2.csr.status.mgt_reset_rx_done              <= stat_o.link_status.tclink_core_status.mgt_reset_rx_done;
+  Mon.TCDS_2.csr.status.mgt_tx_ready                   <= stat_o.link_status.tclink_core_status.mgt_tx_ready;
+  Mon.TCDS_2.csr.status.mgt_rx_ready                   <= stat_o.link_status.tclink_core_status.mgt_rx_ready;
+  Mon.TCDS_2.csr.status.cdc40_tx_ready                 <= stat_o.link_status.tclink_core_status.cdc_40_tx_ready;
+  Mon.TCDS_2.csr.status.cdc40_rx_ready                 <= stat_o.link_status.tclink_core_status.cdc_40_rx_ready;
+  Mon.TCDS_2.csr.status.rx_data_not_idle               <= stat_o.link_status.tclink_core_status.rx_data_not_idle;
+  Mon.TCDS_2.csr.status.rx_frame_locked                <= stat_o.link_status.tclink_core_status.rx_frame_locked;
+  Mon.TCDS_2.csr.status.tx_user_data_ready             <= stat_o.link_status.tclink_core_status.tx_user_data_ready;
+  Mon.TCDS_2.csr.status.rx_user_data_ready             <= stat_o.link_status.tclink_core_status.rx_user_data_ready;
+  Mon.TCDS_2.csr.status.tclink_ready                   <= stat_o.link_status.tclink_core_status.channel_ready;
+  Mon.TCDS_2.csr.status.initializer_fsm_state(16 downto 0 ) <= stat_o.link_status.tclink_core_status.channel_controller_state;
+  Mon.TCDS_2.csr.status.initializer_fsm_state(30 downto 17) <= (others  => '0');
+  Mon.TCDS_2.csr.status.initializer_fsm_running        <= stat_o.link_status.tclink_core_status.channel_controller_running;
+  Mon.TCDS_2.csr.status.rx_frame_unlock_counter        <= stat_o.link_status.channel_unlock_count;
+  Mon.TCDS_2.csr.status.phase_cdc40_tx_measured        <= stat_o.link_status.tclink_core_status.phase_cdc40_tx;
+  Mon.TCDS_2.csr.status.phase_cdc40_rx_measured        <= stat_o.link_status.tclink_core_status.phase_cdc40_rx;
+  Mon.TCDS_2.csr.status.phase_pi_tx_measured           <= stat_o.link_status.tclink_core_status.mgt_hptd_tx_pi_phase;
+  Mon.TCDS_2.csr.status.fec_correction_applied         <= stat_o.link_status.tclink_core_status.rx_fec_corrected_latched;
+  Mon.TCDS_2.csr.status.tclink_loop_closed             <= stat_o.link_status.tclink_status.tclink_loop_closed;
+  Mon.TCDS_2.csr.status.tclink_operation_error         <= stat_o.link_status.tclink_status.tclink_operation_error;
+  Mon.TCDS_2.csr.status.tclink_phase_measured          <= stat_o.link_status.tclink_status.tclink_phase_detector;
+  Mon.TCDS_2.csr.status.tclink_phase_error.lo          <= stat_o.link_status.tclink_status.tclink_error_controller(31 downto  0);
+  Mon.TCDS_2.csr.status.tclink_phase_error.hi          <= stat_o.link_status.tclink_status.tclink_error_controller(47 downto 32);
+  Mon.TCDS_2.spy_frame_tx.word0                        <= stat_o.frame_tx( 31 downto    0);
+  Mon.TCDS_2.spy_frame_tx.word1                        <= stat_o.frame_tx( 63 downto   32);
+  Mon.TCDS_2.spy_frame_tx.word2                        <= stat_o.frame_tx( 95 downto   64);
+  Mon.TCDS_2.spy_frame_tx.word3                        <= stat_o.frame_tx(127 downto   96);
+  Mon.TCDS_2.spy_frame_tx.word4                        <= stat_o.frame_tx(159 downto  128);
+  Mon.TCDS_2.spy_frame_tx.word5                        <= stat_o.frame_tx(191 downto  160);
+  Mon.TCDS_2.spy_frame_tx.word6                        <= stat_o.frame_tx(223 downto  192);
+  Mon.TCDS_2.spy_frame_tx.word7                        <= stat_o.frame_tx(233 downto  224);
+  Mon.TCDS_2.spy_frame_rx.word0                        <= stat_o.frame_rx( 31 downto    0);
+  Mon.TCDS_2.spy_frame_rx.word1                        <= stat_o.frame_rx( 63 downto   32);
+  Mon.TCDS_2.spy_frame_rx.word2                        <= stat_o.frame_rx( 95 downto   64);
+  Mon.TCDS_2.spy_frame_rx.word3                        <= stat_o.frame_rx(127 downto   96);
+  Mon.TCDS_2.spy_frame_rx.word4                        <= stat_o.frame_rx(159 downto  128);
+  Mon.TCDS_2.spy_frame_rx.word5                        <= stat_o.frame_rx(191 downto  160);
+  Mon.TCDS_2.spy_frame_rx.word6                        <= stat_o.frame_rx(223 downto  192);
+  Mon.TCDS_2.spy_frame_rx.word7                        <= stat_o.frame_rx(233 downto  224);
   
 
-  Mon.LINK0.TEST2 <= x"12345678";
-  Mon.LINK1.TEST2 <= x"abadcafe";
-  Mon.LINK2.TEST2 <= x"deadbeef";
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.physics        <= stat_o.channel0_ttc2.l1a_types.l1a_physics ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.calibration    <= stat_o.channel0_ttc2.l1a_types.l1a_calibration ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.random         <= stat_o.channel0_ttc2.l1a_types.l1a_random ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.software       <= stat_o.channel0_ttc2.l1a_types.l1a_software ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_4     <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_4 ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_5     <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_5 ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_6     <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_6 ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_7     <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_7 ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_8     <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_8 ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_9     <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_9 ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_10    <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_10 ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_11    <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_11 ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_12    <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_12 ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_13    <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_13 ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_14    <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_14 ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_15    <= stat_o.channel0_ttc2.l1a_types.l1a_reserved_15 ;
+  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.physics_subtype<= stat_o.channel0_ttc2.physics_l1a_subtypes;        
+  Mon.TCDS_2.spy_ttc2_channel0.bril_trigger_info       <= stat_o.channel0_ttc2.bril_trigger_data;   
+  Mon.TCDS_2.spy_ttc2_channel0.timing_and_sync_info.lo <= stat_o.channel0_ttc2.sync_flags_and_commands(31 downto  0);
+  Mon.TCDS_2.spy_ttc2_channel0.timing_and_sync_info.hi <= stat_o.channel0_ttc2.sync_flags_and_commands(48 downto 32);
+  Mon.TCDS_2.spy_ttc2_channel0.status_info             <= stat_o.channel0_ttc2.status;
+  Mon.TCDS_2.spy_ttc2_channel0.reserved                <= stat_o.channel0_ttc2.reserved;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.physics        <= stat_o.channel1_ttc2.l1a_types.l1a_physics ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.calibration    <= stat_o.channel1_ttc2.l1a_types.l1a_calibration ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.random         <= stat_o.channel1_ttc2.l1a_types.l1a_random ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.software       <= stat_o.channel1_ttc2.l1a_types.l1a_software ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_4     <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_4 ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_5     <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_5 ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_6     <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_6 ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_7     <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_7 ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_8     <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_8 ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_9     <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_9 ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_10    <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_10 ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_11    <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_11 ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_12    <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_12 ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_13    <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_13 ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_14    <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_14 ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_15    <= stat_o.channel1_ttc2.l1a_types.l1a_reserved_15 ;
+  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.physics_subtype<= stat_o.channel1_ttc2.physics_l1a_subtypes;        
+  Mon.TCDS_2.spy_ttc2_channel1.bril_trigger_info       <= stat_o.channel1_ttc2.bril_trigger_data;   
+  Mon.TCDS_2.spy_ttc2_channel1.timing_and_sync_info.lo <= stat_o.channel1_ttc2.sync_flags_and_commands(31 downto  0);
+  Mon.TCDS_2.spy_ttc2_channel1.timing_and_sync_info.hi <= stat_o.channel1_ttc2.sync_flags_and_commands(48 downto 32);
+  Mon.TCDS_2.spy_ttc2_channel1.status_info             <= stat_o.channel1_ttc2.status;
+  Mon.TCDS_2.spy_ttc2_channel1.reserved                <= stat_o.channel1_ttc2.reserved;
   
-  LHC_GT_USRCLK_SOURCE_1: entity work.LHC_GT_USRCLK_SOURCE
+  Mon.TCDS_2.spy_tts2_channel0.value_0                 <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(0) ,8));  
+  Mon.TCDS_2.spy_tts2_channel0.value_1                 <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(1) ,8));
+  Mon.TCDS_2.spy_tts2_channel0.value_2                 <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(2) ,8));
+  Mon.TCDS_2.spy_tts2_channel0.value_3                 <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(3) ,8));
+  Mon.TCDS_2.spy_tts2_channel0.value_4                 <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(4) ,8));
+  Mon.TCDS_2.spy_tts2_channel0.value_5                 <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(5) ,8));
+  Mon.TCDS_2.spy_tts2_channel0.value_6                 <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(6) ,8));
+  Mon.TCDS_2.spy_tts2_channel0.value_7                 <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(7) ,8));
+  Mon.TCDS_2.spy_tts2_channel0.value_8                 <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(8) ,8));
+  Mon.TCDS_2.spy_tts2_channel0.value_9                 <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(9) ,8));
+  Mon.TCDS_2.spy_tts2_channel0.value_10                <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(10),8));
+  Mon.TCDS_2.spy_tts2_channel0.value_11                <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(11),8));
+  Mon.TCDS_2.spy_tts2_channel0.value_12                <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(12),8));
+  Mon.TCDS_2.spy_tts2_channel0.value_13                <= std_logic_vector(to_unsigned(stat_o.channel0_tts2(13),8));
+
+  Mon.TCDS_2.spy_tts2_channel1.value_0                 <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(0) ,8));  
+  Mon.TCDS_2.spy_tts2_channel1.value_1                 <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(1) ,8));
+  Mon.TCDS_2.spy_tts2_channel1.value_2                 <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(2) ,8));
+  Mon.TCDS_2.spy_tts2_channel1.value_3                 <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(3) ,8));
+  Mon.TCDS_2.spy_tts2_channel1.value_4                 <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(4) ,8));
+  Mon.TCDS_2.spy_tts2_channel1.value_5                 <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(5) ,8));
+  Mon.TCDS_2.spy_tts2_channel1.value_6                 <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(6) ,8));
+  Mon.TCDS_2.spy_tts2_channel1.value_7                 <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(7) ,8));
+  Mon.TCDS_2.spy_tts2_channel1.value_8                 <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(8) ,8));
+  Mon.TCDS_2.spy_tts2_channel1.value_9                 <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(9) ,8));
+  Mon.TCDS_2.spy_tts2_channel1.value_10                <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(10),8));
+  Mon.TCDS_2.spy_tts2_channel1.value_11                <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(11),8));
+  Mon.TCDS_2.spy_tts2_channel1.value_12                <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(12),8));
+  Mon.TCDS_2.spy_tts2_channel1.value_13                <= std_logic_vector(to_unsigned(stat_o.channel1_tts2(13),8));
+
+
+  ctrl_i.link_test_mode  <=  Ctrl.TCDS_2.link_test.control.link_test_mode;
+  ctrl_i.prbsgen_reset   <=  Ctrl.TCDS_2.link_test.control.prbs_gen_reset;
+  ctrl_i.prbschk_reset   <=  Ctrl.TCDS_2.link_test.control.prbs_chk_reset;
+
+
+  ctrl_i.link_control.tclink_core_control.reset_all                             <= Ctrl.TCDS_2.csr.control.reset_all;
+  ctrl_i.link_control.tclink_core_control.mgt_reset_all                         <= Ctrl.TCDS_2.csr.control.mgt_reset_all ;
+  ctrl_i.link_control.tclink_core_control.mgt_reset_tx_pll_and_datapath         <= Ctrl.TCDS_2.csr.control.mgt_reset_tx_pll_and_datapath ;
+  ctrl_i.link_control.tclink_core_control.mgt_reset_tx_datapath                 <= Ctrl.TCDS_2.csr.control.mgt_reset_tx_datapath ;
+  ctrl_i.link_control.tclink_core_control.mgt_reset_rx_pll_and_datapath         <= Ctrl.TCDS_2.csr.control.mgt_reset_rx_pll_and_datapath ;
+  ctrl_i.link_control.tclink_core_control.mgt_reset_rx_datapath                 <= Ctrl.TCDS_2.csr.control.mgt_reset_rx_datapath ;
+  ctrl_i.link_control.tclink_core_control.channel_controller_reset              <= Ctrl.TCDS_2.csr.control.tclink_channel_ctrl_reset ;
+  ctrl_i.link_control.tclink_core_control.channel_controller_enable             <= Ctrl.TCDS_2.csr.control.tclink_channel_ctrl_enable ;
+  ctrl_i.link_control.tclink_core_control.channel_controller_gentle             <= Ctrl.TCDS_2.csr.control.tclink_channel_ctrl_gentle ;
+  ctrl_i.link_control.tclink_control.tclink_close_loop                          <= Ctrl.TCDS_2.csr.control.tclink_close_loop ;
+  ctrl_i.link_control.tclink_control.tclink_offset_error(31 downto  0)          <= Ctrl.TCDS_2.csr.control.tclink_phase_offset.lo ;
+  ctrl_i.link_control.tclink_control.tclink_offset_error(47 downto 32)          <= Ctrl.TCDS_2.csr.control.tclink_phase_offset.hi ;
+  ctrl_i.link_control.tclink_core_control.phase_cdc40_tx_calib                 <= Ctrl.TCDS_2.csr.control.phase_cdc40_tx_calib ;
+  ctrl_i.link_control.tclink_core_control.phase_cdc40_tx_force                 <= Ctrl.TCDS_2.csr.control.phase_cdc40_tx_force ;
+  ctrl_i.link_control.tclink_core_control.phase_cdc40_rx_calib                 <= Ctrl.TCDS_2.csr.control.phase_cdc40_rx_calib ;
+  ctrl_i.link_control.tclink_core_control.phase_cdc40_rx_force                 <= Ctrl.TCDS_2.csr.control.phase_cdc40_rx_force ;
+  ctrl_i.link_control.tclink_core_control.mgt_hptd_tx_pi_phase_calib            <= Ctrl.TCDS_2.csr.control.phase_pi_tx_calib ;
+  ctrl_i.link_control.tclink_core_control.mgt_hptd_tx_ui_align_calib            <= Ctrl.TCDS_2.csr.control.phase_pi_tx_force ;
+  ctrl_i.link_control.tclink_core_control.mgt_rxeq_rxlpmen                           <= Ctrl.TCDS_2.csr.control.mgt_rx_dfe_vs_lpm ;
+  ctrl_i.link_control.tclink_core_control.mgt_rxprbscntreset                    <= Ctrl.TCDS_2.csr.control.mgt_rx_dfe_vs_lpm_reset ;
+  ctrl_i.link_control.tclink_core_control.mgt_rxeq_rxlpmgcovrden                <= Ctrl.TCDS_2.csr.control.mgt_rxeq_params.lpm.rxlpmgcovrden ;
+  ctrl_i.link_control.tclink_core_control.mgt_rxeq_rxlpmhfovrden                <= Ctrl.TCDS_2.csr.control.mgt_rxeq_params.lpm.rxlpmhfovrden ;
+  ctrl_i.link_control.tclink_core_control.mgt_rxeq_rxlpmlfklovrden              <= Ctrl.TCDS_2.csr.control.mgt_rxeq_params.lpm.rxlpmlfklovrden;
+  ctrl_i.link_control.tclink_core_control.mgt_rxeq_rxlpmosovrden                <= Ctrl.TCDS_2.csr.control.mgt_rxeq_params.lpm.rxlpmosovrden ;
+  ctrl_i.link_control.tclink_core_control.mgt_rxeq_rxosovrden                   <= Ctrl.TCDS_2.csr.control.mgt_rxeq_params.dfe.rxosovrden ;
+  ctrl_i.link_control.tclink_core_control.mgt_rxeq_rxdfeagcovrden               <= Ctrl.TCDS_2.csr.control.mgt_rxeq_params.dfe.rxdfeagcovrden;
+  ctrl_i.link_control.tclink_core_control.mgt_rxeq_rxdfelfovrden                <= Ctrl.TCDS_2.csr.control.mgt_rxeq_params.dfe.rxdfelfovrden ;
+  ctrl_i.link_control.tclink_core_control.mgt_rxeq_rxdfeutovrden                <= Ctrl.TCDS_2.csr.control.mgt_rxeq_params.dfe.rxdfeutovrden ;
+  ctrl_i.link_control.tclink_core_control.mgt_rxeq_rxdfevpovrden                <= Ctrl.TCDS_2.csr.control.mgt_rxeq_params.dfe.rxdfevpovrden ;
+  ctrl_i.link_control.tclink_core_control.rx_fec_corrected_clear                <= Ctrl.TCDS_2.csr.control.fec_monitor_reset ;
+  ctrl_i.link_control.tclink_control.tclink_metastability_deglitch              <= Ctrl.TCDS_2.csr.control.tclink_param_metastability_deglitch ;
+  ctrl_i.link_control.tclink_control.tclink_phase_detector_navg                 <= Ctrl.TCDS_2.csr.control.tclink_param_phase_detector_navg ;
+  ctrl_i.link_control.tclink_control.tclink_modulo_carrier_period(31 downto  0) <= Ctrl.TCDS_2.csr.control.tclink_param_modulo_carrier_period.lo ;
+  ctrl_i.link_control.tclink_control.tclink_modulo_carrier_period(47 downto 32) <= Ctrl.TCDS_2.csr.control.tclink_param_modulo_carrier_period.hi ;
+  ctrl_i.link_control.tclink_control.tclink_master_rx_ui_period(31 downto  0)   <= Ctrl.TCDS_2.csr.control.tclink_param_master_rx_ui_period.lo ;
+  ctrl_i.link_control.tclink_control.tclink_master_rx_ui_period(47 downto 32)   <= Ctrl.TCDS_2.csr.control.tclink_param_master_rx_ui_period.hi ;
+  ctrl_i.link_control.tclink_control.tclink_aie                                 <= Ctrl.TCDS_2.csr.control.tclink_param_aie ;
+  ctrl_i.link_control.tclink_control.tclink_aie_enable                          <= Ctrl.TCDS_2.csr.control.tclink_param_aie_enable ;
+  ctrl_i.link_control.tclink_control.tclink_ape                                 <= Ctrl.TCDS_2.csr.control.tclink_param_ape ;
+  ctrl_i.link_control.tclink_control.tclink_sigma_delta_clk_div                 <= Ctrl.TCDS_2.csr.control.tclink_param_sigma_delta_clk_div ;
+  ctrl_i.link_control.tclink_control.tclink_enable_mirror                       <= Ctrl.TCDS_2.csr.control.tclink_param_enable_mirror ;
+  ctrl_i.link_control.tclink_control.tclink_adco(31 downto  0)                  <= Ctrl.TCDS_2.csr.control.tclink_param_adco.lo ;
+  ctrl_i.link_control.tclink_control.tclink_adco(47 downto 32)                  <= Ctrl.TCDS_2.csr.control.tclink_param_adco.hi ;
+
+
+
+
+
+
+
+
+
+
+  ttc_data( 0) <= channel0_ttc2_o.l1a_types.l1a_physics;
+  ttc_data( 1) <= channel0_ttc2_o.l1a_types.l1a_calibration;
+  ttc_data( 2) <= channel0_ttc2_o.l1a_types.l1a_random;     
+  ttc_data( 3) <= channel0_ttc2_o.l1a_types.l1a_software;   
+  ttc_data( 4) <= channel0_ttc2_o.l1a_types.l1a_reserved_4; 
+  ttc_data( 5) <= channel0_ttc2_o.l1a_types.l1a_reserved_5; 
+  ttc_data( 6) <= channel0_ttc2_o.l1a_types.l1a_reserved_6; 
+  ttc_data( 7) <= channel0_ttc2_o.l1a_types.l1a_reserved_7; 
+  ttc_data( 8) <= channel0_ttc2_o.l1a_types.l1a_reserved_8; 
+  ttc_data( 9) <= channel0_ttc2_o.l1a_types.l1a_reserved_9; 
+  ttc_data(10) <= channel0_ttc2_o.l1a_types.l1a_reserved_10;
+  ttc_data(11) <= channel0_ttc2_o.l1a_types.l1a_reserved_11;
+  ttc_data(12) <= channel0_ttc2_o.l1a_types.l1a_reserved_12;
+  ttc_data(13) <= channel0_ttc2_o.l1a_types.l1a_reserved_13;
+  ttc_data(14) <= channel0_ttc2_o.l1a_types.l1a_reserved_14;
+  ttc_data(15) <= channel0_ttc2_o.l1a_types.l1a_reserved_15;
+  ttc_data(26 downto 16) <= channel0_ttc2_o.sync_flags_and_commands(10 downto 0);
+  ttc_data(31 downto 27) <= channel0_ttc2_o.status;
+
+
+  channel0_tts2_i(0) <=
+      to_integer(unsigned(tts_data(0)(6 downto 0) or
+                          tts_data(1)(6 downto 0)));
+
+  
+  local_TCDS: for iCM in 1 to 2 generate
+
+    local_TCDS_MGBT_1: entity work.LOCAL_TCDS2
     port map (
-      GT0_TXUSRCLK_OUT          => tx_user_clk(0),
-      GT0_TXUSRCLK2_OUT         => tx_user_clk2(0),
-      GT0_TXOUTCLK_IN           => tx_clk(0),
-      GT0_RXUSRCLK_OUT          => rx_user_clk(0),
-      GT0_RXUSRCLK2_OUT         => rx_user_clk2(0),
-      GT1_TXUSRCLK_OUT          => tx_user_clk(1), 
-      GT1_TXUSRCLK2_OUT         => tx_user_clk2(1),
-      GT1_TXOUTCLK_IN           => tx_clk(1),      
-      GT1_RXUSRCLK_OUT          => rx_user_clk(1), 
-      GT1_RXUSRCLK2_OUT         => rx_user_clk2(1),
-      GT2_TXUSRCLK_OUT          => tx_user_clk(2), 
-      GT2_TXUSRCLK2_OUT         => tx_user_clk2(2),
-      GT2_TXOUTCLK_IN           => tx_clk(2),      
-      GT2_RXUSRCLK_OUT          => rx_user_clk(2), 
-      GT2_RXUSRCLK2_OUT         => rx_user_clk2(2),
-      Q2_CLK1_GTREFCLK_PAD_N_IN => refclk_N,
-      Q2_CLK1_GTREFCLK_PAD_P_IN => refclk_P,
-      Q2_CLK1_GTREFCLK_OUT      => refclk);
-
---  clk_TCDS <= tx_clk(0);
-  local_clk_TCDS <= rx_user_clk2(0);
-  clk_TCDS <= local_clk_TCDS;
-  clk_TCDS_reset_n <= gt0_cpll_lock_out;--not gt0_cpll_lock_out;
-
---  reset <= not reset_axi_n;
-  reset <= not reset_axi_DRP_n;
-  Mon.LINK0.CLOCKING.CLK_LOCKED <= gt0_cpll_lock_out;
-    LHC_2: entity work.LHC
-      port map (
-        SYSCLK_IN                   => clk_axi_DRP,--clk_axi,
-        SOFT_RESET_TX_IN            => reset,
-        SOFT_RESET_RX_IN            => reset,
-        DONT_RESET_ON_DATA_ERROR_IN => '0',
-        GT0_TX_FSM_RESET_DONE_OUT   => tx_reset_done(0),
-        GT0_RX_FSM_RESET_DONE_OUT   => rx_reset_done(0),
-        GT0_DATA_VALID_IN           => tx_dv(0),        
-        GT1_TX_FSM_RESET_DONE_OUT   => tx_reset_done(1),
-        GT1_RX_FSM_RESET_DONE_OUT   => rx_reset_done(1),
-        GT1_DATA_VALID_IN           => tx_dv(1),        
-        GT2_TX_FSM_RESET_DONE_OUT   => tx_reset_done(2),
-        GT2_RX_FSM_RESET_DONE_OUT   => rx_reset_done(2),
-        GT2_DATA_VALID_IN           => tx_dv(2),        
-        gt0_cpllfbclklost_out       => Mon.LINK0.CLOCKING.FB_CLK_LOST,         
-        gt0_cplllock_out            => gt0_cpll_lock_out,
-        gt0_cplllockdetclk_in       => clk_axi_DRP,--clk_axi,
-        gt0_cpllreset_in            => Ctrl.LINK0.CLOCKING.RESET,
-        gt0_gtrefclk0_in            => refclk,--'0',
-        gt0_gtrefclk1_in            => '0',--refclk,
-        gt0_drpaddr_in              => drp_intf(0).addr,
-        gt0_drpclk_in               => clk_axi_DRP,
-        gt0_drpdi_in                => drp_intf(0).di,
-        gt0_drpdo_out               => drp_intf(0).do,
-        gt0_drpen_in                => drp_intf(0).en,
-        gt0_drprdy_out              => drp_intf(0).rdy,
-        gt0_drpwe_in                => drp_intf(0).we,
-        gt0_dmonitorout_out         => Mon.LINK0.DMONITOR,
-        gt0_loopback_in             => Ctrl.LINK0.LOOPBACK,
-        gt0_eyescanreset_in         => Ctrl.LINK0.EYESCAN.RESET,
-        gt0_rxuserrdy_in            => Ctrl.LINK0.RX.USER_READY,
-        gt0_eyescandataerror_out    => Mon.LINK0.EYESCAN.DATA_ERROR,
-        gt0_eyescantrigger_in       => Ctrl.LINK0.EYESCAN.TRIGGER, 
-        gt0_rxusrclk_in             => rx_user_clk(0),
-        gt0_rxusrclk2_in            => rx_user_clk2(0),
-        gt0_rxdata_out              => rx_data(0),
-        gt0_rxprbserr_out           => rx_prbs_error(0),
-        gt0_rxprbssel_in            => Ctrl.LINK0.RX.PRBS_SEL,
-        gt0_rxprbscntreset_in       => Ctrl.LINK0.RX.PRBS_RESET,
-        gt0_rxdisperr_out           => rx_disp_error(0),
-        gt0_rxnotintable_out        => rx_bad_char(0),
-        gt0_gtxrxp_in               => rx_P(0),
-        gt0_gtxrxn_in               => rx_N(0),
-        gt0_rxdfelpmreset_in        => Ctrl.LINK0.RX.DFELPM_RESET, 
-        gt0_rxmonitorout_out        => Mon.LINK0.RX.MONITOR,   
-        gt0_rxmonitorsel_in         => Ctrl.LINK0.RX.MONITOR_SEL,  
-        gt0_rxoutclkfabric_out      => open,
-        gt0_gtrxreset_in            => Ctrl.LINK0.RX.RESET,     
-        gt0_rxpmareset_in           => Ctrl.LINK0.RX.PMA_RESET, 
-        gt0_rxcharisk_out           => rx_kdata(0),           
-        gt0_rxresetdone_out         => Mon.LINK0.RX.RESET_DONE, 
-        gt0_gttxreset_in            => Ctrl.LINK0.TX.RESET,  
-        gt0_txuserrdy_in            => Ctrl.LINK0.TX.USER_READY,  
-        gt0_txusrclk_in             => tx_user_clk(0),
-        gt0_txusrclk2_in            => tx_user_clk2(0),
-        gt0_txprbsforceerr_in       => Ctrl.LINK0.TX.PRBS_FORCE_ERROR,
-        gt0_txinhibit_in            => Ctrl.LINK0.TX.INHIBIT,    
-        gt0_txdata_in               => tx_data(0),              
-        gt0_gtxtxn_out              => tx_n(0),                 
-        gt0_gtxtxp_out              => tx_p(0),                 
-        gt0_txoutclk_out            => tx_clk(0),
-        gt0_txoutclkfabric_out      => open,
-        gt0_txoutclkpcs_out         => open,
-        gt0_txcharisk_in            => tx_kdata(0),             
-        gt0_txresetdone_out         => Mon.LINK0.TX.RESET_DONE,
-        gt0_txprbssel_in            => Ctrl.LINK0.TX.PRBS_SEL,
-        gt1_cpllfbclklost_out       => Mon.LINK1.CLOCKING.FB_CLK_LOST,         
-        gt1_cplllock_out            => Mon.LINK1.CLOCKING.CLK_LOCKED,              
-        gt1_cplllockdetclk_in       => clk_axi_DRP,--clk_axi,                                
-        gt1_cpllreset_in            => Ctrl.LINK1.CLOCKING.RESET,            
-        gt1_gtrefclk0_in            => refclk,--'0',
-        gt1_gtrefclk1_in            => '0',--refclk,
-        gt1_drpaddr_in              => drp_intf(1).addr,              
-        gt1_drpclk_in               => clk_axi_DRP,                          
-        gt1_drpdi_in                => drp_intf(1).di,                
-        gt1_drpdo_out               => drp_intf(1).do,                 
-        gt1_drpen_in                => drp_intf(1).en,                
-        gt1_drprdy_out              => drp_intf(1).rdy,                
-        gt1_drpwe_in                => drp_intf(1).we,                
-        gt1_dmonitorout_out         => Mon.LINK1.DMONITOR,
-        gt1_loopback_in             => Ctrl.LINK1.LOOPBACK,
-        gt1_eyescanreset_in         => Ctrl.LINK1.EYESCAN.RESET,         
-        gt1_rxuserrdy_in            => Ctrl.LINK1.RX.USER_READY,            
-        gt1_eyescandataerror_out    => Mon.LINK1.EYESCAN.DATA_ERROR,      
-        gt1_eyescantrigger_in       => Ctrl.LINK1.EYESCAN.TRIGGER,       
-        gt1_rxusrclk_in             => rx_user_clk(1),                  
-        gt1_rxusrclk2_in            => rx_user_clk2(1),                 
-        gt1_rxdata_out              => rx_data(1),
-        gt1_rxprbserr_out           => rx_prbs_error(1),
-        gt1_rxprbssel_in            => Ctrl.LINK1.RX.PRBS_SEL,
-        gt1_rxprbscntreset_in       => Ctrl.LINK1.RX.PRBS_RESET,
-        gt1_rxdisperr_out           => rx_disp_error(1),
-        gt1_rxnotintable_out        => rx_bad_char(1),
-        gt1_gtxrxp_in               => rx_P(1),                         
-        gt1_gtxrxn_in               => rx_N(1),                         
-        gt1_rxdfelpmreset_in        => Ctrl.LINK1.RX.DFELPM_RESET,        
-        gt1_rxmonitorout_out        => Mon.LINK1.RX.MONITOR,          
-        gt1_rxmonitorsel_in         => Ctrl.LINK1.RX.MONITOR_SEL,         
-        gt1_rxoutclkfabric_out      => open,
-        gt1_gtrxreset_in            => Ctrl.LINK1.RX.RESET,            
-        gt1_rxpmareset_in           => Ctrl.LINK1.RX.PMA_RESET,           
-        gt1_rxcharisk_out           => rx_kdata(1),                     
-        gt1_rxresetdone_out         => Mon.LINK1.RX.RESET_DONE,           
-        gt1_gttxreset_in            => Ctrl.LINK1.TX.RESET,            
-        gt1_txuserrdy_in            => Ctrl.LINK1.TX.USER_READY,            
-        gt1_txusrclk_in             => tx_user_clk(1),                  
-        gt1_txusrclk2_in            => tx_user_clk2(1),
-        gt1_txprbsforceerr_in       => Ctrl.LINK1.TX.PRBS_FORCE_ERROR,
-        gt1_txinhibit_in            => Ctrl.LINK1.TX.INHIBIT,            
-        gt1_txdata_in               => tx_data(1),                      
-        gt1_gtxtxn_out              => tx_n(1),                         
-        gt1_gtxtxp_out              => tx_p(1),                         
-        gt1_txoutclk_out            => tx_clk(1),                                
-        gt1_txoutclkfabric_out      => open,
-        gt1_txoutclkpcs_out         => open,
-        gt1_txcharisk_in            => tx_kdata(1),                     
-        gt1_txresetdone_out         => Mon.LINK1.TX.RESET_DONE,
-        gt1_txprbssel_in            => Ctrl.LINK1.TX.PRBS_SEL,
-        gt2_cpllfbclklost_out       => Mon.LINK2.CLOCKING.FB_CLK_LOST,         
-        gt2_cplllock_out            => Mon.LINK2.CLOCKING.CLK_LOCKED,              
-        gt2_cplllockdetclk_in       => clk_axi_DRP,--clk_axi,                                
-        gt2_cpllreset_in            => Ctrl.LINK2.CLOCKING.RESET,            
-        gt2_gtrefclk0_in            => '0',                             
-        gt2_gtrefclk1_in            => refclk,                       
-        gt2_drpaddr_in              => drp_intf(2).addr,              
-        gt2_drpclk_in               => clk_axi_DRP,                          
-        gt2_drpdi_in                => drp_intf(2).di,                
-        gt2_drpdo_out               => drp_intf(2).do,                 
-        gt2_drpen_in                => drp_intf(2).en,                
-        gt2_drprdy_out              => drp_intf(2).rdy,                
-        gt2_drpwe_in                => drp_intf(2).we,                
-        gt2_dmonitorout_out         => Mon.LINK2.DMONITOR,
-        gt2_loopback_in             => Ctrl.LINK2.LOOPBACK,
-        gt2_eyescanreset_in         => Ctrl.LINK2.EYESCAN.RESET,         
-        gt2_rxuserrdy_in            => Ctrl.LINK2.RX.USER_READY,            
-        gt2_eyescandataerror_out    => Mon.LINK2.EYESCAN.DATA_ERROR,      
-        gt2_eyescantrigger_in       => Ctrl.LINK2.EYESCAN.TRIGGER,       
-        gt2_rxusrclk_in             => rx_user_clk(2),                  
-        gt2_rxusrclk2_in            => rx_user_clk2(2),                 
-        gt2_rxdata_out              => rx_data(2),
-        gt2_rxprbserr_out           => rx_prbs_error(2),
-        gt2_rxprbssel_in            => Ctrl.LINK2.RX.PRBS_SEL,
-        gt2_rxprbscntreset_in       => Ctrl.LINK2.RX.PRBS_RESET,
-        gt2_rxdisperr_out           => rx_disp_error(2),
-        gt2_rxnotintable_out        => rx_bad_char(2),     
-        gt2_gtxrxp_in               => rx_P(2),                         
-        gt2_gtxrxn_in               => rx_N(2),                         
-        gt2_rxdfelpmreset_in        => Ctrl.LINK2.RX.DFELPM_RESET,        
-        gt2_rxmonitorout_out        => Mon.LINK2.RX.MONITOR,          
-        gt2_rxmonitorsel_in         => Ctrl.LINK2.RX.MONITOR_SEL,         
-        gt2_rxoutclkfabric_out      => open,
-        gt2_gtrxreset_in            => Ctrl.LINK2.RX.RESET,            
-        gt2_rxpmareset_in           => Ctrl.LINK2.RX.PMA_RESET,           
-        gt2_rxcharisk_out           => rx_kdata(2),                     
-        gt2_rxresetdone_out         => Mon.LINK2.RX.RESET_DONE,           
-        gt2_gttxreset_in            => Ctrl.LINK2.TX.RESET,            
-        gt2_txuserrdy_in            => Ctrl.LINK2.TX.USER_READY,            
-        gt2_txusrclk_in             => tx_user_clk(2),                  
-        gt2_txusrclk2_in            => tx_user_clk2(2),
-        gt2_txprbsforceerr_in       => Ctrl.LINK2.TX.PRBS_FORCE_ERROR,
-        gt2_txinhibit_in            => Ctrl.LINK2.TX.INHIBIT,            
-        gt2_txdata_in               => tx_data(2),                      
-        gt2_gtxtxn_out              => tx_n(2),                         
-        gt2_gtxtxp_out              => tx_p(2),                         
-        gt2_txoutclk_out            => tx_clk(2),                                
-        gt2_txoutclkfabric_out      => open,
-        gt2_txoutclkpcs_out         => open,
-        gt2_txcharisk_in            => tx_kdata(2),                     
-        gt2_txresetdone_out         => Mon.LINK2.TX.RESET_DONE,           
-        gt2_txprbssel_in            => Ctrl.LINK2.TX.PRBS_SEL,
-        GT0_QPLLOUTCLK_IN           => QPLL_CLK,
-        GT0_QPLLOUTREFCLK_IN        => QPLL_REF_CLK);
+      gtwiz_userclk_tx_reset_in(0)          => Ctrl.LTCDS(iCM).RESET.USERCLK_TX,
+      gtwiz_userclk_tx_srcclk_out(0)        => open,
+      gtwiz_userclk_tx_usrclk_out(0)        => open,
+      gtwiz_userclk_tx_usrclk2_out(0)       => open,
+      gtwiz_userclk_tx_active_out(0)        => Mon.LTCDS(iCM).STATUS.userclk_tx_active,
+      gtwiz_userclk_rx_reset_in(0)          => Ctrl.LTCDS(iCM).RESET.USERCLK_RX,
+      gtwiz_userclk_rx_srcclk_out(0)        => open,
+      gtwiz_userclk_rx_usrclk_out(0)        => open,
+      gtwiz_userclk_rx_usrclk2_out(0)       => open,
+      gtwiz_userclk_rx_active_out(0)        => Mon.LTCDS(iCM).STATUS.userclk_rx_active,
+      gtwiz_reset_clk_freerun_in(0)         => '0',
+      gtwiz_reset_all_in(0)                 => Ctrl.LTCDS(iCM).RESET.RESET_ALL,
+      gtwiz_reset_tx_pll_and_datapath_in(0) => Ctrl.LTCDS(iCM).RESET.TX_PLL_AND_DATAPATH,
+      gtwiz_reset_tx_datapath_in(0)         => Ctrl.LTCDS(iCM).RESET.TX_DATAPATH,
+      gtwiz_reset_rx_pll_and_datapath_in(0) => Ctrl.LTCDS(iCM).RESET.RX_PLL_AND_DATAPATH,
+      gtwiz_reset_rx_datapath_in(0)         => Ctrl.LTCDS(iCM).RESET.RX_DATAPATH,
+      gtwiz_reset_qpll0lock_in(0)           => mgt_stat.txplllock_out(0),
+      gtwiz_reset_rx_cdr_stable_out(0)      => Mon.LTCDS(iCM).STATUS.reset_rx_cdr_stable,
+      gtwiz_reset_tx_done_out(0)            => Mon.LTCDS(iCM).STATUS.reset_tx_done,
+      gtwiz_reset_rx_done_out(0)            => Mon.LTCDS(iCM).STATUS.reset_rx_done,
+      gtwiz_reset_qpll0reset_out(0)         => open,
+      gtwiz_userdata_tx_in                  => ttc_data,
+      gtwiz_userdata_rx_out                 => tts_data(iCM-1),
+      qpll0clk_in(0)                        => local_TCDS_clk1,   
+      qpll0refclk_in(0)                     => local_TCDS_refclk1,
+      qpll1clk_in(0)                        => local_TCDS_clk2,   
+      qpll1refclk_in(0)                     => local_TCDS_refclk2,
+      gthrxn_in(0)                          => LTTS_N(iCM-1),
+      gthrxp_in(0)                          => LTTS_P(iCM-1),
+      rx8b10ben_in(0)                       => '1',
+      rxcommadeten_in(0)                    => '1',
+      rxmcommaalignen_in(0)                 => '1',
+      rxpcommaalignen_in(0)                 => '1',
+      tx8b10ben_in(0)                       => '1',
+      txctrl0_in                            => Ctrl.LTCDS(iCM).tx.ctrl0,
+      txctrl1_in                            => Ctrl.LTCDS(iCM).tx.ctrl1,
+      txctrl2_in                            => Ctrl.LTCDS(iCM).tx.ctrl2,
+      gthtxn_out(0)                         => LTTC_N(iCM-1),
+      gthtxp_out(0)                         => LTTC_P(iCM-1),
+      gtpowergood_out(0)                    => Mon.LTCDS(iCM).STATUS.gt_power_good,
+      rxbyteisaligned_out(0)                => Mon.LTCDS(iCM).STATUS.rx_byte_isaligned,
+      rxbyterealign_out(0)                  => Mon.LTCDS(iCM).STATUS.rx_byte_realign,
+      rxcommadet_out(0)                     => Mon.LTCDS(iCM).STATUS.rx_commadet,
+      rxctrl0_out                           => Mon.LTCDS(iCM).RX.ctrl0,
+      rxctrl1_out                           => Mon.LTCDS(iCM).RX.ctrl1,
+      rxctrl2_out                           => Mon.LTCDS(iCM).RX.ctrl2,
+      rxctrl3_out                           => Mon.LTCDS(iCM).RX.ctrl3,
+      rxpmaresetdone_out(0)                 => Mon.LTCDS(iCM).STATUS.rx_pma_reset_done,
+      txpmaresetdone_out(0)                 => Mon.LTCDS(iCM).STATUS.tx_pma_reset_done);
+  end generate local_TCDS;
 
 
-  TCDS_DRP_BRIDGE_1: entity work.TCDS_DRP_BRIDGE
-    port map (
-      AXI_aclk      => clk_axi_DRP,
-      AXI_aresetn   => reset_axi_DRP_n,
-      S_AXI_araddr  => DRP_readMOSI.address,            
-      S_AXI_arready => DRP_readMISO.ready_for_address,  
-      S_AXI_arvalid => DRP_readMOSI.address_valid,      
-      S_AXI_arprot  => DRP_readMOSI.protection_type,    
-      S_AXI_awaddr  => DRP_writeMOSI.address,            
-      S_AXI_awready => DRP_writeMISO.ready_for_address,  
-      S_AXI_awvalid => DRP_writeMOSI.address_valid,      
-      S_AXI_awprot  => DRP_writeMOSI.protection_type,    
-      S_AXI_bresp   => DRP_writeMISO.response,           
-      S_AXI_bready  => DRP_writeMOSI.ready_for_response, 
-      S_AXI_bvalid  => DRP_writeMISO.response_valid,     
-      S_AXI_rdata   => DRP_readMISO.data,               
-      S_AXI_rready  => DRP_readMOSI.ready_for_data,     
-      S_AXI_rvalid  => DRP_readMISO.data_valid,         
-      S_AXI_rresp   => DRP_readMISO.response,           
-      S_AXI_wdata   => DRP_writeMOSI.data,               
-      S_AXI_wready  => DRP_writeMISO.ready_for_data,     
-      S_AXI_wvalid  => DRP_writeMOSI.data_valid,         
-      S_AXI_wstrb   => DRP_writeMOSI.data_write_strobe,  
-      drp0_en       => drp_intf(0).en,
-      drp0_we       => drp_intf(0).we,
-      drp0_addr     => drp_intf(0).addr,
-      drp0_di       => drp_intf(0).di,
-      drp0_do       => drp_intf(0).do,
-      drp0_rdy      => drp_intf(0).rdy,
-      drp1_en       => drp_intf(1).en,
-      drp1_we       => drp_intf(1).we,
-      drp1_addr     => drp_intf(1).addr,
-      drp1_di       => drp_intf(1).di,
-      drp1_do       => drp_intf(1).do,
-      drp1_rdy      => drp_intf(1).rdy,
-      drp2_en       => drp_intf(2).en,
-      drp2_we       => drp_intf(2).we,
-      drp2_addr     => drp_intf(2).addr,
-      drp2_di       => drp_intf(2).di,
-      drp2_do       => drp_intf(2).do,
-      drp2_rdy      => drp_intf(2).rdy);
 
 
-  TCDS_Monitor_0: entity work.TCDS_Monitor
-    port map(
-      clk_axi        => clk_axi,
-      axi_reset_n    => reset_axi_n,
-      counters_en    => Ctrl.LINK0.RX.Counter_ENABLE,
-      prbs_err_count => Mon.LINK0.RX.PRBS_ERR_COUNT,
-      bad_word_count => Mon.LINK0.RX.BAD_CHAR_COUNT,
-      disp_err_count => Mon.LINK0.RX.DISP_ERR_COUNT,
-      clk_txrx       => local_clk_TCDS,
-      prbs_error     => rx_prbs_error(0),
-      bad_word       => or_reduce(rx_bad_char(0)),
-      disp_error     => or_reduce(rx_disp_error(0))
-      );
-
-  TCDS_Monitor_1: entity work.TCDS_Monitor
-    port map(
-      clk_axi        => clk_axi,
-      axi_reset_n    => reset_axi_n,
-      counters_en    => Ctrl.LINK1.RX.Counter_ENABLE,
-      prbs_err_count => Mon.LINK1.RX.PRBS_ERR_COUNT,
-      bad_word_count => Mon.LINK1.RX.BAD_CHAR_COUNT,
-      disp_err_count => Mon.LINK1.RX.DISP_ERR_COUNT,
-      clk_txrx       => local_clk_TCDS,
-      prbs_error     => rx_prbs_error(1),
-      bad_word       => or_reduce(rx_bad_char(1)),
-      disp_error     => or_reduce(rx_disp_error(1))
-      );        
-
-  TCDS_Monitor_2: entity work.TCDS_Monitor
-    port map(
-      clk_axi        => clk_axi,
-      axi_reset_n    => reset_axi_n,
-      counters_en    => Ctrl.LINK2.RX.Counter_ENABLE,
-      prbs_err_count => Mon.LINK2.RX.PRBS_ERR_COUNT,
-      bad_word_count => Mon.LINK2.RX.BAD_CHAR_COUNT,
-      disp_err_count => Mon.LINK2.RX.DISP_ERR_COUNT,
-      clk_txrx       => local_clk_TCDS,
-      prbs_error     => rx_prbs_error(2),
-      bad_word       => or_reduce(rx_bad_char(2)),
-      disp_error     => or_reduce(rx_disp_error(2))
-      );
 
   
   
-  TCDS_Control_0: entity work.TCDS_Control
-    port map (
-      clk_axi      => clk_axi,
-      axi_reset_n  => reset_axi_n,
-      clk_txrx     => local_clk_TCDS,
-      mode         => Ctrl.CTRL0.MODE,
-      fixed_send_d => Ctrl.CTRL0.FIXED_SEND_D,
-      fixed_send_k => Ctrl.CTRL0.FIXED_SEND_K,
-      capture      => Ctrl.CTRL0.CAPTURE,
-      capture_d    => Mon.CTRL0.CAPTURE_D,
-      capture_k    => Mon.CTRL0.CAPTURE_K,
-      tx_data      => tx_data(0),
-      tx_k_data    => tx_kdata(0),
-      rx_data      => rx_data(0),
-      rx_k_data    => rx_kdata(0));
-  TCDS_Control_1: entity work.TCDS_Control
-    port map (
-      clk_axi      => clk_axi,
-      axi_reset_n  => reset_axi_n,
-      clk_txrx     => local_clk_TCDS,
-      mode         => Ctrl.CTRL1.MODE,
-      fixed_send_d => Ctrl.CTRL1.FIXED_SEND_D,
-      fixed_send_k => Ctrl.CTRL1.FIXED_SEND_K,
-      capture      => Ctrl.CTRL1.CAPTURE,
-      capture_d    => Mon.CTRL1.CAPTURE_D,
-      capture_k    => Mon.CTRL1.CAPTURE_K,
-      tx_data      => tx_data(1),
-      tx_k_data    => tx_kdata(1),
-      rx_data      => rx_data(1),
-      rx_k_data    => rx_kdata(1));
-  TCDS_Control_2: entity work.TCDS_Control
-    port map (
-      clk_axi      => clk_axi,
-      axi_reset_n  => reset_axi_n,
-      clk_txrx     => local_clk_TCDS,
-      mode         => Ctrl.CTRL2.MODE,
-      fixed_send_d => Ctrl.CTRL2.FIXED_SEND_D,
-      fixed_send_k => Ctrl.CTRL2.FIXED_SEND_K,
-      capture      => Ctrl.CTRL2.CAPTURE,
-      capture_d    => Mon.CTRL2.CAPTURE_D,
-      capture_k    => Mon.CTRL2.CAPTURE_K,
-      tx_data      => tx_data(2),
-      tx_k_data    => tx_kdata(2),
-      rx_data      => rx_data(2),
-      rx_k_data    => rx_kdata(2));
   
-end architecture Behavioral;
+end behavioral;
+

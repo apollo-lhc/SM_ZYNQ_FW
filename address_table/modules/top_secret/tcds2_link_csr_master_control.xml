@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<node id="tcsds2_link_master_csr_control">
+
+  <!-- Full reset of the TCLink. -->
+  <node id="reset_all"
+        description=""
+        address="0x00000000"
+        mask="0x00000001"
+        permission="rw" />
+
+  <!-- MGT resets. -->
+  <node id="mgt_reset_all"
+        description="Direct full (i.e., both TX and RX) reset of the MGT. Only enabled when the TCLink channel controller is disabled (i.e., control.tclink_channel_ctrl_enable is low)."
+        address="0x00000000"
+        mask="0x00000010"
+        permission="rw" />
+  <node id="mgt_reset_tx_pll_and_datapath"
+        description="Direct TX reset of the MGT. Only enabled when the TCLink channel controller is disabled."
+        address="0x00000000"
+        mask="0x00000020"
+        permission="rw" />
+  <node id="mgt_reset_tx_datapath"
+        description="Direct TX reset of the MGT. Only enabled when the TCLink channel controller is disabled."
+        address="0x00000000"
+        mask="0x00000040"
+        permission="rw" />
+  <node id="mgt_reset_rx_pll_and_datapath"
+        description="Direct RX reset of the MGT. Only enabled when the TCLink channel controller is disabled."
+        address="0x00000000"
+        mask="0x0000080"
+        permission="rw" />
+  <node id="mgt_reset_rx_datapath"
+        description="Direct RX reset of the MGT. Only enabled when the TCLink channel controller is disabled."
+        address="0x00000000"
+        mask="0x0000100"
+        permission="rw" />
+
+  <!-- Controls for the TCLink channel controller. -->
+  <node id="tclink_channel_ctrl_reset"
+        description="Resets the TCLink channel controller."
+        address="0x00000000"
+        mask="0x00001000"
+        permission="rw" />
+  <node id="tclink_channel_ctrl_enable"
+        description="Enables/disables the TCLink channel controller."
+        address="0x00000000"
+        mask="0x00002000"
+        permission="rw" />
+  <node id="tclink_channel_ctrl_gentle"
+        description="When high: tells the TCLink channel controller to use the 'gentle' instead of the 'full' reset procedure. The 'gentle' procedure does not reset the MGT QUAD PLLs, whereas the 'full' procedure does."
+        address="0x00000000"
+        mask="0x00004000"
+        permission="rw" />
+
+  <!-- Controls for the TCLink core. -->
+  <node id="tclink_close_loop"
+        description="When high: activates the TCLink phase stabilisation."
+        address="0x00000000"
+        mask="0x00010000"
+        permission="rw" />
+  <node id="tclink_phase_offset"
+        description="Offset value to be subtracted from TCLink phase error before phase correction. Configure this value from an initial read of status.tclink_phase_error."
+        address="0x00000001">
+    <node id="lo"
+          description="Lower 32 bits of status.tclink_phase_offset."
+          address="0x00000000"
+          mask="0xffffffff"
+          permission="rw" />
+    <node id="hi"
+          description="Upper 16 bits of status.tclink_phase_offset."
+          address="0x00000001"
+          mask="0x0000ffff"
+          permission="rw" />
+  </node>
+
+  <!-- Clock-domain crossing phase control. -->
+  <node id="phase_cdc40_tx_calib"
+        description=""
+        address="0x00000003"
+        mask="0x000003ff"
+        permission="rw" />
+  <node id="phase_cdc40_tx_force"
+        description=""
+        address="0x00000003"
+        mask="0x00000400"
+        permission="rw" />
+  <node id="phase_cdc40_rx_calib"
+        description=""
+        address="0x00000003"
+        mask="0x00070000"
+        permission="rw" />
+  <node id="phase_cdc40_rx_force"
+        description=""
+        address="0x00000003"
+        mask="0x00080000"
+        permission="rw" />
+
+  <!-- MGT TX Phase-Interpolator control. -->
+  <node id="phase_pi_tx_calib"
+        description=""
+        address="0x00000003"
+        mask="0x7f000000"
+        permission="rw" />
+  <node id="phase_pi_tx_force"
+        description=""
+        address="0x00000003"
+        mask="0x80000000"
+        permission="rw" />
+
+  <!-- MGT RX mode (LPM vs. DFE) controls. -->
+  <node id="mgt_rx_dfe_vs_lpm"
+        description="Choice of MGT mode: 1: LPM, 0: DFE."
+        address="0x00000004"
+        mask="0x00000001"
+        permission="rw" />
+  <node id="mgt_rx_dfe_vs_lpm_reset"
+        description="Reset to be strobed after changing MGT RXmode (LPM/DFE)."
+        address="0x00000004"
+        mask="0x00000002"
+        permission="rw" />
+
+  <!-- MGT RX mode parameter overrides. See also:
+       https://espace.cern.ch/HighPrecisionTiming/Evaluations/Components%20Evaluations/Xilinx%20FPGAs/report_xilinx_fpga_rx_equalizer.pdf. -->
+  <node id="mgt_rxeq_params"
+        address="0x00000005">
+    <node id="lpm"
+          address="0x00000000">
+      <node id="rxlpmgcovrden"
+            address="0x00000000"
+            mask="0x00000010"
+            permission="rw" />
+      <node id="rxlpmhfovrden"
+            address="0x00000000"
+            mask="0x00000020"
+            permission="rw" />
+      <node id="rxlpmlfklovrden"
+            address="0x00000000"
+            mask="0x00000040"
+            permission="rw" />
+      <node id="rxlpmosovrden"
+            address="0x00000000"
+            mask="0x00000080"
+            permission="rw" />
+    </node>
+    <node id="dfe"
+          address="0x00000001">
+      <node id="rxosovrden"
+            address="0x00000000"
+            mask="0x00000100"
+            permission="rw" />
+      <node id="rxdfeagcovrden"
+            address="0x00000000"
+            mask="0x00000200"
+            permission="rw" />
+      <node id="rxdfelfovrden"
+            address="0x00000000"
+            mask="0x00000400"
+            permission="rw" />
+      <node id="rxdfeutovrden"
+            address="0x00000000"
+            mask="0x00000800"
+            permission="rw" />
+      <node id="rxdfevpovrden"
+            address="0x00000000"
+            mask="0x00001000"
+            permission="rw" />
+    </node>
+  </node>
+
+  <!-- Stuff related to link monitoring. -->
+  <node id="fec_monitor_reset"
+        description="Reset of the lpGBT FEC monitoring."
+        address="0x00000007"
+        mask="0x00000001"
+        permission="rw" />
+
+  <!-- TCLink parameters. -->
+  <node id="tclink_param_metastability_deglitch" address="0x00000008" mask="0x0000ffff" permission="rw" />
+  <node id="tclink_param_phase_detector_navg"    address="0x00000009" mask="0x00000fff" permission="rw" />
+  <node id="tclink_param_modulo_carrier_period"  address="0x0000000a">
+    <node id="lo" address="0x00000000" mask="0xffffffff" permission="rw" />
+    <node id="hi" address="0x00000001" mask="0x0000ffff" permission="rw" />
+  </node>
+  <node id="tclink_param_master_rx_ui_period" address="0x0000000c">
+    <node id="lo" address="0x00000000" mask="0xffffffff" permission="rw" />
+    <node id="hi" address="0x00000001" mask="0x0000ffff" permission="rw" />
+  </node>
+  <node id="tclink_param_aie"                 address="0x0000000e" mask="0x0000000f" permission="rw" />
+  <node id="tclink_param_aie_enable"          address="0x0000000e" mask="0x00000010" permission="rw" />
+  <node id="tclink_param_ape"                 address="0x0000000e" mask="0x00000f00" permission="rw" />
+  <node id="tclink_param_sigma_delta_clk_div" address="0x0000000f" mask="0xffff0000" permission="rw" />
+  <node id="tclink_param_enable_mirror"       address="0x00000010" mask="0x00000001" permission="rw" />
+  <node id="tclink_param_adco" address="0x00000011">
+    <node id="lo" address="0x00000000" mask="0xffffffff" permission="rw" />
+    <node id="hi" address="0x00000001" mask="0x0000ffff" permission="rw" />
+  </node>
+
+</node>
