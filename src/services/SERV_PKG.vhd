@@ -110,6 +110,30 @@ package SERV_CTRL is
   constant DEFAULT_SERV_CPLD_CTRL_t : SERV_CPLD_CTRL_t := (
                                                            ENABLE_JTAG => '0'
                                                           );
+  type SERV_MDIO_MON_t is record
+    BUSY                       :std_logic;   
+    ERROR_CODE                 :std_logic_vector( 2 downto 0);
+    HEX_INT                    :std_logic_vector( 3 downto 0);
+    DATA_RD                    :std_logic_vector(15 downto 0);
+  end record SERV_MDIO_MON_t;
+
+
+  type SERV_MDIO_CTRL_t is record
+    GO                         :std_logic;   
+    OPCODE                     :std_logic_vector( 1 downto 0);
+    DATA_WR                    :std_logic_vector(15 downto 0);
+    PHY_ADDRESS                :std_logic_vector( 4 downto 0);
+    DATA_ADDRESS               :std_logic_vector( 4 downto 0);
+  end record SERV_MDIO_CTRL_t;
+
+
+  constant DEFAULT_SERV_MDIO_CTRL_t : SERV_MDIO_CTRL_t := (
+                                                           GO => '0',
+                                                           DATA_WR => (others => '0'),
+                                                           OPCODE => (others => '0'),
+                                                           DATA_ADDRESS => (others => '0'),
+                                                           PHY_ADDRESS => (others => '0')
+                                                          );
   type SERV_MON_t is record
     SI5344                     :SERV_SI5344_MON_t;
     TCDS                       :SERV_TCDS_MON_t;  
@@ -117,6 +141,7 @@ package SERV_CTRL is
     FP_LEDS                    :SERV_FP_LEDS_MON_t; 
     SWITCH                     :SERV_SWITCH_MON_t;  
     CPLD                       :SERV_CPLD_MON_t;    
+    MDIO                       :SERV_MDIO_MON_t;    
   end record SERV_MON_t;
 
 
@@ -126,15 +151,17 @@ package SERV_CTRL is
     CLOCKING                   :SERV_CLOCKING_CTRL_t;
     FP_LEDS                    :SERV_FP_LEDS_CTRL_t; 
     CPLD                       :SERV_CPLD_CTRL_t;    
+    MDIO                       :SERV_MDIO_CTRL_t;    
   end record SERV_CTRL_t;
 
 
   constant DEFAULT_SERV_CTRL_t : SERV_CTRL_t := (
+                                                 CLOCKING => DEFAULT_SERV_CLOCKING_CTRL_t,
                                                  FP_LEDS => DEFAULT_SERV_FP_LEDS_CTRL_t,
+                                                 MDIO => DEFAULT_SERV_MDIO_CTRL_t,
                                                  SI5344 => DEFAULT_SERV_SI5344_CTRL_t,
-                                                 TCDS => DEFAULT_SERV_TCDS_CTRL_t,
                                                  CPLD => DEFAULT_SERV_CPLD_CTRL_t,
-                                                 CLOCKING => DEFAULT_SERV_CLOCKING_CTRL_t
+                                                 TCDS => DEFAULT_SERV_TCDS_CTRL_t
                                                 );
 
 

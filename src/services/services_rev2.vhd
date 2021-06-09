@@ -24,6 +24,9 @@ entity services is
     FP_switch          : in  std_logic;
     linux_booted       : in  std_logic;
 
+    mdc                : out std_logic;
+    mdi                : inout std_logic;
+
     ESM_LED_CLK        : in  std_logic;
     ESM_LED_SDA        : in  std_logic;
     SI5344_Mon         : in  SERV_SI5344_MON_t;
@@ -53,9 +56,15 @@ architecture behavioral of services is
   signal LED_mode : slv_3_t;
   signal  FP_shutdown : std_logic;
   constant FP_LED_ORDER : int8_array_t(0 to 7) := (0,1,2,3,7,6,5,4);
-  
+
+ signal reset_axi : std_logic;
+ 
+ 
 begin  -- architecture behavioral
 
+  reset_axi <= not reset_axi_n;
+
+  
   ESM_LED_CAP: process (clk_axi, reset_axi_n) is
   begin  -- process ESM_LED_CAP
     if reset_axi_n = '0' then           -- asynchronous reset (active high)
@@ -167,5 +176,22 @@ begin  -- architecture behavioral
   FP_LED_RST    <= not Ctrl.FP_LEDS.RESET;
   CPLD_Ctrl <= Ctrl.CPLD;
 
+  mdio_1: entity work.mdio
+    generic map (
+      COUNT_WIDTH    => 128)
+    port map (
+      reset              => reset_axi,
+      clk_in             => clk_axi,
+      serial_clock       => mdc,
+      serial_data        => mdi,
+      opcode             => Ctrl.MDIO.opcode,
+      mdio_address       => Ctrl.MDIO.phy_address,
+      device_address     => Ctrl.MDIO.data_address,
+      data_read          => Mon.MDIO.data_rd,
+      data_write         => Ctrl.MDIO.data_wr,
+      start_conversion   => Ctrl.MDIO.go,
+      running_conversion => Mon.MDIO.busy,
+      error_code         => Mon.MDIO.error_code,
+      hexint             => Mon.MDIO.hex_int);
   
 end architecture behavioral;

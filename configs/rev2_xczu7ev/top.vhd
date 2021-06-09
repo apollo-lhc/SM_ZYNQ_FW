@@ -31,8 +31,8 @@ entity top is
     FP_1V8_GPIO       : out   std_logic_vector(5 downto 0);
     
     SATA_DETECT_N     : in    std_logic;
---         UART_Rx_ZYNQ  : in    std_logic; -- not used
---         UART_Tx_ZYNQ  : out   std_logic; -- not used
+    UART_Rx_ZYNQ      : out   std_logic; -- not used
+    UART_Tx_ZYNQ      : inout std_logic; -- not used
 
     CPLD_TCK          : out   std_logic;
     CPLD_TDI          : out   std_logic;
@@ -692,6 +692,8 @@ begin  -- architecture structure
       FP_LED_SDA      => FP_LED_SDA,
       FP_switch       => FP_Button,
       linux_booted    => linux_booted,
+      mdc             => UART_Rx_ZYNQ,
+      mdi             => UART_Tx_ZYNQ,
       ESM_LED_CLK     => ESM_LED_CLK,
       ESM_LED_SDA     => ESM_LED_SDA,
       SI5344_Mon.INT  => not SI_INT,

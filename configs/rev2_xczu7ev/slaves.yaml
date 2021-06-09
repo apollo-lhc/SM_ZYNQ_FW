@@ -116,6 +116,7 @@ AXI_SLAVES:
         range: "8K"
     XML:
       - "address_table/modules/SERV_rev2.xml"
+      - "address_table/modules/mdio.xml"
     UHAL_BASE: 0x04000000
     HDL:
       out_dir:  "src/services"

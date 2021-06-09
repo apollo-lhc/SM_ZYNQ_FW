@@ -26,6 +26,7 @@ set vhdl_files "\
      src/services/services_rev2.vhd \
      src/services/SERV_map.vhd \
      src/services/SERV_PKG.vhd \
+     src/services/mdio.vhd \
      src/IPMC_i2c_slave/i2c_slave.vhd \
      src/IPMC_i2c_slave/IPMC_i2c_slave.vhd \
      src/CM_interface/CM_map.vhd \

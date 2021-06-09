@@ -28,7 +28,7 @@ set_property BITSTREAM.CONFIG.UNUSEDPIN PULLNONE [current_design]
 set_property -dict {PACKAGE_PIN B15  IOSTANDARD LVCMOS33 PULLDOWN TRUE} [get_ports {ZYNQ_BOOT_DONE}]
 
 #alternate, not used by default
-set_property -dict {PACKAGE_PIN F16  IOSTANDARD LVCMOS33}               [get_ports {UART_RX_ZYNQ}] 
+set_property -dict {PACKAGE_PIN F16  IOSTANDARD LVCMOS33 PULLUP TRUE}   [get_ports {UART_RX_ZYNQ}] 
 set_property -dict {PACKAGE_PIN F15  IOSTANDARD LVCMOS33}               [get_ports {UART_TX_ZYNQ}] 
 
 set_property -dict {PACKAGE_PIN G14  IOSTANDARD LVCMOS33}               [get_ports {IPMC_SDA}]

@@ -35,8 +35,8 @@ architecture behavioral of SERV_interface is
 
   
   
-  signal reg_data :  slv32_array_t(integer range 0 to 50);
-  constant Default_reg_data : slv32_array_t(integer range 0 to 50) := (others => x"00000000");
+  signal reg_data :  slv32_array_t(integer range 0 to 67);
+  constant Default_reg_data : slv32_array_t(integer range 0 to 67) := (others => x"00000000");
 begin  -- architecture behavioral
 
   -------------------------------------------------------------------------------
@@ -88,7 +88,7 @@ begin  -- architecture behavioral
       localRdData <= x"00000000";
       if localRdReq = '1' then
         regRdAck  <= '1';
-        case to_integer(unsigned(localAddress(5 downto 0))) is
+        case to_integer(unsigned(localAddress(6 downto 0))) is
           
         when 0 => --0x0
           localRdData( 0)            <=  reg_data( 0)( 0);                --Enable Si5344 outputs
@@ -99,6 +99,12 @@ begin  -- architecture behavioral
           localRdData( 6)            <=  Mon.SI5344.LOS;                  --Si5344 Loss of signal
         when 32 => --0x20
           localRdData(15 downto  0)  <=  Mon.SWITCH.STATUS;               --Ethernet switch LEDs
+        when 66 => --0x42
+          localRdData( 1 downto  0)  <=  reg_data(66)( 1 downto  0);      --
+          localRdData(31 downto 16)  <=  reg_data(66)(31 downto 16);      --
+        when 67 => --0x43
+          localRdData( 4 downto  0)  <=  reg_data(67)( 4 downto  0);      --
+          localRdData(20 downto 16)  <=  reg_data(67)(20 downto 16);      --
         when 4 => --0x4
           localRdData( 0)            <=  reg_data( 4)( 0);                --TTC source select (0:TCDS,1:TTC_FAKE
           localRdData( 4)            <=  Mon.TCDS.REFCLK_LOCKED;          --TCDS refclk locked
@@ -136,6 +142,11 @@ begin  -- architecture behavioral
           localRdData( 3 downto  0)  <=  Mon.CPLD.IO;                     --inputs(for now) from CPLD
         when 48 => --0x30
           localRdData( 0)            <=  reg_data(48)( 0);                --Enable the JTAG lines to the CPLD
+        when 65 => --0x41
+          localRdData( 0)            <=  Mon.MDIO.BUSY;                   --
+          localRdData( 6 downto  4)  <=  Mon.MDIO.ERROR_CODE;             --
+          localRdData(11 downto  8)  <=  Mon.MDIO.HEX_INT;                --
+          localRdData(31 downto 16)  <=  Mon.MDIO.DATA_RD;                --
 
 
           when others =>
@@ -170,6 +181,10 @@ begin  -- architecture behavioral
   Ctrl.FP_LEDS.FORCE_PAGE        <=  reg_data(16)(22);               
   Ctrl.FP_LEDS.PAGE              <=  reg_data(16)(29 downto 24);     
   Ctrl.CPLD.ENABLE_JTAG          <=  reg_data(48)( 0);               
+  Ctrl.MDIO.OPCODE               <=  reg_data(66)( 1 downto  0);     
+  Ctrl.MDIO.PHY_ADDRESS          <=  reg_data(67)( 4 downto  0);     
+  Ctrl.MDIO.DATA_ADDRESS         <=  reg_data(67)(20 downto 16);     
+  Ctrl.MDIO.DATA_WR              <=  reg_data(66)(31 downto 16);     
 
 
   reg_writes: process (clk_axi, reset_axi_n) is
@@ -192,25 +207,30 @@ begin  -- architecture behavioral
       reg_data(16)(22)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.FORCE_PAGE;
       reg_data(16)(29 downto 24)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.PAGE;
       reg_data(48)( 0)  <= DEFAULT_SERV_CTRL_t.CPLD.ENABLE_JTAG;
+      reg_data(66)( 1 downto  0)  <= DEFAULT_SERV_CTRL_t.MDIO.OPCODE;
+      reg_data(67)( 4 downto  0)  <= DEFAULT_SERV_CTRL_t.MDIO.PHY_ADDRESS;
+      reg_data(67)(20 downto 16)  <= DEFAULT_SERV_CTRL_t.MDIO.DATA_ADDRESS;
+      reg_data(66)(31 downto 16)  <= DEFAULT_SERV_CTRL_t.MDIO.DATA_WR;
 
     elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
+      Ctrl.MDIO.GO <= '0';
       
 
       
       if localWrEn = '1' then
-        case to_integer(unsigned(localAddress(5 downto 0))) is
+        case to_integer(unsigned(localAddress(6 downto 0))) is
         when 0 => --0x0
           reg_data( 0)( 0)            <=  localWrData( 0);                --Enable Si5344 outputs
           reg_data( 0)( 1)            <=  localWrData( 1);                --Power on Si5344
           reg_data( 0)( 2)            <=  localWrData( 2);                --
-        when 16 => --0x10
-          reg_data(16)( 0)            <=  localWrData( 0);                --reset FP LEDs
-          reg_data(16)( 1)            <=  localWrData( 1);                --override FP LED page 0
-          reg_data(16)( 4 downto  2)  <=  localWrData( 4 downto  2);      --override FP LED page 0 pattern
-          reg_data(16)(11 downto  8)  <=  localWrData(11 downto  8);      --page 0 speed
-          reg_data(16)(21 downto 16)  <=  localWrData(21 downto 16);      --Page to display
-          reg_data(16)(22)            <=  localWrData(22);                --Force the display of a page (override button UI)
-          reg_data(16)(29 downto 24)  <=  localWrData(29 downto 24);      --Page to display
+        when 64 => --0x40
+          Ctrl.MDIO.GO                <=  localWrData( 0);               
+        when 66 => --0x42
+          reg_data(66)( 1 downto  0)  <=  localWrData( 1 downto  0);      --
+          reg_data(66)(31 downto 16)  <=  localWrData(31 downto 16);      --
+        when 67 => --0x43
+          reg_data(67)( 4 downto  0)  <=  localWrData( 4 downto  0);      --
+          reg_data(67)(20 downto 16)  <=  localWrData(20 downto 16);      --
         when 4 => --0x4
           reg_data( 4)( 0)            <=  localWrData( 0);                --TTC source select (0:TCDS,1:TTC_FAKE
         when 5 => --0x5
@@ -221,6 +241,14 @@ begin  -- architecture behavioral
           reg_data( 5)(21)            <=  localWrData(21);                --Enable FPGA IBUFDS
         when 48 => --0x30
           reg_data(48)( 0)            <=  localWrData( 0);                --Enable the JTAG lines to the CPLD
+        when 16 => --0x10
+          reg_data(16)( 0)            <=  localWrData( 0);                --reset FP LEDs
+          reg_data(16)( 1)            <=  localWrData( 1);                --override FP LED page 0
+          reg_data(16)( 4 downto  2)  <=  localWrData( 4 downto  2);      --override FP LED page 0 pattern
+          reg_data(16)(11 downto  8)  <=  localWrData(11 downto  8);      --page 0 speed
+          reg_data(16)(21 downto 16)  <=  localWrData(21 downto 16);      --Page to display
+          reg_data(16)(22)            <=  localWrData(22);                --Force the display of a page (override button UI)
+          reg_data(16)(29 downto 24)  <=  localWrData(29 downto 24);      --Page to display
 
           when others => null;
         end case;
