@@ -93,10 +93,12 @@ for {set j 0} {$j < [llength $xci_files ] } {incr j} {
 check_syntax -fileset sources_1
 
 #Add bd files
+source ../src/ZynqPS/build_Zynq.tcl
 foreach bd_name [array names bd_files] {
-    set filename "${apollo_root_path}/$bd_files($bd_name)"
-    source $filename
-    puts "Running $filename"
+    #set filename "${apollo_root_path}/$bd_files($bd_name)"
+    #source $filename
+    #puts "Running $filename"
+    $bd_name
     read_bd [get_files "${apollo_root_path}/$bd_path/$bd_name/$bd_name.bd"]
     open_bd_design [get_files "${apollo_root_path}/$bd_path/$bd_name/$bd_name.bd"]
     make_wrapper -files [get_files $bd_name.bd] -top -import -force

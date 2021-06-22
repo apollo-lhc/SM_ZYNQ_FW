@@ -1,6 +1,6 @@
 set bd_path proj/
 
-array set bd_files [list {zynq_bd} {src/ZynqPS/build_Zynq_rev2_xczu7ev.tcl} \
+array set bd_files [list {zynq_bd} {src/ZynqPS/build_Zynq.tcl Zynq_bd rev2 xczu7ev} \
 		       ]
 
 set vhdl_files "\
