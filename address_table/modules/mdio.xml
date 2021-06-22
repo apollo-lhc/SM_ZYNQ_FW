@@ -1,0 +1,11 @@
+<node id="MDIO">
+  <node id="GO"           address="0x0" mask="0x00000001" permission="w"/>
+  <node id="BUSY"         address="0x1" mask="0x00000001" permission="r"/>
+  <node id="ERROR_CODE"   address="0x1" mask="0x00000070" permission="r"/>
+  <node id="HEX_INT"      address="0x1" mask="0x00000F00" permission="r"/>
+  <node id="DATA_RD"      address="0x1" mask="0xFFFF0000" permission="r"/>
+  <node id="OPCODE"       address="0x2" mask="0x00000003" permission="rw"/>
+  <node id="DATA_WR"      address="0x2" mask="0xFFFF0000" permission="rw"/>
+  <node id="PHY_ADDRESS"  address="0x3" mask="0x0000001F" permission="rw"/>
+  <node id="DATA_ADDRESS" address="0x3" mask="0x001F0000" permission="rw"/>
+</node>

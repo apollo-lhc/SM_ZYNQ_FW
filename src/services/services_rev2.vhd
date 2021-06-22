@@ -178,7 +178,7 @@ begin  -- architecture behavioral
 
   mdio_1: entity work.mdio
     generic map (
-      COUNT_WIDTH    => 128)
+      COUNT_WIDTH    => 7)
     port map (
       reset              => reset_axi,
       clk_in             => clk_axi,

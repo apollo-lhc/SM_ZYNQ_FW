@@ -60,5 +60,6 @@ set xdc_files "\
 
 set xci_files "\
               configs/rev2_xczu7ev/cores/onboardClk.tcl \
+              configs/rev2_xczu7ev/cores/my_ila.tcl \
               "
 
