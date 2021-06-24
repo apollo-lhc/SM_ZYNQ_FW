@@ -1,8 +1,9 @@
 #UHAL_TAG=v2.7.4
-UHAL_TAG=v2.8.0
-UIO_UHAL_URI=https://github.com/ammitra/UIOuHAL.git
-#UIO_UHAL_TAG=feature-kernelPatch
-UIO_UHAL_TAG=feature-uhal_280
+UHAL_TAG=v2.8.1
+
+UIO_UHAL_URI=https://github.com/BU-Tools/UIOuHAL.git
+UIO_UHAL_TAG=develop
+
 DT_OVERLAY_URI=https://gitlab.com/BU-EDF/devicetreeoverlay-scripts.git
 DT_OVERLAY_TAG=main
 ${OPT_PATH}/cactus: | ${OPT_PATH} ${TMP_PATH}
@@ -11,7 +12,9 @@ ${OPT_PATH}/cactus: | ${OPT_PATH} ${TMP_PATH}
 	cp ${MODS_PATH}/build_ipbus.sh ${TMP_PATH}/ipbus-software/
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/ipbus-software/build_ipbus.sh
 	cd ${TMP_PATH} && \
-		git clone --branch ${UIO_UHAL_TAG} ${UIO_UHAL_URI}
+		git clone ${UIO_UHAL_URI}
+	cd ${TMP_PATH}/UIOuHAL && \
+		git checkout ${UIO_UHAL_TAG}
 	cp ${MODS_PATH}/build_uiouhal.sh ${TMP_PATH}/UIOuHAL
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/UIOuHAL/build_uiouhal.sh
 	cd ${TMP_PATH} && \

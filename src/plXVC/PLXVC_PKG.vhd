@@ -19,7 +19,7 @@ package PLXVC_CTRL is
     TDO_VECTOR                 :std_logic_vector(31 downto 0);  -- Test Data Out (TDO) Capture Vector
     BUSY                       :std_logic;                      -- Cable is operating
   end record PLXVC_XVC_MON_t;
-  type PLXVC_XVC_MON_t_ARRAY is array(1 to 3) of PLXVC_XVC_MON_t;
+  type PLXVC_XVC_MON_t_ARRAY is array(1 to 2) of PLXVC_XVC_MON_t;
 
   type PLXVC_XVC_CTRL_t is record
     LENGTH                     :std_logic_vector(31 downto 0);  -- Length of shift operation in bits
@@ -30,7 +30,7 @@ package PLXVC_CTRL is
     REMOTE                     :PLXVC_XVC_REMOTE_CTRL_t;      
     PS_RST                     :std_logic;                      -- PS reset
   end record PLXVC_XVC_CTRL_t;
-  type PLXVC_XVC_CTRL_t_ARRAY is array(1 to 3) of PLXVC_XVC_CTRL_t;
+  type PLXVC_XVC_CTRL_t_ARRAY is array(1 to 2) of PLXVC_XVC_CTRL_t;
 
   constant DEFAULT_PLXVC_XVC_CTRL_t : PLXVC_XVC_CTRL_t := (
                                                            REMOTE => DEFAULT_PLXVC_XVC_REMOTE_CTRL_t,
