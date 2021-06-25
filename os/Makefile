@@ -29,9 +29,6 @@ ${INSTALL_PATH}:  centos-rootfs/extra_rpms.txt
 #rules for building QEMU emulators
 include mk/QEMU.mk
 
-
-
-
 ${ETC_PATH} ${TMP_PATH}: ${QEMU_PATH}/${QEMU} ${INSTALL_PATH}/${QEMU_PATH}/${QEMU} centos-rootfs/extra_rpms.txt
 	cd centos-rootfs && \
 		sudo python mkrootfs.py --root=${INSTALL_PATH} --arch=${ZYNQ_ARCH} --extra=extra_rpms.txt
@@ -68,6 +65,9 @@ clean:
 	sudo rm -rf ${INSTALL_PATH}
 	rm -f ${TARBALL_NAME}
 
+
+
+rev1_armv7hl.tar.gz : 
 
 #################################################################################
 # Help
