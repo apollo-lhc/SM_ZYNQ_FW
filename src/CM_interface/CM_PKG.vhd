@@ -188,7 +188,7 @@ package CM_CTRL is
   type CM_CM_C2C_CTRL_t_ARRAY is array(1 to 2) of CM_CM_C2C_CTRL_t;
 
   constant DEFAULT_CM_CM_C2C_CTRL_t : CM_CM_C2C_CTRL_t := (
-                                                           ENABLE_PHY_CTRL => '1',
+                                                           ENABLE_PHY_CTRL => '0',
                                                            PHY_READ_TIME => x"4c4b40",
                                                            CNT => DEFAULT_CM_CM_C2C_CNT_CTRL_t,
                                                            PHY_LANE_STABLE => x"000000ff",
@@ -241,14 +241,16 @@ package CM_CTRL is
 
   type CM_CM_MONITOR_CTRL_t is record
     COUNT_16X_BAUD             :std_logic_vector( 7 downto 0);  -- Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
+    ENABLE                     :std_logic;                      -- Enable readout
     ERRORS                     :CM_CM_MONITOR_ERRORS_CTRL_t;  
     SM_TIMEOUT                 :std_logic_vector(31 downto 0);  -- Count to wait for in state machine before timing out (50Mhz clk)
   end record CM_CM_MONITOR_CTRL_t;
 
 
   constant DEFAULT_CM_CM_MONITOR_CTRL_t : CM_CM_MONITOR_CTRL_t := (
-                                                                   ERRORS => DEFAULT_CM_CM_MONITOR_ERRORS_CTRL_t,
+                                                                   ENABLE => '0',
                                                                    COUNT_16X_BAUD => x"1b",
+                                                                   ERRORS => DEFAULT_CM_CM_MONITOR_ERRORS_CTRL_t,
                                                                    SM_TIMEOUT => x"0001fca0"
                                                                   );
   type CM_CM_MON_t is record

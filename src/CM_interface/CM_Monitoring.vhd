@@ -20,6 +20,7 @@ entity CM_Monitoring is
   port (
     clk              : in  std_logic;
     reset            : in  std_logic;
+    enable_axi_writes: in  std_logic;
     uart_rx          : in  std_logic;
     baud_16x_count   : in  std_logic_vector(BAUD_COUNT_BITS-1 downto 0);
     sm_timeout_value : in  slv_32_t;

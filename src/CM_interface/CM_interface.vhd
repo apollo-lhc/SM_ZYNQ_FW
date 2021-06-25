@@ -142,6 +142,7 @@ begin
     port map (
       clk                            => clk_axi,
       reset                          => reset,
+      enable_axi_writes              => CTRL.CM(1).MONITOR.ENABLE,
       uart_rx                        => CM_mon_uart,
       baud_16x_count                 => CTRL.CM(1).MONITOR.COUNT_16X_BAUD,
       sm_timeout_value               => CTRL.CM(1).MONITOR.SM_TIMEOUT,

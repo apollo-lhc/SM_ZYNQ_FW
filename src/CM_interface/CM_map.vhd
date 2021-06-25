@@ -237,6 +237,7 @@ begin  -- architecture behavioral
           localRdData( 7 downto  0)  <=  reg_data(80)( 7 downto  0);                          --Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
           localRdData( 8)            <=  Mon.CM(1).MONITOR.ACTIVE;                            --Monitoring active. Is zero when no update in the last second.
           localRdData(15 downto 12)  <=  Mon.CM(1).MONITOR.HISTORY_VALID;                     --bytes valid in debug history
+          localRdData(16)            <=  reg_data(80)(16);                                    --Enable readout
         when 81 => --0x51
           localRdData(31 downto  0)  <=  Mon.CM(1).MONITOR.HISTORY;                           --4 bytes of uart history
         when 82 => --0x52
@@ -433,6 +434,7 @@ begin  -- architecture behavioral
           localRdData( 7 downto  0)  <=  reg_data(336)( 7 downto  0);                         --Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
           localRdData( 8)            <=  Mon.CM(2).MONITOR.ACTIVE;                            --Monitoring active. Is zero when no update in the last second.
           localRdData(15 downto 12)  <=  Mon.CM(2).MONITOR.HISTORY_VALID;                     --bytes valid in debug history
+          localRdData(16)            <=  reg_data(336)(16);                                   --Enable readout
         when 337 => --0x151
           localRdData(31 downto  0)  <=  Mon.CM(2).MONITOR.HISTORY;                           --4 bytes of uart history
         when 338 => --0x152
@@ -537,6 +539,7 @@ begin  -- architecture behavioral
   Ctrl.CM(1).C2C(2).LINK_DEBUG.TX.PRBS_SEL           <=  reg_data(57)(26 downto 24);      
   Ctrl.CM(1).C2C(2).LINK_DEBUG.TX.PRE_CURSOR         <=  reg_data(57)(31 downto 27);      
   Ctrl.CM(1).MONITOR.COUNT_16X_BAUD                  <=  reg_data(80)( 7 downto  0);      
+  Ctrl.CM(1).MONITOR.ENABLE                          <=  reg_data(80)(16);                
   Ctrl.CM(1).MONITOR.ERRORS.RESET                    <=  reg_data(84)( 0);                
   Ctrl.CM(1).MONITOR.SM_TIMEOUT                      <=  reg_data(90)(31 downto  0);      
   Ctrl.CM(2).CTRL.ENABLE_UC                          <=  reg_data(256)( 0);               
@@ -604,6 +607,7 @@ begin  -- architecture behavioral
   Ctrl.CM(2).C2C(2).LINK_DEBUG.TX.PRBS_SEL           <=  reg_data(313)(26 downto 24);     
   Ctrl.CM(2).C2C(2).LINK_DEBUG.TX.PRE_CURSOR         <=  reg_data(313)(31 downto 27);     
   Ctrl.CM(2).MONITOR.COUNT_16X_BAUD                  <=  reg_data(336)( 7 downto  0);     
+  Ctrl.CM(2).MONITOR.ENABLE                          <=  reg_data(336)(16);               
   Ctrl.CM(2).MONITOR.ERRORS.RESET                    <=  reg_data(340)( 0);               
   Ctrl.CM(2).MONITOR.SM_TIMEOUT                      <=  reg_data(346)(31 downto  0);     
 
@@ -676,6 +680,7 @@ begin  -- architecture behavioral
       reg_data(57)(26 downto 24)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).LINK_DEBUG.TX.PRBS_SEL;
       reg_data(57)(31 downto 27)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).LINK_DEBUG.TX.PRE_CURSOR;
       reg_data(80)( 7 downto  0)  <= DEFAULT_CM_CTRL_t.CM(1).MONITOR.COUNT_16X_BAUD;
+      reg_data(80)(16)  <= DEFAULT_CM_CTRL_t.CM(1).MONITOR.ENABLE;
       reg_data(84)( 0)  <= DEFAULT_CM_CTRL_t.CM(1).MONITOR.ERRORS.RESET;
       reg_data(90)(31 downto  0)  <= DEFAULT_CM_CTRL_t.CM(1).MONITOR.SM_TIMEOUT;
       reg_data(256)( 0)  <= DEFAULT_CM_CTRL_t.CM(2).CTRL.ENABLE_UC;
@@ -743,6 +748,7 @@ begin  -- architecture behavioral
       reg_data(313)(26 downto 24)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).LINK_DEBUG.TX.PRBS_SEL;
       reg_data(313)(31 downto 27)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).LINK_DEBUG.TX.PRE_CURSOR;
       reg_data(336)( 7 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).MONITOR.COUNT_16X_BAUD;
+      reg_data(336)(16)  <= DEFAULT_CM_CTRL_t.CM(2).MONITOR.ENABLE;
       reg_data(340)( 0)  <= DEFAULT_CM_CTRL_t.CM(2).MONITOR.ERRORS.RESET;
       reg_data(346)(31 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).MONITOR.SM_TIMEOUT;
 
@@ -891,6 +897,7 @@ begin  -- architecture behavioral
           reg_data(311)(28 downto 26)           <=  localWrData(28 downto 26);      --DEBUG rx PRBS select
         when 80 => --0x50
           reg_data(80)( 7 downto  0)            <=  localWrData( 7 downto  0);      --Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
+          reg_data(80)(16)                      <=  localWrData(16);                --Enable readout
         when 84 => --0x54
           reg_data(84)( 0)                      <=  localWrData( 0);                --Reset monitoring error counters
         when 313 => --0x139
@@ -916,6 +923,7 @@ begin  -- architecture behavioral
           reg_data(274)(23 downto  0)           <=  localWrData(23 downto  0);      --Time spent waiting for phylane to stabilize
         when 336 => --0x150
           reg_data(336)( 7 downto  0)           <=  localWrData( 7 downto  0);      --Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
+          reg_data(336)(16)                     <=  localWrData(16);                --Enable readout
         when 296 => --0x128
           Ctrl.CM(2).C2C(1).CNT.RESET_COUNTERS  <=  localWrData( 0);               
         when 276 => --0x114

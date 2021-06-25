@@ -854,7 +854,7 @@ begin  -- architecture structure
     port map (
       clk_A         => clk_200Mhz,
       clk_B         => clk_C2C1_PHY,
-      reset_A_async => axi_reset or (CM_C2C_Mon.Link(1).status.phy_mmcm_lol),
+      reset_A_async => axi_reset,-- or (CM_C2C_Mon.Link(1).status.phy_mmcm_lol),
       event_b       => one,--'1',
       rate          => CM_C2C_Mon.Link(1).USER_CLK_FREQ);    
 
