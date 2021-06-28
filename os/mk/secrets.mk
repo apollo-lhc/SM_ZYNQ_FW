@@ -1,3 +1,5 @@
+SECURE_FILES=${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_PATH}/passwd ${ETC_PATH}/shadow 
+
 ${HOME_PATH}/cms ${HOME_PATH}/atlas ${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_PATH}/passwd ${ETC_PATH}/shadow: ${PWD}/secure ${SECURE_PATH}/group ${SECURE_PATH}/gshadow ${SECURE_PATH}/passwd ${SECURE_PATH}/shadow | ${ETC_PATH} 
 	sudo install -m 644 ${SECURE_PATH}/group   ${ETC_PATH}/
 	sudo install -m 644 ${SECURE_PATH}/passwd  ${ETC_PATH}/

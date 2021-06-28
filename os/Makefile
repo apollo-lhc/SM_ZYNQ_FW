@@ -1,30 +1,38 @@
 SHELL=bash
 PWD=$(shell pwd)
 
-ZYNQ_ARCH=aarch64
-#ZYNQ_ARCH=armv7hl
 MODS_PATH=${PWD}/mods
 SECURE_PATH=${PWD}/secure
 
-INSTALL_PATH=${PWD}/image
-ETC_PATH=${INSTALL_PATH}/etc/
+%xc7z035.tar.gz : QEMU=qemu-arm-static
+%xc7z045.tar.gz : QEMU=qemu-arm-static
+%xczu7ev.tar.gz : QEMU=qemu-aarch64-static
+
+%xc7z035.tar.gz : ZYNQ_ARCH=armv7hl
+%xc7z045.tar.gz : ZYNQ_ARCH=armv7hl
+%xczu7ev.tar.gz : ZYNQ_ARCH=aarch64
+
+INSTALL_BASE_PATH=${PWD}/image/
+rev1_xc7z035.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}/rev1_xc7z035/
+rev1_xc7z045.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}/rev1_xc7z035/
+rev2_xc7z035.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}/rev2_xc7z035/
+rev2_xc7z045.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}/rev2_xc7z045/
+rev2_xczu7ev.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}/rev2_xczu7ev/
+
+#INSTALL_PATH=${PWD}/image
+ETC_PATH =${INSTALL_PATH}/etc/
 HOME_PATH=${INSTALL_PATH}/home/
-TMP_PATH=${INSTALL_PATH}/tmp/
-OPT_PATH=${INSTALL_PATH}/opt/
+TMP_PATH =${INSTALL_PATH}/tmp/
+OPT_PATH =${INSTALL_PATH}/opt/
 
-
-
-TARBALL_NAME=SD_p2.tar.gz
 
 .PHONEY: clean finalize_image all shell
-
-all: finalize_image
 
 
 #paths for build output
 ${INSTALL_PATH}:  centos-rootfs/extra_rpms.txt
-	rm -rf ${INSTALL_PATH}
-	mkdir -p ${INSTALL_PATH}
+	rm -rf $@
+	mkdir -p $@
 
 #rules for building QEMU emulators
 include mk/QEMU.mk
@@ -49,25 +57,23 @@ include mk/CM_MCU.mk
 include mk/mmc-utils.mk
 include mk/overlay-tools.mk
 
+SOFTWARE_AND_LIBS=${OPT_PATH}/BUTool ${OPT_PATH}/mcu_tools ${OPT_PATH}/Graphite_Monitor ${INSTALL_PATH}/usr/local/bin/mmc ${OPT_PATH}/overlay-tools
 
 
-finalize_image: ${ETC_PATH}/group ${ETC_PATH}/gshadow ${ETC_PATH}/passwd ${ETC_PATH}/shadow  ${OPT_PATH}/BUTool ${HOME_PATH}/cms ${HOME_PATH}/atlas ${OPT_PATH}/mcu_tools ${OPT_PATH}/Graphite_Monitor ${INSTALL_PATH}/usr/local/bin/mmc ${OPT_PATH}/overlay-tools
+shell:
+	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash
+clean:
+	sudo rm -rf ${INSTALL_BASE_PATH}
+
+
+
+%.tar.gz : ${INSTALL_PATH} ${ETC_PATH} ${SECURE_FILES} ${USERS_FILES} ${SOFTWARE_AND_LIBS}
 	$(MAKE) users
 	$(MAKE) services
 	sudo cp ${MODS_PATH}/scripts/cleanup_locale.sh ${TMP_PATH}
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/cleanup_locale.sh
 	sudo rm -rf ${TMP_PATH}/*
 
-
-shell:
-	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash
-clean:
-	sudo rm -rf ${INSTALL_PATH}
-	rm -f ${TARBALL_NAME}
-
-
-
-rev1_armv7hl.tar.gz : 
 
 #################################################################################
 # Help
