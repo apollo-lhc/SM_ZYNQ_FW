@@ -1,7 +1,10 @@
 DTBO_TAG=main
 DTBO_URI=https://gitlab.com/BU-EDF/devicetreeoverlay-scripts.git
 NAME=overlay-tools
-${OPT_PATH}/${NAME}: ${OPT_PATH}
+
+${INSTALL_BASE_PATH}/%/opt/${NAME}: INSTALL_PATH=${INSTALL_BASE_PATH}/%/
+
+${INSTALL_BASE_PATH}/%/opt/${NAME}: ${INSTALL_BASE_PATH}/%/opt/
 	cd ${OPT_PATH} && \
 		git clone --branch ${DTBO_TAG} ${DTBO_URI} ${NAME}
 

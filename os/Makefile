@@ -1,7 +1,7 @@
 SHELL=bash
 PWD=$(shell pwd)
 
-SCRIPTS_PATH=${PWD}/scripts
+SCRIPTS_PATH=${PWD}/scripts/
 SECURE_PATH=${PWD}/secure
 
 %xc7z035.tar.gz : QEMU=qemu-arm-static
@@ -13,58 +13,45 @@ SECURE_PATH=${PWD}/secure
 %xczu7ev.tar.gz : ZYNQ_ARCH=aarch64
 
 CONFIG_BASE_DIR=${PWD}/config
-rev1_% : CONFIG_DIR = ${CONFIG_BASE_DIR}/rev1
-rev2_% : CONFIG_DIR = ${CONFIG_BASE_DIR}/rev2
+rev1_% : CONFIG_DIR=${CONFIG_BASE_DIR}/rev1
+rev2_% : CONFIG_DIR=${CONFIG_BASE_DIR}/rev2
 
 INSTALL_BASE_PATH=${PWD}/image/
-rev1_xc7z035.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}/rev1_xc7z035/
-rev1_xc7z045.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}/rev1_xc7z035/
-rev2_xc7z035.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}/rev2_xc7z035/
-rev2_xc7z045.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}/rev2_xc7z045/
-rev2_xczu7ev.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}/rev2_xczu7ev/
+#INSTALL_PATH=${INSTALL_BASE_PATH}
+rev1_xc7z035.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev1_xc7z035/
+rev1_xc7z045.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev1_xc7z035/
+rev2_xc7z035.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev2_xc7z035/
+rev2_xc7z045.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev2_xc7z045/
+rev2_xczu7ev.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev2_xczu7ev/
 
 
+CMS_UID=1000
+CMS_GID=1000
+ATLAS_UID=1001
+ATLAS_GID=1001
 
-#INSTALL_PATH=${PWD}/image
-ETC_PATH =${INSTALL_PATH}/etc/
-HOME_PATH=${INSTALL_PATH}/home/
-TMP_PATH =${INSTALL_PATH}/tmp/
-OPT_PATH =${INSTALL_PATH}/opt/
+ETC_PATH =${INSTALL_PATH}etc
+HOME_PATH=${INSTALL_PATH}home
+TMP_PATH =${INSTALL_PATH}tmp
+OPT_PATH =${INSTALL_PATH}opt
 
+all: rev1_xc7z035.tar.gz
 
 .PHONEY: clean finalize_image all shell
 
 
-#paths for build output
-${INSTALL_PATH}:  centos-rootfs/extra_rpms.txt
-	rm -rf $@
-	mkdir -p $@
 
-#rules for building QEMU emulators
-include mk/QEMU.mk
 
-${ETC_PATH} ${TMP_PATH}: ${QEMU_PATH}/${QEMU} ${INSTALL_PATH}/${QEMU_PATH}/${QEMU} centos-rootfs/extra_rpms.txt
-	cd centos-rootfs && \
-		sudo python mkrootfs.py --root=${INSTALL_PATH} --arch=${ZYNQ_ARCH} --extra=extra_rpms.txt
-
-${OPT_PATH}: ${TMP_PATH}
-	sudo mkdir -p ${OPT_PATH}
-
-#system components
-include mk/secrets.mk
-include mk/fs_mods.mk
-include mk/users.mk
-include mk/services.mk
 
 #software/libraries
-include mk/uHAL.mk
-include mk/BUTool.mk
-include mk/Monitoring.mk
-include mk/CM_MCU.mk
-include mk/mmc-utils.mk
-include mk/overlay-tools.mk
 
-SOFTWARE_AND_LIBS=${OPT_PATH}/BUTool ${OPT_PATH}/mcu_tools ${OPT_PATH}/Graphite_Monitor ${INSTALL_PATH}/usr/local/bin/mmc ${OPT_PATH}/overlay-tools
+#include mk/BUTool.mk
+#include mk/Monitoring.mk
+#include mk/CM_MCU.mk
+#include mk/mmc-utils.mk
+#include mk/overlay-tools.mk
+
+#SOFTWARE_AND_LIBS=${OPT_PATH}/BUTool ${OPT_PATH}/mcu_tools ${OPT_PATH}/Graphite_Monitor ${INSTALL_PATH}/usr/local/bin/mmc ${OPT_PATH}/overlay-tools
 
 
 shell:
@@ -72,18 +59,62 @@ shell:
 clean:
 	sudo rm -rf ${INSTALL_BASE_PATH}
 
+${INSTALL_BASE_PATH}/%/:
+	#Build output path
+	rm -rf $@
+	mkdir -p $@
+
+${OPT_PATH}: ${TMP_PATH}
+	sudo mkdir -p ${OPT_PATH}
 
 
-%.tar.gz : ${INSTALL_PATH} ${ETC_PATH} ${SECURE_FILES} ${USERS_FILES} ${SOFTWARE_AND_LIBS}
-	#modifications made via configs dir (common and rev specific)
-	$(MAKE) fs_mods
-	$(MAKE) users
-	$(MAKE) services
-	sudo cp ${SCRIPTS_PATH}/cleanup_locale.sh ${TMP_PATH}
-	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/cleanup_locale.sh
-	sudo rm -rf ${TMP_PATH}/*
-	cd ${INSTALL_PATH} && \
-		sudo tar --numeric-owner -p -zcf ../$@ ./
+include mk/QEMU.mk
+include mk/uHAL.mk
+include mk/BUTool.mk
+
+%.tar.gz : centos-rootfs/extra_rpms.txt 
+	$(MAKE) ${INSTALL_PATH}${QEMU_PATH}/${QEMU} /${QEMU_PATH}/${QEMU}
+	cd centos-rootfs && \
+		sudo python mkrootfs.py --root=${INSTALL_PATH} --arch=${ZYNQ_ARCH} --extra=extra_rpms.txt
+	# Add common filesystem mods
+	sudo cp -r ${CONFIG_BASE_DIR}/common/file_system/* ${INSTALL_PATH}
+	# Add rev specific mods
+	@echo ${CONFIG_DIR}
+	sudo cp -r ${CONFIG_DIR}/file_system/* ${INSTALL_PATH}
+	#Remove ipv6 from lighttpd
+	sudo sed -i -e "s/server.use-ipv6 = \"enable\"/server.use-ipv6 = \"disable\"/g" ${ETC_PATH}/lighttpd/lighttpd.conf 
+	#this service breaks things
+	sudo rm ${ETC_PATH}/systemd/system/multi-user.target.wants/auditd.service
+	#Add all the password files and keys
+	sudo install -m 644 ${SECURE_PATH}/group   ${ETC_PATH}/
+	sudo install -m 644 ${SECURE_PATH}/passwd  ${ETC_PATH}/
+	sudo install -m 000 ${SECURE_PATH}/gshadow ${ETC_PATH}/
+	sudo install -m 000 ${SECURE_PATH}/shadow  ${ETC_PATH}/
+	sudo install -m 640 -g 997 -o 0 ${SECURE_PATH}/ssh/ssh_host_ecdsa_key       ${ETC_PATH}/ssh/
+	sudo install -m 644 -g 0   -o 0 ${SECURE_PATH}/ssh/ssh_host_ecdsa_key.pub   ${ETC_PATH}/ssh/
+	sudo install -m 640 -g 997 -o 0 ${SECURE_PATH}/ssh/ssh_host_ed25519_key     ${ETC_PATH}/ssh/
+	sudo install -m 644 -g 0   -o 0 ${SECURE_PATH}/ssh/ssh_host_ed25519_key.pub ${ETC_PATH}/ssh/
+	sudo install -m 640 -g 997 -o 0 ${SECURE_PATH}/ssh/ssh_host_rsa_key         ${ETC_PATH}/ssh/
+	sudo install -m 644 -g 0   -o 0 ${SECURE_PATH}/ssh/ssh_host_rsa_key.pub     ${ETC_PATH}/ssh/
+	#setup local user accounts
+	# setup cms account
+	sudo chown ${CMS_UID}:${CMS_GID} ${HOME_PATH}/cms
+	sudo chmod u+wX ${HOME_PATH}/cms
+	# setup atlas account
+	sudo chown ${ATLAS_UID}:${ATLAS_GID} ${HOME_PATH}/atlas
+	sudo chmod u+wX ${HOME_PATH}/atlas
+	#setup software and libraries
+#	${MAKE} ${OPT_PATH}cactus
+	$(MAKE) ${OPT_PATH}/BUTool/bin 
+#	${MAKE} ${OPT_PATH}/mcu_tools 
+#	${MAKE} ${OPT_PATH}/Graphite_Monitor 
+#	${MAKE} ${INSTALL_PATH}/usr/local/bin/mmc 
+#	${MAKE} ${OPT_PATH}/overlay-tools
+#	sudo cp ${SCRIPTS_PATH}/cleanup_locale.sh ${TMP_PATH}
+#	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/cleanup_locale.sh
+#	sudo rm -rf ${TMP_PATH}/*
+#	cd ${INSTALL_PATH} && \
+#		sudo tar --numeric-owner -p -zcf ../$@ ./
 
 
 #################################################################################
