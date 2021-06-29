@@ -1,11 +1,15 @@
 MONITORING_TAG=v1.1.4
+MONITORING_URI=https://github.com/apollo-lhc/Grafana-Monitor.git
 
-${INSTALL_BASE_PATH}/%/opt/BUTool: TMP_PATH=${INSTALL_BASE_PATH}/%/tmp/
-${INSTALL_BASE_PATH}/%/opt/BUTool: INSTALL_PATH=${INSTALL_BASE_PATH}/%/
+%xc7z035/opt/Graphite_Monitor : QEMU=qemu-arm-static
+%xc7z045/opt/Graphite_Monitor : QEMU=qemu-arm-static
+%xczu7ev/opt/Graphite_Monitor : QEMU=qemu-aarch64-static
+%opt/Graphite_Monitor: TMP_PATH=$*/tmp/
+%opt/Graphite_Monitor: INSTALL_PATH=$*/
 
-${INSTALL_BASE_PATH}/%/Graphite_Monitor: ${INSTALL_BASE_PATH}/%/BUTool | ${INSTALL_BASE_PATH}/%/opt/ ${INSTALL_BASE_PATH}/%/tmp/
+%opt/Graphite_Monitor: %opt/BUTool | %tmp/
 	cd ${TMP_PATH} && \
-		git clone --branch ${MONITORING_TAG} https://github.com/apollo-lhc/Grafana-Monitor.git Graphite
+		git clone --branch ${MONITORING_TAG} ${MONITORING_URI} Graphite
 	cp ${SCRIPTS_PATH}/build_Graphite.sh ${TMP_PATH}/Graphite/
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/Graphite/build_Graphite.sh
 

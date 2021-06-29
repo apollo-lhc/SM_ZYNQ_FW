@@ -35,23 +35,9 @@ HOME_PATH=${INSTALL_PATH}home
 TMP_PATH =${INSTALL_PATH}tmp
 OPT_PATH =${INSTALL_PATH}opt
 
-all: rev1_xc7z035.tar.gz
+all: rev1_xc7z035.tar.gz rev2_xc7z035.tar.gz rev2_xczu7ev.tar.gz
 
 .PHONEY: clean finalize_image all shell
-
-
-
-
-
-#software/libraries
-
-#include mk/BUTool.mk
-#include mk/Monitoring.mk
-#include mk/CM_MCU.mk
-#include mk/mmc-utils.mk
-#include mk/overlay-tools.mk
-
-#SOFTWARE_AND_LIBS=${OPT_PATH}/BUTool ${OPT_PATH}/mcu_tools ${OPT_PATH}/Graphite_Monitor ${INSTALL_PATH}/usr/local/bin/mmc ${OPT_PATH}/overlay-tools
 
 
 shell:
@@ -69,8 +55,13 @@ ${OPT_PATH}: ${TMP_PATH}
 
 
 include mk/QEMU.mk
+
 include mk/uHAL.mk
 include mk/BUTool.mk
+include mk/Monitoring.mk
+include mk/CM_MCU.mk
+include mk/mmc-utils.mk
+include mk/overlay-tools.mk
 
 %.tar.gz : centos-rootfs/extra_rpms.txt 
 	$(MAKE) ${INSTALL_PATH}${QEMU_PATH}/${QEMU} /${QEMU_PATH}/${QEMU}
@@ -104,17 +95,12 @@ include mk/BUTool.mk
 	sudo chown ${ATLAS_UID}:${ATLAS_GID} ${HOME_PATH}/atlas
 	sudo chmod u+wX ${HOME_PATH}/atlas
 	#setup software and libraries
-#	${MAKE} ${OPT_PATH}cactus
-	$(MAKE) ${OPT_PATH}/BUTool/bin 
-#	${MAKE} ${OPT_PATH}/mcu_tools 
-#	${MAKE} ${OPT_PATH}/Graphite_Monitor 
-#	${MAKE} ${INSTALL_PATH}/usr/local/bin/mmc 
-#	${MAKE} ${OPT_PATH}/overlay-tools
-#	sudo cp ${SCRIPTS_PATH}/cleanup_locale.sh ${TMP_PATH}
-#	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/cleanup_locale.sh
-#	sudo rm -rf ${TMP_PATH}/*
-#	cd ${INSTALL_PATH} && \
-#		sudo tar --numeric-owner -p -zcf ../$@ ./
+	${MAKE} ${OPT_PATH}/BUTool/bin ${OPT_PATH}/cactus ${OPT_PATH}/mcu_tools ${OPT_PATH}/Graphite_Monitor ${INSTALL_PATH}usr/local/bin/mmc ${OPT_PATH}/overlay-tools
+	sudo cp ${SCRIPTS_PATH}/cleanup_locale.sh ${TMP_PATH}
+	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/cleanup_locale.sh
+	sudo rm -rf ${TMP_PATH}/*
+	cd ${INSTALL_PATH} && \
+		sudo tar --numeric-owner -p -zcf ../$@ ./
 
 
 #################################################################################

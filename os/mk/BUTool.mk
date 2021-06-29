@@ -2,10 +2,10 @@
 APOLLO_TOOL_TAG=master
 APOLLO_TOOL_URI=https://github.com/apollo-lhc/ApolloTool.git
 
+#target level variables
 %xc7z035/opt/BUTool/bin : QEMU=qemu-arm-static
 %xc7z045/opt/BUTool/bin : QEMU=qemu-arm-static
 %xczu7ev/opt/BUTool/bin : QEMU=qemu-aarch64-static
-
 %opt/BUTool/bin: TMP_PATH=$*/tmp/
 %opt/BUTool/bin: INSTALL_PATH=$*/
 
@@ -20,7 +20,4 @@ APOLLO_TOOL_URI=https://github.com/apollo-lhc/ApolloTool.git
 	sudo ln -s /opt/address_table ${OPT_PATH}/address_tables
 
 
-#clean_BUTool:
-#	sudo rm -rf ${TMP_PATH}/ApolloTool
-#	sudo rm -rf ${OPT_PATH}/BUTool
 
