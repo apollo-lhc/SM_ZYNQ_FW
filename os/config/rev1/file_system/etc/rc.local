@@ -10,7 +10,7 @@
 # Please note that you must run 'chmod +x /etc/rc.d/rc.local' to ensure
 # that this script will be executed during boot.
 
-/etc/rc.local.common
+bash /etc/rc.local.common
 
 ethtool -s eth0 speed 100 duplex full autoneg off
 
