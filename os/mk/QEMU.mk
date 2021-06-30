@@ -8,7 +8,7 @@ QEMU_ARCHS=qemu-aarch64-static qemu-arm-static
 #template for grabbing the qemu requested and putting it in the correct place
 
 define QEMU_template =
-${QEMU_PATH}/$(1):
+/${QEMU_PATH}/$(1):
 	wget https://github.com/multiarch/qemu-user-static/releases/download/v4.0.0/$(1)
 	chmod +x $(1)
 	sudo mkdir -p /${QEMU_PATH}
