@@ -29,8 +29,8 @@ architecture behavioral of SERV_interface is
   signal localRdAck         : std_logic;
 
 
-  signal reg_data :  slv32_array_t(integer range 0 to 32);
-  constant Default_reg_data : slv32_array_t(integer range 0 to 32) := (others => x"00000000");
+  signal reg_data :  slv32_array_t(integer range 0 to 50);
+  constant Default_reg_data : slv32_array_t(integer range 0 to 50) := (others => x"00000000");
 begin  -- architecture behavioral
 
   -------------------------------------------------------------------------------
@@ -89,12 +89,17 @@ begin  -- architecture behavioral
           localRdData( 9)            <=  Mon.CLOCKING.HQ_LOS_OSC;         --Local Si HQ clk LOS
           localRdData(12)            <=  reg_data( 5)(12);                --HQ clk source select
           localRdData(13)            <=  reg_data( 5)(13);                --Enable FPGA IBUFDS
+          localRdData(21)            <=  reg_data( 5)(21);                --Enable FPGA IBUFDS
         when 6 => --0x6
           localRdData(31 downto  0)  <=  Mon.CLOCKING.LHC_CLK_FREQ;       --Measured Freq of clock
         when 7 => --0x7
           localRdData(31 downto  0)  <=  Mon.CLOCKING.HQ_CLK_FREQ;        --Measured Freq of clock
+        when 8 => --0x8
+          localRdData(31 downto  0)  <=  Mon.CLOCKING.TTC_CLK_FREQ;       --Measured Freq of clock
         when 9 => --0x9
           localRdData(31 downto  0)  <=  Mon.CLOCKING.AXI_CLK_FREQ;       --Measured Freq of clock
+        when 10 => --0xa
+          localRdData(31 downto  0)  <=  Mon.CLOCKING.ETH1_CLK_FREQ;      --Measured Freq of clock
         when 16 => --0x10
           localRdData( 0)            <=  reg_data(16)( 0);                --reset FP LEDs
           localRdData( 1)            <=  reg_data(16)( 1);                --override FP LED page 0
@@ -105,6 +110,10 @@ begin  -- architecture behavioral
           localRdData(22)            <=  reg_data(16)(22);                --Force the display of a page (override button UI)
           localRdData(29 downto 24)  <=  reg_data(16)(29 downto 24);      --Page to display
           localRdData(31)            <=  Mon.FP_LEDS.FP_SHDWN_REQ;        --FP button shutdown request
+        when 50 => --0x32
+          localRdData( 3 downto  0)  <=  Mon.CPLD.IO;                     --inputs(for now) from CPLD
+        when 48 => --0x30
+          localRdData( 0)            <=  reg_data(48)( 0);                --Enable the JTAG lines to the CPLD
 
 
         when others =>
@@ -125,6 +134,7 @@ begin  -- architecture behavioral
   Ctrl.CLOCKING.LHC_CLK_IBUF_EN  <=  reg_data( 5)( 5);               
   Ctrl.CLOCKING.HQ_SEL           <=  reg_data( 5)(12);               
   Ctrl.CLOCKING.HQ_CLK_IBUF_EN   <=  reg_data( 5)(13);               
+  Ctrl.CLOCKING.TTC_CLK_IBUF_EN  <=  reg_data( 5)(21);               
   Ctrl.FP_LEDS.RESET             <=  reg_data(16)( 0);               
   Ctrl.FP_LEDS.PAGE0_FORCE       <=  reg_data(16)( 1);               
   Ctrl.FP_LEDS.PAGE0_MODE        <=  reg_data(16)( 4 downto  2);     
@@ -132,6 +142,7 @@ begin  -- architecture behavioral
   Ctrl.FP_LEDS.FORCED_PAGE       <=  reg_data(16)(21 downto 16);     
   Ctrl.FP_LEDS.FORCE_PAGE        <=  reg_data(16)(22);               
   Ctrl.FP_LEDS.PAGE              <=  reg_data(16)(29 downto 24);     
+  Ctrl.CPLD.ENABLE_JTAG          <=  reg_data(48)( 0);               
 
 
   reg_writes: process (clk_axi, reset_axi_n) is
@@ -145,6 +156,7 @@ begin  -- architecture behavioral
       reg_data( 5)( 5)  <= DEFAULT_SERV_CTRL_t.CLOCKING.LHC_CLK_IBUF_EN;
       reg_data( 5)(12)  <= DEFAULT_SERV_CTRL_t.CLOCKING.HQ_SEL;
       reg_data( 5)(13)  <= DEFAULT_SERV_CTRL_t.CLOCKING.HQ_CLK_IBUF_EN;
+      reg_data( 5)(21)  <= DEFAULT_SERV_CTRL_t.CLOCKING.TTC_CLK_IBUF_EN;
       reg_data(16)( 0)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.RESET;
       reg_data(16)( 1)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.PAGE0_FORCE;
       reg_data(16)( 4 downto  2)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.PAGE0_MODE;
@@ -152,6 +164,7 @@ begin  -- architecture behavioral
       reg_data(16)(21 downto 16)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.FORCED_PAGE;
       reg_data(16)(22)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.FORCE_PAGE;
       reg_data(16)(29 downto 24)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.PAGE;
+      reg_data(48)( 0)  <= DEFAULT_SERV_CTRL_t.CPLD.ENABLE_JTAG;
 
     elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
       
@@ -178,6 +191,9 @@ begin  -- architecture behavioral
           reg_data( 5)( 5)            <=  localWrData( 5);                --Enable FPGA IBUFDS
           reg_data( 5)(12)            <=  localWrData(12);                --HQ clk source select
           reg_data( 5)(13)            <=  localWrData(13);                --Enable FPGA IBUFDS
+          reg_data( 5)(21)            <=  localWrData(21);                --Enable FPGA IBUFDS
+        when 48 => --0x30
+          reg_data(48)( 0)            <=  localWrData( 0);                --Enable the JTAG lines to the CPLD
 
           when others => null;
         end case;
