@@ -773,9 +773,9 @@ begin  -- architecture structure
       to_CM_out.CM(2).TDI       => CM2_TDI,
       to_CM_out.CM(2).TCK       => CM2_TCK,
       clk_C2C(1)                => clk_C2C1_PHY,
-      clk_C2C(2)                => '0',
+      clk_C2C(2)                => clk_C2C1_PHY,
       clk_C2C(3)                => clk_C2C1_PHY,
-      clk_C2C(4)                => '0',
+      clk_C2C(4)                => clk_C2C1_PHY,
       CM_C2C_Mon                => CM_C2C_Mon,
       CM_C2C_Ctrl               => CM_C2C_Ctrl);
   plXVC_TDO(0) <= CM1_TDO;
