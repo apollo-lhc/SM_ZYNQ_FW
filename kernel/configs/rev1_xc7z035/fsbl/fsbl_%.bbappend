@@ -1,9 +1,9 @@
 # Patch for FSBL
  
-#####SRC_URI_append = " \
-#####	       file://SI_Programming.patch \
-#####	       file://git/lib/sw_apps/zynq_fsbl/src/AXI_slave_addrs.h \
-#####        "
+SRC_URI_append = " \
+	       file://SI_Programming.patch \
+	       file://git/lib/sw_apps/zynq_fsbl/src/AXI_slave_addrs.h \
+        "
  
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
