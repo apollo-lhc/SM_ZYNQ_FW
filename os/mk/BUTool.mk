@@ -11,7 +11,9 @@ APOLLO_TOOL_URI=https://github.com/apollo-lhc/ApolloTool.git
 
 %opt/BUTool/bin: %opt/cactus | %tmp/
 	cd ${TMP_PATH} && \
-		git clone --branch ${APOLLO_TOOL_TAG} ${APOLLO_TOOL_URI}
+		git clone  ${APOLLO_TOOL_URI}
+	cd ${TMP_PATH}/ApolloTool && \
+		git checkout ${APOLLO_TOOL_TAG}
 	cd ${TMP_PATH}/ApolloTool && \
 		make init
 	cp ${SCRIPTS_PATH}/build_BUTool.sh ${TMP_PATH}/ApolloTool/

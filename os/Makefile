@@ -1,7 +1,6 @@
 SHELL=bash
 PWD=$(shell pwd)
 
-SCRIPTS_PATH=${PWD}/scripts/
 SECURE_PATH=${PWD}/secure
 
 %xc7z035.tar.gz : QEMU=qemu-arm-static
