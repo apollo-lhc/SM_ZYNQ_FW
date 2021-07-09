@@ -384,7 +384,9 @@ architecture structure of top is
   signal clk_TTC : std_logic;
   signal local_clk_TTC : std_logic;
   signal clk_TTC_freq : std_logic_vector(31 downto 0);
+  signal ETH1_CLK_FREQ : std_logic_vector(31 downto 0);
 
+  
 begin  -- architecture structure
 
   --Zynq axi signals  
@@ -766,9 +768,11 @@ begin  -- architecture structure
       Clocking_Ctrl   => Clocking_Ctrl,
       CM1_C2C_Mon     => CM_C2C_Mon.Link(1),
       CM2_C2C_Mon     => CM_C2C_Mon.Link(2),
+      MISC_Mon.ETH1_CLK_FREQ => ETH1_CLK_FREQ,
+      MISC_Ctrl.ETH1_RESET_N => open,--ETH1_RESET_N,
       CPLD_Mon        => CPLD_Mon,
       CPLD_Ctrl       => CPLD_Ctrl);
-
+  ETH1_RESET_N <= '1';
   SM_info_1: entity work.SM_info
     port map (
       clk_axi     => axi_clk,
@@ -1012,7 +1016,7 @@ begin  -- architecture structure
       rate          => Clocking_Mon.AXI_CLK_FREQ);
 
   ETH1_CLK <= ETH1_CLK_local;  
-  ETH1_RESET_N <= '1';
+
   rate_counter_ETH1: entity work.rate_counter
     generic map (
       CLK_A_1_SECOND => 200000000)
@@ -1021,6 +1025,6 @@ begin  -- architecture structure
       clk_B         => ETH1_CLK_local,
       reset_A_async => axi_reset,
       event_b       => '1',
-      rate          => Clocking_Mon.ETH1_CLK_FREQ);
+      rate          => ETH1_CLK_FREQ);
 
 end architecture structure;

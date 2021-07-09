@@ -23,6 +23,7 @@ rev2_xc7z035.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev2_xc7z035/
 rev2_xc7z045.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev2_xc7z045/
 rev2_xczu7ev.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev2_xczu7ev/
 
+SCRIPTS_PATH=${PWD}/scripts
 
 CMS_UID=1000
 CMS_GID=1000
