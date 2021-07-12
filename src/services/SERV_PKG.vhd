@@ -44,7 +44,6 @@ package SERV_CTRL is
     HQ_LOS_OSC                 :std_logic;     -- Local Si HQ clk LOS
     LHC_CLK_FREQ               :std_logic_vector(31 downto 0);  -- Measured Freq of clock
     HQ_CLK_FREQ                :std_logic_vector(31 downto 0);  -- Measured Freq of clock
-    TTC_CLK_FREQ               :std_logic_vector(31 downto 0);  -- Measured Freq of clock
     AXI_CLK_FREQ               :std_logic_vector(31 downto 0);  -- Measured Freq of clock
   end record SERV_CLOCKING_MON_t;
 
@@ -54,12 +53,10 @@ package SERV_CTRL is
     LHC_CLK_IBUF_EN            :std_logic;     -- Enable FPGA IBUFDS
     HQ_SEL                     :std_logic;     -- HQ clk source select
     HQ_CLK_IBUF_EN             :std_logic;     -- Enable FPGA IBUFDS
-    TTC_CLK_IBUF_EN            :std_logic;     -- Enable FPGA IBUFDS
   end record SERV_CLOCKING_CTRL_t;
 
 
   constant DEFAULT_SERV_CLOCKING_CTRL_t : SERV_CLOCKING_CTRL_t := (
-                                                                   TTC_CLK_IBUF_EN => '0',
                                                                    HQ_SEL => '1',
                                                                    LHC_SEL => '1',
                                                                    LHC_CLK_IBUF_EN => '1',
@@ -96,40 +93,12 @@ package SERV_CTRL is
   end record SERV_SWITCH_MON_t;
 
 
-  type SERV_CPLD_MON_t is record
-    IO                         :std_logic_vector( 3 downto 0);  -- inputs(for now) from CPLD
-  end record SERV_CPLD_MON_t;
-
-
-  type SERV_CPLD_CTRL_t is record
-    ENABLE_JTAG                :std_logic;     -- Enable the JTAG lines to the CPLD
-  end record SERV_CPLD_CTRL_t;
-
-
-  constant DEFAULT_SERV_CPLD_CTRL_t : SERV_CPLD_CTRL_t := (
-                                                           ENABLE_JTAG => '0'
-                                                          );
-  type SERV_MISC_MON_t is record
-    ETH1_CLK_FREQ              :std_logic_vector(31 downto 0);  -- Measured Freq of clock
-  end record SERV_MISC_MON_t;
-
-
-  type SERV_MISC_CTRL_t is record
-    ETH1_RESET_N               :std_logic;   
-  end record SERV_MISC_CTRL_t;
-
-
-  constant DEFAULT_SERV_MISC_CTRL_t : SERV_MISC_CTRL_t := (
-                                                           ETH1_RESET_N => '1'
-                                                          );
   type SERV_MON_t is record
     SI5344                     :SERV_SI5344_MON_t;
     TCDS                       :SERV_TCDS_MON_t;  
     CLOCKING                   :SERV_CLOCKING_MON_t;
     FP_LEDS                    :SERV_FP_LEDS_MON_t; 
     SWITCH                     :SERV_SWITCH_MON_t;  
-    CPLD                       :SERV_CPLD_MON_t;    
-    MISC                       :SERV_MISC_MON_t;    
   end record SERV_MON_t;
 
 
@@ -138,18 +107,14 @@ package SERV_CTRL is
     TCDS                       :SERV_TCDS_CTRL_t;  
     CLOCKING                   :SERV_CLOCKING_CTRL_t;
     FP_LEDS                    :SERV_FP_LEDS_CTRL_t; 
-    CPLD                       :SERV_CPLD_CTRL_t;    
-    MISC                       :SERV_MISC_CTRL_t;    
   end record SERV_CTRL_t;
 
 
   constant DEFAULT_SERV_CTRL_t : SERV_CTRL_t := (
-                                                 CLOCKING => DEFAULT_SERV_CLOCKING_CTRL_t,
                                                  FP_LEDS => DEFAULT_SERV_FP_LEDS_CTRL_t,
-                                                 MISC => DEFAULT_SERV_MISC_CTRL_t,
                                                  SI5344 => DEFAULT_SERV_SI5344_CTRL_t,
-                                                 CPLD => DEFAULT_SERV_CPLD_CTRL_t,
-                                                 TCDS => DEFAULT_SERV_TCDS_CTRL_t
+                                                 TCDS => DEFAULT_SERV_TCDS_CTRL_t,
+                                                 CLOCKING => DEFAULT_SERV_CLOCKING_CTRL_t
                                                 );
 
 

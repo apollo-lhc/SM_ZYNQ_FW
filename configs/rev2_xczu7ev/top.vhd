@@ -748,10 +748,10 @@ begin  -- architecture structure
   CM_COUNT_IS_1_ASSIGNMENTS: if CM_COUNT = 1 generate
     AXI_C2C_powerdown(3) <= not CM_enable_IOs(1);
     AXI_C2C_powerdown(4) <= not CM_enable_IOs(1);
-    CM_C2C_Mon.Link(3).status.phy_mmcm_lol  <= '0';
-    CM_C2C_Mon.Link(3).link_debug.cpll_lock <= '0';
-    CM_C2C_Mon.Link(4).status.phy_mmcm_lol  <= '0';
-    CM_C2C_Mon.Link(4).link_debug.cpll_lock <= '0';
+    CM_C2C_Mon.Link(3).status.phy_mmcm_lol  <= CM_C2C_Mon.Link(1).status.phy_mmcm_lol;
+    CM_C2C_Mon.Link(3).link_debug.cpll_lock <= CM_C2C_Mon.Link(1).link_debug.cpll_lock;
+    CM_C2C_Mon.Link(4).status.phy_mmcm_lol  <= CM_C2C_Mon.Link(1).status.phy_mmcm_lol;
+    CM_C2C_Mon.Link(4).link_debug.cpll_lock <= CM_C2C_Mon.Link(1).link_debug.cpll_lock;
   end generate CM_COUNT_IS_1_ASSIGNMENTS;
   
   CM_COUNT_IS_2_ASSIGNMENTS: if CM_COUNT = 2 generate

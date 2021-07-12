@@ -1,7 +1,7 @@
 UHAL_TAG=v2.8.1
 UHAL_URI=https://github.com/ipbus/ipbus-software.git
 
-UIO_UHAL_URI=https://github.com/ammitra/UIOuHAL.git
+UIO_UHAL_URI=https://github.com/BU-Tools/UIOuHAL.git
 UIO_UHAL_TAG=develop
 
 DT_OVERLAY_URI=https://gitlab.com/BU-EDF/devicetreeoverlay-scripts.git

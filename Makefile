@@ -157,16 +157,15 @@ $(BIT_BASE)%.bit	: $(SLAVE_DTSI_PATH)/slaves_%.yaml $(ADDRESS_TABLE_CREATION_PAT
 	vivado $(VIVADO_FLAGS) -source $(SETUP_BUILD_TCL) -tclargs ${MAKE_PATH} $(subst .bit,,$(subst ${BIT_BASE},,$@)) $(OUTPUT_MARKUP)
 	$(MAKE) NOTIFY_DAN_GOOD
 
-all-the-things: clean clean_bd clean_kernel clean_bit clean_remote clean_CM clean_prebuild
+full_%: BUILD_NAME=%
+full_%: clean clean_bd clean_kernel clean_bit clean_remote clean_CM clean_prebuild
 	cd os     && $(MAKE) -f Makefile clean && cd ${MAKE_PATH}
 	cd kernel && $(MAKE) -f Makefile clean && cd ${MAKE_PATH}
 	$(MAKE) init
-	$(MAKE) prebuild
-	$(MAKE) all
-	$(MAKE) pull_cm
+	$(MAKE) ${BUILD_NAME}
 	$(MAKE) ${ADDRESS_TABLE}
-	cd kernel && $(MAKE) -f Makefile all  && cd ${MAKE_PATH}
-	cd os     && $(MAKE) -f Makefile all  && cd ${MAKE_PATH}
+	cd kernel && $(MAKE) {BUILD_NAME} && cd ${MAKE_PATH}
+	cd os     && $(MAKE) {BUILD_NAME}.tar.gz && cd ${MAKE_PATH}
 #################################################################################         
 # Sim     
 #################################################################################         
