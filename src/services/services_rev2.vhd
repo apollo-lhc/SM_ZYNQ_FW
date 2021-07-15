@@ -34,15 +34,18 @@ entity services is
     CLOCKING_Ctrl      : out SERV_CLOCKING_CTRL_t;
     CM1_C2C_Mon        : in  single_C2C_Monitor_t;
     CM2_C2C_Mon        : in  single_C2C_Monitor_t;
+    MISC_Mon           : in  SERV_MISC_Mon_t;
+    MISC_Ctrl          : out SERV_MISC_Ctrl_t;
     CPLD_Mon           : in  SERV_CPLD_Mon_t;
     CPLD_Ctrl          : out SERV_CPLD_Ctrl_t);
 end entity services;
 
 architecture behavioral of services is
- signal Mon              :  SERV_Mon_t;
- signal Ctrl             :  SERV_Ctrl_t;
+  signal Mon              :  SERV_Mon_t;
+  signal Ctrl             :  SERV_Ctrl_t;
 
 
+  
   signal ESM_LEDs : slv_16_t;
   signal ESM_clk_last : std_logic;
 
@@ -160,12 +163,14 @@ begin  -- architecture behavioral
   Mon.FP_LEDS.FP_SHDWN_REQ     <= FP_shutdown;
   Mon.SWITCH.STATUS            <= ESM_LEDs;
   Mon.CPLD <= CPLD_Mon;
+  Mon.MISC <= MISC_Mon;
+  
   
   SI5344_Ctrl   <= Ctrl.SI5344;
   TCDS_Ctrl     <= Ctrl.TCDS;
   CLOCKING_Ctrl <= Ctrl.CLOCKING;
   FP_LED_RST    <= not Ctrl.FP_LEDS.RESET;
-  CPLD_Ctrl <= Ctrl.CPLD;
-
+  CPLD_Ctrl     <= Ctrl.CPLD;
+  MISC_Ctrl     <= Ctrl.MISC;
   
 end architecture behavioral;

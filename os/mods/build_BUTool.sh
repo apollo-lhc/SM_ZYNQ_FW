@@ -1,7 +1,0 @@
-#!/bin/bash
-cd /tmp/ApolloTool
-export CACTUS_ROOT=/opt/cactus
-UHAL_VER_MAJOR=2 UHAL_VER_MINOR=8 make local MAP_TYPE=-DSTD_UNORDERED_MAP -j32 RUNTIME_LDPATH=/opt/BUTool COMPILETIME_ROOT=--sysroot=/
-#make local MAP_TYPE=-DSTD_UNORDERED_MAP -j32 RUNTIME_LDPATH=/opt/BUTool COMPILETIME_ROOT=--sysroot=/
-UHAL_VER_MAJOR=2 UHAL_VER_MINOR=8 make install RUNTIME_LDPATH=/opt/BUTool COMPILETIME_ROOT=--sysroot=/ INSTALL_PATH=/opt/BUTool
-#make install RUNTIME_LDPATH=/opt/BUTool COMPILETIME_ROOT=--sysroot=/ INSTALL_PATH=/opt/BUTool
