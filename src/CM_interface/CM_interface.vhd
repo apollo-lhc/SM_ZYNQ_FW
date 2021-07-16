@@ -117,7 +117,7 @@ begin
 
 
   --For AXI
-  CM_interface_1: entity work.CM_interface
+  CM_interface_1: entity work.CM_map
     port map (
       clk_axi         => clk_axi,
       reset_axi_n     => reset_axi_n,

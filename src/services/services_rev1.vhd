@@ -142,7 +142,7 @@ begin  -- architecture behavioral
 
 
   
-  SERV_interface_1: entity work.SERV_interface
+  SERV_interface_1: entity work.SERV_map
     port map (
       clk_axi         => clk_axi,
       reset_axi_n     => reset_axi_n,
