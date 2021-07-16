@@ -79,8 +79,9 @@ package CM_CTRL is
 
   constant DEFAULT_CM_CM_C2C_LINK_DEBUG_RX_CTRL_t : CM_CM_C2C_LINK_DEBUG_RX_CTRL_t := (
                                                                                        DFE_LPM_RESET => '0',
-                                                                                       PRBS_SEL => (others => '0'),
                                                                                        LPM_EN => '0',
+                                                                                       PRBS_SEL => (others => '0'),
+                                                                                       CDR_HOLD => '0',
                                                                                        PRBS_CNT_RST => '0',
                                                                                        DFE_AGC_HOLD => '0',
                                                                                        MON_SEL => (others => '0'),
@@ -89,7 +90,6 @@ package CM_CTRL is
                                                                                        DFE_LF_HOLD => '0',
                                                                                        BUF_RESET => '0',
                                                                                        PMA_RESET => '0',
-                                                                                       CDR_HOLD => '0',
                                                                                        LPM_HF_OVERRIDE => '0',
                                                                                        PCS_RESET => '0'
                                                                                       );
