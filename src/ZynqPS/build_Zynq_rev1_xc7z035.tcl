@@ -27,6 +27,14 @@ set PL_M_FREQ 50000000
 
 set AXI_MASTER_CLK_FREQ 50000000
 
+
+#create an axi FW for the PL connection to the main interconnect
+set PL_AXI_FW PL_AXI_FW
+create_bd_cell -type ip -vlnv [get_ipdefs -filter {NAME == axi_firewall}] ${PL_AXI_FW}
+#connect PL to this FW
+connect_bd_intf_net [get_bd_intf_port ${PL_M}] [get_bd_intf_pins ${PL_AXI_FW}/S_AXI]
+
+
 #create an axi FW for the main interconnect
 set INT_AXI_FW INT_AXI_FW
 create_bd_cell -type ip -vlnv [get_ipdefs -filter {NAME == axi_firewall}] ${INT_AXI_FW}
@@ -34,7 +42,7 @@ create_bd_cell -type ip -vlnv [get_ipdefs -filter {NAME == axi_firewall}] ${INT_
 connect_bd_intf_net [get_bd_intf_pins ${ZYNQ_NAME}/M_AXI_GP0] [get_bd_intf_pins ${INT_AXI_FW}/S_AXI]
 
 #create the main interconnect (connected to the PL master and the Zynq(via FW))
-[BUILD_AXI_INTERCONNECT ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} [list ${INT_AXI_FW}/M_AXI ${PL_M}] [list ${AXI_MASTER_CLK} ${PL_M_CLK}] [list ${AXI_MASTER_RSTN} ${PL_M_RSTN}]]
+[BUILD_AXI_INTERCONNECT ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} [list ${INT_AXI_FW}/M_AXI ${PL_AXI_FW}/M_AXI] [list ${AXI_MASTER_CLK} ${PL_M_CLK}] [list ${AXI_MASTER_RSTN} ${PL_M_RSTN}]]
 
 
 #build the C2C interconnect
@@ -44,6 +52,9 @@ set_property CONFIG.STRATEGY {1} [get_bd_cells ${AXI_C2C_INTERCONNECT_NAME}]
 #tak the INT_AXI_FW to the C2C interconnect
 [AXI_CTL_DEV_CONNECT $INT_AXI_FW ${AXI_C2C_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} $AXI_MASTER_CLK_FREQ]    
 [AXI_DEV_UIO_DTSI_POST_CHUNK ${INT_AXI_FW}]
+#tak the PL_AXI_FW to the C2C interconnect
+[AXI_CTL_DEV_CONNECT $PL_AXI_FW ${AXI_C2C_INTERCONNECT_NAME} ${PL_M_CLK} ${PL_M_RSTN} ${PL_M_FREQ}]    
+[AXI_DEV_UIO_DTSI_POST_CHUNK ${PL_AXI_FW}]
 
 
 #tcds CLOCKS
