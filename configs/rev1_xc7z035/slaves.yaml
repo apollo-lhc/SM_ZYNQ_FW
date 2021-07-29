@@ -241,13 +241,3 @@ AXI_SLAVES:
       - "address_table/modules/AXI_MONITOR.xml"
       - "address_table/modules/AXI_MONITOR_COUNTER.xml"
     UHAL_BASE: 0x1F000000
-
-  INT_AXI_FW:
-    XML:
-      - "address_table/modules/INT_AXI_FW.xml"
-    UHAL_BASE: 0x20000000
-
-  PL_AXI_FW:
-    XML:
-      - "address_table/modules/PL_AXI_FW.xml"
-    UHAL_BASE: 0x21000000

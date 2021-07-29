@@ -27,8 +27,8 @@ AXI_SLAVES:
         offset: 0xBA000000
         range: "32M"
       addr_lite:
-        offset: 0xBE000000
-        range: "64K"
+        offset: 0xB9000000
+        range: "8M"
 
     SUB_SLAVES:
       1_AXI_FW:
@@ -59,8 +59,8 @@ AXI_SLAVES:
             offset: 0xBC000000
             range: "32M"
           addr_lite:
-            offset: 0xBE010000
-            range: "64K"
+            offset: 0xB9800000
+            range: "8M"
 
         SUB_SLAVES:
           _AXI_FW:

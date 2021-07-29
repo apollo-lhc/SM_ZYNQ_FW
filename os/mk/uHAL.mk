@@ -1,8 +1,10 @@
 UHAL_TAG=v2.8.1
+#UHAL_TAG=v2.7.9
 UHAL_URI=https://github.com/ipbus/ipbus-software.git
 
 UIO_UHAL_URI=https://github.com/BU-Tools/UIOuHAL.git
 UIO_UHAL_TAG=develop
+#UIO_UHAL_TAG=feature/extra-protection
 
 DT_OVERLAY_URI=https://gitlab.com/BU-EDF/devicetreeoverlay-scripts.git
 DT_OVERLAY_TAG=main
