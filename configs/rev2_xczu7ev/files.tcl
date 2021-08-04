@@ -24,12 +24,12 @@ set vhdl_files "\
      regmap_helper/axiReg/bramPortPkg.vhd \
      regmap_helper/axiReg/axiRegBlocking.vhd \
      src/services/services_rev2.vhd \
-     src/services/SERV_map.vhd \
-     src/services/SERV_PKG.vhd \
+     configs/rev2_xczu7ev/autogen/services/SERV_map.vhd \
+     configs/rev2_xczu7ev/autogen/services/SERV_PKG.vhd \
      src/IPMC_i2c_slave/i2c_slave.vhd \
      src/IPMC_i2c_slave/IPMC_i2c_slave.vhd \
-     src/CM_interface/CM_map.vhd \
-     src/CM_interface/CM_PKG.vhd \
+     configs/rev2_xczu7ev/autogen/CM_interface/CM_map.vhd \
+     configs/rev2_xczu7ev/autogen/CM_interface/CM_PKG.vhd \
      src/CM_interface/CM_interface.vhd \
      src/CM_interface/CM_Monitoring.vhd \
      src/CM_interface/CM_pwr.vhd \
@@ -41,16 +41,16 @@ set vhdl_files "\
      src/front_panel/LED_Encoder.vhd \
      src/front_panel/SR_Out.vhd \
      src/front_panel/LED_Paterns.vhd \
-     src/SM_info/SM_INFO_map.vhd \
-     src/SM_info/SM_INFO_PKG.vhd \
+     configs/rev2_xczu7ev/autogen/SM_info/SM_INFO_map.vhd \
+     configs/rev2_xczu7ev/autogen/SM_info/SM_INFO_PKG.vhd \
      src/SM_info/SM_info.vhd \
-     src/plXVC/PLXVC_map.vhd \
-     src/plXVC/PLXVC_PKG.vhd \
+     configs/rev2_xczu7ev/autogen/plXVC/PLXVC_map.vhd \
+     configs/rev2_xczu7ev/autogen/plXVC/PLXVC_PKG.vhd \
      src/plXVC/plXVC_intf.vhd \
      src/plXVC/virtualJTAG.vhd \
      src/MEM_TEST/Mem_test.vhd \
-     src/MEM_TEST/MEM_TEST_map.vhd \
-     src/MEM_TEST/MEM_TEST_PKG.vhd \
+     configs/rev2_xczu7ev/autogen/MEM_TEST/MEM_TEST_map.vhd \
+     configs/rev2_xczu7ev/autogen/MEM_TEST/MEM_TEST_PKG.vhd \
      "
 
 set xdc_files "\

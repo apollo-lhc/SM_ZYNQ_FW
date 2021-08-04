@@ -1,4 +1,6 @@
 <node id="ES">
+  <node id="GTY_GTH_CHECK"      address="0x01E" mask="0x007F" permission="r"/>
+
   <node id="PRESCALE"           address="0x003C" mask="0x001F" permission="rw"/>
   <node id="EYE_SCAN_EN"        address="0x003C" mask="0x0100" permission="rw"/>
   <node id="ERRDET_EN"          address="0x003C" mask="0x0200" permission="rw"/>

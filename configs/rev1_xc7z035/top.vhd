@@ -606,11 +606,8 @@ begin  -- architecture structure
       BRAM_PORTB_0_rst  => '0',
       BRAM_PORTB_0_we   => x"0",
 
-      C2C1_PHY_CLK      => clk_C2C1_PHY,
-      
-      TCDS_CLK          => clk_TCDS,
-      TCDS_reset_n      => clk_TCDS_locked--clk_TCDS_reset_n
-      );
+      C2C1_PHY_CLK      => clk_C2C1_PHY
+            );
 
 
 
