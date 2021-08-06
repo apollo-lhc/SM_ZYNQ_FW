@@ -23,12 +23,12 @@ set vhdl_files "\
      regmap_helper/axiReg/bramPortPkg.vhd \
      regmap_helper/axiReg/axiRegBlocking.vhd \
      src/services/services_rev2.vhd \
-     src/services/SERV_map.vhd \
-     src/services/SERV_PKG.vhd \
+     configs/rev2a_xczu7ev/autogen/services/SERV_map.vhd \
+     configs/rev2a_xczu7ev/autogen/services/SERV_PKG.vhd \
      src/IPMC_i2c_slave/i2c_slave.vhd \
      src/IPMC_i2c_slave/IPMC_i2c_slave.vhd \
-     src/CM_interface/CM_map.vhd \
-     src/CM_interface/CM_PKG.vhd \
+     configs/rev2a_xczu7ev/autogen/CM_interface/CM_map.vhd \
+     configs/rev2a_xczu7ev/autogen/CM_interface/CM_PKG.vhd \
      src/CM_interface/CM_interface.vhd \
      src/CM_interface/CM_Monitoring.vhd \
      src/CM_interface/CM_pwr.vhd \
@@ -40,11 +40,11 @@ set vhdl_files "\
      src/front_panel/LED_Encoder.vhd \
      src/front_panel/SR_Out.vhd \
      src/front_panel/LED_Paterns.vhd \
-     src/SM_info/SM_INFO_map.vhd \
-     src/SM_info/SM_INFO_PKG.vhd \
+     configs/rev2a_xczu7ev/autogen/SM_info/SM_INFO_map.vhd \
+     configs/rev2a_xczu7ev/autogen/SM_info/SM_INFO_PKG.vhd \
      src/SM_info/SM_info.vhd \
-     src/plXVC/PLXVC_map.vhd \
-     src/plXVC/PLXVC_PKG.vhd \
+     configs/rev2a_xczu7ev/autogen/plXVC/PLXVC_map.vhd \
+     configs/rev2a_xczu7ev/autogen/plXVC/PLXVC_PKG.vhd \
      src/plXVC/plXVC_intf.vhd \
      src/plXVC/virtualJTAG.vhd \
      src/TCDS/tclink/firmware/source/common/bit_synchronizer.vhd \
@@ -126,12 +126,12 @@ set vhdl_files "\
      src/TCDS/top_secret/tcds2_link/firmware/hdl/tcds2_link_csr_pkg.vhd \
      src/TCDS/top_secret/constants/firmware/hdl/constants_tcds2.vhd \
      src/TCDS/top_secret/board_and_fw_id/firmware/hdl/board_and_fw_id_pkg.vhd \
-     src/TCDS/TCDS_2_map.vhd \
-     src/TCDS/TCDS_2_PKG.vhd \
+     configs/rev2a_xczu7ev/autogen/TCDS/TCDS_2_map.vhd \
+     configs/rev2a_xczu7ev/autogen/TCDS/TCDS_2_PKG.vhd \
      src/TCDS/TCDS.vhd \
      src/LDAQ/LDAQ_map.vhd \
-     src/LDAQ/LDAQ_PKG.vhd \
-     src/LDAQ/LDAQ.vhd \
+     configs/rev2a_xczu7ev/autogen/LDAQ/LDAQ_PKG.vhd \
+     configs/rev2a_xczu7ev/autogen/LDAQ/LDAQ.vhd \
      "
 
 set xdc_files "\

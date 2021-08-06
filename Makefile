@@ -37,7 +37,7 @@ ADDRESS_TABLE = ${MAKE_PATH}/os/address_table/address_apollo.xml
 CONFIGS=$(filter-out configs/,$(patsubst configs/%/,%,$(dir $(wildcard configs/*/))))
 
 define CONFIGS_template =
- $(1): clean_make_log
+ $(1): clean_make_log clean
 	time $(MAKE) $(BIT_BASE)$$@.bit || $(MAKE) NOTIFY_DAN_BAD
 endef
 
