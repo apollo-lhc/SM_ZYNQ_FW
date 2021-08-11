@@ -44,7 +44,7 @@ architecture behavioral of plXVC_intf is
 begin
 
 --Instansiate plXVC_interface Module
-  PLXVC_interface_1: entity work.PLXVC_interface
+  PLXVC_interface_1: entity work.PLXVC_map
     port map (
       clk_axi             => clk_axi,     --AXI_clk in
       reset_axi_n         => reset_axi_n, --AXI_reset in

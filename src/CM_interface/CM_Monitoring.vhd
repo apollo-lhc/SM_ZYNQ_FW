@@ -308,7 +308,7 @@ begin  -- architecture behavioral
           if uart_data_present = '1' then            
             --construct the AXI address we will use for transactions
             axi_address <= std_logic_vector(BASE_ADDRESS + unsigned(sensor_address_offset));
-            axi_rd_en <= '1';
+            axi_rd_en <= enable_axi_writes;
 
             --finish sensor_number, start on sensor_value
             sensor_number( 1 downto  0) <= uart_data(5 downto 4);
@@ -333,7 +333,7 @@ begin  -- architecture behavioral
             else
               axi_wr_data <= sensor_value & axi_rd_data(15 downto  0);
             end if;
-            axi_wr_en <= '1';
+            axi_wr_en <= enable_axi_writes;
 
             --latch this transaction
             last_transaction(31 downto 24) <= "0"&error_pulse;

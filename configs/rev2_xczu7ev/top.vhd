@@ -649,10 +649,8 @@ begin  -- architecture structure
       BRAM_PORTB_0_rst  => '0',
       BRAM_PORTB_0_we   => x"0",
 
-      C2C1_PHY_CLK      => clk_C2C1_PHY,
+      C2C1_PHY_CLK      => clk_C2C1_PHY
       
-      TCDS_CLK          => clk_TCDS,
-      TCDS_reset_n      => clk_TCDS_locked--clk_TCDS_reset_n
       );
 
 
@@ -706,6 +704,8 @@ begin  -- architecture structure
       Clocking_Ctrl   => Clocking_Ctrl,
       CM1_C2C_Mon     => CM_C2C_Mon.Link(1),
       CM2_C2C_Mon     => CM_C2C_Mon.Link(2),
+      MISC_Mon.ETH1_CLK_FREQ => (others => '0'),--ETH1_CLK_FREQ,
+      MISC_Ctrl.ETH1_RESET_N => open,--ETH1_RESET_N,
       CPLD_Mon        => CPLD_Mon,
       CPLD_Ctrl       => CPLD_Ctrl);
 
@@ -809,9 +809,9 @@ begin  -- architecture structure
       to_CM_out.CM(2).TDI       => CM2_TDI,
       to_CM_out.CM(2).TCK       => CM2_TCK,
       clk_C2C(1)                => clk_C2C1_PHY,
-      clk_C2C(2)                => '0',
+      clk_C2C(2)                => clk_C2C1_PHY,
       clk_C2C(3)                => clk_C2C1_PHY,
-      clk_C2C(4)                => '0',
+      clk_C2C(4)                => clk_C2C1_PHY,
       CM_C2C_Mon                => CM_C2C_Mon,
       CM_C2C_Ctrl               => CM_C2C_Ctrl);
   CM1_PS_RST   <= plXVC_PS_RST(0);

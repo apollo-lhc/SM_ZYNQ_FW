@@ -1,0 +1,41 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+package AXISlaveAddrPkg is
+constant AXI_ADDR_C2C2_AXI_FW : unsigned(31 downto 0) := x"84000000";
+constant AXI_ADDR_C2C2_AXILITE_FW : unsigned(31 downto 0) := x"84010000";
+constant AXI_ADDR_C2C2_PHY : unsigned(31 downto 0) := x"84020000";
+constant AXI_ADDR_C2C1_AXI_FW : unsigned(31 downto 0) := x"84030000";
+constant AXI_ADDR_C2C1_AXILITE_FW : unsigned(31 downto 0) := x"84040000";
+constant AXI_ADDR_C2C1_PHY : unsigned(31 downto 0) := x"84050000";
+constant AXI_ADDR_INT_AXI_FW : unsigned(31 downto 0) := x"84060000";
+constant AXI_ADDR_PLXVC : unsigned(31 downto 0) := x"40010000";
+constant AXI_ADDR_XVC_LOCAL : unsigned(31 downto 0) := x"40030000";
+constant AXI_ADDR_SLAVE_I2C : unsigned(31 downto 0) := x"40008000";
+constant AXI_ADDR_CM : unsigned(31 downto 0) := x"4000A000";
+constant AXI_ADDR_SM_INFO : unsigned(31 downto 0) := x"4000C000";
+constant AXI_ADDR_MONITOR : unsigned(31 downto 0) := x"40040000";
+constant AXI_ADDR_AXI_MON : unsigned(31 downto 0) := x"84070000";
+constant AXI_ADDR_PL_MEM : unsigned(31 downto 0) := x"40000000";
+constant AXI_ADDR_SI : unsigned(31 downto 0) := x"41600000";
+constant AXI_ADDR_SERV : unsigned(31 downto 0) := x"43C20000";
+-- ranges
+constant AXI_RANGE_C2C2_AXI_FW : unsigned(31 downto 0) :=  x"10000";
+constant AXI_RANGE_C2C2_AXILITE_FW : unsigned(31 downto 0) :=  x"10000";
+constant AXI_RANGE_C2C2_PHY : unsigned(31 downto 0) :=  x"10000";
+constant AXI_RANGE_C2C1_AXI_FW : unsigned(31 downto 0) :=  x"10000";
+constant AXI_RANGE_C2C1_AXILITE_FW : unsigned(31 downto 0) :=  x"10000";
+constant AXI_RANGE_C2C1_PHY : unsigned(31 downto 0) :=  x"10000";
+constant AXI_RANGE_INT_AXI_FW : unsigned(31 downto 0) :=  x"10000";
+constant AXI_RANGE_PLXVC : unsigned(31 downto 0) :=  x"10000";
+constant AXI_RANGE_XVC_LOCAL : unsigned(31 downto 0) :=  x"10000";
+constant AXI_RANGE_SLAVE_I2C : unsigned(31 downto 0) :=  x"2000";
+constant AXI_RANGE_CM : unsigned(31 downto 0) :=  x"2000";
+constant AXI_RANGE_SM_INFO : unsigned(31 downto 0) :=  x"2000";
+constant AXI_RANGE_MONITOR : unsigned(31 downto 0) :=  x"10000";
+constant AXI_RANGE_AXI_MON : unsigned(31 downto 0) :=  x"10000";
+constant AXI_RANGE_PL_MEM : unsigned(31 downto 0) :=  x"2000";
+constant AXI_RANGE_SI : unsigned(31 downto 0) :=  x"2000";
+constant AXI_RANGE_SERV : unsigned(31 downto 0) :=  x"2000";
+end package AXISlaveAddrPkg;
