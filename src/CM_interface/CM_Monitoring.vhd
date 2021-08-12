@@ -4,6 +4,7 @@ use ieee.numeric_std.all;
 use ieee.std_logic_misc.all;
 
 use work.types.all;
+use work.axiRegWidthPkg.all;
 use work.axiRegPkg.all;
 
 
@@ -15,10 +16,11 @@ entity CM_Monitoring is
   generic (
     BAUD_COUNT_BITS : integer := 8;
     INACTIVE_COUNT  : slv_32_t := x"03FFFFFF";
-    BASE_ADDRESS    : unsigned(31 downto 0) := x"00000000");
+    BASE_ADDRESS    : unsigned(AXI_ADDR_WIDTH-1 downto 0) := (others => '0'));
   port (
     clk              : in  std_logic;
     reset            : in  std_logic;
+    enable_axi_writes: in  std_logic;
     uart_rx          : in  std_logic;
     baud_16x_count   : in  std_logic_vector(BAUD_COUNT_BITS-1 downto 0);
     sm_timeout_value : in  slv_32_t;
@@ -67,7 +69,7 @@ architecture behavioral of CM_Monitoring is
   
 
   signal reset_axi_n : std_logic;
-  signal axi_address : slv_32_t;
+  signal axi_address : std_logic_vector(AXI_ADDR_WIDTH-1 downto 0);
   signal axi_rd_en : std_logic;
   signal axi_rd_data : slv_32_t;
   signal axi_rd_data_valid : std_logic;
@@ -83,7 +85,7 @@ architecture behavioral of CM_Monitoring is
   signal sensor_number : slv_8_t;
   signal sensor_value : slv_16_t;
 
-  signal sensor_address_offset : slv_32_t;
+  signal sensor_address_offset : std_logic_vector(AXI_ADDR_WIDTH-1 downto 0);
  
   type state_t is (SM_RESET,
                    SM_WAIT_FOR_SOF,
@@ -280,8 +282,8 @@ begin  -- architecture behavioral
   --  this current UART word.
   --  This is used to compute the final axi address and then re-used in the
   --  ending axi write
-  sensor_address_offset <= x"00000" & "000" & sensor_number(7 downto 2) & uart_data(5) & "00";
-
+  sensor_address_offset(8 downto 0) <= sensor_number(7 downto 2) & uart_data(5) & "00";
+  sensor_address_offset(sensor_address_offset'length -1  downto 9) <= (others => '0');
   Mon_SM_proc: process (clk, reset) is
   begin  -- process Mon_SM_proc
     if reset = '1' then                 -- asynchronous reset (active high)
@@ -305,8 +307,8 @@ begin  -- architecture behavioral
         when SM_WAIT_FOR_BYTE2 =>
           if uart_data_present = '1' then            
             --construct the AXI address we will use for transactions
-            axi_address <= slv_32_t(BASE_ADDRESS + unsigned(sensor_address_offset));
-            axi_rd_en <= '1';
+            axi_address <= std_logic_vector(BASE_ADDRESS + unsigned(sensor_address_offset));
+            axi_rd_en <= enable_axi_writes;
 
             --finish sensor_number, start on sensor_value
             sensor_number( 1 downto  0) <= uart_data(5 downto 4);
@@ -331,7 +333,7 @@ begin  -- architecture behavioral
             else
               axi_wr_data <= sensor_value & axi_rd_data(15 downto  0);
             end if;
-            axi_wr_en <= '1';
+            axi_wr_en <= enable_axi_writes;
 
             --latch this transaction
             last_transaction(31 downto 24) <= "0"&error_pulse;

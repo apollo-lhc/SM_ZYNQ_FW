@@ -18,30 +18,48 @@ package CM_CTRL is
     ENABLE_PWR                 :std_logic;     -- Tell CM uC to power-up the rest of the CM
     OVERRIDE_PWR_GOOD          :std_logic;     -- Ignore power good from CM
     ERROR_STATE_RESET          :std_logic;     -- CM power is good
-    ENABLE_PHY_CTRL            :std_logic;     -- phy_lane_control is enabled
-    PHY_LANE_STABLE            :std_logic_vector(31 downto 0);  -- Contious phy_lane_up signals required to lock phylane control
-    PHY_READ_TIME              :std_logic_vector(23 downto 0);  -- Time spent waiting for phylane to stabilize
   end record CM_CM_CTRL_CTRL_t;
 
 
   constant DEFAULT_CM_CM_CTRL_CTRL_t : CM_CM_CTRL_CTRL_t := (
-                                                             ENABLE_PHY_CTRL => '1',
-                                                             PHY_READ_TIME => x"4c4b40",
-                                                             PHY_LANE_STABLE => x"000000ff",
-                                                             ENABLE_UC => '0',
                                                              OVERRIDE_PWR_GOOD => '0',
-                                                             ENABLE_PWR => '0',
-                                                             ERROR_STATE_RESET => '0'
+                                                             ERROR_STATE_RESET => '0',
+                                                             ENABLE_UC => '0',
+                                                             ENABLE_PWR => '0'
                                                             );
-  type CM_CM_C2C_RX_MON_t is record
+  type CM_CM_C2C_STATUS_MON_t is record
+    CONFIG_ERROR               :std_logic;     -- C2C config error
+    LINK_ERROR                 :std_logic;     -- C2C link error
+    LINK_GOOD                  :std_logic;     -- C2C link FSM in SYNC
+    MB_ERROR                   :std_logic;     -- C2C multi-bit error
+    DO_CC                      :std_logic;     -- Aurora do CC
+    PHY_RESET                  :std_logic;     -- Aurora phy in reset
+    PHY_GT_PLL_LOCK            :std_logic;     -- Aurora phy GT PLL locked
+    PHY_MMCM_LOL               :std_logic;     -- Aurora phy mmcm LOL
+    PHY_LANE_UP                :std_logic_vector( 1 downto 0);  -- Aurora phy lanes up
+    PHY_HARD_ERR               :std_logic;                      -- Aurora phy hard error
+    PHY_SOFT_ERR               :std_logic;                      -- Aurora phy soft error
+    LINK_IN_FW                 :std_logic;                      -- FW includes this link
+  end record CM_CM_C2C_STATUS_MON_t;
+
+
+  type CM_CM_C2C_STATUS_CTRL_t is record
+    INITIALIZE                 :std_logic;     -- C2C initialize
+  end record CM_CM_C2C_STATUS_CTRL_t;
+
+
+  constant DEFAULT_CM_CM_C2C_STATUS_CTRL_t : CM_CM_C2C_STATUS_CTRL_t := (
+                                                                         INITIALIZE => '0'
+                                                                        );
+  type CM_CM_C2C_LINK_DEBUG_RX_MON_t is record
     BUF_STATUS                 :std_logic_vector( 2 downto 0);  -- DEBUG rx buf status
     MONITOR                    :std_logic_vector( 6 downto 0);  -- DEBUG rx status
     PRBS_ERR                   :std_logic;                      -- DEBUG rx PRBS error
     RESET_DONE                 :std_logic;                      -- DEBUG rx reset done
-  end record CM_CM_C2C_RX_MON_t;
+  end record CM_CM_C2C_LINK_DEBUG_RX_MON_t;
 
 
-  type CM_CM_C2C_RX_CTRL_t is record
+  type CM_CM_C2C_LINK_DEBUG_RX_CTRL_t is record
     BUF_RESET                  :std_logic;     -- DEBUG rx buf reset
     CDR_HOLD                   :std_logic;     -- DEBUG rx CDR hold
     DFE_AGC_HOLD               :std_logic;     -- DEBUG rx DFE AGC HOLD
@@ -56,32 +74,32 @@ package CM_CTRL is
     PMA_RESET                  :std_logic;                      -- DEBUG rx pma reset
     PRBS_CNT_RST               :std_logic;                      -- DEBUG rx PRBS counter reset
     PRBS_SEL                   :std_logic_vector( 2 downto 0);  -- DEBUG rx PRBS select
-  end record CM_CM_C2C_RX_CTRL_t;
+  end record CM_CM_C2C_LINK_DEBUG_RX_CTRL_t;
 
 
-  constant DEFAULT_CM_CM_C2C_RX_CTRL_t : CM_CM_C2C_RX_CTRL_t := (
-                                                                 DFE_LPM_RESET => '0',
-                                                                 PRBS_SEL => (others => '0'),
-                                                                 LPM_EN => '0',
-                                                                 PRBS_CNT_RST => '0',
-                                                                 DFE_AGC_HOLD => '0',
-                                                                 MON_SEL => (others => '0'),
-                                                                 LPM_LFKL_OVERRIDE => '0',
-                                                                 DFE_AGC_OVERRIDE => '0',
-                                                                 DFE_LF_HOLD => '0',
-                                                                 BUF_RESET => '0',
-                                                                 PMA_RESET => '0',
-                                                                 CDR_HOLD => '0',
-                                                                 LPM_HF_OVERRIDE => '0',
-                                                                 PCS_RESET => '0'
-                                                                );
-  type CM_CM_C2C_TX_MON_t is record
+  constant DEFAULT_CM_CM_C2C_LINK_DEBUG_RX_CTRL_t : CM_CM_C2C_LINK_DEBUG_RX_CTRL_t := (
+                                                                                       DFE_LPM_RESET => '0',
+                                                                                       LPM_EN => '0',
+                                                                                       PRBS_SEL => (others => '0'),
+                                                                                       CDR_HOLD => '0',
+                                                                                       PRBS_CNT_RST => '0',
+                                                                                       DFE_AGC_HOLD => '0',
+                                                                                       MON_SEL => (others => '0'),
+                                                                                       LPM_LFKL_OVERRIDE => '0',
+                                                                                       DFE_AGC_OVERRIDE => '0',
+                                                                                       DFE_LF_HOLD => '0',
+                                                                                       BUF_RESET => '0',
+                                                                                       PMA_RESET => '0',
+                                                                                       LPM_HF_OVERRIDE => '0',
+                                                                                       PCS_RESET => '0'
+                                                                                      );
+  type CM_CM_C2C_LINK_DEBUG_TX_MON_t is record
     BUF_STATUS                 :std_logic_vector( 1 downto 0);  -- DEBUG tx buf status
     RESET_DONE                 :std_logic;                      -- DEBUG tx reset done
-  end record CM_CM_C2C_TX_MON_t;
+  end record CM_CM_C2C_LINK_DEBUG_TX_MON_t;
 
 
-  type CM_CM_C2C_TX_CTRL_t is record
+  type CM_CM_C2C_LINK_DEBUG_TX_CTRL_t is record
     DIFF_CTRL                  :std_logic_vector( 3 downto 0);  -- DEBUG tx diff control
     INHIBIT                    :std_logic;                      -- DEBUG tx inhibit
     MAIN_CURSOR                :std_logic_vector( 6 downto 0);  -- DEBUG tx main cursor
@@ -92,21 +110,44 @@ package CM_CTRL is
     PRBS_FORCE_ERR             :std_logic;                      -- DEBUG force PRBS error
     PRBS_SEL                   :std_logic_vector( 2 downto 0);  -- DEBUG PRBS select
     PRE_CURSOR                 :std_logic_vector( 4 downto 0);  -- DEBUG pre cursor
-  end record CM_CM_C2C_TX_CTRL_t;
+  end record CM_CM_C2C_LINK_DEBUG_TX_CTRL_t;
 
 
-  constant DEFAULT_CM_CM_C2C_TX_CTRL_t : CM_CM_C2C_TX_CTRL_t := (
-                                                                 POLARITY => '0',
-                                                                 INHIBIT => '0',
-                                                                 POST_CURSOR => (others => '0'),
-                                                                 PRBS_SEL => (others => '0'),
-                                                                 PRBS_FORCE_ERR => '0',
-                                                                 DIFF_CTRL => (others => '0'),
-                                                                 MAIN_CURSOR => (others => '0'),
-                                                                 PMA_RESET => '0',
-                                                                 PRE_CURSOR => (others => '0'),
-                                                                 PCS_RESET => '0'
-                                                                );
+  constant DEFAULT_CM_CM_C2C_LINK_DEBUG_TX_CTRL_t : CM_CM_C2C_LINK_DEBUG_TX_CTRL_t := (
+                                                                                       POLARITY => '0',
+                                                                                       INHIBIT => '0',
+                                                                                       POST_CURSOR => (others => '0'),
+                                                                                       PRBS_SEL => (others => '0'),
+                                                                                       PRBS_FORCE_ERR => '0',
+                                                                                       DIFF_CTRL => (others => '0'),
+                                                                                       MAIN_CURSOR => (others => '0'),
+                                                                                       PMA_RESET => '0',
+                                                                                       PRE_CURSOR => (others => '0'),
+                                                                                       PCS_RESET => '0'
+                                                                                      );
+  type CM_CM_C2C_LINK_DEBUG_MON_t is record
+    DMONITOR                   :std_logic_vector( 7 downto 0);  -- DEBUG d monitor
+    CPLL_LOCK                  :std_logic;                      -- DEBUG cplllock
+    EYESCAN_DATA_ERROR         :std_logic;                      -- DEBUG eyescan data error
+    RX                         :CM_CM_C2C_LINK_DEBUG_RX_MON_t;
+    TX                         :CM_CM_C2C_LINK_DEBUG_TX_MON_t;
+  end record CM_CM_C2C_LINK_DEBUG_MON_t;
+
+
+  type CM_CM_C2C_LINK_DEBUG_CTRL_t is record
+    EYESCAN_RESET              :std_logic;     -- DEBUG eyescan reset
+    EYESCAN_TRIGGER            :std_logic;     -- DEBUG eyescan trigger
+    RX                         :CM_CM_C2C_LINK_DEBUG_RX_CTRL_t;
+    TX                         :CM_CM_C2C_LINK_DEBUG_TX_CTRL_t;
+  end record CM_CM_C2C_LINK_DEBUG_CTRL_t;
+
+
+  constant DEFAULT_CM_CM_C2C_LINK_DEBUG_CTRL_t : CM_CM_C2C_LINK_DEBUG_CTRL_t := (
+                                                                                 RX => DEFAULT_CM_CM_C2C_LINK_DEBUG_RX_CTRL_t,
+                                                                                 EYESCAN_RESET => '0',
+                                                                                 EYESCAN_TRIGGER => '0',
+                                                                                 TX => DEFAULT_CM_CM_C2C_LINK_DEBUG_TX_CTRL_t
+                                                                                );
   type CM_CM_C2C_CNT_MON_t is record
     INIT_ALLTIME               :std_logic_vector(31 downto 0);  -- Counter for every PHYLANEUP cycle
     INIT_SHORTTERM             :std_logic_vector(31 downto 0);  -- Counter for PHYLANEUP cycles since lase C2C INITIALIZE
@@ -117,6 +158,7 @@ package CM_CTRL is
     PHY_SOFT_ERROR_COUNT       :std_logic_vector(31 downto 0);  -- Counter for PHY_SOFT_ERROR
     PHYLANE_STATE              :std_logic_vector( 2 downto 0);  -- Current state of phy_lane_control module
     PHY_ERRORSTATE_COUNT       :std_logic_vector(31 downto 0);  -- Count for phylane in error state
+    USER_CLK_FREQ              :std_logic_vector(31 downto 0);  -- Frequency of the user C2C clk
   end record CM_CM_C2C_CNT_MON_t;
 
 
@@ -129,43 +171,29 @@ package CM_CTRL is
                                                                    RESET_COUNTERS => '0'
                                                                   );
   type CM_CM_C2C_MON_t is record
-    CONFIG_ERROR               :std_logic;     -- C2C config error
-    LINK_ERROR                 :std_logic;     -- C2C link error
-    LINK_GOOD                  :std_logic;     -- C2C link FSM in SYNC
-    MB_ERROR                   :std_logic;     -- C2C multi-bit error
-    DO_CC                      :std_logic;     -- Aurora do CC
-    PHY_RESET                  :std_logic;     -- Aurora phy in reset
-    PHY_GT_PLL_LOCK            :std_logic;     -- Aurora phy GT PLL locked
-    PHY_MMCM_LOL               :std_logic;     -- Aurora phy mmcm LOL
-    PHY_LANE_UP                :std_logic_vector( 1 downto 0);  -- Aurora phy lanes up
-    PHY_HARD_ERR               :std_logic;                      -- Aurora phy hard error
-    PHY_SOFT_ERR               :std_logic;                      -- Aurora phy soft error
-    CPLL_LOCK                  :std_logic;                      -- DEBUG cplllock
-    EYESCAN_DATA_ERROR         :std_logic;                      -- DEBUG eyescan data error
-    DMONITOR                   :std_logic_vector( 7 downto 0);  -- DEBUG d monitor
-    RX                         :CM_CM_C2C_RX_MON_t;           
-    TX                         :CM_CM_C2C_TX_MON_t;           
-    CNT                        :CM_CM_C2C_CNT_MON_t;          
+    STATUS                     :CM_CM_C2C_STATUS_MON_t;
+    LINK_DEBUG                 :CM_CM_C2C_LINK_DEBUG_MON_t;
+    CNT                        :CM_CM_C2C_CNT_MON_t;       
   end record CM_CM_C2C_MON_t;
-
+  type CM_CM_C2C_MON_t_ARRAY is array(1 to 2) of CM_CM_C2C_MON_t;
 
   type CM_CM_C2C_CTRL_t is record
-    INITIALIZE                 :std_logic;     -- C2C initialize
-    EYESCAN_RESET              :std_logic;     -- DEBUG eyescan reset
-    EYESCAN_TRIGGER            :std_logic;     -- DEBUG eyescan trigger
-    RX                         :CM_CM_C2C_RX_CTRL_t;
-    TX                         :CM_CM_C2C_TX_CTRL_t;
-    CNT                        :CM_CM_C2C_CNT_CTRL_t;
+    ENABLE_PHY_CTRL            :std_logic;     -- phy_lane_control is enabled
+    PHY_LANE_STABLE            :std_logic_vector(31 downto 0);  -- Contious phy_lane_up signals required to lock phylane control
+    PHY_READ_TIME              :std_logic_vector(23 downto 0);  -- Time spent waiting for phylane to stabilize
+    STATUS                     :CM_CM_C2C_STATUS_CTRL_t;      
+    LINK_DEBUG                 :CM_CM_C2C_LINK_DEBUG_CTRL_t;  
+    CNT                        :CM_CM_C2C_CNT_CTRL_t;         
   end record CM_CM_C2C_CTRL_t;
-
+  type CM_CM_C2C_CTRL_t_ARRAY is array(1 to 2) of CM_CM_C2C_CTRL_t;
 
   constant DEFAULT_CM_CM_C2C_CTRL_t : CM_CM_C2C_CTRL_t := (
+                                                           ENABLE_PHY_CTRL => '0',
+                                                           PHY_READ_TIME => x"4c4b40",
                                                            CNT => DEFAULT_CM_CM_C2C_CNT_CTRL_t,
-                                                           TX => DEFAULT_CM_CM_C2C_TX_CTRL_t,
-                                                           RX => DEFAULT_CM_CM_C2C_RX_CTRL_t,
-                                                           EYESCAN_RESET => '0',
-                                                           INITIALIZE => '0',
-                                                           EYESCAN_TRIGGER => '0'
+                                                           PHY_LANE_STABLE => x"000000ff",
+                                                           STATUS => DEFAULT_CM_CM_C2C_STATUS_CTRL_t,
+                                                           LINK_DEBUG => DEFAULT_CM_CM_C2C_LINK_DEBUG_CTRL_t
                                                           );
   type CM_CM_MONITOR_BAD_TRANS_MON_t is record
     ADDR                       :std_logic_vector( 7 downto 0);  -- Sensor addr bits
@@ -213,32 +241,34 @@ package CM_CTRL is
 
   type CM_CM_MONITOR_CTRL_t is record
     COUNT_16X_BAUD             :std_logic_vector( 7 downto 0);  -- Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
+    ENABLE                     :std_logic;                      -- Enable readout
     ERRORS                     :CM_CM_MONITOR_ERRORS_CTRL_t;  
     SM_TIMEOUT                 :std_logic_vector(31 downto 0);  -- Count to wait for in state machine before timing out (50Mhz clk)
   end record CM_CM_MONITOR_CTRL_t;
 
 
   constant DEFAULT_CM_CM_MONITOR_CTRL_t : CM_CM_MONITOR_CTRL_t := (
-                                                                   ERRORS => DEFAULT_CM_CM_MONITOR_ERRORS_CTRL_t,
+                                                                   ENABLE => '0',
                                                                    COUNT_16X_BAUD => x"1b",
+                                                                   ERRORS => DEFAULT_CM_CM_MONITOR_ERRORS_CTRL_t,
                                                                    SM_TIMEOUT => x"0001fca0"
                                                                   );
   type CM_CM_MON_t is record
     CTRL                       :CM_CM_CTRL_MON_t;
-    C2C                        :CM_CM_C2C_MON_t; 
-    MONITOR                    :CM_CM_MONITOR_MON_t;
+    C2C                        :CM_CM_C2C_MON_t_ARRAY;
+    MONITOR                    :CM_CM_MONITOR_MON_t;  
   end record CM_CM_MON_t;
   type CM_CM_MON_t_ARRAY is array(1 to 2) of CM_CM_MON_t;
 
   type CM_CM_CTRL_t is record
     CTRL                       :CM_CM_CTRL_CTRL_t;
-    C2C                        :CM_CM_C2C_CTRL_t; 
-    MONITOR                    :CM_CM_MONITOR_CTRL_t;
+    C2C                        :CM_CM_C2C_CTRL_t_ARRAY;
+    MONITOR                    :CM_CM_MONITOR_CTRL_t;  
   end record CM_CM_CTRL_t;
   type CM_CM_CTRL_t_ARRAY is array(1 to 2) of CM_CM_CTRL_t;
 
   constant DEFAULT_CM_CM_CTRL_t : CM_CM_CTRL_t := (
-                                                   C2C => DEFAULT_CM_CM_C2C_CTRL_t,
+                                                   C2C => (others => DEFAULT_CM_CM_C2C_CTRL_t ),
                                                    MONITOR => DEFAULT_CM_CM_MONITOR_CTRL_t,
                                                    CTRL => DEFAULT_CM_CM_CTRL_CTRL_t
                                                   );

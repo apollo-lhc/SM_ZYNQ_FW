@@ -36,7 +36,7 @@ begin  -- architecture behavioral
   -- AXI 
   -------------------------------------------------------------------------------
   -------------------------------------------------------------------------------
-  SM_INFO_interface_1: entity work.SM_INFO_interface
+  SM_INFO_interface_1: entity work.SM_INFO_map
     port map (
       clk_axi         => clk_axi,
       reset_axi_n     => reset_axi_n,

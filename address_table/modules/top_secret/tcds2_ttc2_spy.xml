@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!-- Corresponds to version 0 of the TTC2 protocol. -->
+
+<node id="tcds2_ttc2_spy" fwinfo="endpoint; width=3">
+  <node id="l1a_info" address="0x00000000">
+
+    <!-- L1A flags. -->
+    <node id="physics" address="0x00000000" mask="0x00000001" permission="r" />
+    <node id="calibration" address="0x00000000" mask="0x00000002" permission="r" />
+    <node id="random" address="0x00000000" mask="0x00000004" permission="r" />
+    <node id="software" address="0x00000000" mask="0x00000008" permission="r" />
+    <node id="reserved_4" address="0x00000000" mask="0x00000010" permission="r" />
+    <node id="reserved_5" address="0x00000000" mask="0x00000020" permission="r" />
+    <node id="reserved_6" address="0x00000000" mask="0x00000040" permission="r" />
+    <node id="reserved_7" address="0x00000000" mask="0x00000080" permission="r" />
+    <node id="reserved_8" address="0x00000000" mask="0x00000100" permission="r" />
+    <node id="reserved_9" address="0x00000000" mask="0x00000200" permission="r" />
+    <node id="reserved_10" address="0x00000000" mask="0x00000400" permission="r" />
+    <node id="reserved_11" address="0x00000000" mask="0x00000800" permission="r" />
+    <node id="reserved_12" address="0x00000000" mask="0x00001000" permission="r" />
+    <node id="reserved_13" address="0x00000000" mask="0x00002000" permission="r" />
+    <node id="reserved_14" address="0x00000000" mask="0x00004000" permission="r" />
+    <node id="reserved_15" address="0x00000000" mask="0x00008000" permission="r" />
+
+    <!-- Physics L1A sub-type. -->
+    <node id="physics_subtype" address="0x00000001" mask="0x000000ff" permission="r" />
+
+  </node>
+
+  <!-- BRIL trigger data. -->
+  <node id="bril_trigger_info" address="0x00000002" mask="0x0000ffff" permission="r" />
+
+  <!-- Timing and synchronisation flags. -->
+  <node id="timing_and_sync_info" address="0x00000003" permission="r">
+    <node id="lo" address="0x00000000" mask="0xffffffff" permission="r" />
+    <node id="hi" address="0x00000001" mask="0x0001ffff" permission="r" />
+  </node>
+
+  <!-- Status flags. -->
+  <node id="status_info" address="0x00000005" mask="0x0000001f" permission="r" />
+
+  <!-- Left-overs. -->
+  <node id="reserved" address="0x00000006" mask="0x0003ffff" permission="r" />
+
+</node>

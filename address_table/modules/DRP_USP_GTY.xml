@@ -6,6 +6,7 @@
 
   <node id="RX_DATA_WIDTH"      address="0x0003" mask="0x01E0" permission="rw"/>
   <node id="RX_INT_DATAWIDTH"   address="0x0066" mask="0x0002" permission="rw"/>
+  <node id="GTY_GTH_CHECK"      address="0x001E" mask="0x03FF" permission="r"/>
   
   <node id="QUALIFIER_0"        address="0x003F" mask="0xFFFF" permission="rw"/>
   <node id="QUALIFIER_1"        address="0x0040" mask="0xFFFF" permission="rw"/>

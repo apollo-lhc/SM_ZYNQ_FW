@@ -1,0 +1,113 @@
+&gem0 {
+      status = "okay";
+      /delete-property/ local-mac-address;
+      phy-mode = "rgmii-id";
+      phy-handle = <&phy0>;
+      phy0: phy@3 {
+          reg = <3>;
+          txc-skew-ps = <1800>;
+          txen-skew-ps = <420>;
+          txd0-skew-ps = <420>;
+          txd1-skew-ps = <420>;
+          txd2-skew-ps = <420>;
+          txd3-skew-ps = <420>;
+          rxc-skew-ps = <900>;
+          rxdv-skew-ps = <420>;
+          rxd0-skew-ps = <420>;
+          rxd1-skew-ps = <420>;
+          rxd2-skew-ps = <420>;
+          rxd3-skew-ps = <420>;  
+      };
+      phy1: phy@7 {
+          reg = <7>;
+
+          txc-skew-ps = <1800>;
+          txen-skew-ps = <420>;
+
+          txd0-skew-ps = <420>;
+          txd1-skew-ps = <420>;
+          txd2-skew-ps = <420>;
+          txd3-skew-ps = <420>;
+
+          rxc-skew-ps = <900>;
+          rxdv-skew-ps = <420>;
+
+          rxd0-skew-ps = <420>;
+          rxd1-skew-ps = <420>;
+          rxd2-skew-ps = <420>;
+          rxd3-skew-ps = <420>;  
+    };
+};
+
+&gem3 {
+      status = "okay";
+      /delete-property/ local-mac-address;
+      phy-handle = <&phy1>;
+      phy-mode = "rgmii-id";
+};
+
+/*
+ &gem0 {
+      status = "okay";
+      local-mac-address = [00 0a 35 00 02 90];
+      phy-handle = <&phy3>;
+      pinctrl-names = "default";
+      pinctrl-0 = <&pinctrl_gem0_default>;
+ };
+ 
+ &gem3 {
+       status = "okay";
+       local-mac-address = [00 0a 35 00 02 91];
+       phy-handle = <&phy7>;
+       pinctrl-names = "default";
+       pinctrl-0 = <&pinctrl_gem3_default>;
+ };
+*/
+
+ &pinctrl0 {
+    status = "okay";
+
+   pinctrl_gem3_default: gem3-default {
+   mux {
+    function = "ethernet3";
+    groups = "ethernet3_0_grp";
+        };
+                conf {
+        groups = "ethernet3_0_grp";
+     slew-rate = <SLEW_RATE_SLOW>;
+     io-standard = <IO_STANDARD_LVCMOS18>;
+};
+conf-rx {
+pins = "MIO70", "MIO71", "MIO72", "MIO73", "MIO74", "MIO75";
+bias-high-impedance;
+low-power-disable;
+};
+conf-tx {
+pins = "MIO64", "MIO65", "MIO66", "MIO67", "MIO68", "MIO69";
+bias-disable;
+low-power-enable;
+};
+   };
+
+   pinctrl_gem0_default: gem0-default {
+   mux {
+    function = "ethernet0";
+    groups = "ethernet0_0_grp";
+        };
+                conf {
+        groups = "ethernet0_0_grp";
+     slew-rate = <SLEW_RATE_SLOW>;
+     io-standard = <IO_STANDARD_LVCMOS33>;
+};
+conf-rx {
+pins = "MIO32", "MIO33", "MIO34", "MIO35", "MIO36", "MIO37";
+bias-high-impedance;
+low-power-disable;
+};
+conf-tx {
+pins = "MIO26", "MIO27", "MIO28", "MIO29", "MIO30", "MIO31";
+bias-disable;
+low-power-enable;
+};
+   };
+  };

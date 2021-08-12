@@ -1,0 +1,13 @@
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index d414a45..9c49afb 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -708,7 +708,7 @@ static int macb_halt_tx(struct macb *bp)
+ 		if (!(status & MACB_BIT(TGO)))
+ 			return 0;
+ 
+-		usleep_range(10, 250);
++		udelay(250);
+ 	} while (time_before(halt_time, timeout));
+ 
+ 	return -ETIMEDOUT;

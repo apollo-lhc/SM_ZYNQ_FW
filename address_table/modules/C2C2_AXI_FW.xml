@@ -12,4 +12,11 @@
     <node id="READ_RESPONSE_BUSY" mask="0x00000001" permission="r" description="error. Indicates whether there are outstanding read transactions that still need to be completed on the SI; deasserts as soon as outstanding reads decrements to zero. (Not masked while reads are in normal operating mode.)" parameters="Table=C2C;Column=AXI_OUTSTANDING_WRITES;Row=CM1_V;Status=1;Show=nz"/>
   </node>
   <node id="UNBLOCK" address="0x2"  mask="0x00000001" permission="w"/>
+  <node id="MAX_WAITS" address="0xC">         
+    <node id="CONTINIOUS_R_TRANSFER" address="0x0" mask="0x0000FFFF"/>         
+    <node id="WRITE_TO_BVALID"       address="0x1" mask="0x0000FFFF"/>         
+    <node id="ARREADY"         address="0x2" mask="0x0000FFFF"/>    
+    <node id="AWREADY"         address="0x3" mask="0x0000FFFF"/>    
+    <node id="WREADY"          address="0x4" mask="0x0000FFFF"/>    
+  </node>
 </node>

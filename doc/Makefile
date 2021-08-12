@@ -1,6 +1,6 @@
 .PHONY: doc doc_zynq doc_tcl clean push push_zynq push_tcl
 
-VHDL_SEARCH_PATHS = "INPUT=./main_fw.md ../src/ ../proj/zynq_bd/synth/ ../proj/zynq_bd/hdl/ "$(wildcard  ../proj/zynq_bd/ip/*/synth/)
+VHDL_SEARCH_PATHS = "INPUT=./main_fw.md ../src/ ../proj/zynq_bd/synth/ ../proj/zynq_bd/hdl/ ../configs/ "$(wildcard  ../proj/zynq_bd/ip/*/synth/)
 
 
 all: doc

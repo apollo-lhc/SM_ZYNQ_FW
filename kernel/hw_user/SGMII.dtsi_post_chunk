@@ -1,9 +1,0 @@
-&gem1 {
-local-mac-address = [00 50 51 FF 10 06];
-status = "okay";
-is-internal-pcspma;
-phy-mode = "moca";
-
-fixed-link = <1 1 1000 1 1>;
-
-};

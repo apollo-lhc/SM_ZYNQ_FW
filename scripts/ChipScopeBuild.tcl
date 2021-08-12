@@ -1,4 +1,4 @@
-source ../scripts/settings.tcl
+source ${apollo_root_path}/scripts/settings.tcl
 
 #################################################################################
 # STEP#3: run placement and logic optimization, report utilization and timing
@@ -32,4 +32,4 @@ write_checkpoint -force $outputDir/post_route
 #################################################################################
 # STEP#5: Generate files for os build
 #################################################################################
-source ../scripts/Generate_hwInfo.tcl
+source ${apollo_root_path}/scripts/Generate_hwInfo.tcl

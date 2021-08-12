@@ -124,7 +124,7 @@ def BuildAddressTable(fileName,top):
     ATFile.write("</node>\n")
     
 
-def main(localSlavesYAML,remoteSlavesYAML,outputDir ):
+def main(localSlavesYAML,remoteSlavesYAML,CMyaml,outputDir):
     #address table top node
     top = ET.Element("node",{"id":"top"})
 
@@ -149,22 +149,40 @@ def main(localSlavesYAML,remoteSlavesYAML,outputDir ):
         
         AddAddressTableNode(slave,slaves['UHAL_MODULES'][slave],top)
 
-    #remote slaves
-    if type(remoteSlavesYAML) == type(list()):
+    remoteSlaves = list()
+    #append CM.yaml remote slaves
+    try:
+      if type(CMyaml) == type('  '):
+        CMFile=open(CMyaml)
+        remotes=yaml.load(CMFile)
+        if remotes:
+          for remote in remotes:
+            filename="os/"+remote+"_slaves.yaml"
+            remoteSlaves.append(filename)
+    except IOError:
+      pass
+    #remote slaves (explicit)
+    if type(remoteSlavesYAML) == type(list()):      
       for CM in remoteSlavesYAML:
-        slavesFile=open(CM)
-        slaves=yaml.load(slavesFile)
-        
-        nameCM=os.path.basename(CM)[0:os.path.basename(CM).find("_")]
+        remoteSlaves.append(CM)
 
-        for slave in slaves['UHAL_MODULES']:        
-            if "XML" in slaves['UHAL_MODULES'][slave]:
-              for iFile in range(0,len(slaves['UHAL_MODULES'][slave]["XML"])):
-                #change the file path to be relative on the apollo
-                relPath=slaves['UHAL_MODULES'][slave]['XML'][iFile]
-                relPath=nameCM+"_"+relPath[relPath.find("module"):]
-                slaves['UHAL_MODULES'][slave]['XML'][iFile] = relPath
-              AddAddressTableNode(slave,slaves['UHAL_MODULES'][slave],top)
+    #go through all found remote slaves
+    for CM in remoteSlaves:
+      slavesFile=open(CM)
+      slaves=yaml.load(slavesFile)
+      
+      nameCM=os.path.basename(CM)[0:os.path.basename(CM).find("_")]
+
+      for slave in slaves['UHAL_MODULES']:        
+        if "XML" in slaves['UHAL_MODULES'][slave]:
+          for iFile in range(0,len(slaves['UHAL_MODULES'][slave]["XML"])):
+            #change the file path to be relative on the apollo
+            relPath=slaves['UHAL_MODULES'][slave]['XML'][iFile]
+            relPath=nameCM+"_"+relPath[relPath.find("module"):]
+            slaves['UHAL_MODULES'][slave]['XML'][iFile] = relPath
+          AddAddressTableNode(slave,slaves['UHAL_MODULES'][slave],top)
+
+        
 
 
     #generate the final address table file
@@ -200,9 +218,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Build address table.")
     parser.add_argument("--localSlavesYAML","-l"      ,help="YAML file storing the slave info for generation",required=True)
     parser.add_argument("--remoteSlavesYAML","-r"     ,help="YAML file storing remote locations of slave info for generation",required=False,action='append')
-    parser.add_argument("--outputDir","-o"           ,help="Output directory",default="os/")
+    parser.add_argument("--CM","-R"                   ,help="YAML file for CM sources used to set the remoteSlaves",required=False)  
+    parser.add_argument("--outputDir","-o"            ,help="Output directory",default="os/")
     args=parser.parse_args()
     
     main(args.localSlavesYAML,
          args.remoteSlavesYAML,
+         args.CM,
          args.outputDir)

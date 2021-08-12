@@ -3,6 +3,8 @@ slack_msg
 make_log.txt
 *~
 *#
+vivado*.log
+vivado*.jou
 #################################################################################
 ## Vivado files
 #################################################################################
@@ -26,12 +28,12 @@ kernel/*
 !kernel/*.dtsi_post_chunk
 !kernel/*.dtsi_chunk
 kernel/zynq_os
-!kernel/zynq_os_mods
-!kernel/extra_files
+!kernel/configs
 /os/Kintex_slaves.yaml
 /os/Virtex_slaves.yaml
 /os/address_table/
 /os/slaves.yaml
+
 
 #################################################################################
 ## Sim files

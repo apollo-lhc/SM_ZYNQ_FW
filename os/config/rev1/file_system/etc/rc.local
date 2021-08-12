@@ -1,0 +1,23 @@
+#!/bin/bash
+# THIS FILE IS ADDED FOR COMPATIBILITY PURPOSES
+#
+# It is highly advisable to create own systemd services or udev rules
+# to run scripts during boot instead of using this file.
+#
+# In contrast to previous versions due to parallel execution during boot
+# this script will NOT be run after all other services.
+#
+# Please note that you must run 'chmod +x /etc/rc.d/rc.local' to ensure
+# that this script will be executed during boot.
+
+bash /etc/rc.local.common
+
+ethtool -s eth0 speed 100 duplex full autoneg on
+
+if [ -f "/fw/mac.dat" ]; then
+    ifconfig eth0 down
+    cat /fw/mac.dat | xargs ifconfig eth0 hw ether 
+    ifconfig eth0 up
+fi
+dhclient eth0
+

@@ -22,6 +22,7 @@ package types is
   subtype slv_24_t is std_logic_vector(23 downto 0);
   subtype slv_26_t is std_logic_vector(25 downto 0);
   subtype slv_32_t is std_logic_vector(31 downto 0);
+  subtype slv_40_t is std_logic_vector(39 downto 0);
   
   type slv4_array_t   is array (integer range <>) of std_logic_vector(  3 downto 0);
   type slv7_array_t   is array (integer range <>) of std_logic_vector(  6 downto 0);
@@ -43,7 +44,12 @@ package types is
   type u16_array_t is array (integer range <>) of unsigned(47 downto 0);
 
   type int8_array_t is array (integer range <>) of integer range 0 to 7;
-  
+
+  type int_array_t  is array (integer range <>) of integer;
+
+  function log2 (val: INTEGER) return natural;
+    
+
 end package types;
 
 package body types is

@@ -3,10 +3,11 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.AXIRegWidthPkg.all;
 use work.AXIRegPkg.all;
 use work.types.all;
 use work.SM_INFO_Ctrl.all;
-entity SM_INFO_interface is
+entity SM_INFO_map is
   port (
     clk_axi          : in  std_logic;
     reset_axi_n      : in  std_logic;
@@ -16,9 +17,9 @@ entity SM_INFO_interface is
     slave_writeMISO  : out AXIWriteMISO := DefaultAXIWriteMISO;
     Mon              : in  SM_INFO_Mon_t
     );
-end entity SM_INFO_interface;
-architecture behavioral of SM_INFO_interface is
-  signal localAddress       : slv_32_t;
+end entity SM_INFO_map;
+architecture behavioral of SM_INFO_map is
+  signal localAddress       : std_logic_vector(AXI_ADDR_WIDTH-1 downto 0);
   signal localRdData        : slv_32_t;
   signal localRdData_latch  : slv_32_t;
   signal localWrData        : slv_32_t;

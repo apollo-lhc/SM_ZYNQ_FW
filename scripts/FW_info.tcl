@@ -1,4 +1,4 @@
-proc build_fw_version {path {FPGA_part "unknown"}} {
+proc build_fw_version {{path "./"} {FPGA_part "unknown"}} {
     ## Set output filename
     set outFile $path/fw_version.vhd
     set outFile_fd [open $outFile "w"]
