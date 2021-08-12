@@ -22,10 +22,10 @@ package CM_CTRL is
 
 
   constant DEFAULT_CM_CM_CTRL_CTRL_t : CM_CM_CTRL_CTRL_t := (
-                                                             OVERRIDE_PWR_GOOD => '0',
-                                                             ERROR_STATE_RESET => '0',
                                                              ENABLE_UC => '0',
-                                                             ENABLE_PWR => '0'
+                                                             ENABLE_PWR => '0',
+                                                             OVERRIDE_PWR_GOOD => '0',
+                                                             ERROR_STATE_RESET => '0'
                                                             );
   type CM_CM_C2C_STATUS_MON_t is record
     CONFIG_ERROR               :std_logic;     -- C2C config error
@@ -72,15 +72,15 @@ package CM_CTRL is
 
 
   constant DEFAULT_CM_CM_C2C_LINK_DEBUG_RX_CTRL_t : CM_CM_C2C_LINK_DEBUG_RX_CTRL_t := (
-                                                                                       DFE_LPM_RESET => '0',
-                                                                                       PRBS_SEL => (others => '0'),
-                                                                                       LPM_EN => '0',
-                                                                                       PRBS_CNT_RST => '0',
-                                                                                       RATE => (others => '0'),
-                                                                                       CDR_HOLD => '0',
                                                                                        BUF_RESET => '0',
+                                                                                       CDR_HOLD => '0',
+                                                                                       DFE_LPM_RESET => '0',
+                                                                                       LPM_EN => '0',
+                                                                                       PCS_RESET => '0',
                                                                                        PMA_RESET => '0',
-                                                                                       PCS_RESET => '0'
+                                                                                       PRBS_CNT_RST => '0',
+                                                                                       PRBS_SEL => (others => '0'),
+                                                                                       RATE => (others => '0')
                                                                                       );
   type CM_CM_C2C_LINK_DEBUG_TX_MON_t is record
     BUF_STATUS                 :std_logic_vector( 1 downto 0);  -- DEBUG tx buf status
@@ -102,15 +102,15 @@ package CM_CTRL is
 
 
   constant DEFAULT_CM_CM_C2C_LINK_DEBUG_TX_CTRL_t : CM_CM_C2C_LINK_DEBUG_TX_CTRL_t := (
-                                                                                       POLARITY => '0',
                                                                                        INHIBIT => '0',
-                                                                                       POST_CURSOR => (others => '0'),
-                                                                                       PRE_CURSOR => (others => '0'),
-                                                                                       PRBS_FORCE_ERR => '0',
-                                                                                       DIFF_CTRL => (others => '0'),
+                                                                                       PCS_RESET => '0',
                                                                                        PMA_RESET => '0',
+                                                                                       POLARITY => '0',
+                                                                                       POST_CURSOR => (others => '0'),
+                                                                                       PRBS_FORCE_ERR => '0',
+                                                                                       PRE_CURSOR => (others => '0'),
                                                                                        PRBS_SEL => (others => '0'),
-                                                                                       PCS_RESET => '0'
+                                                                                       DIFF_CTRL => (others => '0')
                                                                                       );
   type CM_CM_C2C_LINK_DEBUG_MON_t is record
     DMONITOR                   :std_logic_vector(15 downto 0);  -- DEBUG d monitor
@@ -132,11 +132,11 @@ package CM_CTRL is
 
 
   constant DEFAULT_CM_CM_C2C_LINK_DEBUG_CTRL_t : CM_CM_C2C_LINK_DEBUG_CTRL_t := (
-                                                                                 TX => DEFAULT_CM_CM_C2C_LINK_DEBUG_TX_CTRL_t,
-                                                                                 RX => DEFAULT_CM_CM_C2C_LINK_DEBUG_RX_CTRL_t,
                                                                                  EYESCAN_RESET => '0',
                                                                                  EYESCAN_TRIGGER => '0',
-                                                                                 PCS_RSV_DIN => (others => '0')
+                                                                                 PCS_RSV_DIN => (others => '0'),
+                                                                                 RX => DEFAULT_CM_CM_C2C_LINK_DEBUG_RX_CTRL_t,
+                                                                                 TX => DEFAULT_CM_CM_C2C_LINK_DEBUG_TX_CTRL_t
                                                                                 );
   type CM_CM_C2C_CNT_MON_t is record
     INIT_ALLTIME               :std_logic_vector(31 downto 0);  -- Counter for every PHYLANEUP cycle
@@ -179,11 +179,11 @@ package CM_CTRL is
 
   constant DEFAULT_CM_CM_C2C_CTRL_t : CM_CM_C2C_CTRL_t := (
                                                            ENABLE_PHY_CTRL => '0',
-                                                           PHY_READ_TIME => x"4c4b40",
-                                                           CNT => DEFAULT_CM_CM_C2C_CNT_CTRL_t,
                                                            PHY_LANE_STABLE => x"000000ff",
+                                                           PHY_READ_TIME => x"4c4b40",
                                                            STATUS => DEFAULT_CM_CM_C2C_STATUS_CTRL_t,
-                                                           LINK_DEBUG => DEFAULT_CM_CM_C2C_LINK_DEBUG_CTRL_t
+                                                           LINK_DEBUG => DEFAULT_CM_CM_C2C_LINK_DEBUG_CTRL_t,
+                                                           CNT => DEFAULT_CM_CM_C2C_CNT_CTRL_t
                                                           );
   type CM_CM_MONITOR_BAD_TRANS_MON_t is record
     ADDR                       :std_logic_vector( 7 downto 0);  -- Sensor addr bits
@@ -238,8 +238,8 @@ package CM_CTRL is
 
 
   constant DEFAULT_CM_CM_MONITOR_CTRL_t : CM_CM_MONITOR_CTRL_t := (
-                                                                   ENABLE => '0',
                                                                    COUNT_16X_BAUD => x"1b",
+                                                                   ENABLE => '0',
                                                                    ERRORS => DEFAULT_CM_CM_MONITOR_ERRORS_CTRL_t,
                                                                    SM_TIMEOUT => x"0001fca0"
                                                                   );
@@ -258,9 +258,9 @@ package CM_CTRL is
   type CM_CM_CTRL_t_ARRAY is array(1 to 2) of CM_CM_CTRL_t;
 
   constant DEFAULT_CM_CM_CTRL_t : CM_CM_CTRL_t := (
+                                                   CTRL => DEFAULT_CM_CM_CTRL_CTRL_t,
                                                    C2C => (others => DEFAULT_CM_CM_C2C_CTRL_t ),
-                                                   MONITOR => DEFAULT_CM_CM_MONITOR_CTRL_t,
-                                                   CTRL => DEFAULT_CM_CM_CTRL_CTRL_t
+                                                   MONITOR => DEFAULT_CM_CM_MONITOR_CTRL_t
                                                   );
   type CM_MON_t is record
     CM                         :CM_CM_MON_t_ARRAY;

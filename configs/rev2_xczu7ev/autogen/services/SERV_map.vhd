@@ -9,6 +9,7 @@ use work.AXIRegPkg.all;
 use work.types.all;
 
 use work.SERV_Ctrl.all;
+
 entity SERV_map is
   port (
     clk_axi          : in  std_logic;
@@ -97,8 +98,6 @@ begin  -- architecture behavioral
           localRdData( 4)            <=  Mon.SI5344.INT;                  --Si5344 i2c interrupt
           localRdData( 5)            <=  Mon.SI5344.LOL;                  --Si5344 Loss of lock
           localRdData( 6)            <=  Mon.SI5344.LOS;                  --Si5344 Loss of signal
-        when 32 => --0x20
-          localRdData(15 downto  0)  <=  Mon.SWITCH.STATUS;               --Ethernet switch LEDs
         when 4 => --0x4
           localRdData( 0)            <=  reg_data( 4)( 0);                --TTC source select (0:TCDS,1:TTC_FAKE
           localRdData( 4)            <=  Mon.TCDS.REFCLK_LOCKED;          --TCDS refclk locked
@@ -120,8 +119,6 @@ begin  -- architecture behavioral
           localRdData(31 downto  0)  <=  Mon.CLOCKING.TTC_CLK_FREQ;       --Measured Freq of clock
         when 9 => --0x9
           localRdData(31 downto  0)  <=  Mon.CLOCKING.AXI_CLK_FREQ;       --Measured Freq of clock
-        when 80 => --0x50
-          localRdData( 0)            <=  reg_data(80)( 0);                --
         when 16 => --0x10
           localRdData( 0)            <=  reg_data(16)( 0);                --reset FP LEDs
           localRdData( 1)            <=  reg_data(16)( 1);                --override FP LED page 0
@@ -132,12 +129,16 @@ begin  -- architecture behavioral
           localRdData(22)            <=  reg_data(16)(22);                --Force the display of a page (override button UI)
           localRdData(29 downto 24)  <=  reg_data(16)(29 downto 24);      --Page to display
           localRdData(31)            <=  Mon.FP_LEDS.FP_SHDWN_REQ;        --FP button shutdown request
-        when 81 => --0x51
-          localRdData(31 downto  0)  <=  Mon.MISC.ETH1_CLK_FREQ;          --Measured Freq of clock
-        when 50 => --0x32
-          localRdData( 3 downto  0)  <=  Mon.CPLD.IO;                     --inputs(for now) from CPLD
+        when 32 => --0x20
+          localRdData(15 downto  0)  <=  Mon.SWITCH.STATUS;               --Ethernet switch LEDs
         when 48 => --0x30
           localRdData( 0)            <=  reg_data(48)( 0);                --Enable the JTAG lines to the CPLD
+        when 50 => --0x32
+          localRdData( 3 downto  0)  <=  Mon.CPLD.IO;                     --inputs(for now) from CPLD
+        when 80 => --0x50
+          localRdData( 0)            <=  reg_data(80)( 0);                --
+        when 81 => --0x51
+          localRdData(31 downto  0)  <=  Mon.MISC.ETH1_CLK_FREQ;          --Measured Freq of clock
 
 
           when others =>
@@ -207,8 +208,6 @@ begin  -- architecture behavioral
           reg_data( 0)( 0)            <=  localWrData( 0);                --Enable Si5344 outputs
           reg_data( 0)( 1)            <=  localWrData( 1);                --Power on Si5344
           reg_data( 0)( 2)            <=  localWrData( 2);                --
-        when 80 => --0x50
-          reg_data(80)( 0)            <=  localWrData( 0);                --
         when 4 => --0x4
           reg_data( 4)( 0)            <=  localWrData( 0);                --TTC source select (0:TCDS,1:TTC_FAKE
         when 5 => --0x5
@@ -217,8 +216,6 @@ begin  -- architecture behavioral
           reg_data( 5)(12)            <=  localWrData(12);                --HQ clk source select
           reg_data( 5)(13)            <=  localWrData(13);                --Enable FPGA IBUFDS
           reg_data( 5)(21)            <=  localWrData(21);                --Enable FPGA IBUFDS
-        when 48 => --0x30
-          reg_data(48)( 0)            <=  localWrData( 0);                --Enable the JTAG lines to the CPLD
         when 16 => --0x10
           reg_data(16)( 0)            <=  localWrData( 0);                --reset FP LEDs
           reg_data(16)( 1)            <=  localWrData( 1);                --override FP LED page 0
@@ -227,6 +224,10 @@ begin  -- architecture behavioral
           reg_data(16)(21 downto 16)  <=  localWrData(21 downto 16);      --Page to display
           reg_data(16)(22)            <=  localWrData(22);                --Force the display of a page (override button UI)
           reg_data(16)(29 downto 24)  <=  localWrData(29 downto 24);      --Page to display
+        when 48 => --0x30
+          reg_data(48)( 0)            <=  localWrData( 0);                --Enable the JTAG lines to the CPLD
+        when 80 => --0x50
+          reg_data(80)( 0)            <=  localWrData( 0);                --
 
           when others => null;
         end case;

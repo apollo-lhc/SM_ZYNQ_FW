@@ -20,9 +20,9 @@ package SERV_CTRL is
 
 
   constant DEFAULT_SERV_SI5344_CTRL_t : SERV_SI5344_CTRL_t := (
-                                                               FPGA_PLL_RESET => '0',
                                                                OE => '1',
-                                                               EN => '1'
+                                                               EN => '1',
+                                                               FPGA_PLL_RESET => '0'
                                                               );
   type SERV_TCDS_MON_t is record
     REFCLK_LOCKED              :std_logic;     -- TCDS refclk locked
@@ -57,9 +57,9 @@ package SERV_CTRL is
 
 
   constant DEFAULT_SERV_CLOCKING_CTRL_t : SERV_CLOCKING_CTRL_t := (
-                                                                   HQ_SEL => '1',
                                                                    LHC_SEL => '1',
                                                                    LHC_CLK_IBUF_EN => '1',
+                                                                   HQ_SEL => '1',
                                                                    HQ_CLK_IBUF_EN => '1'
                                                                   );
   type SERV_FP_LEDS_MON_t is record
@@ -82,10 +82,10 @@ package SERV_CTRL is
   constant DEFAULT_SERV_FP_LEDS_CTRL_t : SERV_FP_LEDS_CTRL_t := (
                                                                  RESET => '0',
                                                                  PAGE0_FORCE => '0',
-                                                                 PAGE0_SPEED => x"8",
-                                                                 FORCE_PAGE => '0',
                                                                  PAGE0_MODE => (others => '0'),
+                                                                 PAGE0_SPEED => x"8",
                                                                  FORCED_PAGE => (others => '0'),
+                                                                 FORCE_PAGE => '0',
                                                                  PAGE => (others => '0')
                                                                 );
   type SERV_SWITCH_MON_t is record
@@ -111,10 +111,10 @@ package SERV_CTRL is
 
 
   constant DEFAULT_SERV_CTRL_t : SERV_CTRL_t := (
-                                                 FP_LEDS => DEFAULT_SERV_FP_LEDS_CTRL_t,
                                                  SI5344 => DEFAULT_SERV_SI5344_CTRL_t,
                                                  TCDS => DEFAULT_SERV_TCDS_CTRL_t,
-                                                 CLOCKING => DEFAULT_SERV_CLOCKING_CTRL_t
+                                                 CLOCKING => DEFAULT_SERV_CLOCKING_CTRL_t,
+                                                 FP_LEDS => DEFAULT_SERV_FP_LEDS_CTRL_t
                                                 );
 
 

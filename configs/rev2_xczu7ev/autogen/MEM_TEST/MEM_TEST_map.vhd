@@ -9,6 +9,7 @@ use work.AXIRegPkg.all;
 use work.types.all;
 use work.BRAMPortPkg.all;
 use work.MEM_TEST_Ctrl.all;
+
 entity MEM_TEST_map is
   port (
     clk_axi          : in  std_logic;
@@ -118,8 +119,6 @@ elsif BRAM_MISO(1).rd_data_valid = '1' then
           localRdData(31 downto  0)  <=  Mon.GIT_HASH_4;                   --
         when 5 => --0x5
           localRdData(31 downto  0)  <=  Mon.GIT_HASH_5;                   --
-        when 32 => --0x20
-          localRdData(31 downto  0)  <=  reg_data(32)(31 downto  0);       --
         when 16 => --0x10
           localRdData( 7 downto  0)  <=  Mon.BUILD_DATE.DAY;               --
           localRdData(15 downto  8)  <=  Mon.BUILD_DATE.MONTH;             --
@@ -146,6 +145,8 @@ elsif BRAM_MISO(1).rd_data_valid = '1' then
           localRdData(31 downto  0)  <=  Mon.FPGA.WORD_07;                 --
         when 26 => --0x1a
           localRdData(31 downto  0)  <=  Mon.FPGA.WORD_08;                 --
+        when 32 => --0x20
+          localRdData(31 downto  0)  <=  reg_data(32)(31 downto  0);       --
         when 768 => --0x300
           localRdData(31 downto  0)  <=  reg_data(768)(31 downto  0);      --
 

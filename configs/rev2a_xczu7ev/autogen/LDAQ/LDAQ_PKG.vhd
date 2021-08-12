@@ -17,13 +17,13 @@ package LDAQ_CTRL is
 
 
   constant DEFAULT_LDAQ_RESET_CTRL_t : LDAQ_RESET_CTRL_t := (
-                                                             USERCLK_TX => '0',
+                                                             RESET_ALL => '0',
+                                                             TX_PLL_AND_DATAPATH => '0',
+                                                             TX_DATAPATH => '0',
                                                              RX_PLL_AND_DATAPATH => '0',
                                                              RX_DATAPATH => '0',
-                                                             TX_PLL_AND_DATAPATH => '0',
-                                                             USERCLK_RX => '0',
-                                                             RESET_ALL => '0',
-                                                             TX_DATAPATH => '0'
+                                                             USERCLK_TX => '0',
+                                                             USERCLK_RX => '0'
                                                             );
   type LDAQ_STATUS_MON_t is record
     RESET_RX_CDR_STABLE        :std_logic;   

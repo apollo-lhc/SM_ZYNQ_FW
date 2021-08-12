@@ -9,6 +9,7 @@ use work.AXIRegPkg.all;
 use work.types.all;
 
 use work.SM_INFO_Ctrl.all;
+
 entity SM_INFO_map is
   port (
     clk_axi          : in  std_logic;

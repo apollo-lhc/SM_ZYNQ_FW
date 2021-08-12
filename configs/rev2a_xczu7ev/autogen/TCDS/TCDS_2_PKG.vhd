@@ -65,10 +65,10 @@ package TCDS_2_CTRL is
 
 
   constant DEFAULT_TCDS_2_TCDS_2_csr_control_mgt_rxeq_params_lpm_CTRL_t : TCDS_2_TCDS_2_csr_control_mgt_rxeq_params_lpm_CTRL_t := (
+                                                                                                                                   rxlpmgcovrden => '0',
                                                                                                                                    rxlpmhfovrden => '0',
-                                                                                                                                   rxlpmosovrden => '0',
                                                                                                                                    rxlpmlfklovrden => '0',
-                                                                                                                                   rxlpmgcovrden => '0'
+                                                                                                                                   rxlpmosovrden => '0'
                                                                                                                                   );
   type TCDS_2_TCDS_2_csr_control_mgt_rxeq_params_dfe_CTRL_t is record
     rxosovrden                 :std_logic;   
@@ -80,11 +80,11 @@ package TCDS_2_CTRL is
 
 
   constant DEFAULT_TCDS_2_TCDS_2_csr_control_mgt_rxeq_params_dfe_CTRL_t : TCDS_2_TCDS_2_csr_control_mgt_rxeq_params_dfe_CTRL_t := (
-                                                                                                                                   rxdfelfovrden => '0',
-                                                                                                                                   rxdfevpovrden => '0',
-                                                                                                                                   rxdfeutovrden => '0',
+                                                                                                                                   rxosovrden => '0',
                                                                                                                                    rxdfeagcovrden => '0',
-                                                                                                                                   rxosovrden => '0'
+                                                                                                                                   rxdfelfovrden => '0',
+                                                                                                                                   rxdfeutovrden => '0',
+                                                                                                                                   rxdfevpovrden => '0'
                                                                                                                                   );
   type TCDS_2_TCDS_2_csr_control_mgt_rxeq_params_CTRL_t is record
     lpm                        :TCDS_2_TCDS_2_csr_control_mgt_rxeq_params_lpm_CTRL_t;
@@ -93,8 +93,8 @@ package TCDS_2_CTRL is
 
 
   constant DEFAULT_TCDS_2_TCDS_2_csr_control_mgt_rxeq_params_CTRL_t : TCDS_2_TCDS_2_csr_control_mgt_rxeq_params_CTRL_t := (
-                                                                                                                           dfe => DEFAULT_TCDS_2_TCDS_2_csr_control_mgt_rxeq_params_dfe_CTRL_t,
-                                                                                                                           lpm => DEFAULT_TCDS_2_TCDS_2_csr_control_mgt_rxeq_params_lpm_CTRL_t
+                                                                                                                           lpm => DEFAULT_TCDS_2_TCDS_2_csr_control_mgt_rxeq_params_lpm_CTRL_t,
+                                                                                                                           dfe => DEFAULT_TCDS_2_TCDS_2_csr_control_mgt_rxeq_params_dfe_CTRL_t
                                                                                                                           );
   type TCDS_2_TCDS_2_csr_control_tclink_param_modulo_carrier_period_CTRL_t is record
     lo                         :std_logic_vector(31 downto 0);
@@ -162,37 +162,37 @@ package TCDS_2_CTRL is
 
 
   constant DEFAULT_TCDS_2_TCDS_2_csr_control_CTRL_t : TCDS_2_TCDS_2_csr_control_CTRL_t := (
+                                                                                           reset_all => '0',
+                                                                                           mgt_reset_all => '0',
+                                                                                           mgt_reset_tx_pll_and_datapath => '0',
+                                                                                           mgt_reset_tx_datapath => '0',
+                                                                                           mgt_reset_rx_pll_and_datapath => '0',
+                                                                                           mgt_reset_rx_datapath => '0',
+                                                                                           tclink_channel_ctrl_reset => '0',
+                                                                                           tclink_channel_ctrl_enable => '0',
+                                                                                           tclink_channel_ctrl_gentle => '0',
+                                                                                           tclink_close_loop => '0',
+                                                                                           tclink_phase_offset => DEFAULT_TCDS_2_TCDS_2_csr_control_tclink_phase_offset_CTRL_t,
                                                                                            phase_cdc40_tx_calib => (others => '0'),
+                                                                                           phase_cdc40_tx_force => '0',
+                                                                                           phase_cdc40_rx_calib => (others => '0'),
                                                                                            phase_cdc40_rx_force => '0',
+                                                                                           phase_pi_tx_calib => (others => '0'),
+                                                                                           phase_pi_tx_force => '0',
+                                                                                           mgt_rx_dfe_vs_lpm => '0',
+                                                                                           mgt_rx_dfe_vs_lpm_reset => '0',
                                                                                            mgt_rxeq_params => DEFAULT_TCDS_2_TCDS_2_csr_control_mgt_rxeq_params_CTRL_t,
                                                                                            fec_monitor_reset => '0',
-                                                                                           phase_pi_tx_force => '0',
-                                                                                           tclink_param_ape => (others => '0'),
-                                                                                           tclink_close_loop => '0',
-                                                                                           tclink_param_adco => DEFAULT_TCDS_2_TCDS_2_csr_control_tclink_param_adco_CTRL_t,
-                                                                                           tclink_param_modulo_carrier_period => DEFAULT_TCDS_2_TCDS_2_csr_control_tclink_param_modulo_carrier_period_CTRL_t,
-                                                                                           mgt_rx_dfe_vs_lpm => '0',
-                                                                                           tclink_param_master_rx_ui_period => DEFAULT_TCDS_2_TCDS_2_csr_control_tclink_param_master_rx_ui_period_CTRL_t,
-                                                                                           phase_cdc40_tx_force => '0',
                                                                                            tclink_param_metastability_deglitch => (others => '0'),
-                                                                                           mgt_reset_rx_datapath => '0',
-                                                                                           tclink_channel_ctrl_enable => '0',
-                                                                                           phase_pi_tx_calib => (others => '0'),
                                                                                            tclink_param_phase_detector_navg => (others => '0'),
-                                                                                           tclink_phase_offset => DEFAULT_TCDS_2_TCDS_2_csr_control_tclink_phase_offset_CTRL_t,
+                                                                                           tclink_param_modulo_carrier_period => DEFAULT_TCDS_2_TCDS_2_csr_control_tclink_param_modulo_carrier_period_CTRL_t,
+                                                                                           tclink_param_master_rx_ui_period => DEFAULT_TCDS_2_TCDS_2_csr_control_tclink_param_master_rx_ui_period_CTRL_t,
+                                                                                           tclink_param_aie => (others => '0'),
                                                                                            tclink_param_aie_enable => '0',
-                                                                                           reset_all => '0',
-                                                                                           tclink_channel_ctrl_reset => '0',
-                                                                                           mgt_rx_dfe_vs_lpm_reset => '0',
+                                                                                           tclink_param_ape => (others => '0'),
                                                                                            tclink_param_sigma_delta_clk_div => (others => '0'),
-                                                                                           tclink_channel_ctrl_gentle => '0',
                                                                                            tclink_param_enable_mirror => '0',
-                                                                                           mgt_reset_tx_datapath => '0',
-                                                                                           mgt_reset_all => '0',
-                                                                                           phase_cdc40_rx_calib => (others => '0'),
-                                                                                           mgt_reset_tx_pll_and_datapath => '0',
-                                                                                           mgt_reset_rx_pll_and_datapath => '0',
-                                                                                           tclink_param_aie => (others => '0')
+                                                                                           tclink_param_adco => DEFAULT_TCDS_2_TCDS_2_csr_control_tclink_param_adco_CTRL_t
                                                                                           );
   type TCDS_2_TCDS_2_csr_status_tclink_phase_error_MON_t is record
     lo                         :std_logic_vector(31 downto 0);
@@ -415,13 +415,13 @@ package TCDS_2_CTRL is
 
 
   constant DEFAULT_TCDS_2_LTCDS_RESET_CTRL_t : TCDS_2_LTCDS_RESET_CTRL_t := (
-                                                                             USERCLK_TX => '0',
+                                                                             RESET_ALL => '0',
+                                                                             TX_PLL_AND_DATAPATH => '0',
+                                                                             TX_DATAPATH => '0',
                                                                              RX_PLL_AND_DATAPATH => '0',
                                                                              RX_DATAPATH => '0',
-                                                                             TX_PLL_AND_DATAPATH => '0',
-                                                                             USERCLK_RX => '0',
-                                                                             RESET_ALL => '0',
-                                                                             TX_DATAPATH => '0'
+                                                                             USERCLK_TX => '0',
+                                                                             USERCLK_RX => '0'
                                                                             );
   type TCDS_2_LTCDS_STATUS_MON_t is record
     RESET_RX_CDR_STABLE        :std_logic;   

@@ -33,12 +33,12 @@ package PLXVC_CTRL is
   type PLXVC_XVC_CTRL_t_ARRAY is array(1 to 3) of PLXVC_XVC_CTRL_t;
 
   constant DEFAULT_PLXVC_XVC_CTRL_t : PLXVC_XVC_CTRL_t := (
-                                                           REMOTE => DEFAULT_PLXVC_XVC_REMOTE_CTRL_t,
-                                                           LOCK => (others => '0'),
-                                                           TDI_VECTOR => (others => '0'),
                                                            LENGTH => (others => '0'),
                                                            TMS_VECTOR => (others => '0'),
+                                                           TDI_VECTOR => (others => '0'),
                                                            GO => '0',
+                                                           LOCK => (others => '0'),
+                                                           REMOTE => DEFAULT_PLXVC_XVC_REMOTE_CTRL_t,
                                                            PS_RST => '1'
                                                           );
   type PLXVC_MON_t is record

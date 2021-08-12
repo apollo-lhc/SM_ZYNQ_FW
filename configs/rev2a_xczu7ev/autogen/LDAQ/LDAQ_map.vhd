@@ -7,6 +7,7 @@ use work.AXIRegWidthPkg.all;
 use work.AXIRegPkg.all;
 use work.types.all;
 use work.LDAQ_Ctrl.all;
+
 entity LDAQ_map is
   port (
     clk_axi          : in  std_logic;
@@ -68,11 +69,6 @@ begin  -- architecture behavioral
       localRdAck  <= '1';
       case to_integer(unsigned(localAddress(4 downto 0))) is
 
-        when 16 => --0x10
-          localRdData(15 downto  0)  <=  reg_data(16)(15 downto  0);          --
-          localRdData(31 downto 16)  <=  reg_data(16)(31 downto 16);          --
-        when 17 => --0x11
-          localRdData( 7 downto  0)  <=  reg_data(17)( 7 downto  0);          --
         when 2 => --0x2
           localRdData( 0)            <=  Mon.STATUS.RESET_RX_CDR_STABLE;      --
           localRdData( 1)            <=  Mon.STATUS.RESET_TX_DONE;            --
@@ -85,12 +81,17 @@ begin  -- architecture behavioral
           localRdData(19)            <=  Mon.STATUS.RX_COMMADET;              --
           localRdData(20)            <=  Mon.STATUS.RX_PMA_RESET_DONE;        --
           localRdData(21)            <=  Mon.STATUS.TX_PMA_RESET_DONE;        --
-        when 19 => --0x13
-          localRdData( 7 downto  0)  <=  Mon.RX.CTRL2;                        --
-          localRdData(15 downto  8)  <=  Mon.RX.CTRL3;                        --
+        when 16 => --0x10
+          localRdData(15 downto  0)  <=  reg_data(16)(15 downto  0);          --
+          localRdData(31 downto 16)  <=  reg_data(16)(31 downto 16);          --
+        when 17 => --0x11
+          localRdData( 7 downto  0)  <=  reg_data(17)( 7 downto  0);          --
         when 18 => --0x12
           localRdData(15 downto  0)  <=  Mon.RX.CTRL0;                        --
           localRdData(31 downto 16)  <=  Mon.RX.CTRL1;                        --
+        when 19 => --0x13
+          localRdData( 7 downto  0)  <=  Mon.RX.CTRL2;                        --
+          localRdData(15 downto  8)  <=  Mon.RX.CTRL3;                        --
 
 
         when others =>

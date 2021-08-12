@@ -7,6 +7,7 @@ use work.AXIRegWidthPkg.all;
 use work.AXIRegPkg.all;
 use work.types.all;
 use work.TCDS_2_Ctrl.all;
+
 entity TCDS_2_map is
   port (
     clk_axi          : in  std_logic;
@@ -71,18 +72,6 @@ begin  -- architecture behavioral
         when 0 => --0x0
           localRdData( 0)            <=  Mon.TCDS_2.hw_cfg.has_spy_registers;                        --
           localRdData( 1)            <=  Mon.TCDS_2.hw_cfg.has_link_test_mode;                       --
-        when 514 => --0x202
-          localRdData( 0)            <=  Mon.LTCDS(1).STATUS.RESET_RX_CDR_STABLE;                    --
-          localRdData( 1)            <=  Mon.LTCDS(1).STATUS.RESET_TX_DONE;                          --
-          localRdData( 2)            <=  Mon.LTCDS(1).STATUS.RESET_RX_DONE;                          --
-          localRdData( 8)            <=  Mon.LTCDS(1).STATUS.USERCLK_TX_ACTIVE;                      --
-          localRdData( 9)            <=  Mon.LTCDS(1).STATUS.USERCLK_RX_ACTIVE;                      --
-          localRdData(16)            <=  Mon.LTCDS(1).STATUS.GT_POWER_GOOD;                          --
-          localRdData(17)            <=  Mon.LTCDS(1).STATUS.RX_BYTE_ISALIGNED;                      --
-          localRdData(18)            <=  Mon.LTCDS(1).STATUS.RX_BYTE_REALIGN;                        --
-          localRdData(19)            <=  Mon.LTCDS(1).STATUS.RX_COMMADET;                            --
-          localRdData(20)            <=  Mon.LTCDS(1).STATUS.RX_PMA_RESET_DONE;                      --
-          localRdData(21)            <=  Mon.LTCDS(1).STATUS.TX_PMA_RESET_DONE;                      --
         when 8 => --0x8
           localRdData( 0)            <=  reg_data( 8)( 0);                                           --
         when 9 => --0x9
@@ -97,40 +86,6 @@ begin  -- architecture behavioral
           localRdData( 7 downto  0)  <=  Mon.TCDS_2.link_test.status.prbs_gen_o_hint;                --
           localRdData(15 downto  8)  <=  Mon.TCDS_2.link_test.status.prbs_chk_i_hint;                --
           localRdData(23 downto 16)  <=  Mon.TCDS_2.link_test.status.prbs_chk_o_hint;                --
-        when 528 => --0x210
-          localRdData(15 downto  0)  <=  reg_data(528)(15 downto  0);                                --
-          localRdData(31 downto 16)  <=  reg_data(528)(31 downto 16);                                --
-        when 529 => --0x211
-          localRdData( 7 downto  0)  <=  reg_data(529)( 7 downto  0);                                --
-        when 530 => --0x212
-          localRdData(15 downto  0)  <=  Mon.LTCDS(1).RX.CTRL0;                                      --
-          localRdData(31 downto 16)  <=  Mon.LTCDS(1).RX.CTRL1;                                      --
-        when 531 => --0x213
-          localRdData( 7 downto  0)  <=  Mon.LTCDS(1).RX.CTRL2;                                      --
-          localRdData(15 downto  8)  <=  Mon.LTCDS(1).RX.CTRL3;                                      --
-        when 546 => --0x222
-          localRdData( 0)            <=  Mon.LTCDS(2).STATUS.RESET_RX_CDR_STABLE;                    --
-          localRdData( 1)            <=  Mon.LTCDS(2).STATUS.RESET_TX_DONE;                          --
-          localRdData( 2)            <=  Mon.LTCDS(2).STATUS.RESET_RX_DONE;                          --
-          localRdData( 8)            <=  Mon.LTCDS(2).STATUS.USERCLK_TX_ACTIVE;                      --
-          localRdData( 9)            <=  Mon.LTCDS(2).STATUS.USERCLK_RX_ACTIVE;                      --
-          localRdData(16)            <=  Mon.LTCDS(2).STATUS.GT_POWER_GOOD;                          --
-          localRdData(17)            <=  Mon.LTCDS(2).STATUS.RX_BYTE_ISALIGNED;                      --
-          localRdData(18)            <=  Mon.LTCDS(2).STATUS.RX_BYTE_REALIGN;                        --
-          localRdData(19)            <=  Mon.LTCDS(2).STATUS.RX_COMMADET;                            --
-          localRdData(20)            <=  Mon.LTCDS(2).STATUS.RX_PMA_RESET_DONE;                      --
-          localRdData(21)            <=  Mon.LTCDS(2).STATUS.TX_PMA_RESET_DONE;                      --
-        when 560 => --0x230
-          localRdData(15 downto  0)  <=  reg_data(560)(15 downto  0);                                --
-          localRdData(31 downto 16)  <=  reg_data(560)(31 downto 16);                                --
-        when 561 => --0x231
-          localRdData( 7 downto  0)  <=  reg_data(561)( 7 downto  0);                                --
-        when 562 => --0x232
-          localRdData(15 downto  0)  <=  Mon.LTCDS(2).RX.CTRL0;                                      --
-          localRdData(31 downto 16)  <=  Mon.LTCDS(2).RX.CTRL1;                                      --
-        when 563 => --0x233
-          localRdData( 7 downto  0)  <=  Mon.LTCDS(2).RX.CTRL2;                                      --
-          localRdData(15 downto  8)  <=  Mon.LTCDS(2).RX.CTRL3;                                      --
         when 64 => --0x40
           localRdData( 0)            <=  reg_data(64)( 0);                                           --
           localRdData( 4)            <=  reg_data(64)( 4);                                           --Direct full (i.e., both TX and RX) reset of the MGT. Only enabled when the TCLink channel controller is disabled (i.e., control.tclink_channel_ctrl_enable is low).
@@ -381,6 +336,52 @@ begin  -- architecture behavioral
           localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel1.value_12;                      --
         when 349 => --0x15d
           localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel1.value_13;                      --
+        when 514 => --0x202
+          localRdData( 0)            <=  Mon.LTCDS(1).STATUS.RESET_RX_CDR_STABLE;                    --
+          localRdData( 1)            <=  Mon.LTCDS(1).STATUS.RESET_TX_DONE;                          --
+          localRdData( 2)            <=  Mon.LTCDS(1).STATUS.RESET_RX_DONE;                          --
+          localRdData( 8)            <=  Mon.LTCDS(1).STATUS.USERCLK_TX_ACTIVE;                      --
+          localRdData( 9)            <=  Mon.LTCDS(1).STATUS.USERCLK_RX_ACTIVE;                      --
+          localRdData(16)            <=  Mon.LTCDS(1).STATUS.GT_POWER_GOOD;                          --
+          localRdData(17)            <=  Mon.LTCDS(1).STATUS.RX_BYTE_ISALIGNED;                      --
+          localRdData(18)            <=  Mon.LTCDS(1).STATUS.RX_BYTE_REALIGN;                        --
+          localRdData(19)            <=  Mon.LTCDS(1).STATUS.RX_COMMADET;                            --
+          localRdData(20)            <=  Mon.LTCDS(1).STATUS.RX_PMA_RESET_DONE;                      --
+          localRdData(21)            <=  Mon.LTCDS(1).STATUS.TX_PMA_RESET_DONE;                      --
+        when 528 => --0x210
+          localRdData(15 downto  0)  <=  reg_data(528)(15 downto  0);                                --
+          localRdData(31 downto 16)  <=  reg_data(528)(31 downto 16);                                --
+        when 529 => --0x211
+          localRdData( 7 downto  0)  <=  reg_data(529)( 7 downto  0);                                --
+        when 530 => --0x212
+          localRdData(15 downto  0)  <=  Mon.LTCDS(1).RX.CTRL0;                                      --
+          localRdData(31 downto 16)  <=  Mon.LTCDS(1).RX.CTRL1;                                      --
+        when 531 => --0x213
+          localRdData( 7 downto  0)  <=  Mon.LTCDS(1).RX.CTRL2;                                      --
+          localRdData(15 downto  8)  <=  Mon.LTCDS(1).RX.CTRL3;                                      --
+        when 546 => --0x222
+          localRdData( 0)            <=  Mon.LTCDS(2).STATUS.RESET_RX_CDR_STABLE;                    --
+          localRdData( 1)            <=  Mon.LTCDS(2).STATUS.RESET_TX_DONE;                          --
+          localRdData( 2)            <=  Mon.LTCDS(2).STATUS.RESET_RX_DONE;                          --
+          localRdData( 8)            <=  Mon.LTCDS(2).STATUS.USERCLK_TX_ACTIVE;                      --
+          localRdData( 9)            <=  Mon.LTCDS(2).STATUS.USERCLK_RX_ACTIVE;                      --
+          localRdData(16)            <=  Mon.LTCDS(2).STATUS.GT_POWER_GOOD;                          --
+          localRdData(17)            <=  Mon.LTCDS(2).STATUS.RX_BYTE_ISALIGNED;                      --
+          localRdData(18)            <=  Mon.LTCDS(2).STATUS.RX_BYTE_REALIGN;                        --
+          localRdData(19)            <=  Mon.LTCDS(2).STATUS.RX_COMMADET;                            --
+          localRdData(20)            <=  Mon.LTCDS(2).STATUS.RX_PMA_RESET_DONE;                      --
+          localRdData(21)            <=  Mon.LTCDS(2).STATUS.TX_PMA_RESET_DONE;                      --
+        when 560 => --0x230
+          localRdData(15 downto  0)  <=  reg_data(560)(15 downto  0);                                --
+          localRdData(31 downto 16)  <=  reg_data(560)(31 downto 16);                                --
+        when 561 => --0x231
+          localRdData( 7 downto  0)  <=  reg_data(561)( 7 downto  0);                                --
+        when 562 => --0x232
+          localRdData(15 downto  0)  <=  Mon.LTCDS(2).RX.CTRL0;                                      --
+          localRdData(31 downto 16)  <=  Mon.LTCDS(2).RX.CTRL1;                                      --
+        when 563 => --0x233
+          localRdData( 7 downto  0)  <=  Mon.LTCDS(2).RX.CTRL2;                                      --
+          localRdData(15 downto  8)  <=  Mon.LTCDS(2).RX.CTRL3;                                      --
 
 
         when others =>
@@ -523,37 +524,11 @@ begin  -- architecture behavioral
       
       if localWrEn = '1' then
         case to_integer(unsigned(localAddress(9 downto 0))) is
-        when 512 => --0x200
-          Ctrl.LTCDS(1).RESET.RESET_ALL            <=  localWrData( 0);               
-          Ctrl.LTCDS(1).RESET.TX_PLL_AND_DATAPATH  <=  localWrData( 4);               
-          Ctrl.LTCDS(1).RESET.TX_DATAPATH          <=  localWrData( 5);               
-          Ctrl.LTCDS(1).RESET.RX_PLL_AND_DATAPATH  <=  localWrData( 6);               
-          Ctrl.LTCDS(1).RESET.RX_DATAPATH          <=  localWrData( 7);               
-          Ctrl.LTCDS(1).RESET.USERCLK_TX           <=  localWrData( 8);               
-          Ctrl.LTCDS(1).RESET.USERCLK_RX           <=  localWrData( 9);               
         when 8 => --0x8
           reg_data( 8)( 0)                         <=  localWrData( 0);                --
         when 9 => --0x9
           reg_data( 9)( 0)                         <=  localWrData( 0);                --
           reg_data( 9)( 1)                         <=  localWrData( 1);                --
-        when 528 => --0x210
-          reg_data(528)(15 downto  0)              <=  localWrData(15 downto  0);      --
-          reg_data(528)(31 downto 16)              <=  localWrData(31 downto 16);      --
-        when 529 => --0x211
-          reg_data(529)( 7 downto  0)              <=  localWrData( 7 downto  0);      --
-        when 544 => --0x220
-          Ctrl.LTCDS(2).RESET.RESET_ALL            <=  localWrData( 0);               
-          Ctrl.LTCDS(2).RESET.TX_PLL_AND_DATAPATH  <=  localWrData( 4);               
-          Ctrl.LTCDS(2).RESET.TX_DATAPATH          <=  localWrData( 5);               
-          Ctrl.LTCDS(2).RESET.RX_PLL_AND_DATAPATH  <=  localWrData( 6);               
-          Ctrl.LTCDS(2).RESET.RX_DATAPATH          <=  localWrData( 7);               
-          Ctrl.LTCDS(2).RESET.USERCLK_TX           <=  localWrData( 8);               
-          Ctrl.LTCDS(2).RESET.USERCLK_RX           <=  localWrData( 9);               
-        when 560 => --0x230
-          reg_data(560)(15 downto  0)              <=  localWrData(15 downto  0);      --
-          reg_data(560)(31 downto 16)              <=  localWrData(31 downto 16);      --
-        when 561 => --0x231
-          reg_data(561)( 7 downto  0)              <=  localWrData( 7 downto  0);      --
         when 64 => --0x40
           reg_data(64)( 0)                         <=  localWrData( 0);                --
           reg_data(64)( 4)                         <=  localWrData( 4);                --Direct full (i.e., both TX and RX) reset of the MGT. Only enabled when the TCLink channel controller is disabled (i.e., control.tclink_channel_ctrl_enable is low).
@@ -616,6 +591,32 @@ begin  -- architecture behavioral
           reg_data(81)(31 downto  0)               <=  localWrData(31 downto  0);      --
         when 82 => --0x52
           reg_data(82)(15 downto  0)               <=  localWrData(15 downto  0);      --
+        when 512 => --0x200
+          Ctrl.LTCDS(1).RESET.RESET_ALL            <=  localWrData( 0);               
+          Ctrl.LTCDS(1).RESET.TX_PLL_AND_DATAPATH  <=  localWrData( 4);               
+          Ctrl.LTCDS(1).RESET.TX_DATAPATH          <=  localWrData( 5);               
+          Ctrl.LTCDS(1).RESET.RX_PLL_AND_DATAPATH  <=  localWrData( 6);               
+          Ctrl.LTCDS(1).RESET.RX_DATAPATH          <=  localWrData( 7);               
+          Ctrl.LTCDS(1).RESET.USERCLK_TX           <=  localWrData( 8);               
+          Ctrl.LTCDS(1).RESET.USERCLK_RX           <=  localWrData( 9);               
+        when 528 => --0x210
+          reg_data(528)(15 downto  0)              <=  localWrData(15 downto  0);      --
+          reg_data(528)(31 downto 16)              <=  localWrData(31 downto 16);      --
+        when 529 => --0x211
+          reg_data(529)( 7 downto  0)              <=  localWrData( 7 downto  0);      --
+        when 544 => --0x220
+          Ctrl.LTCDS(2).RESET.RESET_ALL            <=  localWrData( 0);               
+          Ctrl.LTCDS(2).RESET.TX_PLL_AND_DATAPATH  <=  localWrData( 4);               
+          Ctrl.LTCDS(2).RESET.TX_DATAPATH          <=  localWrData( 5);               
+          Ctrl.LTCDS(2).RESET.RX_PLL_AND_DATAPATH  <=  localWrData( 6);               
+          Ctrl.LTCDS(2).RESET.RX_DATAPATH          <=  localWrData( 7);               
+          Ctrl.LTCDS(2).RESET.USERCLK_TX           <=  localWrData( 8);               
+          Ctrl.LTCDS(2).RESET.USERCLK_RX           <=  localWrData( 9);               
+        when 560 => --0x230
+          reg_data(560)(15 downto  0)              <=  localWrData(15 downto  0);      --
+          reg_data(560)(31 downto 16)              <=  localWrData(31 downto 16);      --
+        when 561 => --0x231
+          reg_data(561)( 7 downto  0)              <=  localWrData( 7 downto  0);      --
 
           when others => null;
         end case;
