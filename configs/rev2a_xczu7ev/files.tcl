@@ -129,9 +129,9 @@ set vhdl_files "\
      configs/rev2a_xczu7ev/autogen/TCDS/TCDS_2_map.vhd \
      configs/rev2a_xczu7ev/autogen/TCDS/TCDS_2_PKG.vhd \
      src/TCDS/TCDS.vhd \
-     src/LDAQ/LDAQ_map.vhd \
+     configs/rev2a_xczu7ev/autogen/LDAQ/LDAQ_map.vhd \
      configs/rev2a_xczu7ev/autogen/LDAQ/LDAQ_PKG.vhd \
-     configs/rev2a_xczu7ev/autogen/LDAQ/LDAQ.vhd \
+     src/LDAQ/LDAQ.vhd \
      "
 
 set xdc_files "\

@@ -286,7 +286,7 @@ begin
   -- AXI slave interface
   -------------------------------------------------------------------------------
   -------------------------------------------------------------------------------
-  TCDS_2_interface_1: entity work.TCDS_2_interface
+  TCDS_2_map_1: entity work.TCDS_2_map
     port map (
       clk_axi         => clk_axi,
       reset_axi_n     => reset_axi_n,

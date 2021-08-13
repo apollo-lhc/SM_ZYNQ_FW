@@ -97,7 +97,7 @@ begin  -- architecture behavioral
       txpmaresetdone_out(0)                 => Mon.STATUS.tx_pma_reset_done);
 
 
-  LDAQ_interface_1: entity work.LDAQ_interface
+  LDAQ_interface_1: entity work.LDAQ_map
     port map (
       clk_axi         => clk_axi,
       reset_axi_n     => reset_axi_n,

@@ -52,5 +52,9 @@
     <node id="ENABLE_JTAG" address="0x00" mask="0x00000001" permission="rw" description="Enable the JTAG lines to the CPLD" parameters="default=0x0"/>
     <node id="IO" address="0x02" mask="0x0000000F" permission="r" description="inputs(for now) from CPLD"/>
   </node>
+  <node id="MISC" address="0x50">
+    <node id="ETH1_RESET_N" address="0x0" permission="rw" mask="0x1" parameters="default=0x1" />
+    <node id="ETH1_CLK_FREQ" address="0x1" permission="r" mask="0xFFFFFFFF" description="Measured Freq of clock" parameters="Table=CLOCKING;Column=FREQ;Row=ETH1;Status=3;Show=nz;Format=m_1_1_1000000_1_0_1" />
+  </node>
 
 </node>

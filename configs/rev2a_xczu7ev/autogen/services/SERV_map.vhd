@@ -30,8 +30,8 @@ architecture behavioral of SERV_map is
   signal localRdAck         : std_logic;
 
 
-  signal reg_data :  slv32_array_t(integer range 0 to 50);
-  constant Default_reg_data : slv32_array_t(integer range 0 to 50) := (others => x"00000000");
+  signal reg_data :  slv32_array_t(integer range 0 to 81);
+  constant Default_reg_data : slv32_array_t(integer range 0 to 81) := (others => x"00000000");
 begin  -- architecture behavioral
 
   -------------------------------------------------------------------------------
@@ -67,7 +67,7 @@ begin  -- architecture behavioral
     localRdData <= x"00000000";
     if localRdReq = '1' then
       localRdAck  <= '1';
-      case to_integer(unsigned(localAddress(5 downto 0))) is
+      case to_integer(unsigned(localAddress(6 downto 0))) is
 
         when 0 => --0x0
           localRdData( 0)            <=  reg_data( 0)( 0);                --Enable Si5344 outputs
@@ -119,6 +119,10 @@ begin  -- architecture behavioral
           localRdData( 0)            <=  reg_data(48)( 0);                --Enable the JTAG lines to the CPLD
         when 50 => --0x32
           localRdData( 3 downto  0)  <=  Mon.CPLD.IO;                     --inputs(for now) from CPLD
+        when 80 => --0x50
+          localRdData( 0)            <=  reg_data(80)( 0);                --
+        when 81 => --0x51
+          localRdData(31 downto  0)  <=  Mon.MISC.ETH1_CLK_FREQ;          --Measured Freq of clock
 
 
         when others =>
@@ -150,6 +154,7 @@ begin  -- architecture behavioral
   Ctrl.FP_LEDS.FORCE_PAGE        <=  reg_data(16)(22);               
   Ctrl.FP_LEDS.PAGE              <=  reg_data(16)(29 downto 24);     
   Ctrl.CPLD.ENABLE_JTAG          <=  reg_data(48)( 0);               
+  Ctrl.MISC.ETH1_RESET_N         <=  reg_data(80)( 0);               
 
 
   reg_writes: process (clk_axi, reset_axi_n) is
@@ -174,13 +179,14 @@ begin  -- architecture behavioral
       reg_data(16)(22)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.FORCE_PAGE;
       reg_data(16)(29 downto 24)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.PAGE;
       reg_data(48)( 0)  <= DEFAULT_SERV_CTRL_t.CPLD.ENABLE_JTAG;
+      reg_data(80)( 0)  <= DEFAULT_SERV_CTRL_t.MISC.ETH1_RESET_N;
 
     elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
       
 
       
       if localWrEn = '1' then
-        case to_integer(unsigned(localAddress(5 downto 0))) is
+        case to_integer(unsigned(localAddress(6 downto 0))) is
         when 0 => --0x0
           reg_data( 0)( 0)            <=  localWrData( 0);                --Enable Si5344 outputs
           reg_data( 0)( 1)            <=  localWrData( 1);                --Power on Si5344
@@ -206,6 +212,8 @@ begin  -- architecture behavioral
           reg_data(16)(29 downto 24)  <=  localWrData(29 downto 24);      --Page to display
         when 48 => --0x30
           reg_data(48)( 0)            <=  localWrData( 0);                --Enable the JTAG lines to the CPLD
+        when 80 => --0x50
+          reg_data(80)( 0)            <=  localWrData( 0);                --
 
           when others => null;
         end case;
