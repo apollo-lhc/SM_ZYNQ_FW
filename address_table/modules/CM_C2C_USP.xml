@@ -9,7 +9,10 @@
   <!-- CTRL 0x0 -> 0x2 mapped to 0x05 -> 0x07 -->
   <node id="LINK_DEBUG"             address="0x5" module="file://CM_C2C_DEBUG_USP.xml"/>
 
-  <!-- CTRL 0x0 -> 0x9 mapped to 0x10 -> 0x19 -->
+  <!-- CNT 0x0 -> 0x9 mapped to 0x10 -> 0x19 -->
   <node id="CNT"                    address="0x10" module="file://CM_C2C_CNT.xml"/>
+
+  <!-- BRIDGE_INFO 0x0 ->0x7 mapped to 0x20 -> 0x27 -->
+  <node id="BRIDGE_INFO"            address="0x20" module="file://CM_BRIDGE_INFO.xml"/>
 </node>
   

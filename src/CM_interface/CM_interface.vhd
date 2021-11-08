@@ -170,6 +170,42 @@ begin
       channel_active                 => mon_active(1));
 
 
+
+  Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.ADDR_LSB      <= std_logic_vector(AXI_ADDR_C2C1_AXI_BRIDGE(31 downto 0));
+  Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.ADDR_MSB      <= x"00000000";
+  Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.SIZE          <= std_logic_vector(AXI_RANGE_C2C1_AXI_BRIDGE);
+  Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.VALID         <= '1';
+  Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.ADDR_LSB  <= std_logic_vector(AXI_ADDR_C2C1_AXI_LITE_BRIDGE(31 downto 0));
+  Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.ADDR_MSB  <= x"00000000";
+  Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.SIZE      <= std_logic_vector(AXI_RANGE_C2C1_AXI_LITE_BRIDGE);
+  Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.VALID     <= '1';
+  Mon.CM(1).C2C(2).BRIDGE_INFO.AXI.ADDR_LSB      <= x"00000000";
+  Mon.CM(1).C2C(2).BRIDGE_INFO.AXI.ADDR_MSB      <= x"00000000";
+  Mon.CM(1).C2C(2).BRIDGE_INFO.AXI.SIZE          <= x"00000000";
+  Mon.CM(1).C2C(2).BRIDGE_INFO.AXI.VALID         <= '0';
+  Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.ADDR_LSB <= x"00000000";
+  Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.ADDR_MSB <= x"00000000";
+  Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.SIZE     <= x"00000000";
+  Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.VALID    <= '0';
+  Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.ADDR_LSB      <= std_logic_vector(AXI_ADDR_C2C2_AXI_BRIDGE(31 downto 0));
+  Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.ADDR_MSB      <= x"00000000";
+  Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.SIZE          <= std_logic_vector(AXI_RANGE_C2C2_AXI_BRIDGE);
+  Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.VALID         <= '1';
+  Mon.CM(2).C2C(1).BRIDGE_INFO.AXILITE.ADDR_LSB <= std_logic_vector(AXI_ADDR_C2C2_AXI_LITE_BRIDGE(31 downto 0));
+  Mon.CM(2).C2C(1).BRIDGE_INFO.AXILITE.ADDR_MSB <= x"00000000";
+  Mon.CM(2).C2C(1).BRIDGE_INFO.AXILITE.SIZE     <= std_logic_vector(AXI_RANGE_C2C2_AXI_LITE_BRIDGE);
+  Mon.CM(2).C2C(1).BRIDGE_INFO.AXILITE.VALID    <= '1';
+  Mon.CM(2).C2C(2).BRIDGE_INFO.AXI.ADDR_LSB      <= x"00000000";
+  Mon.CM(2).C2C(2).BRIDGE_INFO.AXI.ADDR_MSB      <= x"00000000";
+  Mon.CM(2).C2C(2).BRIDGE_INFO.AXI.SIZE          <= x"00000000";
+  Mon.CM(2).C2C(2).BRIDGE_INFO.AXI.VALID         <= '0';
+  Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.ADDR_LSB <= x"00000000";
+  Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.ADDR_MSB <= x"00000000";
+  Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.SIZE     <= x"00000000";
+  Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.VALID    <= '0';
+
+
+  
   GENERATE_LOOP: for iCM in 1 to 2 generate
 
     -------------------------------------------------------------------------------
@@ -232,7 +268,7 @@ begin
 
     GENERATE_LANE_LOOP: for iLane in 1 to 2 generate
       signal linkID : integer := 2*(iCM-1) + (iLane);
-    begin
+    begin      
       Mon.CM(iCM).C2C(iLane).LINK_DEBUG         <= CM_C2C_Mon.Link(linkID).LINK_DEBUG;
       Mon.CM(iCM).C2C(iLane).STATUS             <= CM_C2C_Mon.Link(linkID).STATUS;
       Mon.CM(iCM).C2C(iLane).CNT.USER_CLK_FREQ  <= CM_C2C_Mon.Link(linkID).user_clk_freq;

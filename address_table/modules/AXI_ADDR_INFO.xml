@@ -1,0 +1,6 @@
+<node id="AXI_ADDR_INFO">
+  <node id="ADDR_LSB"  address="0x0" mask="0xFFFFFFFF" permission="r"/>
+  <node id="ADDR_MSB"  address="0x1" mask="0xFFFFFFFF" permission="r"/>
+  <node id="SIZE"      address="0x2" mask="0xFFFFFFFF" permission="r"/>
+  <node id="VALID"     address="0x3" mask="0x00000001" permission="r"/>
+</node>

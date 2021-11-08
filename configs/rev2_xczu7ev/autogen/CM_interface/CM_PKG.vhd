@@ -160,10 +160,33 @@ package CM_CTRL is
   constant DEFAULT_CM_CM_C2C_CNT_CTRL_t : CM_CM_C2C_CNT_CTRL_t := (
                                                                    RESET_COUNTERS => '0'
                                                                   );
+  type CM_CM_C2C_BRIDGE_INFO_AXI_MON_t is record
+    ADDR_LSB                   :std_logic_vector(31 downto 0);
+    ADDR_MSB                   :std_logic_vector(31 downto 0);
+    SIZE                       :std_logic_vector(31 downto 0);
+    VALID                      :std_logic;                    
+  end record CM_CM_C2C_BRIDGE_INFO_AXI_MON_t;
+
+
+  type CM_CM_C2C_BRIDGE_INFO_AXILITE_MON_t is record
+    ADDR_LSB                   :std_logic_vector(31 downto 0);
+    ADDR_MSB                   :std_logic_vector(31 downto 0);
+    SIZE                       :std_logic_vector(31 downto 0);
+    VALID                      :std_logic;                    
+  end record CM_CM_C2C_BRIDGE_INFO_AXILITE_MON_t;
+
+
+  type CM_CM_C2C_BRIDGE_INFO_MON_t is record
+    AXI                        :CM_CM_C2C_BRIDGE_INFO_AXI_MON_t;
+    AXILITE                    :CM_CM_C2C_BRIDGE_INFO_AXILITE_MON_t;
+  end record CM_CM_C2C_BRIDGE_INFO_MON_t;
+
+
   type CM_CM_C2C_MON_t is record
     STATUS                     :CM_CM_C2C_STATUS_MON_t;
     LINK_DEBUG                 :CM_CM_C2C_LINK_DEBUG_MON_t;
     CNT                        :CM_CM_C2C_CNT_MON_t;       
+    BRIDGE_INFO                :CM_CM_C2C_BRIDGE_INFO_MON_t;
   end record CM_CM_C2C_MON_t;
   type CM_CM_C2C_MON_t_ARRAY is array(1 to 2) of CM_CM_C2C_MON_t;
 

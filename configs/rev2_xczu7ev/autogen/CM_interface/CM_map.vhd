@@ -36,8 +36,8 @@ architecture behavioral of CM_map is
 
   
   
-  signal reg_data :  slv32_array_t(integer range 0 to 346);
-  constant Default_reg_data : slv32_array_t(integer range 0 to 346) := (others => x"00000000");
+  signal reg_data :  slv32_array_t(integer range 0 to 378);
+  constant Default_reg_data : slv32_array_t(integer range 0 to 378) := (others => x"00000000");
 begin  -- architecture behavioral
 
   -------------------------------------------------------------------------------
@@ -178,10 +178,15 @@ begin  -- architecture behavioral
           localRdData(31 downto  0)  <=  Mon.CM(1).C2C(1).CNT.USER_CLK_FREQ;                  --Frequency of the user C2C clk
         when 48 => --0x30
           localRdData(11)            <=  reg_data(48)(11);                                    --phy_lane_control is enabled
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.ADDR_LSB;           --
         when 49 => --0x31
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.ADDR_MSB;           --
           localRdData(31 downto  0)  <=  reg_data(49)(31 downto  0);                          --Contious phy_lane_up signals required to lock phylane control
         when 50 => --0x32
           localRdData(23 downto  0)  <=  reg_data(50)(23 downto  0);                          --Time spent waiting for phylane to stabilize
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.SIZE;               --
+        when 51 => --0x33
+          localRdData( 0)            <=  Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.VALID;              --
         when 52 => --0x34
           localRdData( 0)            <=  Mon.CM(1).C2C(2).STATUS.CONFIG_ERROR;                --C2C config error
           localRdData( 1)            <=  Mon.CM(1).C2C(2).STATUS.LINK_ERROR;                  --C2C link error
@@ -195,6 +200,7 @@ begin  -- architecture behavioral
           localRdData(13 downto 12)  <=  Mon.CM(1).C2C(2).STATUS.PHY_LANE_UP;                 --Aurora phy lanes up
           localRdData(16)            <=  Mon.CM(1).C2C(2).STATUS.PHY_HARD_ERR;                --Aurora phy hard error
           localRdData(17)            <=  Mon.CM(1).C2C(2).STATUS.PHY_SOFT_ERR;                --Aurora phy soft error
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.ADDR_LSB;       --
           localRdData(31)            <=  Mon.CM(1).C2C(2).STATUS.LINK_IN_FW;                  --FW includes this link
         when 53 => --0x35
           localRdData(15 downto  0)  <=  Mon.CM(1).C2C(2).LINK_DEBUG.DMONITOR;                --DEBUG d monitor
@@ -203,9 +209,12 @@ begin  -- architecture behavioral
           localRdData(21)            <=  Mon.CM(1).C2C(2).LINK_DEBUG.EYESCAN_DATA_ERROR;      --DEBUG eyescan data error
           localRdData(22)            <=  reg_data(53)(22);                                    --DEBUG eyescan reset
           localRdData(23)            <=  reg_data(53)(23);                                    --DEBUG eyescan trigger
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.ADDR_MSB;       --
         when 54 => --0x36
           localRdData(15 downto  0)  <=  reg_data(54)(15 downto  0);                          --bit 2 is DRP uber reset
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.SIZE;           --
         when 55 => --0x37
+          localRdData( 0)            <=  Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.VALID;          --
           localRdData( 2 downto  0)  <=  Mon.CM(1).C2C(2).LINK_DEBUG.RX.BUF_STATUS;           --DEBUG rx buf status
           localRdData(10)            <=  Mon.CM(1).C2C(2).LINK_DEBUG.RX.PRBS_ERR;             --DEBUG rx PRBS error
           localRdData(11)            <=  Mon.CM(1).C2C(2).LINK_DEBUG.RX.RESET_DONE;           --DEBUG rx reset done
@@ -253,37 +262,53 @@ begin  -- architecture behavioral
         when 74 => --0x4a
           localRdData(31 downto  0)  <=  Mon.CM(1).C2C(2).CNT.USER_CLK_FREQ;                  --Frequency of the user C2C clk
         when 80 => --0x50
-          localRdData( 7 downto  0)  <=  reg_data(80)( 7 downto  0);                          --Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(2).BRIDGE_INFO.AXI.ADDR_LSB;           --
+        when 81 => --0x51
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(2).BRIDGE_INFO.AXI.ADDR_MSB;           --
+        when 82 => --0x52
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(2).BRIDGE_INFO.AXI.SIZE;               --
+        when 83 => --0x53
+          localRdData( 0)            <=  Mon.CM(1).C2C(2).BRIDGE_INFO.AXI.VALID;              --
+        when 84 => --0x54
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.ADDR_LSB;       --
+        when 85 => --0x55
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.ADDR_MSB;       --
+        when 86 => --0x56
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.SIZE;           --
+        when 87 => --0x57
+          localRdData( 0)            <=  Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.VALID;          --
+        when 112 => --0x70
+          localRdData( 7 downto  0)  <=  reg_data(112)( 7 downto  0);                         --Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
           localRdData( 8)            <=  Mon.CM(1).MONITOR.ACTIVE;                            --Monitoring active. Is zero when no update in the last second.
           localRdData(15 downto 12)  <=  Mon.CM(1).MONITOR.HISTORY_VALID;                     --bytes valid in debug history
-          localRdData(16)            <=  reg_data(80)(16);                                    --Enable readout
-        when 81 => --0x51
+          localRdData(16)            <=  reg_data(112)(16);                                   --Enable readout
+        when 113 => --0x71
           localRdData(31 downto  0)  <=  Mon.CM(1).MONITOR.HISTORY;                           --4 bytes of uart history
-        when 82 => --0x52
+        when 114 => --0x72
           localRdData( 7 downto  0)  <=  Mon.CM(1).MONITOR.BAD_TRANS.ADDR;                    --Sensor addr bits
           localRdData(23 downto  8)  <=  Mon.CM(1).MONITOR.BAD_TRANS.DATA;                    --Sensor data bits
           localRdData(31 downto 24)  <=  Mon.CM(1).MONITOR.BAD_TRANS.ERROR_MASK;              --Sensor error bits
-        when 83 => --0x53
+        when 115 => --0x73
           localRdData( 7 downto  0)  <=  Mon.CM(1).MONITOR.LAST_TRANS.ADDR;                   --Sensor addr bits
           localRdData(23 downto  8)  <=  Mon.CM(1).MONITOR.LAST_TRANS.DATA;                   --Sensor data bits
           localRdData(31 downto 24)  <=  Mon.CM(1).MONITOR.LAST_TRANS.ERROR_MASK;             --Sensor error bits
-        when 84 => --0x54
-          localRdData( 0)            <=  reg_data(84)( 0);                                    --Reset monitoring error counters
-        when 85 => --0x55
+        when 116 => --0x74
+          localRdData( 0)            <=  reg_data(116)( 0);                                   --Reset monitoring error counters
+        when 117 => --0x75
           localRdData(15 downto  0)  <=  Mon.CM(1).MONITOR.ERRORS.CNT_BAD_SOF;                --Monitoring errors. Count of invalid byte types in parsing.
           localRdData(31 downto 16)  <=  Mon.CM(1).MONITOR.ERRORS.CNT_AXI_BUSY_BYTE2;         --Monitoring errors. Count of invalid byte types in parsing.
-        when 86 => --0x56
+        when 118 => --0x76
           localRdData(15 downto  0)  <=  Mon.CM(1).MONITOR.ERRORS.CNT_BYTE2_NOT_DATA;         --Monitoring errors. Count of invalid byte types in parsing.
           localRdData(31 downto 16)  <=  Mon.CM(1).MONITOR.ERRORS.CNT_BYTE3_NOT_DATA;         --Monitoring errors. Count of invalid byte types in parsing.
-        when 87 => --0x57
+        when 119 => --0x77
           localRdData(15 downto  0)  <=  Mon.CM(1).MONITOR.ERRORS.CNT_BYTE4_NOT_DATA;         --Monitoring errors. Count of invalid byte types in parsing.
           localRdData(31 downto 16)  <=  Mon.CM(1).MONITOR.ERRORS.CNT_TIMEOUT;                --Monitoring errors. Count of invalid byte types in parsing.
-        when 88 => --0x58
+        when 120 => --0x78
           localRdData(15 downto  0)  <=  Mon.CM(1).MONITOR.ERRORS.CNT_UNKNOWN;                --Monitoring errors. Count of invalid byte types in parsing.
-        when 89 => --0x59
+        when 121 => --0x79
           localRdData(31 downto  0)  <=  Mon.CM(1).MONITOR.UART_BYTES;                        --Count of UART bytes from CM MCU
-        when 90 => --0x5a
-          localRdData(31 downto  0)  <=  reg_data(90)(31 downto  0);                          --Count to wait for in state machine before timing out (50Mhz clk)
+        when 122 => --0x7a
+          localRdData(31 downto  0)  <=  reg_data(122)(31 downto  0);                         --Count to wait for in state machine before timing out (50Mhz clk)
         when 256 => --0x100
           localRdData( 0)            <=  reg_data(256)( 0);                                   --Tell CM uC to power-up
           localRdData( 1)            <=  reg_data(256)( 1);                                   --Tell CM uC to power-up the rest of the CM
@@ -371,10 +396,15 @@ begin  -- architecture behavioral
           localRdData(31 downto  0)  <=  Mon.CM(2).C2C(1).CNT.USER_CLK_FREQ;                  --Frequency of the user C2C clk
         when 304 => --0x130
           localRdData(11)            <=  reg_data(304)(11);                                   --phy_lane_control is enabled
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.ADDR_LSB;           --
         when 305 => --0x131
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.ADDR_MSB;           --
           localRdData(31 downto  0)  <=  reg_data(305)(31 downto  0);                         --Contious phy_lane_up signals required to lock phylane control
         when 306 => --0x132
           localRdData(23 downto  0)  <=  reg_data(306)(23 downto  0);                         --Time spent waiting for phylane to stabilize
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.SIZE;               --
+        when 307 => --0x133
+          localRdData( 0)            <=  Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.VALID;              --
         when 308 => --0x134
           localRdData( 0)            <=  Mon.CM(2).C2C(2).STATUS.CONFIG_ERROR;                --C2C config error
           localRdData( 1)            <=  Mon.CM(2).C2C(2).STATUS.LINK_ERROR;                  --C2C link error
@@ -388,6 +418,7 @@ begin  -- architecture behavioral
           localRdData(13 downto 12)  <=  Mon.CM(2).C2C(2).STATUS.PHY_LANE_UP;                 --Aurora phy lanes up
           localRdData(16)            <=  Mon.CM(2).C2C(2).STATUS.PHY_HARD_ERR;                --Aurora phy hard error
           localRdData(17)            <=  Mon.CM(2).C2C(2).STATUS.PHY_SOFT_ERR;                --Aurora phy soft error
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(1).BRIDGE_INFO.AXILITE.ADDR_LSB;       --
           localRdData(31)            <=  Mon.CM(2).C2C(2).STATUS.LINK_IN_FW;                  --FW includes this link
         when 309 => --0x135
           localRdData(15 downto  0)  <=  Mon.CM(2).C2C(2).LINK_DEBUG.DMONITOR;                --DEBUG d monitor
@@ -396,9 +427,12 @@ begin  -- architecture behavioral
           localRdData(21)            <=  Mon.CM(2).C2C(2).LINK_DEBUG.EYESCAN_DATA_ERROR;      --DEBUG eyescan data error
           localRdData(22)            <=  reg_data(309)(22);                                   --DEBUG eyescan reset
           localRdData(23)            <=  reg_data(309)(23);                                   --DEBUG eyescan trigger
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(1).BRIDGE_INFO.AXILITE.ADDR_MSB;       --
         when 310 => --0x136
           localRdData(15 downto  0)  <=  reg_data(310)(15 downto  0);                         --bit 2 is DRP uber reset
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(1).BRIDGE_INFO.AXILITE.SIZE;           --
         when 311 => --0x137
+          localRdData( 0)            <=  Mon.CM(2).C2C(1).BRIDGE_INFO.AXILITE.VALID;          --
           localRdData( 2 downto  0)  <=  Mon.CM(2).C2C(2).LINK_DEBUG.RX.BUF_STATUS;           --DEBUG rx buf status
           localRdData(10)            <=  Mon.CM(2).C2C(2).LINK_DEBUG.RX.PRBS_ERR;             --DEBUG rx PRBS error
           localRdData(11)            <=  Mon.CM(2).C2C(2).LINK_DEBUG.RX.RESET_DONE;           --DEBUG rx reset done
@@ -446,37 +480,53 @@ begin  -- architecture behavioral
         when 330 => --0x14a
           localRdData(31 downto  0)  <=  Mon.CM(2).C2C(2).CNT.USER_CLK_FREQ;                  --Frequency of the user C2C clk
         when 336 => --0x150
-          localRdData( 7 downto  0)  <=  reg_data(336)( 7 downto  0);                         --Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(2).BRIDGE_INFO.AXI.ADDR_LSB;           --
+        when 337 => --0x151
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(2).BRIDGE_INFO.AXI.ADDR_MSB;           --
+        when 338 => --0x152
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(2).BRIDGE_INFO.AXI.SIZE;               --
+        when 339 => --0x153
+          localRdData( 0)            <=  Mon.CM(2).C2C(2).BRIDGE_INFO.AXI.VALID;              --
+        when 340 => --0x154
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.ADDR_LSB;       --
+        when 341 => --0x155
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.ADDR_MSB;       --
+        when 342 => --0x156
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.SIZE;           --
+        when 343 => --0x157
+          localRdData( 0)            <=  Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.VALID;          --
+        when 368 => --0x170
+          localRdData( 7 downto  0)  <=  reg_data(368)( 7 downto  0);                         --Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
           localRdData( 8)            <=  Mon.CM(2).MONITOR.ACTIVE;                            --Monitoring active. Is zero when no update in the last second.
           localRdData(15 downto 12)  <=  Mon.CM(2).MONITOR.HISTORY_VALID;                     --bytes valid in debug history
-          localRdData(16)            <=  reg_data(336)(16);                                   --Enable readout
-        when 337 => --0x151
+          localRdData(16)            <=  reg_data(368)(16);                                   --Enable readout
+        when 369 => --0x171
           localRdData(31 downto  0)  <=  Mon.CM(2).MONITOR.HISTORY;                           --4 bytes of uart history
-        when 338 => --0x152
+        when 370 => --0x172
           localRdData( 7 downto  0)  <=  Mon.CM(2).MONITOR.BAD_TRANS.ADDR;                    --Sensor addr bits
           localRdData(23 downto  8)  <=  Mon.CM(2).MONITOR.BAD_TRANS.DATA;                    --Sensor data bits
           localRdData(31 downto 24)  <=  Mon.CM(2).MONITOR.BAD_TRANS.ERROR_MASK;              --Sensor error bits
-        when 339 => --0x153
+        when 371 => --0x173
           localRdData( 7 downto  0)  <=  Mon.CM(2).MONITOR.LAST_TRANS.ADDR;                   --Sensor addr bits
           localRdData(23 downto  8)  <=  Mon.CM(2).MONITOR.LAST_TRANS.DATA;                   --Sensor data bits
           localRdData(31 downto 24)  <=  Mon.CM(2).MONITOR.LAST_TRANS.ERROR_MASK;             --Sensor error bits
-        when 340 => --0x154
-          localRdData( 0)            <=  reg_data(340)( 0);                                   --Reset monitoring error counters
-        when 341 => --0x155
+        when 372 => --0x174
+          localRdData( 0)            <=  reg_data(372)( 0);                                   --Reset monitoring error counters
+        when 373 => --0x175
           localRdData(15 downto  0)  <=  Mon.CM(2).MONITOR.ERRORS.CNT_BAD_SOF;                --Monitoring errors. Count of invalid byte types in parsing.
           localRdData(31 downto 16)  <=  Mon.CM(2).MONITOR.ERRORS.CNT_AXI_BUSY_BYTE2;         --Monitoring errors. Count of invalid byte types in parsing.
-        when 342 => --0x156
+        when 374 => --0x176
           localRdData(15 downto  0)  <=  Mon.CM(2).MONITOR.ERRORS.CNT_BYTE2_NOT_DATA;         --Monitoring errors. Count of invalid byte types in parsing.
           localRdData(31 downto 16)  <=  Mon.CM(2).MONITOR.ERRORS.CNT_BYTE3_NOT_DATA;         --Monitoring errors. Count of invalid byte types in parsing.
-        when 343 => --0x157
+        when 375 => --0x177
           localRdData(15 downto  0)  <=  Mon.CM(2).MONITOR.ERRORS.CNT_BYTE4_NOT_DATA;         --Monitoring errors. Count of invalid byte types in parsing.
           localRdData(31 downto 16)  <=  Mon.CM(2).MONITOR.ERRORS.CNT_TIMEOUT;                --Monitoring errors. Count of invalid byte types in parsing.
-        when 344 => --0x158
+        when 376 => --0x178
           localRdData(15 downto  0)  <=  Mon.CM(2).MONITOR.ERRORS.CNT_UNKNOWN;                --Monitoring errors. Count of invalid byte types in parsing.
-        when 345 => --0x159
+        when 377 => --0x179
           localRdData(31 downto  0)  <=  Mon.CM(2).MONITOR.UART_BYTES;                        --Count of UART bytes from CM MCU
-        when 346 => --0x15a
-          localRdData(31 downto  0)  <=  reg_data(346)(31 downto  0);                         --Count to wait for in state machine before timing out (50Mhz clk)
+        when 378 => --0x17a
+          localRdData(31 downto  0)  <=  reg_data(378)(31 downto  0);                         --Count to wait for in state machine before timing out (50Mhz clk)
 
 
           when others =>
@@ -548,10 +598,10 @@ begin  -- architecture behavioral
   Ctrl.CM(1).C2C(2).LINK_DEBUG.TX.PRE_CURSOR      <=  reg_data(57)(31 downto 27);      
   Ctrl.CM(1).C2C(2).LINK_DEBUG.TX.PRBS_SEL        <=  reg_data(58)( 3 downto  0);      
   Ctrl.CM(1).C2C(2).LINK_DEBUG.TX.DIFF_CTRL       <=  reg_data(58)( 8 downto  4);      
-  Ctrl.CM(1).MONITOR.COUNT_16X_BAUD               <=  reg_data(80)( 7 downto  0);      
-  Ctrl.CM(1).MONITOR.ENABLE                       <=  reg_data(80)(16);                
-  Ctrl.CM(1).MONITOR.ERRORS.RESET                 <=  reg_data(84)( 0);                
-  Ctrl.CM(1).MONITOR.SM_TIMEOUT                   <=  reg_data(90)(31 downto  0);      
+  Ctrl.CM(1).MONITOR.COUNT_16X_BAUD               <=  reg_data(112)( 7 downto  0);     
+  Ctrl.CM(1).MONITOR.ENABLE                       <=  reg_data(112)(16);               
+  Ctrl.CM(1).MONITOR.ERRORS.RESET                 <=  reg_data(116)( 0);               
+  Ctrl.CM(1).MONITOR.SM_TIMEOUT                   <=  reg_data(122)(31 downto  0);     
   Ctrl.CM(2).CTRL.ENABLE_UC                       <=  reg_data(256)( 0);               
   Ctrl.CM(2).CTRL.ENABLE_PWR                      <=  reg_data(256)( 1);               
   Ctrl.CM(2).CTRL.OVERRIDE_PWR_GOOD               <=  reg_data(256)( 2);               
@@ -606,10 +656,10 @@ begin  -- architecture behavioral
   Ctrl.CM(2).C2C(2).LINK_DEBUG.TX.PRE_CURSOR      <=  reg_data(313)(31 downto 27);     
   Ctrl.CM(2).C2C(2).LINK_DEBUG.TX.PRBS_SEL        <=  reg_data(314)( 3 downto  0);     
   Ctrl.CM(2).C2C(2).LINK_DEBUG.TX.DIFF_CTRL       <=  reg_data(314)( 8 downto  4);     
-  Ctrl.CM(2).MONITOR.COUNT_16X_BAUD               <=  reg_data(336)( 7 downto  0);     
-  Ctrl.CM(2).MONITOR.ENABLE                       <=  reg_data(336)(16);               
-  Ctrl.CM(2).MONITOR.ERRORS.RESET                 <=  reg_data(340)( 0);               
-  Ctrl.CM(2).MONITOR.SM_TIMEOUT                   <=  reg_data(346)(31 downto  0);     
+  Ctrl.CM(2).MONITOR.COUNT_16X_BAUD               <=  reg_data(368)( 7 downto  0);     
+  Ctrl.CM(2).MONITOR.ENABLE                       <=  reg_data(368)(16);               
+  Ctrl.CM(2).MONITOR.ERRORS.RESET                 <=  reg_data(372)( 0);               
+  Ctrl.CM(2).MONITOR.SM_TIMEOUT                   <=  reg_data(378)(31 downto  0);     
 
 
   reg_writes: process (clk_axi, reset_axi_n) is
@@ -669,10 +719,10 @@ begin  -- architecture behavioral
       reg_data(57)(31 downto 27)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).LINK_DEBUG.TX.PRE_CURSOR;
       reg_data(58)( 3 downto  0)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).LINK_DEBUG.TX.PRBS_SEL;
       reg_data(58)( 8 downto  4)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).LINK_DEBUG.TX.DIFF_CTRL;
-      reg_data(80)( 7 downto  0)  <= DEFAULT_CM_CTRL_t.CM(1).MONITOR.COUNT_16X_BAUD;
-      reg_data(80)(16)  <= DEFAULT_CM_CTRL_t.CM(1).MONITOR.ENABLE;
-      reg_data(84)( 0)  <= DEFAULT_CM_CTRL_t.CM(1).MONITOR.ERRORS.RESET;
-      reg_data(90)(31 downto  0)  <= DEFAULT_CM_CTRL_t.CM(1).MONITOR.SM_TIMEOUT;
+      reg_data(112)( 7 downto  0)  <= DEFAULT_CM_CTRL_t.CM(1).MONITOR.COUNT_16X_BAUD;
+      reg_data(112)(16)  <= DEFAULT_CM_CTRL_t.CM(1).MONITOR.ENABLE;
+      reg_data(116)( 0)  <= DEFAULT_CM_CTRL_t.CM(1).MONITOR.ERRORS.RESET;
+      reg_data(122)(31 downto  0)  <= DEFAULT_CM_CTRL_t.CM(1).MONITOR.SM_TIMEOUT;
       reg_data(256)( 0)  <= DEFAULT_CM_CTRL_t.CM(2).CTRL.ENABLE_UC;
       reg_data(256)( 1)  <= DEFAULT_CM_CTRL_t.CM(2).CTRL.ENABLE_PWR;
       reg_data(256)( 2)  <= DEFAULT_CM_CTRL_t.CM(2).CTRL.OVERRIDE_PWR_GOOD;
@@ -727,10 +777,10 @@ begin  -- architecture behavioral
       reg_data(313)(31 downto 27)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).LINK_DEBUG.TX.PRE_CURSOR;
       reg_data(314)( 3 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).LINK_DEBUG.TX.PRBS_SEL;
       reg_data(314)( 8 downto  4)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).LINK_DEBUG.TX.DIFF_CTRL;
-      reg_data(336)( 7 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).MONITOR.COUNT_16X_BAUD;
-      reg_data(336)(16)  <= DEFAULT_CM_CTRL_t.CM(2).MONITOR.ENABLE;
-      reg_data(340)( 0)  <= DEFAULT_CM_CTRL_t.CM(2).MONITOR.ERRORS.RESET;
-      reg_data(346)(31 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).MONITOR.SM_TIMEOUT;
+      reg_data(368)( 7 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).MONITOR.COUNT_16X_BAUD;
+      reg_data(368)(16)  <= DEFAULT_CM_CTRL_t.CM(2).MONITOR.ENABLE;
+      reg_data(372)( 0)  <= DEFAULT_CM_CTRL_t.CM(2).MONITOR.ERRORS.RESET;
+      reg_data(378)(31 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).MONITOR.SM_TIMEOUT;
 
     elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
       Ctrl.CM(1).C2C(1).CNT.RESET_COUNTERS <= '0';
@@ -821,13 +871,13 @@ begin  -- architecture behavioral
           reg_data(58)( 8 downto  4)            <=  localWrData( 8 downto  4);      --DEBUG tx diff control
         when 72 => --0x48
           Ctrl.CM(1).C2C(2).CNT.RESET_COUNTERS  <=  localWrData( 0);               
-        when 80 => --0x50
-          reg_data(80)( 7 downto  0)            <=  localWrData( 7 downto  0);      --Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
-          reg_data(80)(16)                      <=  localWrData(16);                --Enable readout
-        when 84 => --0x54
-          reg_data(84)( 0)                      <=  localWrData( 0);                --Reset monitoring error counters
-        when 90 => --0x5a
-          reg_data(90)(31 downto  0)            <=  localWrData(31 downto  0);      --Count to wait for in state machine before timing out (50Mhz clk)
+        when 112 => --0x70
+          reg_data(112)( 7 downto  0)           <=  localWrData( 7 downto  0);      --Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
+          reg_data(112)(16)                     <=  localWrData(16);                --Enable readout
+        when 116 => --0x74
+          reg_data(116)( 0)                     <=  localWrData( 0);                --Reset monitoring error counters
+        when 122 => --0x7a
+          reg_data(122)(31 downto  0)           <=  localWrData(31 downto  0);      --Count to wait for in state machine before timing out (50Mhz clk)
         when 256 => --0x100
           reg_data(256)( 0)                     <=  localWrData( 0);                --Tell CM uC to power-up
           reg_data(256)( 1)                     <=  localWrData( 1);                --Tell CM uC to power-up the rest of the CM
@@ -907,13 +957,13 @@ begin  -- architecture behavioral
           reg_data(314)( 8 downto  4)           <=  localWrData( 8 downto  4);      --DEBUG tx diff control
         when 328 => --0x148
           Ctrl.CM(2).C2C(2).CNT.RESET_COUNTERS  <=  localWrData( 0);               
-        when 336 => --0x150
-          reg_data(336)( 7 downto  0)           <=  localWrData( 7 downto  0);      --Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
-          reg_data(336)(16)                     <=  localWrData(16);                --Enable readout
-        when 340 => --0x154
-          reg_data(340)( 0)                     <=  localWrData( 0);                --Reset monitoring error counters
-        when 346 => --0x15a
-          reg_data(346)(31 downto  0)           <=  localWrData(31 downto  0);      --Count to wait for in state machine before timing out (50Mhz clk)
+        when 368 => --0x170
+          reg_data(368)( 7 downto  0)           <=  localWrData( 7 downto  0);      --Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
+          reg_data(368)(16)                     <=  localWrData(16);                --Enable readout
+        when 372 => --0x174
+          reg_data(372)( 0)                     <=  localWrData( 0);                --Reset monitoring error counters
+        when 378 => --0x17a
+          reg_data(378)(31 downto  0)           <=  localWrData(31 downto  0);      --Count to wait for in state machine before timing out (50Mhz clk)
 
           when others => null;
         end case;

@@ -187,6 +187,8 @@ AXI_SLAVES:
       - "address_table/modules/CM_C2C_DEBUG_USP.xml"
       - "address_table/modules/CM_Mon.xml"
       - "address_table/modules/CM_C2C_CNT.xml"
+      - "address_table/modules/AXI_ADDR_INFO.xml"
+      - "address_table/modules/CM_BRIDGE_INFO.xml"
     UHAL_BASE: 0x03000000
     HDL: 
       out_dir: "configs/rev2_xczu7ev/autogen/CM_interface"
