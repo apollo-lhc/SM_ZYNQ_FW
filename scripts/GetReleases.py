@@ -9,7 +9,7 @@ import json # parse github return
 import os #for mkdir
 import shutil
 
-token=""
+token="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"
 
 
 def RecreateDir(dir):
@@ -97,11 +97,11 @@ def GetReleaseFiles(name,host, project,repo, release):
 def main(CMFilename):
 
   #get the token for remote write access to the repo
-  global token
-  token=os.getenv("GH_TOKEN")
-  if token == None:
-      print "Missing github oath token"
-      quit()
+  #global token
+  #token=os.getenv("GH_TOKEN")
+  #if token == None:
+  #    print "Missing github oath token"
+  #    quit()
 
 
   #load the remote slaves list yaml

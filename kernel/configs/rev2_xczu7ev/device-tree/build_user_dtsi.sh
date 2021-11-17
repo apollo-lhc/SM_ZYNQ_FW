@@ -21,7 +21,7 @@ echo "#include <dt-bindings/phy/phy.h>" >> $filename
 echo "/{"                             >> $filename
 echo "  chosen {"                     >> $filename
 #update bootargs to include uio
-echo "        bootargs = \"earlycon clk_ignore_unused earlyprintk uio_pdrv_genirq.of_id=generic-uio  root=/dev/mmcblk0p2 rw rootwait\";" >> $filename
+echo "        bootargs = \"console=ttyPS0,115200 earlycon clk_ignore_unused rootwait root=/dev/nfs rw ip=dhcp nfsroot=192.168.30.2:/export/CentOS,nfsvers=3,tcp\";" >> $filename
 echo "        };"                     >> $filename
 ##add lines for amba_pl in case there are no xilinx IPs to add them
 #echo "	amba_pl: amba_pl {"           >> $filename
