@@ -27,11 +27,24 @@ AXI_SLAVES:
       addr:
         offset: 0xB0000000
         range: "16M"
-      addr_lite:
-        offset: 0xB1000000
-        range: "16M"
 
     SUB_SLAVES:
+      C2C1B:
+        TCL_CALL:
+          command: "AXI_C2C_MASTER"
+          device_name: "C2C1B"
+          primary_serdes: "C2C1_PHY"
+          init_clk: "${::INIT_CLK}"
+          refclk_freq: "100"
+          irq_port: "${::IRQ0_INTR_CTRL}"
+          axi_control:
+            axi_interconnect: "${::AXI_C2C_INTERCONNECT_NAME}"
+            axi_clk: "${::AXI_MASTER_CLK}"
+            axi_rstn: "${::AXI_MASTER_RSTN}"
+            axi_freq: "${::AXI_MASTER_CLK_FREQ}"
+          addr_lite:
+            offset: 0xB1000000
+            range: "16M"    
       C2C2:
         TCL_CALL:
           command: "AXI_C2C_MASTER"
@@ -48,27 +61,41 @@ AXI_SLAVES:
           addr:
             offset: 0xB2000000
             range: "16M"
-          addr_lite:
-            offset: 0xB3000000
-            range: "16M"
 
         SUB_SLAVES:
-          C2C2_AXI_FW:
+          C2C2B:
             TCL_CALL:
-              command: "AXI_IP_AXI_FW"
-              axi_fw_bus: "/C2C2/s_axi"
-              axi_control: "${::AXI_C2C_CTRL}"
-            XML:
-              - "address_table/modules/C2C2_AXI_FW.xml"
-            UHAL_BASE: 0x13000000
-          C2C2_AXILITE_FW:
-            TCL_CALL:
-              command: "AXI_IP_AXI_FW"
-              axi_fw_bus: "/C2C2/s_axi_lite"
-              axi_control: "${::AXI_C2C_CTRL}"
-            XML:
-              - "address_table/modules/C2C2_AXILITE_FW.xml"
-            UHAL_BASE: 0x14000000
+              command: "AXI_C2C_MASTER"
+              device_name: "C2C2B"
+              axi_control:
+                axi_interconnect: "${::AXI_C2C_INTERCONNECT_NAME}"
+                axi_clk: "${::AXI_MASTER_CLK}"
+                axi_rstn: "${::AXI_MASTER_RSTN}"
+                axi_freq: "${::AXI_MASTER_CLK_FREQ}"
+              primary_serdes: "C2C1_PHY"
+              init_clk: "${::INIT_CLK}"
+              refclk_freq: "100"
+              irq_port: "${::IRQ0_INTR_CTRL}"
+              addr_lite:
+                offset: 0xB3000000
+                range: "16M"
+              SUB_SLAVES:    
+                C2C2_AXI_FW:
+                  TCL_CALL:
+                    command: "AXI_IP_AXI_FW"
+                    axi_fw_bus: "/C2C2/s_axi"
+                    axi_control: "${::AXI_C2C_CTRL}"
+                  XML:
+                    - "address_table/modules/C2C2_AXI_FW.xml"
+                  UHAL_BASE: 0x13000000
+                C2C2_AXILITE_FW:
+                  TCL_CALL:
+                    command: "AXI_IP_AXI_FW"
+                    axi_fw_bus: "/C2C2B/s_axi_lite"
+                    axi_control: "${::AXI_C2C_CTRL}"
+                  XML:
+                    - "address_table/modules/C2C2_AXILITE_FW.xml"
+                  UHAL_BASE: 0x14000000
       C2C1_AXI_FW:
         TCL_CALL:
           command: "AXI_IP_AXI_FW"
@@ -80,7 +107,7 @@ AXI_SLAVES:
       C2C1_AXILITE_FW:
         TCL_CALL:
           command: "AXI_IP_AXI_FW"
-          axi_fw_bus: "/C2C1/s_axi_lite"
+          axi_fw_bus: "/C2C1B/s_axi_lite"
           axi_control: "${::AXI_C2C_CTRL}"
         XML:
           - "address_table/modules/C2C1_AXILITE_FW.xml"
