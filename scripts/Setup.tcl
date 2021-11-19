@@ -65,6 +65,12 @@ for {set j 0} {$j < [llength $xdc_files ] } {incr j} {
     puts "Adding $filename"
 }
 
+set syntax_check_output [check_syntax -return_string]
+if {[string first "Syntax error" ${syntax_check_output}] >= 0 } {
+    error ${syntax_check_output}    
+}
+
+
 #Add xci files
 for {set j 0} {$j < [llength $xci_files ] } {incr j} {
     set filename "${apollo_root_path}/[lindex $xci_files $j]"
@@ -90,7 +96,7 @@ for {set j 0} {$j < [llength $xci_files ] } {incr j} {
 }
 
 
-check_syntax -fileset sources_1
+#check_syntax -fileset sources_1
 
 #Add bd files
 foreach bd_name [array names bd_files] {

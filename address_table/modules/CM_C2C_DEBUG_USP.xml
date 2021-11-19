@@ -9,6 +9,7 @@
 
   <node id="RX" address="0x2">
     <node id="BUF_STATUS"                      mask="0x00000007" permission="r"  description="DEBUG rx buf status" />
+    <node id="PMA_RESET_DONE"                  mask="0x00000020" permission="r"  description="DEBUG rx reset done" />
     <node id="PRBS_ERR"                        mask="0x00000400" permission="r"  description="DEBUG rx PRBS error" />
     <node id="RESET_DONE"                      mask="0x00000800" permission="r"  description="DEBUG rx reset done" />
     <node id="BUF_RESET"                       mask="0x00001000" permission="rw" description="DEBUG rx buf reset" />

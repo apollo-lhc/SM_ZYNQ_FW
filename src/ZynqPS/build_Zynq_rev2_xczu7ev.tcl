@@ -38,11 +38,26 @@ set AXI_MASTER_CLK_FREQ 49999500
 set_property CONFIG.STRATEGY {1} [get_bd_cells ${AXI_C2C_INTERCONNECT_NAME}]
 
 
-#add interrupts
-set IRQ_ORR interrupt_or_reduce
-create_bd_cell -type ip -vlnv  [get_ipdefs -filter {NAME == xlconcat}] ${IRQ_ORR}
-set_property -dict [list CONFIG.NUM_PORTS {3}] [get_bd_cells ${IRQ_ORR}]
-connect_bd_net [get_bd_pins ${IRQ_ORR}/dout] [get_bd_pins ${ZYNQ_NAME}/pl_ps_irq0]
+#add interrupt controller
+set IRQ0_INTR_CTRL IRQ0_INTR_CTRL
+AXI_IP_IRQ_CTRL [dict create \
+		 device_name ${IRQ0_INTR_CTRL} \
+		 irq_dest ${ZYNQ_NAME}/pl_ps_irq0 \
+		     axi_control {[dict create \
+				  axi_interconnect "${::AXI_INTERCONNECT_NAME}" \
+				  axi_clk "${::AXI_MASTER_CLK}" \
+				  axi_rstn "${::AXI_SLAVE_RSTN}" \
+				  axi_freq "${::AXI_MASTER_CLK_FREQ}" \		 
+				  ]}
+		]
+##add interrupt controller
+#set IRQ0_INTR_CTRL IRQ0_INTR_CTLR
+#set IRQ_dict [dict create \
+#		  device_name ${IRQ0_INTR_CTRL} \
+#		  {${ZYNQ_NAME}/pl_ps_irq0
+#AXI_IP_IRQ_CTRL [
+#
+#connect_bd_net [get_bd_pins ${IRQ_ORR}/dout] [get_bd_pins ${ZYNQ_NAME}/pl_ps_irq0]
 
 set INIT_CLK init_clk
 create_bd_port -dir I -type clk ${INIT_CLK}

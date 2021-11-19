@@ -2,12 +2,12 @@ AXI_CONTROL_SETS:
   AXI_MASTER_CTRL:
       axi_interconnect: "${::AXI_INTERCONNECT_NAME}"
       axi_clk: "${::AXI_MASTER_CLK}"
-      axi_rstn: "${::AXI_MASTER_RSTN}"
+      axi_rstn: "${::AXI_SLAVE_RSTN}"
       axi_freq: "${::AXI_MASTER_CLK_FREQ}"
   AXI_C2C_CTRL:
       axi_interconnect: "${::AXI_C2C_INTERCONNECT_NAME}"
       axi_clk: "${::AXI_MASTER_CLK}"
-      axi_rstn: "${::AXI_MASTER_RSTN}"
+      axi_rstn: "${::AXI_SLAVE_RSTN}"
       axi_freq: "${::AXI_MASTER_CLK_FREQ}"
 
 AXI_SLAVES:
@@ -18,6 +18,7 @@ AXI_SLAVES:
       primary_serdes: "1"
       init_clk: "${::INIT_CLK}"
       refclk_freq: "100"
+      irq_port: "${::IRQ0_INTR_CTRL}"
       axi_control:
         axi_interconnect: "${::AXI_C2C_INTERCONNECT_NAME}"
         axi_clk: "${::AXI_MASTER_CLK}"
@@ -43,6 +44,7 @@ AXI_SLAVES:
           primary_serdes: "C2C1_PHY"
           init_clk: "${::INIT_CLK}"
           refclk_freq: "100"
+          irq_port: "${::IRQ0_INTR_CTRL}"
           addr:
             offset: 0xB2000000
             range: "16M"
@@ -67,16 +69,6 @@ AXI_SLAVES:
             XML:
               - "address_table/modules/C2C2_AXILITE_FW.xml"
             UHAL_BASE: 0x14000000
-          C2C2_PHY:
-            TCL_CALL:
-              command: "AXI_IP_DRP_INTF"
-              axi_control: "${::AXI_C2C_CTRL}"
-              drp_name: "C2C2_PHY"
-              drp_rstn: "C2C2_PHY_AXI_LITE_RESET_INVERTER/Res"
-              init_clk: "${::INIT_CLK}"
-            XML:
-              - "address_table/modules/DRP_USP_GTH.xml"
-            UHAL_BASE: 0x1B000000
       C2C1_AXI_FW:
         TCL_CALL:
           command: "AXI_IP_AXI_FW"
@@ -94,17 +86,6 @@ AXI_SLAVES:
           - "address_table/modules/C2C1_AXILITE_FW.xml"
         UHAL_BASE: 0x0E000000
 
-      C2C1_PHY:
-        TCL_CALL:
-          command: "AXI_IP_DRP_INTF"
-          axi_control: "${::AXI_C2C_CTRL}"
-          drp_name: "C2C1_PHY"
-          drp_rstn: "C2C1_PHY_AXI_LITE_RESET_INVERTER/Res"
-          init_clk: "${::INIT_CLK}"
-
-        XML:
-          - "address_table/modules/DRP_USP_GTH.xml"
-        UHAL_BASE: 0x19000000
 
   INT_AXI_FW:
     TCL_CALL:
@@ -115,13 +96,6 @@ AXI_SLAVES:
       - "address_table/modules/INT_AXI_FW.xml"
     UHAL_BASE: 0x20000000
 
-  XVC_LOCAL:
-    TCL_CALL:
-      command: "AXI_IP_LOCAL_XVC"
-      axi_control: "${::AXI_MASTER_CTRL}"
-    XML:
-      - "address_table/modules/XVC.xml"
-    UHAL_BASE: 0x0C000000
 
   PL_MEM:
     TCL_CALL:
@@ -178,6 +152,9 @@ AXI_SLAVES:
     TCL_CALL:
       command: "AXI_PL_DEV_CONNECT"
       axi_control: "${::AXI_MASTER_CTRL}"
+      addr:
+        offset: -1
+        range: "8K"
     XML:
       - "address_table/modules/CM_USP.xml"
       - "address_table/modules/CM_single_USP.xml"
@@ -189,6 +166,7 @@ AXI_SLAVES:
       - "address_table/modules/CM_C2C_CNT.xml"
       - "address_table/modules/AXI_ADDR_INFO.xml"
       - "address_table/modules/CM_BRIDGE_INFO.xml"
+      - "address_table/modules/DRP_USP_GTH.xml"
     UHAL_BASE: 0x03000000
     HDL: 
       out_dir: "configs/rev2_xczu7ev/autogen/CM_interface"
@@ -218,21 +196,21 @@ AXI_SLAVES:
     TCL_CALL:
       command: "AXI_IP_UART"
       baud_rate: "115200"
-      irq_port: "${::IRQ_ORR}/in0"
+      irq_port: "${::IRQ0_INTR_CTRL}"
       axi_control: "${::AXI_MASTER_CTRL}"
 
   CM2_UART:
     TCL_CALL:
       command: "AXI_IP_UART"
       baud_rate: "115200"
-      irq_port: "${::IRQ_ORR}/in1"
+      irq_port: "${::IRQ0_INTR_CTRL}"
       axi_control: "${::AXI_MASTER_CTRL}"
 
   ESM_UART:
     TCL_CALL:
       command: "AXI_IP_UART"
       baud_rate: "115200"
-      irq_port: "${::IRQ_ORR}/in2"
+      irq_port: "${::IRQ0_INTR_CTRL}"
       axi_control: "${::AXI_MASTER_CTRL}"
 
   AXI_MON:
@@ -269,3 +247,16 @@ AXI_SLAVES:
       out_dir: "configs/rev2_xczu7ev/autogen/MEM_TEST"
       map_template: "axi_generic/template_map_withbram.vhd"
 
+  IRQ_CTRL:
+    XML:
+      - "address_table/modules/INTERRUPT_CONTROLLER.xml"
+    UHAL_BASE: 0x16000000
+
+
+XVC_LOCAL:
+  TCL_CALL:
+    command: "AXI_IP_LOCAL_XVC"
+    axi_control: "${::AXI_MASTER_CTRL}"
+  XML:
+    - "address_table/modules/XVC.xml"
+  UHAL_BASE: 0x0C000000
