@@ -18,6 +18,7 @@ AXI_SLAVES:
       primary_serdes: "1"
       init_clk: "${::INIT_CLK}"
       refclk_freq: "100"
+      irq_port: "${::IRQ0_INTR_CTRL}"
       axi_control:
         axi_interconnect: "${::AXI_C2C_INTERCONNECT_NAME}"
         axi_clk: "${::AXI_MASTER_CLK}"
@@ -43,6 +44,7 @@ AXI_SLAVES:
           primary_serdes: "C2C1_PHY"
           init_clk: "${::INIT_CLK}"
           refclk_freq: "100"
+          irq_port: "${::IRQ0_INTR_CTRL}"
           addr:
             offset: 0xB2000000
             range: "16M"
