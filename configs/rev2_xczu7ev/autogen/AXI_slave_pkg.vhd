@@ -5,9 +5,9 @@ use ieee.numeric_std.all;
 package AXISlaveAddrPkg is
 constant AXI_ADDR_IRQ0_INTR_CTRL : unsigned(31 downto 0) := x"A0000000";
 constant AXI_ADDR_C2C1_AXI_BRIDGE : unsigned(31 downto 0) := x"B0000000";
-constant AXI_ADDR_C2C1_AXI_LITE_BRIDGE : unsigned(31 downto 0) := x"B1000000";
+constant AXI_ADDR_C2C1B_AXI_LITE_BRIDGE : unsigned(31 downto 0) := x"B1000000";
 constant AXI_ADDR_C2C2_AXI_BRIDGE : unsigned(31 downto 0) := x"B2000000";
-constant AXI_ADDR_C2C2_AXI_LITE_BRIDGE : unsigned(31 downto 0) := x"B3000000";
+constant AXI_ADDR_C2C2B_AXI_LITE_BRIDGE : unsigned(31 downto 0) := x"B3000000";
 constant AXI_ADDR_C2C2_AXI_FW : unsigned(31 downto 0) := x"B4000000";
 constant AXI_ADDR_C2C2_AXILITE_FW : unsigned(31 downto 0) := x"B4010000";
 constant AXI_ADDR_C2C1_AXI_FW : unsigned(31 downto 0) := x"B4020000";
@@ -26,9 +26,9 @@ constant AXI_ADDR_MEM_TEST : unsigned(31 downto 0) := x"A00C0000";
 -- ranges
 constant AXI_RANGE_IRQ0_INTR_CTRL : unsigned(31 downto 0) :=  x"00010000";
 constant AXI_RANGE_C2C1_AXI_BRIDGE : unsigned(31 downto 0) :=  x"01000000";
-constant AXI_RANGE_C2C1_AXI_LITE_BRIDGE : unsigned(31 downto 0) :=  x"01000000";
+constant AXI_RANGE_C2C1B_AXI_LITE_BRIDGE : unsigned(31 downto 0) :=  x"01000000";
 constant AXI_RANGE_C2C2_AXI_BRIDGE : unsigned(31 downto 0) :=  x"01000000";
-constant AXI_RANGE_C2C2_AXI_LITE_BRIDGE : unsigned(31 downto 0) :=  x"01000000";
+constant AXI_RANGE_C2C2B_AXI_LITE_BRIDGE : unsigned(31 downto 0) :=  x"01000000";
 constant AXI_RANGE_C2C2_AXI_FW : unsigned(31 downto 0) :=  x"00010000";
 constant AXI_RANGE_C2C2_AXILITE_FW : unsigned(31 downto 0) :=  x"00010000";
 constant AXI_RANGE_C2C1_AXI_FW : unsigned(31 downto 0) :=  x"00010000";
