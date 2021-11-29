@@ -56,8 +56,8 @@ AXI_SLAVES:
             axi_freq: "${::AXI_MASTER_CLK_FREQ}"
           primary_serdes: "C2C1_PHY"
           init_clk: "${::INIT_CLK}"
-          refclk_freq: "100"
           irq_port: "${::IRQ0_INTR_CTRL}"
+          refclk_freq: "100"
           addr:
             offset: 0xB2000000
             range: "16M"
@@ -74,8 +74,8 @@ AXI_SLAVES:
                 axi_freq: "${::AXI_MASTER_CLK_FREQ}"
               primary_serdes: "C2C1_PHY"
               init_clk: "${::INIT_CLK}"
-              refclk_freq: "100"
               irq_port: "${::IRQ0_INTR_CTRL}"
+              refclk_freq: "100"
               addr_lite:
                 offset: 0xB3000000
                 range: "16M"
