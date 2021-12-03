@@ -1,0 +1,40 @@
+<node id="ES">
+  <node id="GTY_GTH_CHECK"      address="0x01E" mask="0x007F" permission="r"/>
+
+  <node id="PRESCALE"           address="0x003B" mask="0xF800" permission="rw"/>
+  <node id="EYE_SCAN_EN"        address="0x003D" mask="0x0100" permission="rw"/>
+  <node id="ERRDET_EN"          address="0x003D" mask="0x0200" permission="rw"/>
+  <node id="RUN"                address="0x003D" mask="0x0001" permission="rw"/>
+
+  <node id="RX_DATA_WIDTH"      address="0x0011" mask="0x3800" permission="rw"/>
+  <node id="RX_INT_DATAWIDTH"   address="0x0011" mask="0x4000" permission="rw"/>
+  
+  <node id="QUALIFIER_0"        address="0x002C" mask="0xFFFF" permission="rw"/>
+  <node id="QUALIFIER_1"        address="0x002D" mask="0xFFFF" permission="rw"/>
+  <node id="QUALIFIER_2"        address="0x002E" mask="0xFFFF" permission="rw"/>
+  <node id="QUALIFIER_3"        address="0x002F" mask="0xFFFF" permission="rw"/>
+  <node id="QUALIFIER_4"        address="0x0030" mask="0xFFFF" permission="rw"/>
+			        	    
+  <node id="QUAL_MASK_0"        address="0x0031" mask="0xFFFF" permission="rw"/>
+  <node id="QUAL_MASK_1"        address="0x0032" mask="0xFFFF" permission="rw"/>
+  <node id="QUAL_MASK_2"        address="0x0033" mask="0xFFFF" permission="rw"/>
+  <node id="QUAL_MASK_3"        address="0x0034" mask="0xFFFF" permission="rw"/>
+  <node id="QUAL_MASK_4"        address="0x0035" mask="0xFFFF" permission="rw"/>
+
+  <node id="OFFSET_DATA_MASK_0" address="0x0036" mask="0xFFFF" permission="rw"/>
+  <node id="OFFSET_DATA_MASK_1" address="0x0037" mask="0xFFFF" permission="rw"/>
+  <node id="OFFSET_DATA_MASK_2" address="0x0038" mask="0xFFFF" permission="rw"/>
+  <node id="OFFSET_DATA_MASK_3" address="0x0039" mask="0xFFFF" permission="rw"/>
+  <node id="OFFSET_DATA_MASK_4" address="0x003A" mask="0xFFFF" permission="rw"/>
+
+  <node id="VERT_OFFSET_MAG"    address="0x003B" mask="0x00FF" permission="rw"/>
+  <node id="VERT_OFFSET_SIGN"   address="0x003B" mask="0x0100" permission="rw"/>
+
+  <node id="HORZ_OFFSET_MAG"    address="0x003C" mask="0x07FF" permission="rw"/>
+  <node id="PHASE_UNIFICATION"  address="0x003C" mask="0x0800" permission="rw"/>
+  
+  <node id="ERROR_COUNT"        address="0x014F" mask="0xFFFF" permission="r"/>
+  <node id="SAMPLE_COUNT"       address="0x0150" mask="0xFFFF" permission="r"/>
+  <node id="CTRL_STATUS"        address="0x0151" mask="0x000F" permission="r"/>  
+
+</node>

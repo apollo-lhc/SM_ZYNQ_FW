@@ -1,5 +1,6 @@
 <node id="LINK_DEBUG">
   <node id="CPLL_LOCK"          address="0x0" mask="0x00100000" permission="r"  description="DEBUG cplllock" />
+  <node id="QPLL_LOCK"          address="0x0" mask="0x01000000" permission="r"  description="DEBUG qplllock" />
   <node id="EYESCAN_DATA_ERROR" address="0x0" mask="0x00200000" permission="r"  description="DEBUG eyescan data error" />
   <node id="EYESCAN_RESET"      address="0x0" mask="0x00400000" permission="rw" description="DEBUG eyescan reset" />
   <node id="EYESCAN_TRIGGER"    address="0x0" mask="0x00800000" permission="rw" description="DEBUG eyescan trigger" />

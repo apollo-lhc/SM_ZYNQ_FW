@@ -39,11 +39,25 @@ set AXI_MASTER_CLK_FREQ 50000000
 set_property CONFIG.STRATEGY {1} [get_bd_cells ${AXI_C2C_INTERCONNECT_NAME}]
 
 
-#add interrupts
-set IRQ_ORR interrupt_or_reduce
-create_bd_cell -type ip -vlnv  [get_ipdefs -filter {NAME == xlconcat}] ${IRQ_ORR}
-set_property -dict [list CONFIG.NUM_PORTS {3}] [get_bd_cells ${IRQ_ORR}]
-connect_bd_net [get_bd_pins ${IRQ_ORR}/dout] [get_bd_pins ${ZYNQ_NAME}/IRQ_F2P]
+#add interrupt controller
+set IRQ0_INTR_CTRL IRQ0_INTR_CTRL
+AXI_IP_IRQ_CTRL [dict create \
+		 device_name ${IRQ0_INTR_CTRL} \
+		 irq_dest ${ZYNQ_NAME}/IRQ_F2P \
+		 axi_control {[dict create \
+		    axi_interconnect "${::AXI_INTERCONNECT_NAME}" \
+		    axi_clk "${::AXI_MASTER_CLK}" \
+		    axi_rstn "${::AXI_SLAVE_RSTN}" \
+		    axi_freq "${::AXI_MASTER_CLK_FREQ}" \		 
+		    ]}\
+		 dt_data {    compatible = "xlnx,axi-intc-4.1", "xlnx,xps-intc-1.00.a"; \
+                              interrupt-parent = <&intc>; \
+                              interrupts = <0 29 0>; \
+                              xlnx,kind-of-intr = <0x0>; \
+                              label = "$device_name"; \
+                              linux,uio-name = "$device_name";\
+                         }
+		]
 
 set INIT_CLK init_clk
 create_bd_port -dir I -type clk ${INIT_CLK}

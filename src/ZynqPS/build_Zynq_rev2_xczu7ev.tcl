@@ -57,14 +57,6 @@ AXI_IP_IRQ_CTRL [dict create \
                               linux,uio-name = "$device_name";\
                          }
 		]
-##add interrupt controller
-#set IRQ0_INTR_CTRL IRQ0_INTR_CTLR
-#set IRQ_dict [dict create \
-#		  device_name ${IRQ0_INTR_CTRL} \
-#		  {${ZYNQ_NAME}/pl_ps_irq0
-#AXI_IP_IRQ_CTRL [
-#
-#connect_bd_net [get_bd_pins ${IRQ_ORR}/dout] [get_bd_pins ${ZYNQ_NAME}/pl_ps_irq0]
 
 set INIT_CLK init_clk
 create_bd_port -dir I -type clk ${INIT_CLK}
