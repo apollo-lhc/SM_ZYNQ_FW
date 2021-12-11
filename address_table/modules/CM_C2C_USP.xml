@@ -12,12 +12,13 @@
   <node id="BRIDGE_INFO"                   address="0x420" module="file://CM_BRIDGE_INFO.xml"/>
 
   <node id="USER_FREQ"                     address="0x430" mask="0xFFFFFFFF" permission="r"  description="Measured Freq of clock" parameters="Table=CLOCKING;Column=FREQ;Row=_1_2_3;Status=3;Show=nz;Format=m_1_1_1000000_1_0_1" />
-  <node id="ENABLE_PHY_CTRL"               address="0x431" mask="0x01000000" permission="rw" description="phy_lane_control is enabled"                   parameters="Table=CM;Column=_1_2;Row=_3;Status=1;show=nz;default=0x1"/>
+  <node id="ENABLE_PHY_CTRL"               address="0x431" mask="0x01000000" permission="rw" description="phy_lane_control is enabled"                   parameters="Table=C2C;Column=_2_3;Row=_4;Status=1;show=nz;default=0x1"/>
   <node id="PHY_READ_TIME"                 address="0x431" mask="0x00FFFFFF" permission="rw" description="Time spent waiting for phylane to stabilize"   parameters="default=0x4C4B40"/> <!-- 100ms default -->       
   <node id="PHY_LANE_STABLE"               address="0x432" mask="0x000FFFFF" permission="rw" description="Contious phy_lane_up signals required to lock phylane control" parameters="default=0xFF"/>
   <node id="PHY_LANE_ERRORS_TO_RESET"      address="0x433" mask="0x000000FF" permission="rw" description="Number of failures before we reset the pma" parameters="default=0xFF"/>
   <node id="PHY_MAX_SINGLE_BIT_ERROR_RATE" address="0x434" mask="0xFFFFFFFF" permission="rw" description="Max single bit error rate" parameters="default=0x00FF"/>
   <node id="PHY_MAX_MULTI_BIT_ERROR_RATE"  address="0x435" mask="0xFFFFFFFF" permission="rw" description="Max multi  bit error rate" parameters="default=0x00FF"/>
+
 </node>
 
 

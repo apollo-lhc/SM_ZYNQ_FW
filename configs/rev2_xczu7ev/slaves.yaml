@@ -184,8 +184,8 @@ AXI_SLAVES:
       command: "AXI_PL_DEV_CONNECT"
       axi_control: "${::AXI_MASTER_CTRL}"
       addr:
-        offset: -1
-        range: "8K"
+        offset: 0xA0100000
+        range: "128K"
     XML:
       - "address_table/modules/CM_USP.xml"
       - "address_table/modules/CM_single_USP.xml"
@@ -229,6 +229,8 @@ AXI_SLAVES:
       baud_rate: "115200"
       irq_port: "${::IRQ0_INTR_CTRL}"
       axi_control: "${::AXI_MASTER_CTRL}"
+      remote_slave: "0"
+      dt_data: "port-number = <1>;"
 
   CM2_UART:
     TCL_CALL:
@@ -236,6 +238,20 @@ AXI_SLAVES:
       baud_rate: "115200"
       irq_port: "${::IRQ0_INTR_CTRL}"
       axi_control: "${::AXI_MASTER_CTRL}"
+      remote_slave: "0"
+      dt_data: "port-number = <2>;"
+
+
+  CM_PB_UART:
+    TCL_CALL:
+      command: "AXI_IP_UART"
+      baud_rate: "115200"
+      irq_port: "${::IRQ0_INTR_CTRL}"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      remote_slave: "0"
+      dt_data: "port-number = <100>;"
+
+
 
   ESM_UART:
     TCL_CALL:
@@ -243,6 +259,9 @@ AXI_SLAVES:
       baud_rate: "115200"
       irq_port: "${::IRQ0_INTR_CTRL}"
       axi_control: "${::AXI_MASTER_CTRL}"
+      remote_slave: "0"
+      dt_data: "port-number = <3>;"
+
 
   AXI_MON:
     TCL_CALL:

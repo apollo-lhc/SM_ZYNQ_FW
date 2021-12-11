@@ -325,6 +325,8 @@ architecture structure of top is
   signal C2C_gt_qpllrefclk_quad4 : std_logic;
   signal C2C1_phy_gt_refclk1_out : std_logic;
   signal clk_C2C1_PHY : std_logic;
+  signal C2C_pB_UART_tx : std_logic;
+  signal C2C_pB_UART_rx : std_logic;
 
   
 
@@ -384,6 +386,9 @@ begin  -- architecture structure
     port map (
       AXI_RST_N(0)         => axi_reset_n,
       AXI_CLK              => AXI_clk,
+      CM_PB_UART_rxd                     => C2C_pB_UART_tx,
+      CM_PB_UART_txd                     => C2C_pB_UART_rx,
+            
       SI_scl_i                  => SCL_i_phy,
       SI_scl_o                  => SCL_o_phy,
       SI_scl_t                  => SCL_t_phy,
@@ -971,7 +976,10 @@ begin  -- architecture structure
       clk_C2C(3)                => clk_C2C1_PHY,
       clk_C2C(4)                => clk_C2C1_PHY,
       CM_C2C_Mon                => CM_C2C_Mon,
-      CM_C2C_Ctrl               => CM_C2C_Ctrl);
+      CM_C2C_Ctrl               => CM_C2C_Ctrl,
+      UART_Rx                   => C2C_pB_UART_rx,
+      UART_Tx                   => C2C_pB_UART_tx
+      );
   CM1_PS_RST   <= plXVC_PS_RST(0);
   CM2_PS_RST   <= plXVC_PS_RST(1);
 

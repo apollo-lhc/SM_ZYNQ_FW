@@ -35,6 +35,11 @@ set vhdl_files "\
      src/CM_interface/CM_pwr.vhd \
      src/CM_interface/CM_package.vhd \
      src/CM_interface/CM_phy_lane_control.vhd \
+     src/CM_interface/picoblaze/picoblaze/cli.vhd \
+     src/CM_interface/picoblaze/picoblaze/kcpsm6.vhd \
+     src/CM_interface/picoblaze/uart_rx6.vhd \
+     src/CM_interface/picoblaze/uart_tx6.vhd \
+     src/CM_interface/picoblaze/uC.vhd \     
      src/front_panel/Button_Debouncer.vhd \
      src/front_panel/Button_Decoder.vhd \
      src/front_panel/FrontPanel_UI.vhd \
