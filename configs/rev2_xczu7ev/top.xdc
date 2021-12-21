@@ -246,6 +246,8 @@ set_property -dict {PACKAGE_PIN P5  }  [get_ports LDAQ_TX_N ]
 
 
 set_clock_groups -asynchronous												                                    \
+		 -group [get_clocks CLK_HQ_P        -include_generated_clocks]                                                                              \
+		 -group [get_clocks CLK_LHC_P       -include_generated_clocks]                                                                              \
 		 -group [get_clocks clk_pl_0      -include_generated_clocks]						                                    \
 		 -group [get_clocks clk_pl_1      -include_generated_clocks]						                                    \
 		 		    		    													    \

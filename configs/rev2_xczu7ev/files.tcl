@@ -62,7 +62,8 @@ set xdc_files "\
      configs/rev2_xczu7ev/top.xdc \
      "
 
-set xci_files "\
-              configs/rev2_xczu7ev/cores/onboardClk.tcl \
-              "
+#set xci_files "\
+#              configs/rev2_xczu7ev/cores/onboardClk.tcl \
+#              "
+
 

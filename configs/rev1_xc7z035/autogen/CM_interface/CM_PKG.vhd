@@ -158,6 +158,8 @@ package CM_CTRL is
     USER_CLK_FREQ              :std_logic_vector(31 downto 0);  -- Frequency of the user C2C clk
     XCVR_RESETS                :std_logic_vector(31 downto 0);  -- Count for phylane in error state
     WAITING_TIMEOUTS           :std_logic_vector(31 downto 0);  -- Count for phylane in error state
+    SB_ERROR_RATE              :std_logic_vector(31 downto 0);  -- single bit error rate
+    MB_ERROR_RATE              :std_logic_vector(31 downto 0);  -- multi bit error rate
   end record CM_CM_C2C_COUNTERS_MON_t;
 
 
@@ -326,18 +328,58 @@ package CM_CTRL is
                                                    CTRL => DEFAULT_CM_CM_CTRL_CTRL_t,
                                                    MONITOR => DEFAULT_CM_CM_MONITOR_CTRL_t
                                                   );
+  type CM_PB_MEM_MOSI_t is record
+    clk       : std_logic;
+    enable    : std_logic;
+    wr_enable : std_logic;
+    address   : std_logic_vector(11-1 downto 0);
+    wr_data   : std_logic_vector(18-1 downto 0);
+  end record CM_PB_MEM_MOSI_t;
+  type CM_PB_MEM_MISO_t is record
+    rd_data         : std_logic_vector(18-1 downto 0);
+    rd_data_valid   : std_logic;
+  end record CM_PB_MEM_MISO_t;
+  constant Default_CM_PB_MEM_MOSI_t : CM_PB_MEM_MOSI_t := ( 
+                                                     clk       => '0',
+                                                     enable    => '0',
+                                                     wr_enable => '0',
+                                                     address   => (others => '0'),
+                                                     wr_data   => (others => '0')
+  );
+  type CM_PB_MON_t is record
+    MEM                        :CM_PB_MEM_MISO_t;
+  end record CM_PB_MON_t;
+
+
+  type CM_PB_CTRL_t is record
+    MEM                        :CM_PB_MEM_MOSI_t;
+    RESET                      :std_logic;       
+    IRQ_COUNT                  :std_logic_vector(31 downto 0);
+  end record CM_PB_CTRL_t;
+
+
+  constant DEFAULT_CM_PB_CTRL_t : CM_PB_CTRL_t := (
+                                                   MEM => Default_CM_PB_MEM_MOSI_t,
+                                                   RESET => '0',
+                                                   IRQ_COUNT => x"004c4b40"
+                                                  );
   type CM_MON_t is record
     CM                         :CM_CM_MON_t_ARRAY;
+    PB                         :CM_PB_MON_t;      
   end record CM_MON_t;
 
 
   type CM_CTRL_t is record
     CM                         :CM_CM_CTRL_t_ARRAY;
+    PB                         :CM_PB_CTRL_t;      
+    C2C_RESET                  :std_logic;         
   end record CM_CTRL_t;
 
 
   constant DEFAULT_CM_CTRL_t : CM_CTRL_t := (
-                                             CM => (others => DEFAULT_CM_CM_CTRL_t )
+                                             CM => (others => DEFAULT_CM_CM_CTRL_t ),
+                                             PB => DEFAULT_CM_PB_CTRL_t,
+                                             C2C_RESET => '0'
                                             );
 
 

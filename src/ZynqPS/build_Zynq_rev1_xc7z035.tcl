@@ -31,11 +31,11 @@ set AXI_MASTER_CLK_FREQ 50000000
 
 
 #create the main interconnect (connected to the PL master and the Zynq(via FW))
-[BUILD_AXI_INTERCONNECT ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} [list ${ZYNQ_NAME}/M_AXI_GP0 ${PL_M}] [list ${AXI_MASTER_CLK} ${PL_M_CLK}] [list ${AXI_MASTER_RSTN} ${PL_M_RSTN}]]
+[BUILD_AXI_INTERCONNECT ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_PRIMARY_MASTER_RSTN} [list ${ZYNQ_NAME}/M_AXI_GP0 ${PL_M}] [list ${AXI_MASTER_CLK} ${PL_M_CLK}] [list ${AXI_PRIMARY_MASTER_RSTN} ${PL_M_RSTN}]]
 
 
 #build the C2C interconnect
-[BUILD_AXI_INTERCONNECT ${AXI_C2C_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_MASTER_RSTN} [list ${ZYNQ_NAME}/M_AXI_GP1] [list ${AXI_MASTER_CLK}] [list ${AXI_MASTER_RSTN}]]
+[BUILD_AXI_INTERCONNECT ${AXI_C2C_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_C2C_MASTER_RSTN} [list ${ZYNQ_NAME}/M_AXI_GP1] [list ${AXI_MASTER_CLK}] [list ${AXI_C2C_MASTER_RSTN}]]
 set_property CONFIG.STRATEGY {1} [get_bd_cells ${AXI_C2C_INTERCONNECT_NAME}]
 
 
@@ -47,7 +47,7 @@ AXI_IP_IRQ_CTRL [dict create \
 		 axi_control {[dict create \
 		    axi_interconnect "${::AXI_INTERCONNECT_NAME}" \
 		    axi_clk "${::AXI_MASTER_CLK}" \
-		    axi_rstn "${::AXI_SLAVE_RSTN}" \
+		    axi_rstn "${::AXI_PRIMARY_SLAVE_RSTN}" \
 		    axi_freq "${::AXI_MASTER_CLK_FREQ}" \		 
 		    ]}\
 		 dt_data {    compatible = "xlnx,axi-intc-4.1", "xlnx,xps-intc-1.00.a"; \

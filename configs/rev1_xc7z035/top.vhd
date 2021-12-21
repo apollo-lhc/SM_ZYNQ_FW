@@ -285,6 +285,8 @@ architecture structure of top is
 
   signal CLOCKING_Mon   : SERV_CLOCKING_MON_t;
   signal CLOCKING_Ctrl  : SERV_CLOCKING_CTRL_t;
+  signal C2C_pB_UART_tx : std_logic;
+  signal C2C_pB_UART_rx : std_logic;
 
   
   signal CM_enable_IOs   : std_logic_vector(2 downto 1);
@@ -306,8 +308,14 @@ architecture structure of top is
   signal local_clk_HQ : std_logic;
   signal clk_HQ_freq : std_logic_vector(31 downto 0);
 
+  signal clk_AXI_freq : std_logic_vector(31 downto 0);
+  signal clk_USER_freq : std_logic_vector(31 downto 0);
+
   constant one : std_logic := '1';
   constant zero : std_logic := '0';
+
+  signal reset_c2c : std_logic;
+
 begin  -- architecture structure
 
   pl_reset_n <= axi_reset_n ;
@@ -361,6 +369,12 @@ begin  -- architecture structure
       SI_sda_t                  => SDA_t_phy,--SDA_t_normal,
       AXI_CLK_PL                => pl_clk,
       AXI_RSTN_PL               => pl_reset_n,
+
+      CM_PB_UART_rxd                     => C2C_pB_UART_tx,
+      CM_PB_UART_txd                     => C2C_pB_UART_rx,
+
+      c2c_interconnect_reset    => reset_c2c,
+
       AXIM_PL_awaddr            => AXI_MSTR_WMOSI.address,
       AXIM_PL_awprot            => AXI_MSTR_WMOSI.protection_type,
       AXIM_PL_awvalid           => AXI_MSTR_WMOSI.address_valid,
@@ -891,7 +905,7 @@ begin  -- architecture structure
       C2C1_PHY_CLK      => clk_C2C1_PHY
             );
 
-
+                                                
 
   axi_reset <= not axi_reset_n;
 
@@ -1054,8 +1068,12 @@ begin  -- architecture structure
       clk_C2C(2)                => clk_C2C1_PHY,
       clk_C2C(3)                => clk_C2C1_PHY,
       clk_C2C(4)                => clk_C2C1_PHY,
+      reset_c2c                 => reset_c2c,
       CM_C2C_Mon                => CM_C2C_Mon,
-      CM_C2C_Ctrl               => CM_C2C_Ctrl);
+      CM_C2C_Ctrl               => CM_C2C_Ctrl,
+      UART_Rx                   => C2C_pB_UART_rx,
+      UART_Tx                   => C2C_pB_UART_tx
+      );
   plXVC_TDO(0) <= CM1_TDO;
   plXVC_TDO(1) <= CM2_TDO;
   CM1_ps_rst   <= plXVC_PS_RST(0);
@@ -1084,6 +1102,16 @@ begin  -- architecture structure
   -------------------------------------------------------------------------------
   -- extra clock monitoring
   -------------------------------------------------------------------------------
+  clock_buffering: process (axi_clk) is
+  begin  -- process clock_buffering
+    if axi_clk'event and axi_clk = '1' then  -- rising clock edge
+      Clocking_Mon.LHC_CLK_FREQ <= clk_LHC_freq;
+      Clocking_Mon.HQ_CLK_FREQ  <= clk_HQ_freq;
+      Clocking_Mon.AXI_CLK_FREQ <= clk_AXI_freq;
+      CM_C2C_Mon.Link(1).USER_CLK_FREQ <= clk_USER_freq;
+    end if;
+  end process clock_buffering;
+
   ibufds_CLK_LHC : IBUFDS
     port map (
       I  => CLK_LHC_P,
@@ -1096,13 +1124,13 @@ begin  -- architecture structure
       CE => Clocking_Ctrl.LHC_CLK_IBUF_EN);
   rate_counter_LHC: entity work.rate_counter
     generic map (
-      CLK_A_1_SECOND => 200000000)
+      CLK_A_1_SECOND => 50000000)
     port map (
-      clk_A         => clk_200Mhz,
+      clk_A         => axi_clk,
       clk_B         => clk_LHC,
       reset_A_async => axi_reset or (not Clocking_Ctrl.LHC_CLK_IBUF_EN),
       event_b       => one,--'1',
-      rate          => Clocking_Mon.LHC_CLK_FREQ);
+      rate          => clk_LHC_freq);
   ibufds_CLK_HQ : IBUFDS
     port map (
       I  => CLK_HQ_P,
@@ -1115,36 +1143,36 @@ begin  -- architecture structure
       CE => Clocking_Ctrl.HQ_CLK_IBUF_EN);
   rate_counter_HQ: entity work.rate_counter
     generic map (
-      CLK_A_1_SECOND => 200000000)
+      CLK_A_1_SECOND => 50000000)
     port map (
-      clk_A         => clk_200Mhz,
+      clk_A         => axi_clk,
       clk_B         => clk_HQ,
       reset_A_async => axi_reset or (not Clocking_Ctrl.HQ_CLK_IBUF_EN),
       event_b       => one,--'1',
-      rate          => Clocking_Mon.HQ_CLK_FREQ);
+      rate          => clk_HQ_freq);
 
   CM_C2C_Mon.Link(2).USER_CLK_FREQ <=   (others => '0');
   CM_C2C_Mon.Link(3).USER_CLK_FREQ <=   (others => '0');
   CM_C2C_Mon.Link(4).USER_CLK_FREQ <=   (others => '0');
   rate_counter_C2C_USER: entity work.rate_counter
     generic map (
-      CLK_A_1_SECOND => 200000000)
+      CLK_A_1_SECOND => 50000000)
     port map (
-      clk_A         => clk_200Mhz,
+      clk_A         => axi_clk,
       clk_B         => clk_C2C1_PHY,
       reset_A_async => axi_reset,-- or (CM_C2C_Mon.Link(1).status.phy_mmcm_lol),
       event_b       => one,--'1',
-      rate          => CM_C2C_Mon.Link(1).USER_CLK_FREQ);    
+      rate          => clk_USER_freq);    
 
   rate_counter_AXI: entity work.rate_counter
     generic map (
-      CLK_A_1_SECOND => 200000000)
+      CLK_A_1_SECOND => 50000000)
     port map (
-      clk_A         => clk_200Mhz,
+      clk_A         => axi_clk,
       clk_B         => axi_clk,
       reset_A_async => axi_reset,
       event_b       => one,--'1',
-      rate          => Clocking_Mon.AXI_CLK_FREQ);
+      rate          => clk_AXI_freq);
 
 
 

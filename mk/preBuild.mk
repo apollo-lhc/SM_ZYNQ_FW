@@ -33,6 +33,7 @@ $(SLAVE_DTSI_PATH)/slaves_%.yaml $(ADDRESS_TABLE_CREATION_PATH)/slaves_%.yaml : 
 				             -a $(ADDRESS_TABLE_CREATION_PATH) \
 				             -d $(SLAVE_DTSI_PATH) \
                                              -m $(MAP_TEMPLATE_FILE)
+	make address_table
 
 $(foreach prebuild,$(CONFIGS),$(eval $(call PREBUILD_template,$(prebuild))))
 

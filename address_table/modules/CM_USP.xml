@@ -7,5 +7,5 @@
     <node id="RESET" address="0x800" mask="0x00000001" permission="rw"/>
     <node id="IRQ_COUNT" address="0x801" mask="0xFFFFFFFF" permission="rw" parameters="default=5000000"/>   
   </node>
-
+  <node id="C2C_RESET" address="0x4810" mask="0x00000001" permission="w"/>
 </node>

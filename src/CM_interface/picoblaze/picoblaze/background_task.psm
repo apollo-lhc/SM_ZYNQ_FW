@@ -248,6 +248,18 @@ link_update_LINK_WAIT_check:
 	JUMP link_update_end
 ;;; BG_STATE: RUNNING
 link_update_RUNNING:	
+	;; check that the link is still good
+	INPUT s0, LINK_CTRL_PORT
+	TEST s0, LINK_CTRL_PORT_LINK_GOOD ;check if the link is good
+	JUMP NC, link_update_RUNNING_good_check_bad
+	TEST s0, LINK_CTRL_PORT_LANE_UP   ;check if the lane is up
+	JUMP NC, link_update_RUNNING_good_check_bad
+	JUMP link_update_RUNNING_error_check
+link_update_RUNNING_good_check_bad:	
+	;; go back to the beginning
+	LOAD sF, BG_STATE_INIT
+	JUMP link_update_end
+link_update_RUNNING_error_check:	
 	INPUT s0, LINK_CTRL_PORT
 	TEST s0, LINK_CTRL_PORT_ERR_SB_CNT ;check if there are too many SB errors
 	JUMP C,  link_update_RUNNING_errors ; handle errors

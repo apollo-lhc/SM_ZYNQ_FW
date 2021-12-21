@@ -354,6 +354,10 @@ architecture structure of top is
   signal local_clk_TTC : std_logic;
   signal clk_TTC_freq : std_logic_vector(31 downto 0);
 
+  signal reset_c2c : std_logic;
+
+  constant AXI_CLOCK_FREQ : integer := 71427856;
+  
 begin  -- architecture structure
 
   --debugging start
@@ -388,7 +392,9 @@ begin  -- architecture structure
       AXI_CLK              => AXI_clk,
       CM_PB_UART_rxd                     => C2C_pB_UART_tx,
       CM_PB_UART_txd                     => C2C_pB_UART_rx,
-            
+
+      c2c_interconnect_reset    => reset_c2c,
+      
       SI_scl_i                  => SCL_i_phy,
       SI_scl_o                  => SCL_o_phy,
       SI_scl_t                  => SCL_t_phy,
@@ -906,20 +912,21 @@ begin  -- architecture structure
   -------------------------------------------------------------------------------
   -- Command modules and C2C links
   -------------------------------------------------------------------------------
-  AXI_C2C_powerdown(1) <= not CM_enable_IOs(1);
-  AXI_C2C_powerdown(2) <= not CM_enable_IOs(1);
+  AXI_C2C_powerdown <= (others => '0');
+--  AXI_C2C_powerdown(1) <= not CM_enable_IOs(1);
+--  AXI_C2C_powerdown(2) <= not CM_enable_IOs(1);
 
   CM_COUNT_IS_1_ASSIGNMENTS: if CM_COUNT = 1 generate
-    AXI_C2C_powerdown(3) <= not CM_enable_IOs(1);
-    AXI_C2C_powerdown(4) <= not CM_enable_IOs(1);
+--    AXI_C2C_powerdown(3) <= not CM_enable_IOs(1);
+--    AXI_C2C_powerdown(4) <= not CM_enable_IOs(1);
     CM_C2C_Mon.Link(2).status.phy_mmcm_lol  <= CM_C2C_Mon.Link(1).status.phy_mmcm_lol;
     CM_C2C_Mon.Link(3).status.phy_mmcm_lol  <= CM_C2C_Mon.Link(1).status.phy_mmcm_lol;
     CM_C2C_Mon.Link(4).status.phy_mmcm_lol  <= CM_C2C_Mon.Link(1).status.phy_mmcm_lol;
   end generate CM_COUNT_IS_1_ASSIGNMENTS;
   
   CM_COUNT_IS_2_ASSIGNMENTS: if CM_COUNT = 2 generate
-    AXI_C2C_powerdown(3) <= not CM_enable_IOs(2);
-    AXI_C2C_powerdown(4) <= not CM_enable_IOs(2);
+--    AXI_C2C_powerdown(3) <= not CM_enable_IOs(2);
+--    AXI_C2C_powerdown(4) <= not CM_enable_IOs(2);
   end generate CM_COUNT_IS_2_ASSIGNMENTS;
   
 
@@ -928,8 +935,8 @@ begin  -- architecture structure
     generic map (
       CM_COUNT             => 2,
       COUNTER_COUNT        => 5,
-      CLKFREQ              => 50000000,
-      ERROR_WAIT_TIME      => 50000000)
+      CLKFREQ              => AXI_CLOCK_FREQ,
+      ERROR_WAIT_TIME      => AXI_CLOCK_FREQ)
     port map (
       clk_axi              => axi_clk,
       reset_axi_n          => pl_reset_n,
@@ -975,6 +982,7 @@ begin  -- architecture structure
       clk_C2C(2)                => clk_C2C1_PHY,
       clk_C2C(3)                => clk_C2C1_PHY,
       clk_C2C(4)                => clk_C2C1_PHY,
+      reset_c2c                 => reset_c2c,
       CM_C2C_Mon                => CM_C2C_Mon,
       CM_C2C_Ctrl               => CM_C2C_Ctrl,
       UART_Rx                   => C2C_pB_UART_rx,
@@ -1034,7 +1042,7 @@ begin  -- architecture structure
   onboardCLK_1: entity work.onboardCLK
     port map (
       clk_200Mhz => clk_200Mhz,
-      clk_50Mhz  => AXI_C2C_aurora_init_clk,
+      clk_71_427856Mhz  => AXI_C2C_aurora_init_clk,
       reset      =>  SI_init_reset,--'0',
       locked     => clk_200Mhz_locked,
       clk_in1_n  => onboard_clk_n,
@@ -1056,9 +1064,9 @@ begin  -- architecture structure
       CE => Clocking_Ctrl.LHC_CLK_IBUF_EN);
   rate_counter_LHC: entity work.rate_counter
     generic map (
-      CLK_A_1_SECOND => 200000000)
+      CLK_A_1_SECOND => AXI_CLOCK_FREQ)
     port map (
-      clk_A         => clk_200Mhz,
+      clk_A         => axi_clk,
       clk_B         => clk_LHC,
       reset_A_async => axi_reset or (not Clocking_Ctrl.LHC_CLK_IBUF_EN),
       event_b       => '1',
@@ -1075,9 +1083,9 @@ begin  -- architecture structure
       CE => Clocking_Ctrl.HQ_CLK_IBUF_EN);
   rate_counter_HQ: entity work.rate_counter
     generic map (
-      CLK_A_1_SECOND => 200000000)
+      CLK_A_1_SECOND => AXI_CLOCK_FREQ)
     port map (
-      clk_A         => clk_200Mhz,
+      clk_A         => axi_clk,
       clk_B         => clk_HQ,
       reset_A_async => axi_reset or (not Clocking_Ctrl.HQ_CLK_IBUF_EN),
       event_b       => '1',
@@ -1094,9 +1102,9 @@ begin  -- architecture structure
       CE => Clocking_Ctrl.TTC_CLK_IBUF_EN);
   rate_counter_TTC: entity work.rate_counter
     generic map (
-      CLK_A_1_SECOND => 200000000)
+      CLK_A_1_SECOND => AXI_CLOCK_FREQ)
     port map (
-      clk_A         => clk_200Mhz,
+      clk_A         => axi_clk,
       clk_B         => clk_TTC,
       reset_A_async => axi_reset or (not Clocking_Ctrl.TTC_CLK_IBUF_EN),
       event_b       => '1',
@@ -1105,7 +1113,7 @@ begin  -- architecture structure
   CM_C2C_Mon.Link(3).USER_CLK_FREQ <=   CM_C2C_Mon.Link(1).USER_CLK_FREQ;
   rate_counter_C2C_USER: entity work.rate_counter
     generic map (
-      CLK_A_1_SECOND => 200000000)
+      CLK_A_1_SECOND => AXI_CLOCK_FREQ)
     port map (
 --      clk_A         => clk_200Mhz,
       clk_A         => axi_clk,
@@ -1116,9 +1124,9 @@ begin  -- architecture structure
 
   rate_counter_AXI: entity work.rate_counter
     generic map (
-      CLK_A_1_SECOND => 200000000)
+      CLK_A_1_SECOND => AXI_CLOCK_FREQ)
     port map (
-      clk_A         => clk_200Mhz,
+      clk_A         => axi_clk,
       clk_B         => axi_clk,
       reset_A_async => axi_reset,
       event_b       => '1',

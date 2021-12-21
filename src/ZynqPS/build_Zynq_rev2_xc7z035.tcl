@@ -5,6 +5,7 @@ create_bd_design -dir ./ "zynq_bd"
 #helpers for building AXI things
 source ${apollo_root_path}/bd/axi_helpers.tcl
 source ${apollo_root_path}/bd/Xilinx_AXI_slaves.tcl
+source ${apollo_root_path}/bd/Xilinx_Cores.tcl
 
 #================================================================================
 #  Create and configure the basic zynq processing system.

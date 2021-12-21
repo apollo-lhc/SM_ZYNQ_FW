@@ -362,12 +362,14 @@ package CM_CTRL is
   type CM_CTRL_t is record
     CM                         :CM_CM_CTRL_t_ARRAY;
     PB                         :CM_PB_CTRL_t;      
+    C2C_RESET                  :std_logic;         
   end record CM_CTRL_t;
 
 
   constant DEFAULT_CM_CTRL_t : CM_CTRL_t := (
                                              CM => (others => DEFAULT_CM_CM_CTRL_t ),
-                                             PB => DEFAULT_CM_PB_CTRL_t
+                                             PB => DEFAULT_CM_PB_CTRL_t,
+                                             C2C_RESET => '0'
                                             );
 
 

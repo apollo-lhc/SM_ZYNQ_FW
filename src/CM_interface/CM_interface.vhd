@@ -42,6 +42,7 @@ entity CM_intf is
     to_CM_in          : in  to_CM_t; --from SM
     to_CM_out         : out to_CM_t; --from SM, but tristated
     clk_C2C           : in  std_logic_vector(4 downto 1);
+    reset_c2c         : out std_logic;
     CM_C2C_Mon        : in  C2C_Monitor_t;
     CM_C2C_Ctrl       : out C2C_Control_t;
     UART_Rx           : in  std_logic;
@@ -126,8 +127,12 @@ begin
   end generate CM_CTRL_GENERATE_2;
 
 
+  reset_c2c <= Ctrl.C2C_RESET;
+  
   --For AXI
   CM_interface_1: entity work.CM_map
+    generic map(
+      READ_TIMEOUT    => 1023)
     port map (
       clk_axi         => clk_axi,
       reset_axi_n     => reset_axi_n,
@@ -391,7 +396,7 @@ begin
       aurora_init_buf(linkID)                       <= link_INFO_out(linkID-1).link_init;        
       Mon.CM(iCM).C2C(iLane).COUNTERS.PHYLANE_STATE <= link_INFO_out(linkID-1).state(2 downto 0);
                                   
-      link_INFO_in(linkID-1).link_reset_done          <= Mon.CM(iCM).C2C(iLane).DEBUG.RX.PMA_RESET_DONE;     
+      link_INFO_in(linkID-1).link_reset_done          <= '1';--Mon.CM(iCM).C2C(iLane).DEBUG.RX.PMA_RESET_DONE;     
       link_INFO_in(linkID-1).link_good                <= Mon.CM(iCM).C2C(iLane).status.LINK_GOOD;
       link_INFO_in(linkID-1).lane_up                  <= Mon.CM(iCM).C2C(iLane).status.phy_lane_up(0);
       link_INFO_in(linkID-1).sb_err_rate              <= single_bit_error_rate(linkID);

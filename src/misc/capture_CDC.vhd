@@ -42,7 +42,9 @@ architecture behavioral of capture_CDC is
   -- both
   signal local_data : std_logic_vector(WIDTH-1 downto 0);
 
-  
+  attribute ASYNC_REG : string;
+  attribute ASYNC_REG of outA : signal is "yes";
+
 begin  -- architecture behavioral
   capture_pulseB <= local_capture_pulseB;
   --pass a pulse from A to B for capture

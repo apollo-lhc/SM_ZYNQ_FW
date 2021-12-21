@@ -55,8 +55,8 @@ architecture behavioral of CM_map is
   signal BRAM_MISO          : BRAMPortMISO_array_t(0 to BRAM_COUNT-1);
   
   
-  signal reg_data :  slv32_array_t(integer range 0 to 18433);
-  constant Default_reg_data : slv32_array_t(integer range 0 to 18433) := (others => x"00000000");
+  signal reg_data :  slv32_array_t(integer range 0 to 18448);
+  constant Default_reg_data : slv32_array_t(integer range 0 to 18448) := (others => x"00000000");
 begin  -- architecture behavioral
 
   -------------------------------------------------------------------------------
@@ -820,6 +820,7 @@ elsif BRAM_MISO(4).rd_data_valid = '1' then
       reg_data(1032)(31 downto 27)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.TX.PRE_CURSOR;
       reg_data(1033)( 3 downto  0)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.TX.PRBS_SEL;
       reg_data(1033)( 8 downto  4)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.TX.DIFF_CTRL;
+      reg_data(1048)( 0)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).COUNTERS.RESET_COUNTERS;
       reg_data(1073)(23 downto  0)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).PHY_READ_TIME;
       reg_data(1073)(24)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).ENABLE_PHY_CTRL;
       reg_data(1074)(19 downto  0)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).PHY_LANE_STABLE;
@@ -848,6 +849,7 @@ elsif BRAM_MISO(4).rd_data_valid = '1' then
       reg_data(3080)(31 downto 27)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.TX.PRE_CURSOR;
       reg_data(3081)( 3 downto  0)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.TX.PRBS_SEL;
       reg_data(3081)( 8 downto  4)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.TX.DIFF_CTRL;
+      reg_data(3096)( 0)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).COUNTERS.RESET_COUNTERS;
       reg_data(3121)(23 downto  0)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).PHY_READ_TIME;
       reg_data(3121)(24)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).ENABLE_PHY_CTRL;
       reg_data(3122)(19 downto  0)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).PHY_LANE_STABLE;
@@ -884,6 +886,7 @@ elsif BRAM_MISO(4).rd_data_valid = '1' then
       reg_data(9224)(31 downto 27)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.TX.PRE_CURSOR;
       reg_data(9225)( 3 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.TX.PRBS_SEL;
       reg_data(9225)( 8 downto  4)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.TX.DIFF_CTRL;
+      reg_data(9240)( 0)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).COUNTERS.RESET_COUNTERS;
       reg_data(9265)(23 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).PHY_READ_TIME;
       reg_data(9265)(24)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).ENABLE_PHY_CTRL;
       reg_data(9266)(19 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).PHY_LANE_STABLE;
@@ -912,6 +915,7 @@ elsif BRAM_MISO(4).rd_data_valid = '1' then
       reg_data(11272)(31 downto 27)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.TX.PRE_CURSOR;
       reg_data(11273)( 3 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.TX.PRBS_SEL;
       reg_data(11273)( 8 downto  4)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.TX.DIFF_CTRL;
+      reg_data(11288)( 0)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).COUNTERS.RESET_COUNTERS;
       reg_data(11313)(23 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).PHY_READ_TIME;
       reg_data(11313)(24)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).ENABLE_PHY_CTRL;
       reg_data(11314)(19 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).PHY_LANE_STABLE;
@@ -928,12 +932,14 @@ elsif BRAM_MISO(4).rd_data_valid = '1' then
       reg_data(12410)(31 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).MONITOR.SM_TIMEOUT;
       reg_data(18432)( 0)  <= DEFAULT_CM_CTRL_t.PB.RESET;
       reg_data(18433)(31 downto  0)  <= DEFAULT_CM_CTRL_t.PB.IRQ_COUNT;
+      reg_data(18448)( 0)  <= DEFAULT_CM_CTRL_t.C2C_RESET;
 
     elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
       Ctrl.CM(1).C2C(1).COUNTERS.RESET_COUNTERS <= '0';
       Ctrl.CM(1).C2C(2).COUNTERS.RESET_COUNTERS <= '0';
       Ctrl.CM(2).C2C(1).COUNTERS.RESET_COUNTERS <= '0';
       Ctrl.CM(2).C2C(2).COUNTERS.RESET_COUNTERS <= '0';
+      Ctrl.C2C_RESET <= '0';
       
 
       
@@ -1135,6 +1141,8 @@ elsif BRAM_MISO(4).rd_data_valid = '1' then
           reg_data(18432)( 0)                        <=  localWrData( 0);                --
         when 18433 => --0x4801
           reg_data(18433)(31 downto  0)              <=  localWrData(31 downto  0);      --
+        when 18448 => --0x4810
+          Ctrl.C2C_RESET                             <=  localWrData( 0);               
 
           when others => null;
         end case;
