@@ -27,12 +27,14 @@ PREBUILDS=$(addprefix,prebuild_,$(CONFIGS))
 $(SLAVE_DTSI_PATH)/slaves_%.yaml $(ADDRESS_TABLE_CREATION_PATH)/slaves_%.yaml : $(SLAVE_DEF_FILE_BASE)/%/slaves.yaml
 	@mkdir -p $(ADDRESS_TABLE_CREATION_PATH)
 	@mkdir -p $(SLAVE_DTSI_PATH)
+	@mkdir -p $(SLAVE_DEF_FILE_BASE)/$*/autogen
 	LD_LIBRARY_PATH=$(CACTUS_LD_PATH) ./scripts/preBuild.py \
 			                     -s $^ \
 				             -t $(ADDSLAVE_TCL_PATH) \
 				             -a $(ADDRESS_TABLE_CREATION_PATH) \
 				             -d $(SLAVE_DTSI_PATH) \
-                                             -m $(MAP_TEMPLATE_FILE)
+                                             -m $(MAP_TEMPLATE_FILE) \
+                                             -g $(CONFIGS_BASE_PATH)/$*/autogen
 	make address_table
 
 $(foreach prebuild,$(CONFIGS),$(eval $(call PREBUILD_template,$(prebuild))))

@@ -32,8 +32,9 @@ ADDRESS_TABLE = ${MAKE_PATH}/os/address_table/address_apollo.xml
 ################################################################################
 # Configs
 #################################################################################
+CONFIGS_BASE_PATH=configs/
 #get a list of the subdirs in configs.  These are our FPGA builds
-CONFIGS=$(filter-out configs/,$(patsubst configs/%/,%,$(dir $(wildcard configs/*/))))
+CONFIGS=$(filter-out ${CONFIGS_BASE_PATH},$(patsubst ${CONFIGS_BASE_PATH}%/,%,$(dir $(wildcard ${CONFIGS_BASE_PATH}*/))))
 
 define CONFIGS_template =
  $(1): clean_make_log clean
@@ -50,7 +51,7 @@ BIT_BASE=${MAKE_PATH}/bit/top_
 #################################################################################
 # preBuild 
 #################################################################################
-SLAVE_DEF_FILE_BASE=${MAKE_PATH}/configs/
+SLAVE_DEF_FILE_BASE=${MAKE_PATH}/${CONFIGS_BASE_PATH}
 ADDSLAVE_TCL_PATH=${MAKE_PATH}/src/ZynqPS/
 ADDRESS_TABLE_CREATION_PATH=${MAKE_PATH}/os/
 SLAVE_DTSI_PATH=${MAKE_PATH}/kernel/

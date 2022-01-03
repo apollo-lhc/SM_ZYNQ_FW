@@ -127,7 +127,6 @@ AXI_SLAVES:
       - "address_table/modules/SERV_rev2.xml"
     UHAL_BASE: 0x04000000
     HDL:
-      out_dir:  "configs/rev2_xczu7ev/autogen/services"
       map_template: "axi_generic/template_map_withbram.vhd"
 
   PLXVC:
@@ -139,7 +138,6 @@ AXI_SLAVES:
       - "address_table/modules/plXVC_single.xml"
     UHAL_BASE: 0x06000000
     HDL: 
-      out_dir: "configs/rev2_xczu7ev/autogen/plXVC"
       map_template: "axi_generic/template_map_withbram.vhd"
 
   SLAVE_I2C:
@@ -174,7 +172,6 @@ AXI_SLAVES:
       - "address_table/modules/DRP_USP_GTH.xml"
     UHAL_BASE: 0x03000000
     HDL: 
-      out_dir: "configs/rev2_xczu7ev/autogen/CM_interface"
       map_template: "axi_generic/template_map_withbram.vhd"
 
   SM_INFO:
@@ -185,7 +182,6 @@ AXI_SLAVES:
       - "address_table/modules/FW_INFO.xml"
     UHAL_BASE: 0x0A000000
     HDL: 
-      out_dir: "configs/rev2_xczu7ev/autogen/SM_info"
       map_template: "axi_generic/template_map_withbram.vhd"
 
   MONITOR:
@@ -268,7 +264,6 @@ AXI_SLAVES:
       - "address_table/modules/MEM_TEST.xml"
     UHAL_BASE: 0x0F000000
     HDL: 
-      out_dir: "configs/rev2_xczu7ev/autogen/MEM_TEST"
       map_template: "axi_generic/template_map_withbram.vhd"
 
   IRQ_CTRL:

@@ -106,8 +106,8 @@ if { [info exists xci_files] == 1 } {
 #Add bd files
 foreach bd_name [array names bd_files] {
     set filename "${apollo_root_path}/$bd_files($bd_name)"
-    source $filename
     puts "Running $filename"
+    source $filename
     read_bd [get_files "${apollo_root_path}/$bd_path/$bd_name/$bd_name.bd"]
     open_bd_design [get_files "${apollo_root_path}/$bd_path/$bd_name/$bd_name.bd"]
     make_wrapper -files [get_files $bd_name.bd] -top -import -force
