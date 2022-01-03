@@ -72,7 +72,7 @@ package CM_CTRL is
                                                                              BUF_RESET => '0',
                                                                              CDR_HOLD => '0',
                                                                              DFE_LPM_RESET => '0',
-                                                                             LPM_EN => '0',
+                                                                             LPM_EN => '1',
                                                                              PCS_RESET => '0',
                                                                              PMA_RESET => '0',
                                                                              PRBS_CNT_RST => '0',

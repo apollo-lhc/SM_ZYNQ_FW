@@ -1,3 +1,4 @@
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -6,7 +7,7 @@ use work.types.all;
 use work.AXIRegPKG.all;
 use work.CM_package.all;
 use work.SERV_CTRL.all;
- 
+use work.Global_PKG.all; 
 
 Library UNISIM;
 use UNISIM.vcomponents.all;
@@ -356,7 +357,7 @@ architecture structure of top is
 
   signal reset_c2c : std_logic;
 
-  constant AXI_CLOCK_FREQ : integer := 71427856;
+--  constant AXI_MASTER_CLK_FREQ : integer := 71427856;
   
 begin  -- architecture structure
 
@@ -586,7 +587,7 @@ begin  -- architecture structure
       C2C1_PHY_DRP_di                   => CM_C2C_Ctrl.Link(1).drp.wr_data,
       C2C1_PHY_DRP_do                   => CM_C2C_Mon.Link(1).drp.rd_data,
       C2C1_PHY_DRP_drdy                 => CM_C2C_Mon.Link(1).drp.rd_data_valid,
-      C2C1_PHY_DRP_dwe                  => CM_C2C_Ctrl.Link(1).drp.wr_enable,
+      C2C1_PHY_DRP_dwe                  => CM_C2C_Ctrl.Link(1).drp.wr_enable,    
 
 
       C2C1b_phy_Rx_rxn =>  AXI_C2C_CM1_Rx_N(1 to 1),
@@ -848,6 +849,8 @@ begin  -- architecture structure
   
   
   services_1: entity work.services
+    generic map(
+      CLK_FREQ => AXI_MASTER_CLK_FREQ)
     port map (
       clk_axi         => axi_clk,
       reset_axi_n     => pl_reset_n,
@@ -930,13 +933,16 @@ begin  -- architecture structure
   end generate CM_COUNT_IS_2_ASSIGNMENTS;
   
 
+
+
+
   
   CM_interface_1: entity work.CM_intf
     generic map (
       CM_COUNT             => 2,
       COUNTER_COUNT        => 5,
-      CLKFREQ              => AXI_CLOCK_FREQ,
-      ERROR_WAIT_TIME      => AXI_CLOCK_FREQ)
+      CLKFREQ              => AXI_MASTER_CLK_FREQ,
+      ERROR_WAIT_TIME      => AXI_MASTER_CLK_FREQ)
     port map (
       clk_axi              => axi_clk,
       reset_axi_n          => pl_reset_n,
@@ -982,6 +988,10 @@ begin  -- architecture structure
       clk_C2C(2)                => clk_C2C1_PHY,
       clk_C2C(3)                => clk_C2C1_PHY,
       clk_C2C(4)                => clk_C2C1_PHY,
+      DRP_clk(1)                => AXI_C2C_aurora_init_clk,
+      DRP_clk(2)                => AXI_C2C_aurora_init_clk,
+      DRP_clk(3)                => AXI_C2C_aurora_init_clk,
+      DRP_clk(4)                => AXI_C2C_aurora_init_clk,
       reset_c2c                 => reset_c2c,
       CM_C2C_Mon                => CM_C2C_Mon,
       CM_C2C_Ctrl               => CM_C2C_Ctrl,
@@ -1064,7 +1074,7 @@ begin  -- architecture structure
       CE => Clocking_Ctrl.LHC_CLK_IBUF_EN);
   rate_counter_LHC: entity work.rate_counter
     generic map (
-      CLK_A_1_SECOND => AXI_CLOCK_FREQ)
+      CLK_A_1_SECOND => AXI_MASTER_CLK_FREQ)
     port map (
       clk_A         => axi_clk,
       clk_B         => clk_LHC,
@@ -1083,7 +1093,7 @@ begin  -- architecture structure
       CE => Clocking_Ctrl.HQ_CLK_IBUF_EN);
   rate_counter_HQ: entity work.rate_counter
     generic map (
-      CLK_A_1_SECOND => AXI_CLOCK_FREQ)
+      CLK_A_1_SECOND => AXI_MASTER_CLK_FREQ)
     port map (
       clk_A         => axi_clk,
       clk_B         => clk_HQ,
@@ -1102,7 +1112,7 @@ begin  -- architecture structure
       CE => Clocking_Ctrl.TTC_CLK_IBUF_EN);
   rate_counter_TTC: entity work.rate_counter
     generic map (
-      CLK_A_1_SECOND => AXI_CLOCK_FREQ)
+      CLK_A_1_SECOND => AXI_MASTER_CLK_FREQ)
     port map (
       clk_A         => axi_clk,
       clk_B         => clk_TTC,
@@ -1113,7 +1123,7 @@ begin  -- architecture structure
   CM_C2C_Mon.Link(3).USER_CLK_FREQ <=   CM_C2C_Mon.Link(1).USER_CLK_FREQ;
   rate_counter_C2C_USER: entity work.rate_counter
     generic map (
-      CLK_A_1_SECOND => AXI_CLOCK_FREQ)
+      CLK_A_1_SECOND => AXI_MASTER_CLK_FREQ)
     port map (
 --      clk_A         => clk_200Mhz,
       clk_A         => axi_clk,
@@ -1124,7 +1134,7 @@ begin  -- architecture structure
 
   rate_counter_AXI: entity work.rate_counter
     generic map (
-      CLK_A_1_SECOND => AXI_CLOCK_FREQ)
+      CLK_A_1_SECOND => AXI_MASTER_CLK_FREQ)
     port map (
       clk_A         => axi_clk,
       clk_B         => axi_clk,

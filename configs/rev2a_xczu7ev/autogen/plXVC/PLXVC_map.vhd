@@ -164,6 +164,7 @@ begin  -- architecture behavioral
       reg_data( 0)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(1).LENGTH;
       reg_data( 1)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(1).TMS_VECTOR;
       reg_data( 2)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(1).TDI_VECTOR;
+      reg_data( 4)( 0)  <= DEFAULT_PLXVC_CTRL_t.XVC(1).GO;
       reg_data( 5)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(1).LOCK;
       reg_data( 6)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(1).REMOTE.IP;
       reg_data( 7)(15 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(1).REMOTE.PORT_NUMBER;
@@ -171,6 +172,7 @@ begin  -- architecture behavioral
       reg_data(16)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).LENGTH;
       reg_data(17)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).TMS_VECTOR;
       reg_data(18)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).TDI_VECTOR;
+      reg_data(20)( 0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).GO;
       reg_data(21)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).LOCK;
       reg_data(22)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).REMOTE.IP;
       reg_data(23)(15 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(2).REMOTE.PORT_NUMBER;
@@ -178,6 +180,7 @@ begin  -- architecture behavioral
       reg_data(32)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(3).LENGTH;
       reg_data(33)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(3).TMS_VECTOR;
       reg_data(34)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(3).TDI_VECTOR;
+      reg_data(36)( 0)  <= DEFAULT_PLXVC_CTRL_t.XVC(3).GO;
       reg_data(37)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(3).LOCK;
       reg_data(38)(31 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(3).REMOTE.IP;
       reg_data(39)(15 downto  0)  <= DEFAULT_PLXVC_CTRL_t.XVC(3).REMOTE.PORT_NUMBER;

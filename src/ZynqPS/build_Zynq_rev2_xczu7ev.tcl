@@ -1,3 +1,5 @@
+source ${apollo_root_path}/bd/Xilinx_Helpers.tcl
+
 #create a block design called "zynq_bd"
 create_bd_design -dir ./ $bd_name
 
@@ -31,6 +33,7 @@ set PL_M_FREQ [get_property CONFIG.FREQ_HZ [get_bd_pin ${AXI_MASTER_CLK}]]
 
 #set AXI_MASTER_CLK_FREQ 49999500
 set AXI_MASTER_CLK_FREQ [get_property CONFIG.FREQ_HZ [get_bd_pin ${AXI_MASTER_CLK}]]
+Add_Global_Constant AXI_MASTER_CLK_FREQ integer ${AXI_MASTER_CLK_FREQ}
 
 puts "  Primary interconnect"
 [BUILD_AXI_INTERCONNECT ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_PRIMARY_MASTER_RSTN} [list ${ZYNQ_NAME}/M_AXI_HPM0_FPD ${PL_M}] [list ${AXI_MASTER_CLK} ${PL_M_CLK}] [list ${AXI_PRIMARY_MASTER_RSTN} ${PL_M_RSTN}]]
@@ -91,3 +94,4 @@ save_bd_design
 
 close_bd_design "zynq_bd"
 
+Generate_Global_package

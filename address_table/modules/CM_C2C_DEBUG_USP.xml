@@ -15,7 +15,7 @@
     <node id="BUF_RESET"                       mask="0x00001000" permission="rw" description="DEBUG rx buf reset" />
     <node id="CDR_HOLD"                        mask="0x00002000" permission="rw" description="DEBUG rx CDR hold" />
     <node id="DFE_LPM_RESET"                   mask="0x00020000" permission="rw" description="DEBUG rx DFE LPM RESET" />
-    <node id="LPM_EN"                          mask="0x00040000" permission="rw" description="DEBUG rx LPM ENABLE" />
+    <node id="LPM_EN"                          mask="0x00040000" permission="rw" description="DEBUG rx LPM ENABLE" parameters="default=0x1"/>
     <node id="PCS_RESET"                       mask="0x00800000" permission="rw" description="DEBUG rx pcs reset" />
     <node id="PMA_RESET"                       mask="0x01000000" permission="rw" description="DEBUG rx pma reset" />
     <node id="PRBS_CNT_RST"                    mask="0x02000000" permission="rw" description="DEBUG rx PRBS counter reset" />

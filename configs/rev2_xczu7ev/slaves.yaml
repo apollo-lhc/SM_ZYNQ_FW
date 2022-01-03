@@ -289,7 +289,6 @@ AXI_SLAVES:
       - "address_table/modules/INTERRUPT_CONTROLLER.xml"
     UHAL_BASE: 0x16000000
   
-
 XVC_LOCAL:
   TCL_CALL:
     command: "AXI_IP_LOCAL_XVC"

@@ -42,6 +42,7 @@ entity CM_intf is
     to_CM_in          : in  to_CM_t; --from SM
     to_CM_out         : out to_CM_t; --from SM, but tristated
     clk_C2C           : in  std_logic_vector(4 downto 1);
+    DRP_clk           : in  std_logic_vector(4 downto 1);
     reset_c2c         : out std_logic;
     CM_C2C_Mon        : in  C2C_Monitor_t;
     CM_C2C_Ctrl       : out C2C_Control_t;
@@ -101,6 +102,11 @@ architecture behavioral of CM_intf is
   signal multi_bit_error_rate : slv32_array_t(HW_LINK_COUNT*COUNTER_COUNT downto 1);
   signal link_INFO_out : uC_Link_out_t_array(0 to 3);
   signal link_INFO_in  : uC_Link_in_t_array (0 to 3);
+
+  signal drp_en_signal : std_logic_vector(4 downto 1);
+
+  type DRP_MOSI_array_t is array (1 to 4) of CM_CM_C2C_DRP_MOSI_t;
+  signal DRP_MOSI : DRP_MOSI_array_t;
   
 begin
   --reset
@@ -128,11 +134,14 @@ begin
 
 
   reset_c2c <= Ctrl.C2C_RESET;
+
+
+
   
   --For AXI
   CM_interface_1: entity work.CM_map
     generic map(
-      READ_TIMEOUT    => 1023)
+      READ_TIMEOUT    => 2047)
     port map (
       clk_axi         => clk_axi,
       reset_axi_n     => reset_axi_n,
@@ -190,10 +199,10 @@ begin
   Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.ADDR_MSB      <= x"00000000";
   Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.SIZE          <= std_logic_vector(AXI_RANGE_C2C1_AXI_BRIDGE);
   Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.VALID         <= '1';
-  Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.ADDR_LSB <= x"00000000";
-  Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.ADDR_MSB <= x"00000000";
-  Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.SIZE     <= x"00000000";
-  Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.VALID    <= '0';
+  Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.ADDR_LSB  <= x"00000000";
+  Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.ADDR_MSB  <= x"00000000";
+  Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.SIZE      <= x"00000000";
+  Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.VALID     <= '0';
 
   Mon.CM(1).C2C(2).BRIDGE_INFO.AXI.ADDR_LSB      <= x"00000000";
   Mon.CM(1).C2C(2).BRIDGE_INFO.AXI.ADDR_MSB      <= x"00000000";
@@ -336,37 +345,81 @@ begin
           pass_out((CDC_PRBS_SEL_LENGTH -1) + 1 downto 1) => CDC_PASSTHROUGH(linkID)((CDC_PRBS_SEL_LENGTH - 1) + 1 downto 1));
 
 
-      partial_assignment: process (CM_C2C_Mon.Link(linkID),
-                                   CTRL.CM(iCM).C2C(iLane),
+      Mon.CM(iCM).C2C(iLane).DEBUG                   <= CM_C2C_Mon.Link(linkID).DEBUG;
+      Mon.CM(iCM).C2C(iLane).STATUS                  <= CM_C2C_Mon.Link(linkID).STATUS;
+      Mon.CM(iCM).C2C(iLane).COUNTERS.USER_CLK_FREQ  <= CM_C2C_Mon.Link(linkID).user_clk_freq;
+            
+      partial_assignment: process (Ctrl.CM(iCM).C2C(iLane).debug,
+                                   DRP_MOSI,
+                                   Ctrl.CM(iCM).C2C(iLane).status,
                                    CDC_PASSTHROUGH,
                                    aurora_init_buf,
-                                   phy_reset) is
+                                   phy_reset
+                                   ) is
       begin  -- process partial_assignment
-        Mon.CM(iCM).C2C(iLane).DEBUG                   <= CM_C2C_Mon.Link(linkID).DEBUG;
-        Mon.CM(iCM).C2C(iLane).DRP                     <= CM_C2C_Mon.Link(linkID).DRP;
-        Mon.CM(iCM).C2C(iLane).STATUS                  <= CM_C2C_Mon.Link(linkID).STATUS;
-        Mon.CM(iCM).C2C(iLane).COUNTERS.USER_CLK_FREQ  <= CM_C2C_Mon.Link(linkID).user_clk_freq;
-        
-        
-        --assign everything
         CM_C2C_Ctrl.Link(linkID).debug                 <= CTRL.CM(iCM).C2C(iLane).DEBUG;
+        CM_C2C_Ctrl.Link(linkID).DRP                   <= DRP_MOSI(linkID);
         CM_C2C_Ctrl.Link(linkID).status                <= CTRL.CM(iCM).C2C(iLane).status;
-        CM_C2C_Ctrl.Link(linkID).DRP                   <= CTRL.CM(iCM).C2C(iLane).DRP;
-        CM_C2C_Ctrl.Link(linkID).DRP.enable            <= CTRL.CM(iCM).C2C(iLane).DRP.enable or CTRL.CM(iCM).C2C(iLane).DRP.wr_enable;
-        --override these signals with the CDC versions
         CM_C2C_Ctrl.Link(linkID).DEBUG.RX.PRBS_CNT_RST <= CDC_PASSTHROUGH(linkID)(0);
         CM_C2C_Ctrl.Link(linkID).DEBUG.RX.PRBS_SEL     <= CDC_PASSTHROUGH(linkID)((CDC_PRBS_SEL_LENGTH -1) + 1 downto 1);
-      
-        if CTRL.CM(iCM).C2C(linkID).ENABLE_PHY_CTRL = '1' then
+
+        if CTRL.CM(iCM).C2C(iLane).ENABLE_PHY_CTRL = '1' then
           CM_C2C_Ctrl.Link(linkID).STATUS.INITIALIZE  <= aurora_init_buf(linkID);
-          CM_C2C_Ctrl.Link(linkID).DEBUG.RX.PMA_RESET <= phy_reset(linkID) or Ctrl.CM(iCM).C2C(iLane).DEBUG.RX.PMA_RESET;
+          CM_C2C_Ctrl.Link(linkID).DEBUG.RX.PMA_RESET <= (phy_reset(linkID) or Ctrl.CM(iCM).C2C(iLane).DEBUG.RX.PMA_RESET);
         else
           CM_C2C_Ctrl.Link(linkID).STATUS.INITIALIZE  <= Ctrl.CM(iCM).C2C(iLane).STATUS.INITIALIZE;
           CM_C2C_Ctrl.Link(linkID).DEBUG.RX.PMA_RESET <= Ctrl.CM(iCM).C2C(iLane).DEBUG.RX.PMA_RESET;
-        end if;      
+        end if;
+        
       end process partial_assignment;
-    
+      ---------------------------------------------------------------------------
+      -- DRP CDC
+      ---------------------------------------------------------------------------
+      drp_en_signal(linkID) <= CTRL.CM(iCM).C2C(iLane).DRP.wr_enable or CTRL.CM(iCM).C2C(iLane).DRP.enable;
+      DRP_DATA_to_DRP : entity work.data_CDC
+        generic map (
+          WIDTH => (1 +
+                    CTRL.CM(iCM).C2C(iLane).DRP.address'LENGTH +
+                    CTRL.CM(iCM).C2C(iLane).DRP.wr_data'LENGTH)
+          )
+        port map (
+          clkA       => CTRL.CM(iCM).C2C(iLane).DRP.clk,
+          resetA     => reset,
+          clkB       => DRP_clk(2*(iCM-1) + (iLane)),
+          resetB     => reset,
+          inA(0)                                                     => CTRL.CM(iCM).C2C(iLane).DRP.wr_enable,
 
+          inA(CM_C2C_Ctrl.Link(2*(iCM-1) + (iLane)).DRP.address'LENGTH downto 1)  => CTRL.CM(iCM).C2C(iLane).DRP.address,
+
+          inA(CM_C2C_Ctrl.Link(2*(iCM-1) + (iLane)).DRP.wr_data'LENGTH - 1 +
+              CM_C2C_Ctrl.Link(2*(iCM-1) + (iLane)).DRP.address'LENGTH + 1
+              downto
+              CM_C2C_Ctrl.Link(2*(iCM-1) + (iLane)).DRP.address'LENGTH + 1)       => CTRL.CM(iCM).C2C(iLane).DRP.wr_data,
+        
+          inA_valid  => drp_en_signal(2*(iCM-1) + (iLane)),
+          
+          outB(0)                                                    => DRP_MOSI(2*(iCM-1) + (iLane)).wr_enable,
+          outB(CM_C2C_Ctrl.Link(2*(iCM-1) + (iLane)).DRP.address'LENGTH downto 1) => DRP_MOSI(2*(iCM-1) + (iLane)).address,
+          outB(CM_C2C_Ctrl.Link(2*(iCM-1) + (iLane)).DRP.wr_data'LENGTH - 1 +
+               CM_C2C_Ctrl.Link(2*(iCM-1) + (iLane)).DRP.address'LENGTH + 1
+               downto
+               CM_C2C_Ctrl.Link(2*(iCM-1) + (iLane)).DRP.address'LENGTH + 1)      => DRP_MOSI(2*(iCM-1) + (iLane)).wr_data,
+          outB_valid => DRP_MOSI(2*(iCM-1) + (iLane)).enable);
+      DRP_DATA_from_DRP: entity work.data_CDC
+        generic map (
+          WIDTH => CM_C2C_Mon.Link(linkID).DRP.rd_data'LENGTH)
+        port map (
+          clkA       => DRP_clk(linkID),
+          resetA     => reset,
+          clkB       => clk_axi,
+          resetB     => reset,
+          inA        => CM_C2C_Mon.Link(linkID).DRP.rd_data,
+          inA_valid  => CM_C2C_Mon.Link(linkID).DRP.rd_data_valid,
+          outB       => Mon.CM(iCM).C2C(iLane).DRP.rd_data,
+          outB_valid => Mon.CM(iCM).C2C(iLane).DRP.rd_data_valid);
+      ---------------------------------------------------------------------------
+
+      
       -------------------------------------------------------------------------------
       -- Phy_lane_control
       -------------------------------------------------------------------------------
