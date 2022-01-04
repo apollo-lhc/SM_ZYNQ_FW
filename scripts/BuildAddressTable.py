@@ -138,6 +138,12 @@ def main(localSlavesYAML,remoteSlavesYAML,CMyaml,outputDir):
           #copy XML files
           xmlFile=slaves['UHAL_MODULES'][slave]["XML"][iFile]
           try:
+            #create the destination directory if it doesn't exist
+            os.makedirs(os.path.dirname(os.path.abspath(outputDir+xmlFile)))
+          except OSError:
+            pass
+          try:
+            #copy the file
             shutil.copyfile(os.path.abspath(xmlFile),outputDir+xmlFile)
           except OSError:
             pass
