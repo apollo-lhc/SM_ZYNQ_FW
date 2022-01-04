@@ -1,1 +1,1 @@
-../rev2_xc7z035/top.vhd
+../rev2_xc7z035/src/top.vhd

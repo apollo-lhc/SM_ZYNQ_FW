@@ -111,6 +111,8 @@ clean_ip_%:
 	source $(BUILD_VIVADO_SHELL) &&\
 	cd ${MAKE_PATH}/proj &&\
 	vivado $(VIVADO_FLAGS) -source ../scripts/CleanIPs.tcl -tclargs ${MAKE_PATH} $(subst .bit,,$(subst clean_ip_,,$@))
+clean_autogen:
+	rm -rf configs/*/autogen/*
 
 clean_everything: clean clean_remote clean_CM clean_prebuild
 

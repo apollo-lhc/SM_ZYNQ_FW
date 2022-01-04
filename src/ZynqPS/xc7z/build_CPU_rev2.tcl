@@ -36,7 +36,6 @@ set_property CONFIG.PCW_UIPARAM_DDR_PARTNO {MT41J256M16 RE-125} [get_bd_cells ${
 #AXI MASTERS
 ###############################
 set_property CONFIG.PCW_USE_M_AXI_GP0      {1} [get_bd_cells ${ZYNQ_NAME}]
-
 set_property CONFIG.PCW_USE_M_AXI_GP1      {1} [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PCW_M_AXI_GP1_ENABLE_STATIC_REMAP {1} [get_bd_cells ${ZYNQ_NAME}]
 
@@ -47,6 +46,7 @@ make_bd_pins_external -name axi_clk [get_bd_pins ${AXI_MASTER_CLK}]
 connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins ${ZYNQ_NAME}/M_AXI_GP0_ACLK]
 connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins ${ZYNQ_NAME}/M_AXI_GP1_ACLK]
 
+set ZYNQ_RESETN ${ZYNQ_NAME}/FCLK_RESET0_N
 
 ###############################
 #MIO configuration
@@ -61,16 +61,35 @@ apply_bd_automation -rule xilinx.com:bd_rule:processing_system7 -config {make_ex
 #SDIO clock to 25Mhz
 set_property CONFIG.PCW_SDIO_PERIPHERAL_FREQMHZ {25}         [get_bd_cells ${ZYNQ_NAME}]
 
-set SYS_RESETER sys_reseter
-create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 $SYS_RESETER
-#connect external reset
-connect_bd_net [get_bd_pins ${ZYNQ_NAME}/FCLK_RESET0_N] [get_bd_pins $SYS_RESETER/ext_reset_in]
-#connect clock
-connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins $SYS_RESETER/slowest_sync_clk]
-#set interconnect reset
-set AXI_MASTER_RSTN [get_bd_pins ${SYS_RESETER}/interconnect_aresetn]
-set AXI_SLAVE_RSTN [get_bd_pins ${SYS_RESETER}/peripheral_aresetn]
-make_bd_pins_external -name axi_rst_n [get_bd_pins ${AXI_SLAVE_RSTN}]
+
+#master reset circuit
+set SYS_RESETTER_PRIMARY sys_resetter_primary
+IP_SYS_RESET [dict create \
+	          device_name ${SYS_RESETTER_PRIMARY} \
+		  external_reset_n ${ZYNQ_RESETN} \
+		  slowest_clk ${AXI_MASTER_CLK}]
+####set interconnect reset
+set AXI_PRIMARY_MASTER_RSTN [get_bd_pins ${SYS_RESETTER_PRIMARY}/interconnect_aresetn]
+set AXI_PRIMARY_SLAVE_RSTN [get_bd_pins ${SYS_RESETTER_PRIMARY}/peripheral_aresetn]
+make_bd_pins_external -name axi_rst_n [get_bd_pins ${AXI_PRIMARY_SLAVE_RSTN}]
+
+
+#c2c interconnect reset circuit
+set SYS_RESETTER_C2C sys_resetter_c2c
+set SYS_RESETTER_C2C_RST c2c_interconnect_reset
+create_bd_port -dir I -type rst ${SYS_RESETTER_C2C_RST}
+set_property CONFIG.POLARITY ACTIVE_HIGH [get_bd_ports ${SYS_RESETTER_C2C_RST}]
+IP_SYS_RESET [dict create \
+	          device_name ${SYS_RESETTER_C2C} \
+		  external_reset_n ${ZYNQ_RESETN} \
+		  slowest_clk ${AXI_MASTER_CLK} \
+		  aux_reset ${SYS_RESETTER_C2C_RST} \
+	     ]
+set AXI_C2C_MASTER_RSTN [get_bd_pins ${SYS_RESETTER_C2C}/interconnect_aresetn]
+set AXI_C2C_SLAVE_RSTN [get_bd_pins ${SYS_RESETTER_C2C}/peripheral_aresetn]
+make_bd_pins_external -name axi_c2c_rst_n [get_bd_pins ${AXI_C2C_SLAVE_RSTN}]
+
+
 
 #add interrupts from PL to PS
 set_property -dict [list CONFIG.PCW_USE_FABRIC_INTERRUPT {1}] [get_bd_cells ${ZYNQ_NAME}]

@@ -1,1 +1,1 @@
-../rev2_xc7z035/top.xdc
+../rev2_xc7z035/src/top.xdc
