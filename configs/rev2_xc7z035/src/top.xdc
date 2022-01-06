@@ -186,7 +186,6 @@ set_property -dict {PACKAGE_PIN D3   IOSTANDARD LVCMOS18 PULLDOWN TRUE} [get_por
 
 
 
-
 # -------------------------------------------------------------------------------------------------
 # MGBT (refclks)
 # -------------------------------------------------------------------------------------------------
@@ -241,11 +240,6 @@ set_property -dict {PACKAGE_PIN AC6 }  [get_ports TCDS_TTC_P]
 set_property -dict {PACKAGE_PIN AC5 }  [get_ports TCDS_TTC_N]
 set_property -dict {PACKAGE_PIN AE2 }  [get_ports LOCAL_TCDS_TTC_P]
 set_property -dict {PACKAGE_PIN AE1 }  [get_ports LOCAL_TCDS_TTC_N]
-
-
-
-
-
 
 
 

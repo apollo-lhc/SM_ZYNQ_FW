@@ -182,15 +182,15 @@ entity top is
 -----    -------------------------------------------------------------------------------------------
 -----    -- MGBT 1
 -----    -------------------------------------------------------------------------------------------
-    AXI_C2C_CM1_Rx_P      : in    std_logic_vector(0 to 0);
-    AXI_C2C_CM1_Rx_N      : in    std_logic_vector(0 to 0);
-    AXI_C2C_CM1_Tx_P      : out   std_logic_vector(0 to 0);
-    AXI_C2C_CM1_Tx_N      : out   std_logic_vector(0 to 0);
+    AXI_C2C_CM1_Rx_P      : in    std_logic_vector(0 to 1);
+    AXI_C2C_CM1_Rx_N      : in    std_logic_vector(0 to 1);
+    AXI_C2C_CM1_Tx_P      : out   std_logic_vector(0 to 1);
+    AXI_C2C_CM1_Tx_N      : out   std_logic_vector(0 to 1);
 
-    AXI_C2C_CM2_Rx_P      : in    std_logic_vector(0 to 0);
-    AXI_C2C_CM2_Rx_N      : in    std_logic_vector(0 to 0);
-    AXI_C2C_CM2_Tx_P      : out   std_logic_vector(0 to 0);
-    AXI_C2C_CM2_Tx_N      : out   std_logic_vector(0 to 0);
+    AXI_C2C_CM2_Rx_P      : in    std_logic_vector(0 to 1);
+    AXI_C2C_CM2_Rx_N      : in    std_logic_vector(0 to 1);
+    AXI_C2C_CM2_Tx_P      : out   std_logic_vector(0 to 1);
+    AXI_C2C_CM2_Tx_N      : out   std_logic_vector(0 to 1);
 
                              
 --    SSD_rx_P        : in    std_logic; 
@@ -207,8 +207,8 @@ entity top is
 --    refclk_SSD_P   : in    std_logic; 
 --    refclk_SSD_N   : in    std_logic; 
 --    
-    refclk_C2C1_P          : in    std_logic_vector(1 downto 1);
-    refclk_C2C1_N          : in    std_logic_vector(1 downto 1);
+    refclk_C2C1_P          : in    std_logic_vector(0 downto 0);
+    refclk_C2C1_N          : in    std_logic_vector(0 downto 0);
 
  
     -------------------------------------------------------------------------------------------
@@ -376,7 +376,7 @@ architecture structure of top is
   signal clk_C2C1_PHY : std_logic;
   signal C2C_pB_UART_tx : std_logic;
   signal C2C_pB_UART_rx : std_logic;
-
+  signal refclk_C2C1    : std_logic;
 
     --other clocks
   signal clk_LHC : std_logic;
@@ -415,6 +415,19 @@ begin  -- architecture structure
       T  => SCL_t_phy,
       O  => SCL_i_phy);
 
+
+  IBUFDS_GTE2_inst : IBUFDS_GTE2
+    generic map (
+      CLKCM_CFG => TRUE, -- Refer to Transceiver User Guide
+      CLKRCV_TRST => TRUE, -- Refer to Transceiver User Guide
+      CLKSWING_CFG => b"11" -- Refer to Transceiver User Guide
+      )
+    port map (
+      O => refclk_C2C1, -- 1-bit output: Refer to Transceiver User Guide
+      CEB => '0', -- 1-bit input: Refer to Transceiver User Guide
+      I => refclk_C2C1_P(0), -- 1-bit input: Refer to Transceiver User Guide
+      IB => refclk_C2C1_N(0) -- 1-bit input: Refer to Transceiver User Guide
+      );
   zynq_bd_wrapper_1: entity work.zynq_bd_wrapper
     port map (
       AXI_RST_N(0)         => axi_reset_n,
@@ -592,13 +605,14 @@ begin  -- architecture structure
       PLXVC_wstrb                => AXI_BUS_WMOSI(6).data_write_strobe,
       PLXVC_wvalid               => AXI_BUS_WMOSI(6).data_valid,
 
-            init_clk                  =>  AXI_C2C_aurora_init_clk,
+      init_clk                  =>  AXI_C2C_aurora_init_clk,
       C2C1_phy_Rx_rxn           =>  AXI_C2C_CM1_Rx_N(0 to 0),
       C2C1_phy_Rx_rxp           =>  AXI_C2C_CM1_Rx_P(0 to 0),
       C2C1_phy_Tx_txn           =>  AXI_C2C_CM1_Tx_N(0 to 0),
       C2C1_phy_Tx_txp           =>  AXI_C2C_CM1_Tx_P(0 to 0),
-      C2C1_phy_refclk_clk_n     => refclk_C2C1_N(1),
-      C2C1_phy_refclk_clk_p     => refclk_C2C1_P(1),
+
+      C2C1_phy_refclk           => refclk_C2C1,
+      C2C1B_phy_refclk          => refclk_C2C1,
       C2C1_phy_power_down       => AXI_C2C_powerdown(1),
 
       C2C1_aurora_do_cc                 => CM_C2C_Mon.Link(1).status.do_cc,
@@ -799,7 +813,6 @@ begin  -- architecture structure
 
 
 
-
       C2C2b_phy_Rx_rxn =>  AXI_C2C_CM2_Rx_N(1 to 1),
       C2C2b_phy_Rx_rxp =>  AXI_C2C_CM2_Rx_P(1 to 1),
       C2C2b_phy_Tx_txn =>  AXI_C2C_CM2_Tx_N(1 to 1),
@@ -976,14 +989,14 @@ begin  -- architecture structure
   AXI_C2C_powerdown(2) <= not CM_enable_IOs(1);
 
   CM_C2C_Mon.Link(2).status.phy_mmcm_lol  <= CM_C2C_Mon.Link(1).status.phy_mmcm_lol;
-  CM_C2C_Mon.Link(2).debug.cpll_lock <= CM_C2C_Mon.Link(1).debug.cpll_lock;
+--  CM_C2C_Mon.Link(2).debug.cpll_lock <= CM_C2C_Mon.Link(1).debug.cpll_lock;
   CM_COUNT_IS_1_ASSIGNMENTS: if CM_COUNT = 1 generate
     AXI_C2C_powerdown(3) <= not CM_enable_IOs(1);
     AXI_C2C_powerdown(4) <= not CM_enable_IOs(1);
     CM_C2C_Mon.Link(3).status.phy_mmcm_lol  <= CM_C2C_Mon.Link(1).status.phy_mmcm_lol;
-    CM_C2C_Mon.Link(3).debug.cpll_lock <= CM_C2C_Mon.Link(1).debug.cpll_lock;
+--    CM_C2C_Mon.Link(3).debug.cpll_lock <= CM_C2C_Mon.Link(1).debug.cpll_lock;
     CM_C2C_Mon.Link(4).status.phy_mmcm_lol  <= CM_C2C_Mon.Link(1).status.phy_mmcm_lol; 
-    CM_C2C_Mon.Link(4).debug.cpll_lock <= CM_C2C_Mon.Link(1).debug.cpll_lock;
+--    CM_C2C_Mon.Link(4).debug.cpll_lock <= CM_C2C_Mon.Link(1).debug.cpll_lock;
   end generate CM_COUNT_IS_1_ASSIGNMENTS;
   
   CM_COUNT_IS_2_ASSIGNMENTS: if CM_COUNT = 2 generate
