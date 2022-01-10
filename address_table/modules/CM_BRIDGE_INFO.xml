@@ -1,0 +1,4 @@
+<node id="BRIDGE_INFO">
+  <node id="AXI"     address="0x0" module="file://AXI_ADDR_INFO.xml"/>
+  <node id="AXILITE" address="0x4" module="file://AXI_ADDR_INFO.xml"/>
+</node>

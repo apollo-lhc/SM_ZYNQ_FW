@@ -21,8 +21,9 @@ Structure:
      - XML: is a listing of xml files that will be needed in the final OS image
          The first XML file is the primary one that will be used as the "top" file for the slave
      - UHAL_BASE: this is the uHAL address to be use for the base address of the slave. 
-     - HDL: this lists the path for the generated _PKG.vhd and _MAP.vhd files to be placed.
-         These are generated from the xml files and no vhdl files will be produced if this node isn't present. 
+     - HDL: causes the generation of  _PKG.vhd and _MAP.vhd files.
+       - out_dir (optional)  Path to place these files (configs/name/autogen if not specified)
+       - map_template:  Map template file to use for generation
      - SUB_SLAVES:  This node contains another level of slaves to be generated that require the partent slave to already exist. 
          The name of the sub-slave is its listed name appened to the name of its parent.
 

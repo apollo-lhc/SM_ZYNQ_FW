@@ -171,26 +171,28 @@ set_property -dict {PACKAGE_PIN U1}  [get_ports AXI_C2C_CM1_Tx_N[0] ]
 set_property -dict {PACKAGE_PIN V4}  [get_ports AXI_C2C_CM1_Rx_P[0] ]
 set_property -dict {PACKAGE_PIN V3}  [get_ports AXI_C2C_CM1_Rx_N[0] ]
 
-#set_property -dict {PACKAGE_PIN R2}  [get_ports AXI_C2C_CM1_Tx_P[1] ]
-#set_property -dict {PACKAGE_PIN R1}  [get_ports AXI_C2C_CM1_Tx_N[1] ]
-#set_property -dict {PACKAGE_PIN T4}  [get_ports AXI_C2C_CM1_Rx_P[1] ]
-#set_property -dict {PACKAGE_PIN T3}  [get_ports AXI_C2C_CM1_Rx_N[1] ]
+set_property -dict {PACKAGE_PIN R2}  [get_ports AXI_C2C_CM1_Tx_P[1] ]
+set_property -dict {PACKAGE_PIN R1}  [get_ports AXI_C2C_CM1_Tx_N[1] ]
+set_property -dict {PACKAGE_PIN T4}  [get_ports AXI_C2C_CM1_Rx_P[1] ]
+set_property -dict {PACKAGE_PIN T3}  [get_ports AXI_C2C_CM1_Rx_N[1] ]
 
 set_property -dict {PACKAGE_PIN AA2}  [get_ports AXI_C2C_CM2_Tx_P[0] ]
 set_property -dict {PACKAGE_PIN AA1}  [get_ports AXI_C2C_CM2_Tx_N[0] ]
 set_property -dict {PACKAGE_PIN AB4}  [get_ports AXI_C2C_CM2_Rx_P[0] ]
 set_property -dict {PACKAGE_PIN AB3}  [get_ports AXI_C2C_CM2_Rx_N[0] ]
 
-#set_property -dict {PACKAGE_PIN W2}  [get_ports AXI_C2C_CM2_Tx_P[1] ]
-#set_property -dict {PACKAGE_PIN W1}  [get_ports AXI_C2C_CM2_Tx_N[1] ]
-#set_property -dict {PACKAGE_PIN Y4}  [get_ports AXI_C2C_CM2_Rx_P[1] ]
-#set_property -dict {PACKAGE_PIN Y3}  [get_ports AXI_C2C_CM2_Rx_N[1] ]
+set_property -dict {PACKAGE_PIN W2}  [get_ports AXI_C2C_CM2_Tx_P[1] ]
+set_property -dict {PACKAGE_PIN W1}  [get_ports AXI_C2C_CM2_Tx_N[1] ]
+set_property -dict {PACKAGE_PIN Y4}  [get_ports AXI_C2C_CM2_Rx_P[1] ]
+set_property -dict {PACKAGE_PIN Y3}  [get_ports AXI_C2C_CM2_Rx_N[1] ]
 
 
 
 
 
 set_clock_groups -asynchronous												                                    \
+		 -group [get_clocks CLK_HQ_P        -include_generated_clocks]                                                                              \
+		 -group [get_clocks CLK_LHC_P       -include_generated_clocks]                                                                              \
 		 -group [get_clocks clk_fpga_0      -include_generated_clocks]						                                    \
 		 		    		    													    \
 	         -group [get_clocks onboard_CLK_P   -include_generated_clocks] 										    \
@@ -199,3 +201,8 @@ set_clock_groups -asynchronous												                                    \
 		 -group [get_clocks zynq_bd_wrapper_1/zynq_bd_i/C2C1_PHY/inst/zynq_bd_C2C1_PHY_0_core_i/zynq_bd_C2C1_PHY_0_wrapper_i/zynq_bd_C2C1_PHY_0_multi_gt_i/zynq_bd_C2C1_PHY_0_gtx_inst/gtxe2_i/TXOUTCLK -include_generated_clocks] \
 		 -group [get_clocks zynq_bd_wrapper_1/zynq_bd_i/XVC_LOCAL/U0/bs_switch/inst/BSCAN_SWITCH.N_EXT_BSCAN.bscan_inst/SERIES7_BSCAN.bscan_inst/TCK -include_generated_clocks] 
  
+
+
+
+
+

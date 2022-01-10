@@ -1,6 +1,8 @@
 # Non-project mode
 # collect files
 # run synthesis
+set_param general.maxThreads 10
+
 
 #source ${apollo_root_path}/scripts/settings.tcl
 source ${apollo_root_path}/configs/${build_name}/settings.tcl
@@ -65,38 +67,47 @@ for {set j 0} {$j < [llength $xdc_files ] } {incr j} {
     puts "Adding $filename"
 }
 
-#Add xci files
-for {set j 0} {$j < [llength $xci_files ] } {incr j} {
-    set filename "${apollo_root_path}/[lindex $xci_files $j]"
-    set ip_name [file rootname [file tail $filename]]
-    puts "Adding $filename"    
-    if { [file extension ${filename} ] == ".tcl" } {
-	source ${filename}
-    } else {
-	#normal xci file
-	read_ip $filename
-	set isLocked [get_property IS_LOCKED [get_ips $ip_name]]
-	puts "IP $ip_name : locked = $isLocked"
-	set upgrade  [get_property UPGRADE_VERSIONS [get_ips $ip_name]]
-	if {$isLocked && $upgrade != ""} {
-	    puts "Upgrading IP"
-	    upgrade_ip [get_ips $ip_name]
-	}    
-    }
-    puts "Generating target all on $ip_name"
-    generate_target all [get_ips $ip_name]  
-    puts "Running synth on $ip_name"
-    synth_ip [get_ips $ip_name]
+set syntax_check_output [check_syntax -return_string]
+if {[string first "Syntax error" ${syntax_check_output}] >= 0 } {
+    error ${syntax_check_output}    
 }
 
 
-check_syntax -fileset sources_1
+#Add xci files
+if { [info exists xci_files] == 1 } {
+    set ip_list {}
+    for {set j 0} {$j < [llength $xci_files ] } {incr j} {
+	set filename "${apollo_root_path}/[lindex $xci_files $j]"
+	set ip_name [file rootname [file tail $filename]]
+	puts "Adding $filename"    
+	if { [file extension ${filename} ] == ".tcl" } {
+	    source ${filename}
+	} else {
+	    #normal xci file
+	    read_ip $filename
+	    set isLocked [get_property IS_LOCKED [get_ips $ip_name]]
+	    puts "IP $ip_name : locked = $isLocked"
+	    set upgrade  [get_property UPGRADE_VERSIONS [get_ips $ip_name]]
+	    if {$isLocked && $upgrade != ""} {
+		puts "Upgrading IP"
+		upgrade_ip [get_ips $ip_name]
+	    }    
+	}
+	puts "Generating target all on $ip_name"
+	generate_target all [get_ips $ip_name]  
+	puts "Running synth on $ip_name"
+	#    synth_ip [get_ips $ip_name]
+	lappend ip_list [get_ips $ip_name]
+    }
+    synth_ip ${ip_list}
+}
+#check_syntax -fileset sources_1
 
 #Add bd files
 foreach bd_name [array names bd_files] {
     set filename "${apollo_root_path}/$bd_files($bd_name)"
-    source $filename
     puts "Running $filename"
+    source $filename
     read_bd [get_files "${apollo_root_path}/$bd_path/$bd_name/$bd_name.bd"]
     open_bd_design [get_files "${apollo_root_path}/$bd_path/$bd_name/$bd_name.bd"]
     make_wrapper -files [get_files $bd_name.bd] -top -import -force

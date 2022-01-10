@@ -34,6 +34,12 @@ kernel/zynq_os
 /os/address_table/
 /os/slaves.yaml
 
+#picoblaze
+*.fmt
+src/CM_interface/picoblaze/picoblaze/KCPSM6_session_log.txt
+src/CM_interface/picoblaze/picoblaze/Reprogram.script
+src/CM_interface/picoblaze/picoblaze/cli.log
+
 
 #################################################################################
 ## Sim files

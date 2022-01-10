@@ -1,11 +1,9 @@
-#source ${apollo_root_path}/scripts/settings_${build_name}.tcl
-#source ${apollo_root_path}/scripts/settings.tcl
 source ${apollo_root_path}/scripts/printQuads.tcl
 
 #################################################################################
 # STEP#2: run synthesis, report utilization and timing estimates, write checkpoint design
 #################################################################################
-
+set_param general.maxThreads 10
 
 set_property synth_checkpoint_mode None [get_files $bd_name.bd]
 generate_target all [get_files "[get_bd_designs].bd"]
@@ -18,6 +16,13 @@ synth_design -rtl
 
 #synth design
 synth_design -top $top -part $FPGA_part -flatten rebuilt
+
+#Do any post synth commands
+global post_synth_commands 
+foreach cmd $post_synth_commands {
+    puts $cmd
+    eval $cmd
+}   
 
 write_checkpoint -force $outputDir/post_synth
 
@@ -38,7 +43,8 @@ place_design
 # run drc, write verilog and xdc out
 #################################################################################
 #route_design -directive Explore
-route_design -directive Default
+#route_design -directive Default
+route_design -directive RuntimeOptimized
 report_timing_summary -file $outputDir/post_route_timing_summary.rpt
 report_timing -sort_by group -max_paths 100 -path_type summary -file $outputDir/post_route_timing.rpt
 report_clock_utilization -file $outputDir/clock_util.rpt

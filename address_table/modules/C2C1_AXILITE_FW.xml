@@ -11,7 +11,7 @@
     <node id="RECS_ARREADY_MAX_WAIT" mask="0x00000002" permission="r" parameters="Table=C2C;Column=AXILITE_AR_READY_TIMEOUT;Row=CM1_K;Status=1;Show=nz" description="error"/>
     <node id="READ_RESPONSE_BUSY" mask="0x00000001" permission="r" description="error. Indicates whether there are outstanding read transactions that still need to be completed on the SI; deasserts as soon as outstanding reads decrements to zero. (Not masked while reads are in normal operating mode.)" parameters="Table=C2C;Column=AXILITE_OUTSTANDING_WRITES;Row=CM1_K;Status=1;Show=nz"/>
   </node>
-  <node id="UNBLOCK" address="0x2" mask="0x00000001" permission="w"/>
+  <node id="UNBLOCK" address="0x2" mask="0x00000001" permission="w" parameters="Unblock=C2C1"/>
   <node id="MAX_WAITS" address="0xC">         
     <node id="CONTINIOUS_R_TRANSFER" address="0x0" mask="0x0000FFFF"/>         
     <node id="WRITE_TO_BVALID"       address="0x1" mask="0x0000FFFF"/>         
