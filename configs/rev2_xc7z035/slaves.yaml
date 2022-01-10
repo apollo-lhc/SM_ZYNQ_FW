@@ -168,7 +168,6 @@ AXI_SLAVES:
       - "address_table/modules/CM_C2C_Status.xml"
       - "address_table/modules/CM_C2C_DEBUG_7s.xml"
       - "address_table/modules/CM_Mon.xml"
-      - "address_table/modules/CM_Mon.xml"
       - "address_table/modules/AXI_ADDR_INFO.xml"
       - "address_table/modules/CM_BRIDGE_INFO.xml"
       - "address_table/modules/DRP_7s_GTX.xml"

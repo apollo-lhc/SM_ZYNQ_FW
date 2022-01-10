@@ -1019,7 +1019,7 @@ begin  -- architecture structure
 
   CM_interface_1: entity work.CM_intf
     generic map (
-      CM_COUNT             => 1,
+      CM_COUNT             => 2,
       COUNTER_COUNT        => 5,
       CLKFREQ              => 50000000,
       ERROR_WAIT_TIME      => 50000000)
@@ -1069,6 +1069,10 @@ begin  -- architecture structure
       clk_C2C(3)                => clk_C2C1_PHY,
       clk_C2C(4)                => clk_C2C1_PHY,
       reset_c2c                 => reset_c2c,
+      DRP_clk(1)                => AXI_C2C_aurora_init_clk,
+      DRP_clk(2)                => AXI_C2C_aurora_init_clk,
+      DRP_clk(3)                => AXI_C2C_aurora_init_clk,
+      DRP_clk(4)                => AXI_C2C_aurora_init_clk,
       CM_C2C_Mon                => CM_C2C_Mon,
       CM_C2C_Ctrl               => CM_C2C_Ctrl,
       UART_Rx                   => C2C_pB_UART_rx,

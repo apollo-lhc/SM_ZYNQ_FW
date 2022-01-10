@@ -1,9 +1,14 @@
+source ${apollo_root_path}/bd/Xilinx_Helpers.tcl
+
 #create a block design called "zynq_bd"
 create_bd_design -dir ./ "zynq_bd"
+
+set AXI_ADDR_WIDTH 32
 
 #helpers for building AXI things
 source -quiet ${apollo_root_path}/bd/axi_helpers.tcl
 source -quiet ${apollo_root_path}/bd/Xilinx_AXI_slaves.tcl
+source ${apollo_root_path}/bd/Xilinx_Cores.tcl
 
 #================================================================================
 #  Create and configure the basic zynq processing system.
@@ -22,23 +27,23 @@ set PL_MASTER PL
 set PL_M      AXIM_${PL_MASTER}
 set PL_M_CLK  AXI_CLK_${PL_MASTER}
 set PL_M_RSTN AXI_RSTN_${PL_MASTER}
-set PL_M_FREQ 50000000
+set PL_M_FREQ [get_property CONFIG.FREQ_HZ [get_bd_pin ${AXI_MASTER_CLK}]]
 [AXI_PL_MASTER_PORT ${PL_M} ${PL_M_CLK} ${PL_M_RSTN} ${PL_M_FREQ}]
 
-set AXI_MASTER_CLK_FREQ 50000000
+set AXI_MASTER_CLK_FREQ [get_property CONFIG.FREQ_HZ [get_bd_pin ${AXI_MASTER_CLK}]]
+Add_Global_Constant AXI_MASTER_CLK_FREQ integer ${AXI_MASTER_CLK_FREQ}
 
-
-
-
-#create the main interconnect (connected to the PL master and the Zynq(via FW))
+puts "  Primary interconnect"
 [BUILD_AXI_INTERCONNECT ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_PRIMARY_MASTER_RSTN} [list ${ZYNQ_NAME}/M_AXI_GP0 ${PL_M}] [list ${AXI_MASTER_CLK} ${PL_M_CLK}] [list ${AXI_PRIMARY_MASTER_RSTN} ${PL_M_RSTN}]]
 
 
 #build the C2C interconnect
+puts "  C2C interconnect"
 [BUILD_AXI_INTERCONNECT ${AXI_C2C_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_C2C_MASTER_RSTN} [list ${ZYNQ_NAME}/M_AXI_GP1] [list ${AXI_MASTER_CLK}] [list ${AXI_C2C_MASTER_RSTN}]]
 set_property CONFIG.STRATEGY {1} [get_bd_cells ${AXI_C2C_INTERCONNECT_NAME}]
 
 
+puts "Building interrupt controller"
 #add interrupt controller
 set IRQ0_INTR_CTRL IRQ0_INTR_CTRL
 AXI_IP_IRQ_CTRL [dict create \
@@ -58,7 +63,7 @@ AXI_IP_IRQ_CTRL [dict create \
                               linux,uio-name = "$device_name";\
                          }
 		]
-
+puts "Adding init clk"
 set INIT_CLK init_clk
 create_bd_port -dir I -type clk ${INIT_CLK}
 set_property CONFIG.FREQ_HZ ${AXI_MASTER_CLK_FREQ} [get_bd_ports ${INIT_CLK}]
@@ -66,6 +71,7 @@ set_property CONFIG.FREQ_HZ ${AXI_MASTER_CLK_FREQ} [get_bd_ports ${INIT_CLK}]
 #================================================================================
 #  Configure and add AXI slaves
 #================================================================================
+puts "Adding IP from yaml"
 source -quiet ${apollo_root_path}/bd/add_slaves_from_yaml.tcl
 yaml_to_bd "${apollo_root_path}/configs/${build_name}/slaves.yaml"
 
@@ -89,3 +95,5 @@ save_bd_design
 
 close_bd_design "zynq_bd"
 
+
+Generate_Global_package
