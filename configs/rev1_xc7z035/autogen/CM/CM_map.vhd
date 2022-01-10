@@ -1,0 +1,1312 @@
+--This file was auto-generated.
+--Modifications might be lost.
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_misc.all;
+use ieee.numeric_std.all;
+use work.AXIRegWidthPkg.all;
+use work.AXIRegPkg.all;
+use work.types.all;
+use work.BRAMPortPkg.all;
+use work.CM_Ctrl.all;
+
+entity CM_map is
+  generic (
+    READ_TIMEOUT     : integer := 2048
+    );
+  port (
+    clk_axi          : in  std_logic;
+    reset_axi_n      : in  std_logic;
+    slave_readMOSI   : in  AXIReadMOSI;
+    slave_readMISO   : out AXIReadMISO  := DefaultAXIReadMISO;
+    slave_writeMOSI  : in  AXIWriteMOSI;
+    slave_writeMISO  : out AXIWriteMISO := DefaultAXIWriteMISO;
+    
+    Mon              : in  CM_Mon_t;
+    Ctrl             : out CM_Ctrl_t
+        
+    );
+end entity CM_map;
+architecture behavioral of CM_map is
+  signal localAddress       : std_logic_vector(AXI_ADDR_WIDTH-1 downto 0);
+  signal localRdData        : slv_32_t;
+  signal localRdData_latch  : slv_32_t;
+  signal localWrData        : slv_32_t;
+  signal localWrEn          : std_logic;
+  signal localRdReq         : std_logic;
+  signal localRdAck         : std_logic;
+  signal regRdAck           : std_logic;
+
+  
+  constant BRAM_COUNT       : integer := 5;
+--  signal latchBRAM          : std_logic_vector(BRAM_COUNT-1 downto 0);
+--  signal delayLatchBRAM          : std_logic_vector(BRAM_COUNT-1 downto 0);
+  constant BRAM_range       : int_array_t(0 to BRAM_COUNT-1) := (0 => 9
+,			1 => 9
+,			2 => 9
+,			3 => 9
+,			4 => 11);
+  constant BRAM_addr        : slv32_array_t(0 to BRAM_COUNT-1) := (0 => x"00000000"
+,			1 => x"00000800"
+,			2 => x"00002000"
+,			3 => x"00002800"
+,			4 => x"00004000");
+  signal BRAM_MOSI          : BRAMPortMOSI_array_t(0 to BRAM_COUNT-1);
+  signal BRAM_MISO          : BRAMPortMISO_array_t(0 to BRAM_COUNT-1);
+  
+  
+  signal reg_data :  slv32_array_t(integer range 0 to 18448);
+  constant Default_reg_data : slv32_array_t(integer range 0 to 18448) := (others => x"00000000");
+begin  -- architecture behavioral
+
+  -------------------------------------------------------------------------------
+  -- AXI 
+  -------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------
+  AXIRegBridge : entity work.axiLiteRegBlocking
+    generic map (
+      READ_TIMEOUT => READ_TIMEOUT
+      )
+    port map (
+      clk_axi     => clk_axi,
+      reset_axi_n => reset_axi_n,
+      readMOSI    => slave_readMOSI,
+      readMISO    => slave_readMISO,
+      writeMOSI   => slave_writeMOSI,
+      writeMISO   => slave_writeMISO,
+      address     => localAddress,
+      rd_data     => localRdData_latch,
+      wr_data     => localWrData,
+      write_en    => localWrEn,
+      read_req    => localRdReq,
+      read_ack    => localRdAck);
+
+  -------------------------------------------------------------------------------
+  -- Record read decoding
+  -------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------
+
+  latch_reads: process (clk_axi,reset_axi_n) is
+  begin  -- process latch_reads
+    if reset_axi_n = '0' then
+      localRdAck <= '0';
+    elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
+      localRdAck <= '0';
+      
+      if regRdAck = '1' then
+        localRdData_latch <= localRdData;
+        localRdAck <= '1';
+      elsif BRAM_MISO(0).rd_data_valid = '1' then
+        localRdAck <= '1';
+        localRdData_latch <= BRAM_MISO(0).rd_data;
+elsif BRAM_MISO(1).rd_data_valid = '1' then
+        localRdAck <= '1';
+        localRdData_latch <= BRAM_MISO(1).rd_data;
+elsif BRAM_MISO(2).rd_data_valid = '1' then
+        localRdAck <= '1';
+        localRdData_latch <= BRAM_MISO(2).rd_data;
+elsif BRAM_MISO(3).rd_data_valid = '1' then
+        localRdAck <= '1';
+        localRdData_latch <= BRAM_MISO(3).rd_data;
+elsif BRAM_MISO(4).rd_data_valid = '1' then
+        localRdAck <= '1';
+        localRdData_latch <= BRAM_MISO(4).rd_data;
+
+      end if;
+    end if;
+  end process latch_reads;
+
+  
+  reads: process (clk_axi,reset_axi_n) is
+  begin  -- process latch_reads
+    if reset_axi_n = '0' then
+      regRdAck <= '0';
+    elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
+      regRdAck  <= '0';
+      localRdData <= x"00000000";
+      if localRdReq = '1' then
+        regRdAck  <= '1';
+        case to_integer(unsigned(localAddress(14 downto 0))) is
+          
+        when 1024 => --0x400
+          localRdData( 0)            <=  Mon.CM(1).C2C(1).STATUS.CONFIG_ERROR;                    --C2C config error
+          localRdData( 1)            <=  Mon.CM(1).C2C(1).STATUS.LINK_ERROR;                      --C2C link error
+          localRdData( 2)            <=  Mon.CM(1).C2C(1).STATUS.LINK_GOOD;                       --C2C link FSM in SYNC
+          localRdData( 3)            <=  Mon.CM(1).C2C(1).STATUS.MB_ERROR;                        --C2C multi-bit error
+          localRdData( 4)            <=  Mon.CM(1).C2C(1).STATUS.DO_CC;                           --Aurora do CC
+          localRdData( 5)            <=  reg_data(1024)( 5);                                      --C2C initialize
+          localRdData( 8)            <=  Mon.CM(1).C2C(1).STATUS.PHY_RESET;                       --Aurora phy in reset
+          localRdData( 9)            <=  Mon.CM(1).C2C(1).STATUS.PHY_GT_PLL_LOCK;                 --Aurora phy GT PLL locked
+          localRdData(10)            <=  Mon.CM(1).C2C(1).STATUS.PHY_MMCM_LOL;                    --Aurora phy mmcm LOL
+          localRdData(13 downto 12)  <=  Mon.CM(1).C2C(1).STATUS.PHY_LANE_UP;                     --Aurora phy lanes up
+          localRdData(16)            <=  Mon.CM(1).C2C(1).STATUS.PHY_HARD_ERR;                    --Aurora phy hard error
+          localRdData(17)            <=  Mon.CM(1).C2C(1).STATUS.PHY_SOFT_ERR;                    --Aurora phy soft error
+          localRdData(31)            <=  Mon.CM(1).C2C(1).STATUS.LINK_IN_FW;                      --FW includes this link
+        when 1028 => --0x404
+          localRdData( 7 downto  0)  <=  Mon.CM(1).C2C(1).DEBUG.DMONITOR;                         --DEBUG d monitor
+          localRdData(20)            <=  Mon.CM(1).C2C(1).DEBUG.CPLL_LOCK;                        --DEBUG cplllock
+          localRdData(21)            <=  Mon.CM(1).C2C(1).DEBUG.EYESCAN_DATA_ERROR;               --DEBUG eyescan data error
+          localRdData(22)            <=  reg_data(1028)(22);                                      --DEBUG eyescan reset
+          localRdData(23)            <=  reg_data(1028)(23);                                      --DEBUG eyescan trigger
+          localRdData(24)            <=  Mon.CM(1).C2C(1).DEBUG.QPLL_LOCK;                        --DEBUG qplllock
+        when 1030 => --0x406
+          localRdData( 2 downto  0)  <=  Mon.CM(1).C2C(1).DEBUG.RX.BUF_STATUS;                    --DEBUG rx buf status
+          localRdData( 9 downto  3)  <=  Mon.CM(1).C2C(1).DEBUG.RX.MONITOR;                       --DEBUG rx status
+          localRdData(10)            <=  Mon.CM(1).C2C(1).DEBUG.RX.PRBS_ERR;                      --DEBUG rx PRBS error
+          localRdData(11)            <=  Mon.CM(1).C2C(1).DEBUG.RX.RESET_DONE;                    --DEBUG rx reset done
+          localRdData(12)            <=  reg_data(1030)(12);                                      --DEBUG rx buf reset
+          localRdData(13)            <=  reg_data(1030)(13);                                      --DEBUG rx CDR hold
+          localRdData(14)            <=  reg_data(1030)(14);                                      --DEBUG rx DFE AGC HOLD
+          localRdData(15)            <=  reg_data(1030)(15);                                      --DEBUG rx DFE AGC OVERRIDE
+          localRdData(16)            <=  reg_data(1030)(16);                                      --DEBUG rx DFE LF HOLD
+          localRdData(17)            <=  reg_data(1030)(17);                                      --DEBUG rx DFE LPM RESET
+          localRdData(18)            <=  reg_data(1030)(18);                                      --DEBUG rx LPM ENABLE
+          localRdData(19)            <=  reg_data(1030)(19);                                      --DEBUG rx LPM HF OVERRIDE enable
+          localRdData(20)            <=  reg_data(1030)(20);                                      --DEBUG rx LPM LFKL override
+          localRdData(22 downto 21)  <=  reg_data(1030)(22 downto 21);                            --DEBUG rx monitor select
+          localRdData(23)            <=  reg_data(1030)(23);                                      --DEBUG rx pcs reset
+          localRdData(24)            <=  reg_data(1030)(24);                                      --DEBUG rx pma reset
+          localRdData(25)            <=  reg_data(1030)(25);                                      --DEBUG rx PRBS counter reset
+          localRdData(28 downto 26)  <=  reg_data(1030)(28 downto 26);                            --DEBUG rx PRBS select
+        when 1032 => --0x408
+          localRdData( 1 downto  0)  <=  Mon.CM(1).C2C(1).DEBUG.TX.BUF_STATUS;                    --DEBUG tx buf status
+          localRdData( 2)            <=  Mon.CM(1).C2C(1).DEBUG.TX.RESET_DONE;                    --DEBUG tx reset done
+          localRdData( 6 downto  3)  <=  reg_data(1032)( 6 downto  3);                            --DEBUG tx diff control
+          localRdData( 7)            <=  reg_data(1032)( 7);                                      --DEBUG tx inhibit
+          localRdData(14 downto  8)  <=  reg_data(1032)(14 downto  8);                            --DEBUG tx main cursor
+          localRdData(15)            <=  reg_data(1032)(15);                                      --DEBUG tx pcs reset
+          localRdData(16)            <=  reg_data(1032)(16);                                      --DEBUG tx pma reset
+          localRdData(17)            <=  reg_data(1032)(17);                                      --DEBUG tx polarity
+          localRdData(22 downto 18)  <=  reg_data(1032)(22 downto 18);                            --DEBUG post cursor
+          localRdData(23)            <=  reg_data(1032)(23);                                      --DEBUG force PRBS error
+          localRdData(26 downto 24)  <=  reg_data(1032)(26 downto 24);                            --DEBUG PRBS select
+          localRdData(31 downto 27)  <=  reg_data(1032)(31 downto 27);                            --DEBUG pre cursor
+        when 1040 => --0x410
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(1).COUNTERS.ERRORS_ALL_TIME;               --Counter for all errors while locked
+        when 1041 => --0x411
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(1).COUNTERS.ERRORS_SINCE_LOCKED;           --Counter for errors since locked
+        when 1042 => --0x412
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(1).COUNTERS.CONFIG_ERROR_COUNT;            --Counter for CONFIG_ERROR
+        when 1043 => --0x413
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(1).COUNTERS.LINK_ERROR_COUNT;              --Counter for LINK_ERROR
+        when 1044 => --0x414
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(1).COUNTERS.MB_ERROR_COUNT;                --Counter for MB_ERROR
+        when 1045 => --0x415
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(1).COUNTERS.PHY_HARD_ERROR_COUNT;          --Counter for PHY_HARD_ERROR
+        when 1046 => --0x416
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(1).COUNTERS.PHY_SOFT_ERROR_COUNT;          --Counter for PHY_SOFT_ERROR
+        when 1047 => --0x417
+          localRdData( 2 downto  0)  <=  Mon.CM(1).C2C(1).COUNTERS.PHYLANE_STATE;                 --Current state of phy_lane_control module
+        when 1049 => --0x419
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(1).COUNTERS.ERROR_WAITS_SINCE_LOCKED;      --Count for phylane in error state
+        when 1050 => --0x41a
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(1).COUNTERS.USER_CLK_FREQ;                 --Frequency of the user C2C clk
+        when 1051 => --0x41b
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(1).COUNTERS.XCVR_RESETS;                   --Count for phylane in error state
+        when 1052 => --0x41c
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(1).COUNTERS.WAITING_TIMEOUTS;              --Count for phylane in error state
+        when 1053 => --0x41d
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(1).COUNTERS.SB_ERROR_RATE;                 --single bit error rate
+        when 1054 => --0x41e
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(1).COUNTERS.MB_ERROR_RATE;                 --multi bit error rate
+        when 1056 => --0x420
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.ADDR_LSB;               --
+        when 1057 => --0x421
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.ADDR_MSB;               --
+        when 1058 => --0x422
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.SIZE;                   --
+        when 1059 => --0x423
+          localRdData( 0)            <=  Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.VALID;                  --
+        when 1060 => --0x424
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.ADDR_LSB;           --
+        when 1061 => --0x425
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.ADDR_MSB;           --
+        when 1062 => --0x426
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.SIZE;               --
+        when 1063 => --0x427
+          localRdData( 0)            <=  Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.VALID;              --
+        when 1072 => --0x430
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(1).USER_FREQ;                              --Measured Freq of clock
+        when 1073 => --0x431
+          localRdData(23 downto  0)  <=  reg_data(1073)(23 downto  0);                            --Time spent waiting for phylane to stabilize
+          localRdData(24)            <=  reg_data(1073)(24);                                      --phy_lane_control is enabled
+        when 1074 => --0x432
+          localRdData(19 downto  0)  <=  reg_data(1074)(19 downto  0);                            --Contious phy_lane_up signals required to lock phylane control
+        when 1075 => --0x433
+          localRdData( 7 downto  0)  <=  reg_data(1075)( 7 downto  0);                            --Number of failures before we reset the pma
+        when 1076 => --0x434
+          localRdData(31 downto  0)  <=  reg_data(1076)(31 downto  0);                            --Max single bit error rate
+        when 1077 => --0x435
+          localRdData(31 downto  0)  <=  reg_data(1077)(31 downto  0);                            --Max multi  bit error rate
+        when 3072 => --0xc00
+          localRdData( 0)            <=  Mon.CM(1).C2C(2).STATUS.CONFIG_ERROR;                    --C2C config error
+          localRdData( 1)            <=  Mon.CM(1).C2C(2).STATUS.LINK_ERROR;                      --C2C link error
+          localRdData( 2)            <=  Mon.CM(1).C2C(2).STATUS.LINK_GOOD;                       --C2C link FSM in SYNC
+          localRdData( 3)            <=  Mon.CM(1).C2C(2).STATUS.MB_ERROR;                        --C2C multi-bit error
+          localRdData( 4)            <=  Mon.CM(1).C2C(2).STATUS.DO_CC;                           --Aurora do CC
+          localRdData( 5)            <=  reg_data(3072)( 5);                                      --C2C initialize
+          localRdData( 8)            <=  Mon.CM(1).C2C(2).STATUS.PHY_RESET;                       --Aurora phy in reset
+          localRdData( 9)            <=  Mon.CM(1).C2C(2).STATUS.PHY_GT_PLL_LOCK;                 --Aurora phy GT PLL locked
+          localRdData(10)            <=  Mon.CM(1).C2C(2).STATUS.PHY_MMCM_LOL;                    --Aurora phy mmcm LOL
+          localRdData(13 downto 12)  <=  Mon.CM(1).C2C(2).STATUS.PHY_LANE_UP;                     --Aurora phy lanes up
+          localRdData(16)            <=  Mon.CM(1).C2C(2).STATUS.PHY_HARD_ERR;                    --Aurora phy hard error
+          localRdData(17)            <=  Mon.CM(1).C2C(2).STATUS.PHY_SOFT_ERR;                    --Aurora phy soft error
+          localRdData(31)            <=  Mon.CM(1).C2C(2).STATUS.LINK_IN_FW;                      --FW includes this link
+        when 3076 => --0xc04
+          localRdData( 7 downto  0)  <=  Mon.CM(1).C2C(2).DEBUG.DMONITOR;                         --DEBUG d monitor
+          localRdData(20)            <=  Mon.CM(1).C2C(2).DEBUG.CPLL_LOCK;                        --DEBUG cplllock
+          localRdData(21)            <=  Mon.CM(1).C2C(2).DEBUG.EYESCAN_DATA_ERROR;               --DEBUG eyescan data error
+          localRdData(22)            <=  reg_data(3076)(22);                                      --DEBUG eyescan reset
+          localRdData(23)            <=  reg_data(3076)(23);                                      --DEBUG eyescan trigger
+          localRdData(24)            <=  Mon.CM(1).C2C(2).DEBUG.QPLL_LOCK;                        --DEBUG qplllock
+        when 3078 => --0xc06
+          localRdData( 2 downto  0)  <=  Mon.CM(1).C2C(2).DEBUG.RX.BUF_STATUS;                    --DEBUG rx buf status
+          localRdData( 9 downto  3)  <=  Mon.CM(1).C2C(2).DEBUG.RX.MONITOR;                       --DEBUG rx status
+          localRdData(10)            <=  Mon.CM(1).C2C(2).DEBUG.RX.PRBS_ERR;                      --DEBUG rx PRBS error
+          localRdData(11)            <=  Mon.CM(1).C2C(2).DEBUG.RX.RESET_DONE;                    --DEBUG rx reset done
+          localRdData(12)            <=  reg_data(3078)(12);                                      --DEBUG rx buf reset
+          localRdData(13)            <=  reg_data(3078)(13);                                      --DEBUG rx CDR hold
+          localRdData(14)            <=  reg_data(3078)(14);                                      --DEBUG rx DFE AGC HOLD
+          localRdData(15)            <=  reg_data(3078)(15);                                      --DEBUG rx DFE AGC OVERRIDE
+          localRdData(16)            <=  reg_data(3078)(16);                                      --DEBUG rx DFE LF HOLD
+          localRdData(17)            <=  reg_data(3078)(17);                                      --DEBUG rx DFE LPM RESET
+          localRdData(18)            <=  reg_data(3078)(18);                                      --DEBUG rx LPM ENABLE
+          localRdData(19)            <=  reg_data(3078)(19);                                      --DEBUG rx LPM HF OVERRIDE enable
+          localRdData(20)            <=  reg_data(3078)(20);                                      --DEBUG rx LPM LFKL override
+          localRdData(22 downto 21)  <=  reg_data(3078)(22 downto 21);                            --DEBUG rx monitor select
+          localRdData(23)            <=  reg_data(3078)(23);                                      --DEBUG rx pcs reset
+          localRdData(24)            <=  reg_data(3078)(24);                                      --DEBUG rx pma reset
+          localRdData(25)            <=  reg_data(3078)(25);                                      --DEBUG rx PRBS counter reset
+          localRdData(28 downto 26)  <=  reg_data(3078)(28 downto 26);                            --DEBUG rx PRBS select
+        when 3080 => --0xc08
+          localRdData( 1 downto  0)  <=  Mon.CM(1).C2C(2).DEBUG.TX.BUF_STATUS;                    --DEBUG tx buf status
+          localRdData( 2)            <=  Mon.CM(1).C2C(2).DEBUG.TX.RESET_DONE;                    --DEBUG tx reset done
+          localRdData( 6 downto  3)  <=  reg_data(3080)( 6 downto  3);                            --DEBUG tx diff control
+          localRdData( 7)            <=  reg_data(3080)( 7);                                      --DEBUG tx inhibit
+          localRdData(14 downto  8)  <=  reg_data(3080)(14 downto  8);                            --DEBUG tx main cursor
+          localRdData(15)            <=  reg_data(3080)(15);                                      --DEBUG tx pcs reset
+          localRdData(16)            <=  reg_data(3080)(16);                                      --DEBUG tx pma reset
+          localRdData(17)            <=  reg_data(3080)(17);                                      --DEBUG tx polarity
+          localRdData(22 downto 18)  <=  reg_data(3080)(22 downto 18);                            --DEBUG post cursor
+          localRdData(23)            <=  reg_data(3080)(23);                                      --DEBUG force PRBS error
+          localRdData(26 downto 24)  <=  reg_data(3080)(26 downto 24);                            --DEBUG PRBS select
+          localRdData(31 downto 27)  <=  reg_data(3080)(31 downto 27);                            --DEBUG pre cursor
+        when 3088 => --0xc10
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(2).COUNTERS.ERRORS_ALL_TIME;               --Counter for all errors while locked
+        when 3089 => --0xc11
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(2).COUNTERS.ERRORS_SINCE_LOCKED;           --Counter for errors since locked
+        when 3090 => --0xc12
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(2).COUNTERS.CONFIG_ERROR_COUNT;            --Counter for CONFIG_ERROR
+        when 3091 => --0xc13
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(2).COUNTERS.LINK_ERROR_COUNT;              --Counter for LINK_ERROR
+        when 3092 => --0xc14
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(2).COUNTERS.MB_ERROR_COUNT;                --Counter for MB_ERROR
+        when 3093 => --0xc15
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(2).COUNTERS.PHY_HARD_ERROR_COUNT;          --Counter for PHY_HARD_ERROR
+        when 3094 => --0xc16
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(2).COUNTERS.PHY_SOFT_ERROR_COUNT;          --Counter for PHY_SOFT_ERROR
+        when 3095 => --0xc17
+          localRdData( 2 downto  0)  <=  Mon.CM(1).C2C(2).COUNTERS.PHYLANE_STATE;                 --Current state of phy_lane_control module
+        when 3097 => --0xc19
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(2).COUNTERS.ERROR_WAITS_SINCE_LOCKED;      --Count for phylane in error state
+        when 3098 => --0xc1a
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(2).COUNTERS.USER_CLK_FREQ;                 --Frequency of the user C2C clk
+        when 3099 => --0xc1b
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(2).COUNTERS.XCVR_RESETS;                   --Count for phylane in error state
+        when 3100 => --0xc1c
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(2).COUNTERS.WAITING_TIMEOUTS;              --Count for phylane in error state
+        when 3101 => --0xc1d
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(2).COUNTERS.SB_ERROR_RATE;                 --single bit error rate
+        when 3102 => --0xc1e
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(2).COUNTERS.MB_ERROR_RATE;                 --multi bit error rate
+        when 3104 => --0xc20
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(2).BRIDGE_INFO.AXI.ADDR_LSB;               --
+        when 3105 => --0xc21
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(2).BRIDGE_INFO.AXI.ADDR_MSB;               --
+        when 3106 => --0xc22
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(2).BRIDGE_INFO.AXI.SIZE;                   --
+        when 3107 => --0xc23
+          localRdData( 0)            <=  Mon.CM(1).C2C(2).BRIDGE_INFO.AXI.VALID;                  --
+        when 3108 => --0xc24
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.ADDR_LSB;           --
+        when 3109 => --0xc25
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.ADDR_MSB;           --
+        when 3110 => --0xc26
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.SIZE;               --
+        when 3111 => --0xc27
+          localRdData( 0)            <=  Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.VALID;              --
+        when 3120 => --0xc30
+          localRdData(31 downto  0)  <=  Mon.CM(1).C2C(2).USER_FREQ;                              --Measured Freq of clock
+        when 3121 => --0xc31
+          localRdData(23 downto  0)  <=  reg_data(3121)(23 downto  0);                            --Time spent waiting for phylane to stabilize
+          localRdData(24)            <=  reg_data(3121)(24);                                      --phy_lane_control is enabled
+        when 3122 => --0xc32
+          localRdData(19 downto  0)  <=  reg_data(3122)(19 downto  0);                            --Contious phy_lane_up signals required to lock phylane control
+        when 3123 => --0xc33
+          localRdData( 7 downto  0)  <=  reg_data(3123)( 7 downto  0);                            --Number of failures before we reset the pma
+        when 3124 => --0xc34
+          localRdData(31 downto  0)  <=  reg_data(3124)(31 downto  0);                            --Max single bit error rate
+        when 3125 => --0xc35
+          localRdData(31 downto  0)  <=  reg_data(3125)(31 downto  0);                            --Max multi  bit error rate
+        when 4096 => --0x1000
+          localRdData( 0)            <=  reg_data(4096)( 0);                                      --Tell CM uC to power-up
+          localRdData( 1)            <=  reg_data(4096)( 1);                                      --Tell CM uC to power-up the rest of the CM
+          localRdData( 2)            <=  reg_data(4096)( 2);                                      --Ignore power good from CM
+          localRdData( 3)            <=  Mon.CM(1).CTRL.PWR_GOOD;                                 --CM power is good
+          localRdData( 7 downto  4)  <=  Mon.CM(1).CTRL.STATE;                                    --CM power up state
+          localRdData( 8)            <=  reg_data(4096)( 8);                                      --CM power is good
+          localRdData( 9)            <=  Mon.CM(1).CTRL.PWR_ENABLED;                              --power is enabled
+          localRdData(10)            <=  Mon.CM(1).CTRL.IOS_ENABLED;                              --IOs to CM are enabled
+        when 4208 => --0x1070
+          localRdData( 7 downto  0)  <=  reg_data(4208)( 7 downto  0);                            --Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
+          localRdData( 8)            <=  Mon.CM(1).MONITOR.ACTIVE;                                --Monitoring active. Is zero when no update in the last second.
+          localRdData(15 downto 12)  <=  Mon.CM(1).MONITOR.HISTORY_VALID;                         --bytes valid in debug history
+          localRdData(16)            <=  reg_data(4208)(16);                                      --Enable readout
+        when 4209 => --0x1071
+          localRdData(31 downto  0)  <=  Mon.CM(1).MONITOR.HISTORY;                               --4 bytes of uart history
+        when 4210 => --0x1072
+          localRdData( 7 downto  0)  <=  Mon.CM(1).MONITOR.BAD_TRANS.ADDR;                        --Sensor addr bits
+          localRdData(23 downto  8)  <=  Mon.CM(1).MONITOR.BAD_TRANS.DATA;                        --Sensor data bits
+          localRdData(31 downto 24)  <=  Mon.CM(1).MONITOR.BAD_TRANS.ERROR_MASK;                  --Sensor error bits
+        when 4211 => --0x1073
+          localRdData( 7 downto  0)  <=  Mon.CM(1).MONITOR.LAST_TRANS.ADDR;                       --Sensor addr bits
+          localRdData(23 downto  8)  <=  Mon.CM(1).MONITOR.LAST_TRANS.DATA;                       --Sensor data bits
+          localRdData(31 downto 24)  <=  Mon.CM(1).MONITOR.LAST_TRANS.ERROR_MASK;                 --Sensor error bits
+        when 4212 => --0x1074
+          localRdData( 0)            <=  reg_data(4212)( 0);                                      --Reset monitoring error counters
+        when 4213 => --0x1075
+          localRdData(15 downto  0)  <=  Mon.CM(1).MONITOR.ERRORS.CNT_BAD_SOF;                    --Monitoring errors. Count of invalid byte types in parsing.
+          localRdData(31 downto 16)  <=  Mon.CM(1).MONITOR.ERRORS.CNT_AXI_BUSY_BYTE2;             --Monitoring errors. Count of invalid byte types in parsing.
+        when 4214 => --0x1076
+          localRdData(15 downto  0)  <=  Mon.CM(1).MONITOR.ERRORS.CNT_BYTE2_NOT_DATA;             --Monitoring errors. Count of invalid byte types in parsing.
+          localRdData(31 downto 16)  <=  Mon.CM(1).MONITOR.ERRORS.CNT_BYTE3_NOT_DATA;             --Monitoring errors. Count of invalid byte types in parsing.
+        when 4215 => --0x1077
+          localRdData(15 downto  0)  <=  Mon.CM(1).MONITOR.ERRORS.CNT_BYTE4_NOT_DATA;             --Monitoring errors. Count of invalid byte types in parsing.
+          localRdData(31 downto 16)  <=  Mon.CM(1).MONITOR.ERRORS.CNT_TIMEOUT;                    --Monitoring errors. Count of invalid byte types in parsing.
+        when 4216 => --0x1078
+          localRdData(15 downto  0)  <=  Mon.CM(1).MONITOR.ERRORS.CNT_UNKNOWN;                    --Monitoring errors. Count of invalid byte types in parsing.
+        when 4217 => --0x1079
+          localRdData(31 downto  0)  <=  Mon.CM(1).MONITOR.UART_BYTES;                            --Count of UART bytes from CM MCU
+        when 4218 => --0x107a
+          localRdData(31 downto  0)  <=  reg_data(4218)(31 downto  0);                            --Count to wait for in state machine before timing out (50Mhz clk)
+        when 9216 => --0x2400
+          localRdData( 0)            <=  Mon.CM(2).C2C(1).STATUS.CONFIG_ERROR;                    --C2C config error
+          localRdData( 1)            <=  Mon.CM(2).C2C(1).STATUS.LINK_ERROR;                      --C2C link error
+          localRdData( 2)            <=  Mon.CM(2).C2C(1).STATUS.LINK_GOOD;                       --C2C link FSM in SYNC
+          localRdData( 3)            <=  Mon.CM(2).C2C(1).STATUS.MB_ERROR;                        --C2C multi-bit error
+          localRdData( 4)            <=  Mon.CM(2).C2C(1).STATUS.DO_CC;                           --Aurora do CC
+          localRdData( 5)            <=  reg_data(9216)( 5);                                      --C2C initialize
+          localRdData( 8)            <=  Mon.CM(2).C2C(1).STATUS.PHY_RESET;                       --Aurora phy in reset
+          localRdData( 9)            <=  Mon.CM(2).C2C(1).STATUS.PHY_GT_PLL_LOCK;                 --Aurora phy GT PLL locked
+          localRdData(10)            <=  Mon.CM(2).C2C(1).STATUS.PHY_MMCM_LOL;                    --Aurora phy mmcm LOL
+          localRdData(13 downto 12)  <=  Mon.CM(2).C2C(1).STATUS.PHY_LANE_UP;                     --Aurora phy lanes up
+          localRdData(16)            <=  Mon.CM(2).C2C(1).STATUS.PHY_HARD_ERR;                    --Aurora phy hard error
+          localRdData(17)            <=  Mon.CM(2).C2C(1).STATUS.PHY_SOFT_ERR;                    --Aurora phy soft error
+          localRdData(31)            <=  Mon.CM(2).C2C(1).STATUS.LINK_IN_FW;                      --FW includes this link
+        when 9220 => --0x2404
+          localRdData( 7 downto  0)  <=  Mon.CM(2).C2C(1).DEBUG.DMONITOR;                         --DEBUG d monitor
+          localRdData(20)            <=  Mon.CM(2).C2C(1).DEBUG.CPLL_LOCK;                        --DEBUG cplllock
+          localRdData(21)            <=  Mon.CM(2).C2C(1).DEBUG.EYESCAN_DATA_ERROR;               --DEBUG eyescan data error
+          localRdData(22)            <=  reg_data(9220)(22);                                      --DEBUG eyescan reset
+          localRdData(23)            <=  reg_data(9220)(23);                                      --DEBUG eyescan trigger
+          localRdData(24)            <=  Mon.CM(2).C2C(1).DEBUG.QPLL_LOCK;                        --DEBUG qplllock
+        when 9222 => --0x2406
+          localRdData( 2 downto  0)  <=  Mon.CM(2).C2C(1).DEBUG.RX.BUF_STATUS;                    --DEBUG rx buf status
+          localRdData( 9 downto  3)  <=  Mon.CM(2).C2C(1).DEBUG.RX.MONITOR;                       --DEBUG rx status
+          localRdData(10)            <=  Mon.CM(2).C2C(1).DEBUG.RX.PRBS_ERR;                      --DEBUG rx PRBS error
+          localRdData(11)            <=  Mon.CM(2).C2C(1).DEBUG.RX.RESET_DONE;                    --DEBUG rx reset done
+          localRdData(12)            <=  reg_data(9222)(12);                                      --DEBUG rx buf reset
+          localRdData(13)            <=  reg_data(9222)(13);                                      --DEBUG rx CDR hold
+          localRdData(14)            <=  reg_data(9222)(14);                                      --DEBUG rx DFE AGC HOLD
+          localRdData(15)            <=  reg_data(9222)(15);                                      --DEBUG rx DFE AGC OVERRIDE
+          localRdData(16)            <=  reg_data(9222)(16);                                      --DEBUG rx DFE LF HOLD
+          localRdData(17)            <=  reg_data(9222)(17);                                      --DEBUG rx DFE LPM RESET
+          localRdData(18)            <=  reg_data(9222)(18);                                      --DEBUG rx LPM ENABLE
+          localRdData(19)            <=  reg_data(9222)(19);                                      --DEBUG rx LPM HF OVERRIDE enable
+          localRdData(20)            <=  reg_data(9222)(20);                                      --DEBUG rx LPM LFKL override
+          localRdData(22 downto 21)  <=  reg_data(9222)(22 downto 21);                            --DEBUG rx monitor select
+          localRdData(23)            <=  reg_data(9222)(23);                                      --DEBUG rx pcs reset
+          localRdData(24)            <=  reg_data(9222)(24);                                      --DEBUG rx pma reset
+          localRdData(25)            <=  reg_data(9222)(25);                                      --DEBUG rx PRBS counter reset
+          localRdData(28 downto 26)  <=  reg_data(9222)(28 downto 26);                            --DEBUG rx PRBS select
+        when 9224 => --0x2408
+          localRdData( 1 downto  0)  <=  Mon.CM(2).C2C(1).DEBUG.TX.BUF_STATUS;                    --DEBUG tx buf status
+          localRdData( 2)            <=  Mon.CM(2).C2C(1).DEBUG.TX.RESET_DONE;                    --DEBUG tx reset done
+          localRdData( 6 downto  3)  <=  reg_data(9224)( 6 downto  3);                            --DEBUG tx diff control
+          localRdData( 7)            <=  reg_data(9224)( 7);                                      --DEBUG tx inhibit
+          localRdData(14 downto  8)  <=  reg_data(9224)(14 downto  8);                            --DEBUG tx main cursor
+          localRdData(15)            <=  reg_data(9224)(15);                                      --DEBUG tx pcs reset
+          localRdData(16)            <=  reg_data(9224)(16);                                      --DEBUG tx pma reset
+          localRdData(17)            <=  reg_data(9224)(17);                                      --DEBUG tx polarity
+          localRdData(22 downto 18)  <=  reg_data(9224)(22 downto 18);                            --DEBUG post cursor
+          localRdData(23)            <=  reg_data(9224)(23);                                      --DEBUG force PRBS error
+          localRdData(26 downto 24)  <=  reg_data(9224)(26 downto 24);                            --DEBUG PRBS select
+          localRdData(31 downto 27)  <=  reg_data(9224)(31 downto 27);                            --DEBUG pre cursor
+        when 9232 => --0x2410
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(1).COUNTERS.ERRORS_ALL_TIME;               --Counter for all errors while locked
+        when 9233 => --0x2411
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(1).COUNTERS.ERRORS_SINCE_LOCKED;           --Counter for errors since locked
+        when 9234 => --0x2412
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(1).COUNTERS.CONFIG_ERROR_COUNT;            --Counter for CONFIG_ERROR
+        when 9235 => --0x2413
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(1).COUNTERS.LINK_ERROR_COUNT;              --Counter for LINK_ERROR
+        when 9236 => --0x2414
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(1).COUNTERS.MB_ERROR_COUNT;                --Counter for MB_ERROR
+        when 9237 => --0x2415
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(1).COUNTERS.PHY_HARD_ERROR_COUNT;          --Counter for PHY_HARD_ERROR
+        when 9238 => --0x2416
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(1).COUNTERS.PHY_SOFT_ERROR_COUNT;          --Counter for PHY_SOFT_ERROR
+        when 9239 => --0x2417
+          localRdData( 2 downto  0)  <=  Mon.CM(2).C2C(1).COUNTERS.PHYLANE_STATE;                 --Current state of phy_lane_control module
+        when 9241 => --0x2419
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(1).COUNTERS.ERROR_WAITS_SINCE_LOCKED;      --Count for phylane in error state
+        when 9242 => --0x241a
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(1).COUNTERS.USER_CLK_FREQ;                 --Frequency of the user C2C clk
+        when 9243 => --0x241b
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(1).COUNTERS.XCVR_RESETS;                   --Count for phylane in error state
+        when 9244 => --0x241c
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(1).COUNTERS.WAITING_TIMEOUTS;              --Count for phylane in error state
+        when 9245 => --0x241d
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(1).COUNTERS.SB_ERROR_RATE;                 --single bit error rate
+        when 9246 => --0x241e
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(1).COUNTERS.MB_ERROR_RATE;                 --multi bit error rate
+        when 9248 => --0x2420
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.ADDR_LSB;               --
+        when 9249 => --0x2421
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.ADDR_MSB;               --
+        when 9250 => --0x2422
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.SIZE;                   --
+        when 9251 => --0x2423
+          localRdData( 0)            <=  Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.VALID;                  --
+        when 9252 => --0x2424
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(1).BRIDGE_INFO.AXILITE.ADDR_LSB;           --
+        when 9253 => --0x2425
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(1).BRIDGE_INFO.AXILITE.ADDR_MSB;           --
+        when 9254 => --0x2426
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(1).BRIDGE_INFO.AXILITE.SIZE;               --
+        when 9255 => --0x2427
+          localRdData( 0)            <=  Mon.CM(2).C2C(1).BRIDGE_INFO.AXILITE.VALID;              --
+        when 9264 => --0x2430
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(1).USER_FREQ;                              --Measured Freq of clock
+        when 9265 => --0x2431
+          localRdData(23 downto  0)  <=  reg_data(9265)(23 downto  0);                            --Time spent waiting for phylane to stabilize
+          localRdData(24)            <=  reg_data(9265)(24);                                      --phy_lane_control is enabled
+        when 9266 => --0x2432
+          localRdData(19 downto  0)  <=  reg_data(9266)(19 downto  0);                            --Contious phy_lane_up signals required to lock phylane control
+        when 9267 => --0x2433
+          localRdData( 7 downto  0)  <=  reg_data(9267)( 7 downto  0);                            --Number of failures before we reset the pma
+        when 9268 => --0x2434
+          localRdData(31 downto  0)  <=  reg_data(9268)(31 downto  0);                            --Max single bit error rate
+        when 9269 => --0x2435
+          localRdData(31 downto  0)  <=  reg_data(9269)(31 downto  0);                            --Max multi  bit error rate
+        when 11264 => --0x2c00
+          localRdData( 0)            <=  Mon.CM(2).C2C(2).STATUS.CONFIG_ERROR;                    --C2C config error
+          localRdData( 1)            <=  Mon.CM(2).C2C(2).STATUS.LINK_ERROR;                      --C2C link error
+          localRdData( 2)            <=  Mon.CM(2).C2C(2).STATUS.LINK_GOOD;                       --C2C link FSM in SYNC
+          localRdData( 3)            <=  Mon.CM(2).C2C(2).STATUS.MB_ERROR;                        --C2C multi-bit error
+          localRdData( 4)            <=  Mon.CM(2).C2C(2).STATUS.DO_CC;                           --Aurora do CC
+          localRdData( 5)            <=  reg_data(11264)( 5);                                     --C2C initialize
+          localRdData( 8)            <=  Mon.CM(2).C2C(2).STATUS.PHY_RESET;                       --Aurora phy in reset
+          localRdData( 9)            <=  Mon.CM(2).C2C(2).STATUS.PHY_GT_PLL_LOCK;                 --Aurora phy GT PLL locked
+          localRdData(10)            <=  Mon.CM(2).C2C(2).STATUS.PHY_MMCM_LOL;                    --Aurora phy mmcm LOL
+          localRdData(13 downto 12)  <=  Mon.CM(2).C2C(2).STATUS.PHY_LANE_UP;                     --Aurora phy lanes up
+          localRdData(16)            <=  Mon.CM(2).C2C(2).STATUS.PHY_HARD_ERR;                    --Aurora phy hard error
+          localRdData(17)            <=  Mon.CM(2).C2C(2).STATUS.PHY_SOFT_ERR;                    --Aurora phy soft error
+          localRdData(31)            <=  Mon.CM(2).C2C(2).STATUS.LINK_IN_FW;                      --FW includes this link
+        when 11268 => --0x2c04
+          localRdData( 7 downto  0)  <=  Mon.CM(2).C2C(2).DEBUG.DMONITOR;                         --DEBUG d monitor
+          localRdData(20)            <=  Mon.CM(2).C2C(2).DEBUG.CPLL_LOCK;                        --DEBUG cplllock
+          localRdData(21)            <=  Mon.CM(2).C2C(2).DEBUG.EYESCAN_DATA_ERROR;               --DEBUG eyescan data error
+          localRdData(22)            <=  reg_data(11268)(22);                                     --DEBUG eyescan reset
+          localRdData(23)            <=  reg_data(11268)(23);                                     --DEBUG eyescan trigger
+          localRdData(24)            <=  Mon.CM(2).C2C(2).DEBUG.QPLL_LOCK;                        --DEBUG qplllock
+        when 11270 => --0x2c06
+          localRdData( 2 downto  0)  <=  Mon.CM(2).C2C(2).DEBUG.RX.BUF_STATUS;                    --DEBUG rx buf status
+          localRdData( 9 downto  3)  <=  Mon.CM(2).C2C(2).DEBUG.RX.MONITOR;                       --DEBUG rx status
+          localRdData(10)            <=  Mon.CM(2).C2C(2).DEBUG.RX.PRBS_ERR;                      --DEBUG rx PRBS error
+          localRdData(11)            <=  Mon.CM(2).C2C(2).DEBUG.RX.RESET_DONE;                    --DEBUG rx reset done
+          localRdData(12)            <=  reg_data(11270)(12);                                     --DEBUG rx buf reset
+          localRdData(13)            <=  reg_data(11270)(13);                                     --DEBUG rx CDR hold
+          localRdData(14)            <=  reg_data(11270)(14);                                     --DEBUG rx DFE AGC HOLD
+          localRdData(15)            <=  reg_data(11270)(15);                                     --DEBUG rx DFE AGC OVERRIDE
+          localRdData(16)            <=  reg_data(11270)(16);                                     --DEBUG rx DFE LF HOLD
+          localRdData(17)            <=  reg_data(11270)(17);                                     --DEBUG rx DFE LPM RESET
+          localRdData(18)            <=  reg_data(11270)(18);                                     --DEBUG rx LPM ENABLE
+          localRdData(19)            <=  reg_data(11270)(19);                                     --DEBUG rx LPM HF OVERRIDE enable
+          localRdData(20)            <=  reg_data(11270)(20);                                     --DEBUG rx LPM LFKL override
+          localRdData(22 downto 21)  <=  reg_data(11270)(22 downto 21);                           --DEBUG rx monitor select
+          localRdData(23)            <=  reg_data(11270)(23);                                     --DEBUG rx pcs reset
+          localRdData(24)            <=  reg_data(11270)(24);                                     --DEBUG rx pma reset
+          localRdData(25)            <=  reg_data(11270)(25);                                     --DEBUG rx PRBS counter reset
+          localRdData(28 downto 26)  <=  reg_data(11270)(28 downto 26);                           --DEBUG rx PRBS select
+        when 11272 => --0x2c08
+          localRdData( 1 downto  0)  <=  Mon.CM(2).C2C(2).DEBUG.TX.BUF_STATUS;                    --DEBUG tx buf status
+          localRdData( 2)            <=  Mon.CM(2).C2C(2).DEBUG.TX.RESET_DONE;                    --DEBUG tx reset done
+          localRdData( 6 downto  3)  <=  reg_data(11272)( 6 downto  3);                           --DEBUG tx diff control
+          localRdData( 7)            <=  reg_data(11272)( 7);                                     --DEBUG tx inhibit
+          localRdData(14 downto  8)  <=  reg_data(11272)(14 downto  8);                           --DEBUG tx main cursor
+          localRdData(15)            <=  reg_data(11272)(15);                                     --DEBUG tx pcs reset
+          localRdData(16)            <=  reg_data(11272)(16);                                     --DEBUG tx pma reset
+          localRdData(17)            <=  reg_data(11272)(17);                                     --DEBUG tx polarity
+          localRdData(22 downto 18)  <=  reg_data(11272)(22 downto 18);                           --DEBUG post cursor
+          localRdData(23)            <=  reg_data(11272)(23);                                     --DEBUG force PRBS error
+          localRdData(26 downto 24)  <=  reg_data(11272)(26 downto 24);                           --DEBUG PRBS select
+          localRdData(31 downto 27)  <=  reg_data(11272)(31 downto 27);                           --DEBUG pre cursor
+        when 11280 => --0x2c10
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(2).COUNTERS.ERRORS_ALL_TIME;               --Counter for all errors while locked
+        when 11281 => --0x2c11
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(2).COUNTERS.ERRORS_SINCE_LOCKED;           --Counter for errors since locked
+        when 11282 => --0x2c12
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(2).COUNTERS.CONFIG_ERROR_COUNT;            --Counter for CONFIG_ERROR
+        when 11283 => --0x2c13
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(2).COUNTERS.LINK_ERROR_COUNT;              --Counter for LINK_ERROR
+        when 11284 => --0x2c14
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(2).COUNTERS.MB_ERROR_COUNT;                --Counter for MB_ERROR
+        when 11285 => --0x2c15
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(2).COUNTERS.PHY_HARD_ERROR_COUNT;          --Counter for PHY_HARD_ERROR
+        when 11286 => --0x2c16
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(2).COUNTERS.PHY_SOFT_ERROR_COUNT;          --Counter for PHY_SOFT_ERROR
+        when 11287 => --0x2c17
+          localRdData( 2 downto  0)  <=  Mon.CM(2).C2C(2).COUNTERS.PHYLANE_STATE;                 --Current state of phy_lane_control module
+        when 11289 => --0x2c19
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(2).COUNTERS.ERROR_WAITS_SINCE_LOCKED;      --Count for phylane in error state
+        when 11290 => --0x2c1a
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(2).COUNTERS.USER_CLK_FREQ;                 --Frequency of the user C2C clk
+        when 11291 => --0x2c1b
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(2).COUNTERS.XCVR_RESETS;                   --Count for phylane in error state
+        when 11292 => --0x2c1c
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(2).COUNTERS.WAITING_TIMEOUTS;              --Count for phylane in error state
+        when 11293 => --0x2c1d
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(2).COUNTERS.SB_ERROR_RATE;                 --single bit error rate
+        when 11294 => --0x2c1e
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(2).COUNTERS.MB_ERROR_RATE;                 --multi bit error rate
+        when 11296 => --0x2c20
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(2).BRIDGE_INFO.AXI.ADDR_LSB;               --
+        when 11297 => --0x2c21
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(2).BRIDGE_INFO.AXI.ADDR_MSB;               --
+        when 11298 => --0x2c22
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(2).BRIDGE_INFO.AXI.SIZE;                   --
+        when 11299 => --0x2c23
+          localRdData( 0)            <=  Mon.CM(2).C2C(2).BRIDGE_INFO.AXI.VALID;                  --
+        when 11300 => --0x2c24
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.ADDR_LSB;           --
+        when 11301 => --0x2c25
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.ADDR_MSB;           --
+        when 11302 => --0x2c26
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.SIZE;               --
+        when 11303 => --0x2c27
+          localRdData( 0)            <=  Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.VALID;              --
+        when 11312 => --0x2c30
+          localRdData(31 downto  0)  <=  Mon.CM(2).C2C(2).USER_FREQ;                              --Measured Freq of clock
+        when 11313 => --0x2c31
+          localRdData(23 downto  0)  <=  reg_data(11313)(23 downto  0);                           --Time spent waiting for phylane to stabilize
+          localRdData(24)            <=  reg_data(11313)(24);                                     --phy_lane_control is enabled
+        when 11314 => --0x2c32
+          localRdData(19 downto  0)  <=  reg_data(11314)(19 downto  0);                           --Contious phy_lane_up signals required to lock phylane control
+        when 11315 => --0x2c33
+          localRdData( 7 downto  0)  <=  reg_data(11315)( 7 downto  0);                           --Number of failures before we reset the pma
+        when 11316 => --0x2c34
+          localRdData(31 downto  0)  <=  reg_data(11316)(31 downto  0);                           --Max single bit error rate
+        when 11317 => --0x2c35
+          localRdData(31 downto  0)  <=  reg_data(11317)(31 downto  0);                           --Max multi  bit error rate
+        when 12288 => --0x3000
+          localRdData( 0)            <=  reg_data(12288)( 0);                                     --Tell CM uC to power-up
+          localRdData( 1)            <=  reg_data(12288)( 1);                                     --Tell CM uC to power-up the rest of the CM
+          localRdData( 2)            <=  reg_data(12288)( 2);                                     --Ignore power good from CM
+          localRdData( 3)            <=  Mon.CM(2).CTRL.PWR_GOOD;                                 --CM power is good
+          localRdData( 7 downto  4)  <=  Mon.CM(2).CTRL.STATE;                                    --CM power up state
+          localRdData( 8)            <=  reg_data(12288)( 8);                                     --CM power is good
+          localRdData( 9)            <=  Mon.CM(2).CTRL.PWR_ENABLED;                              --power is enabled
+          localRdData(10)            <=  Mon.CM(2).CTRL.IOS_ENABLED;                              --IOs to CM are enabled
+        when 12400 => --0x3070
+          localRdData( 7 downto  0)  <=  reg_data(12400)( 7 downto  0);                           --Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
+          localRdData( 8)            <=  Mon.CM(2).MONITOR.ACTIVE;                                --Monitoring active. Is zero when no update in the last second.
+          localRdData(15 downto 12)  <=  Mon.CM(2).MONITOR.HISTORY_VALID;                         --bytes valid in debug history
+          localRdData(16)            <=  reg_data(12400)(16);                                     --Enable readout
+        when 12401 => --0x3071
+          localRdData(31 downto  0)  <=  Mon.CM(2).MONITOR.HISTORY;                               --4 bytes of uart history
+        when 12402 => --0x3072
+          localRdData( 7 downto  0)  <=  Mon.CM(2).MONITOR.BAD_TRANS.ADDR;                        --Sensor addr bits
+          localRdData(23 downto  8)  <=  Mon.CM(2).MONITOR.BAD_TRANS.DATA;                        --Sensor data bits
+          localRdData(31 downto 24)  <=  Mon.CM(2).MONITOR.BAD_TRANS.ERROR_MASK;                  --Sensor error bits
+        when 12403 => --0x3073
+          localRdData( 7 downto  0)  <=  Mon.CM(2).MONITOR.LAST_TRANS.ADDR;                       --Sensor addr bits
+          localRdData(23 downto  8)  <=  Mon.CM(2).MONITOR.LAST_TRANS.DATA;                       --Sensor data bits
+          localRdData(31 downto 24)  <=  Mon.CM(2).MONITOR.LAST_TRANS.ERROR_MASK;                 --Sensor error bits
+        when 12404 => --0x3074
+          localRdData( 0)            <=  reg_data(12404)( 0);                                     --Reset monitoring error counters
+        when 12405 => --0x3075
+          localRdData(15 downto  0)  <=  Mon.CM(2).MONITOR.ERRORS.CNT_BAD_SOF;                    --Monitoring errors. Count of invalid byte types in parsing.
+          localRdData(31 downto 16)  <=  Mon.CM(2).MONITOR.ERRORS.CNT_AXI_BUSY_BYTE2;             --Monitoring errors. Count of invalid byte types in parsing.
+        when 12406 => --0x3076
+          localRdData(15 downto  0)  <=  Mon.CM(2).MONITOR.ERRORS.CNT_BYTE2_NOT_DATA;             --Monitoring errors. Count of invalid byte types in parsing.
+          localRdData(31 downto 16)  <=  Mon.CM(2).MONITOR.ERRORS.CNT_BYTE3_NOT_DATA;             --Monitoring errors. Count of invalid byte types in parsing.
+        when 12407 => --0x3077
+          localRdData(15 downto  0)  <=  Mon.CM(2).MONITOR.ERRORS.CNT_BYTE4_NOT_DATA;             --Monitoring errors. Count of invalid byte types in parsing.
+          localRdData(31 downto 16)  <=  Mon.CM(2).MONITOR.ERRORS.CNT_TIMEOUT;                    --Monitoring errors. Count of invalid byte types in parsing.
+        when 12408 => --0x3078
+          localRdData(15 downto  0)  <=  Mon.CM(2).MONITOR.ERRORS.CNT_UNKNOWN;                    --Monitoring errors. Count of invalid byte types in parsing.
+        when 12409 => --0x3079
+          localRdData(31 downto  0)  <=  Mon.CM(2).MONITOR.UART_BYTES;                            --Count of UART bytes from CM MCU
+        when 12410 => --0x307a
+          localRdData(31 downto  0)  <=  reg_data(12410)(31 downto  0);                           --Count to wait for in state machine before timing out (50Mhz clk)
+        when 18432 => --0x4800
+          localRdData( 0)            <=  reg_data(18432)( 0);                                     --
+        when 18433 => --0x4801
+          localRdData(31 downto  0)  <=  reg_data(18433)(31 downto  0);                           --
+
+
+          when others =>
+            regRdAck <= '0';
+            localRdData <= x"00000000";
+        end case;
+      end if;
+    end if;
+  end process reads;
+
+
+  -------------------------------------------------------------------------------
+  -- Record write decoding
+  -------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------
+
+  -- Register mapping to ctrl structures
+  Ctrl.CM(1).C2C(1).STATUS.INITIALIZE              <=  reg_data(1024)( 5);                
+  Ctrl.CM(1).C2C(1).DEBUG.EYESCAN_RESET            <=  reg_data(1028)(22);                
+  Ctrl.CM(1).C2C(1).DEBUG.EYESCAN_TRIGGER          <=  reg_data(1028)(23);                
+  Ctrl.CM(1).C2C(1).DEBUG.RX.BUF_RESET             <=  reg_data(1030)(12);                
+  Ctrl.CM(1).C2C(1).DEBUG.RX.CDR_HOLD              <=  reg_data(1030)(13);                
+  Ctrl.CM(1).C2C(1).DEBUG.RX.DFE_AGC_HOLD          <=  reg_data(1030)(14);                
+  Ctrl.CM(1).C2C(1).DEBUG.RX.DFE_AGC_OVERRIDE      <=  reg_data(1030)(15);                
+  Ctrl.CM(1).C2C(1).DEBUG.RX.DFE_LF_HOLD           <=  reg_data(1030)(16);                
+  Ctrl.CM(1).C2C(1).DEBUG.RX.DFE_LPM_RESET         <=  reg_data(1030)(17);                
+  Ctrl.CM(1).C2C(1).DEBUG.RX.LPM_EN                <=  reg_data(1030)(18);                
+  Ctrl.CM(1).C2C(1).DEBUG.RX.LPM_HF_OVERRIDE       <=  reg_data(1030)(19);                
+  Ctrl.CM(1).C2C(1).DEBUG.RX.LPM_LFKL_OVERRIDE     <=  reg_data(1030)(20);                
+  Ctrl.CM(1).C2C(1).DEBUG.RX.MON_SEL               <=  reg_data(1030)(22 downto 21);      
+  Ctrl.CM(1).C2C(1).DEBUG.RX.PCS_RESET             <=  reg_data(1030)(23);                
+  Ctrl.CM(1).C2C(1).DEBUG.RX.PMA_RESET             <=  reg_data(1030)(24);                
+  Ctrl.CM(1).C2C(1).DEBUG.RX.PRBS_CNT_RST          <=  reg_data(1030)(25);                
+  Ctrl.CM(1).C2C(1).DEBUG.RX.PRBS_SEL              <=  reg_data(1030)(28 downto 26);      
+  Ctrl.CM(1).C2C(1).DEBUG.TX.DIFF_CTRL             <=  reg_data(1032)( 6 downto  3);      
+  Ctrl.CM(1).C2C(1).DEBUG.TX.INHIBIT               <=  reg_data(1032)( 7);                
+  Ctrl.CM(1).C2C(1).DEBUG.TX.MAIN_CURSOR           <=  reg_data(1032)(14 downto  8);      
+  Ctrl.CM(1).C2C(1).DEBUG.TX.PCS_RESET             <=  reg_data(1032)(15);                
+  Ctrl.CM(1).C2C(1).DEBUG.TX.PMA_RESET             <=  reg_data(1032)(16);                
+  Ctrl.CM(1).C2C(1).DEBUG.TX.POLARITY              <=  reg_data(1032)(17);                
+  Ctrl.CM(1).C2C(1).DEBUG.TX.POST_CURSOR           <=  reg_data(1032)(22 downto 18);      
+  Ctrl.CM(1).C2C(1).DEBUG.TX.PRBS_FORCE_ERR        <=  reg_data(1032)(23);                
+  Ctrl.CM(1).C2C(1).DEBUG.TX.PRBS_SEL              <=  reg_data(1032)(26 downto 24);      
+  Ctrl.CM(1).C2C(1).DEBUG.TX.PRE_CURSOR            <=  reg_data(1032)(31 downto 27);      
+  Ctrl.CM(1).C2C(1).PHY_READ_TIME                  <=  reg_data(1073)(23 downto  0);      
+  Ctrl.CM(1).C2C(1).ENABLE_PHY_CTRL                <=  reg_data(1073)(24);                
+  Ctrl.CM(1).C2C(1).PHY_LANE_STABLE                <=  reg_data(1074)(19 downto  0);      
+  Ctrl.CM(1).C2C(1).PHY_LANE_ERRORS_TO_RESET       <=  reg_data(1075)( 7 downto  0);      
+  Ctrl.CM(1).C2C(1).PHY_MAX_SINGLE_BIT_ERROR_RATE  <=  reg_data(1076)(31 downto  0);      
+  Ctrl.CM(1).C2C(1).PHY_MAX_MULTI_BIT_ERROR_RATE   <=  reg_data(1077)(31 downto  0);      
+  Ctrl.CM(1).C2C(2).STATUS.INITIALIZE              <=  reg_data(3072)( 5);                
+  Ctrl.CM(1).C2C(2).DEBUG.EYESCAN_RESET            <=  reg_data(3076)(22);                
+  Ctrl.CM(1).C2C(2).DEBUG.EYESCAN_TRIGGER          <=  reg_data(3076)(23);                
+  Ctrl.CM(1).C2C(2).DEBUG.RX.BUF_RESET             <=  reg_data(3078)(12);                
+  Ctrl.CM(1).C2C(2).DEBUG.RX.CDR_HOLD              <=  reg_data(3078)(13);                
+  Ctrl.CM(1).C2C(2).DEBUG.RX.DFE_AGC_HOLD          <=  reg_data(3078)(14);                
+  Ctrl.CM(1).C2C(2).DEBUG.RX.DFE_AGC_OVERRIDE      <=  reg_data(3078)(15);                
+  Ctrl.CM(1).C2C(2).DEBUG.RX.DFE_LF_HOLD           <=  reg_data(3078)(16);                
+  Ctrl.CM(1).C2C(2).DEBUG.RX.DFE_LPM_RESET         <=  reg_data(3078)(17);                
+  Ctrl.CM(1).C2C(2).DEBUG.RX.LPM_EN                <=  reg_data(3078)(18);                
+  Ctrl.CM(1).C2C(2).DEBUG.RX.LPM_HF_OVERRIDE       <=  reg_data(3078)(19);                
+  Ctrl.CM(1).C2C(2).DEBUG.RX.LPM_LFKL_OVERRIDE     <=  reg_data(3078)(20);                
+  Ctrl.CM(1).C2C(2).DEBUG.RX.MON_SEL               <=  reg_data(3078)(22 downto 21);      
+  Ctrl.CM(1).C2C(2).DEBUG.RX.PCS_RESET             <=  reg_data(3078)(23);                
+  Ctrl.CM(1).C2C(2).DEBUG.RX.PMA_RESET             <=  reg_data(3078)(24);                
+  Ctrl.CM(1).C2C(2).DEBUG.RX.PRBS_CNT_RST          <=  reg_data(3078)(25);                
+  Ctrl.CM(1).C2C(2).DEBUG.RX.PRBS_SEL              <=  reg_data(3078)(28 downto 26);      
+  Ctrl.CM(1).C2C(2).DEBUG.TX.DIFF_CTRL             <=  reg_data(3080)( 6 downto  3);      
+  Ctrl.CM(1).C2C(2).DEBUG.TX.INHIBIT               <=  reg_data(3080)( 7);                
+  Ctrl.CM(1).C2C(2).DEBUG.TX.MAIN_CURSOR           <=  reg_data(3080)(14 downto  8);      
+  Ctrl.CM(1).C2C(2).DEBUG.TX.PCS_RESET             <=  reg_data(3080)(15);                
+  Ctrl.CM(1).C2C(2).DEBUG.TX.PMA_RESET             <=  reg_data(3080)(16);                
+  Ctrl.CM(1).C2C(2).DEBUG.TX.POLARITY              <=  reg_data(3080)(17);                
+  Ctrl.CM(1).C2C(2).DEBUG.TX.POST_CURSOR           <=  reg_data(3080)(22 downto 18);      
+  Ctrl.CM(1).C2C(2).DEBUG.TX.PRBS_FORCE_ERR        <=  reg_data(3080)(23);                
+  Ctrl.CM(1).C2C(2).DEBUG.TX.PRBS_SEL              <=  reg_data(3080)(26 downto 24);      
+  Ctrl.CM(1).C2C(2).DEBUG.TX.PRE_CURSOR            <=  reg_data(3080)(31 downto 27);      
+  Ctrl.CM(1).C2C(2).PHY_READ_TIME                  <=  reg_data(3121)(23 downto  0);      
+  Ctrl.CM(1).C2C(2).ENABLE_PHY_CTRL                <=  reg_data(3121)(24);                
+  Ctrl.CM(1).C2C(2).PHY_LANE_STABLE                <=  reg_data(3122)(19 downto  0);      
+  Ctrl.CM(1).C2C(2).PHY_LANE_ERRORS_TO_RESET       <=  reg_data(3123)( 7 downto  0);      
+  Ctrl.CM(1).C2C(2).PHY_MAX_SINGLE_BIT_ERROR_RATE  <=  reg_data(3124)(31 downto  0);      
+  Ctrl.CM(1).C2C(2).PHY_MAX_MULTI_BIT_ERROR_RATE   <=  reg_data(3125)(31 downto  0);      
+  Ctrl.CM(1).CTRL.ENABLE_UC                        <=  reg_data(4096)( 0);                
+  Ctrl.CM(1).CTRL.ENABLE_PWR                       <=  reg_data(4096)( 1);                
+  Ctrl.CM(1).CTRL.OVERRIDE_PWR_GOOD                <=  reg_data(4096)( 2);                
+  Ctrl.CM(1).CTRL.ERROR_STATE_RESET                <=  reg_data(4096)( 8);                
+  Ctrl.CM(1).MONITOR.COUNT_16X_BAUD                <=  reg_data(4208)( 7 downto  0);      
+  Ctrl.CM(1).MONITOR.ENABLE                        <=  reg_data(4208)(16);                
+  Ctrl.CM(1).MONITOR.ERRORS.RESET                  <=  reg_data(4212)( 0);                
+  Ctrl.CM(1).MONITOR.SM_TIMEOUT                    <=  reg_data(4218)(31 downto  0);      
+  Ctrl.CM(2).C2C(1).STATUS.INITIALIZE              <=  reg_data(9216)( 5);                
+  Ctrl.CM(2).C2C(1).DEBUG.EYESCAN_RESET            <=  reg_data(9220)(22);                
+  Ctrl.CM(2).C2C(1).DEBUG.EYESCAN_TRIGGER          <=  reg_data(9220)(23);                
+  Ctrl.CM(2).C2C(1).DEBUG.RX.BUF_RESET             <=  reg_data(9222)(12);                
+  Ctrl.CM(2).C2C(1).DEBUG.RX.CDR_HOLD              <=  reg_data(9222)(13);                
+  Ctrl.CM(2).C2C(1).DEBUG.RX.DFE_AGC_HOLD          <=  reg_data(9222)(14);                
+  Ctrl.CM(2).C2C(1).DEBUG.RX.DFE_AGC_OVERRIDE      <=  reg_data(9222)(15);                
+  Ctrl.CM(2).C2C(1).DEBUG.RX.DFE_LF_HOLD           <=  reg_data(9222)(16);                
+  Ctrl.CM(2).C2C(1).DEBUG.RX.DFE_LPM_RESET         <=  reg_data(9222)(17);                
+  Ctrl.CM(2).C2C(1).DEBUG.RX.LPM_EN                <=  reg_data(9222)(18);                
+  Ctrl.CM(2).C2C(1).DEBUG.RX.LPM_HF_OVERRIDE       <=  reg_data(9222)(19);                
+  Ctrl.CM(2).C2C(1).DEBUG.RX.LPM_LFKL_OVERRIDE     <=  reg_data(9222)(20);                
+  Ctrl.CM(2).C2C(1).DEBUG.RX.MON_SEL               <=  reg_data(9222)(22 downto 21);      
+  Ctrl.CM(2).C2C(1).DEBUG.RX.PCS_RESET             <=  reg_data(9222)(23);                
+  Ctrl.CM(2).C2C(1).DEBUG.RX.PMA_RESET             <=  reg_data(9222)(24);                
+  Ctrl.CM(2).C2C(1).DEBUG.RX.PRBS_CNT_RST          <=  reg_data(9222)(25);                
+  Ctrl.CM(2).C2C(1).DEBUG.RX.PRBS_SEL              <=  reg_data(9222)(28 downto 26);      
+  Ctrl.CM(2).C2C(1).DEBUG.TX.DIFF_CTRL             <=  reg_data(9224)( 6 downto  3);      
+  Ctrl.CM(2).C2C(1).DEBUG.TX.INHIBIT               <=  reg_data(9224)( 7);                
+  Ctrl.CM(2).C2C(1).DEBUG.TX.MAIN_CURSOR           <=  reg_data(9224)(14 downto  8);      
+  Ctrl.CM(2).C2C(1).DEBUG.TX.PCS_RESET             <=  reg_data(9224)(15);                
+  Ctrl.CM(2).C2C(1).DEBUG.TX.PMA_RESET             <=  reg_data(9224)(16);                
+  Ctrl.CM(2).C2C(1).DEBUG.TX.POLARITY              <=  reg_data(9224)(17);                
+  Ctrl.CM(2).C2C(1).DEBUG.TX.POST_CURSOR           <=  reg_data(9224)(22 downto 18);      
+  Ctrl.CM(2).C2C(1).DEBUG.TX.PRBS_FORCE_ERR        <=  reg_data(9224)(23);                
+  Ctrl.CM(2).C2C(1).DEBUG.TX.PRBS_SEL              <=  reg_data(9224)(26 downto 24);      
+  Ctrl.CM(2).C2C(1).DEBUG.TX.PRE_CURSOR            <=  reg_data(9224)(31 downto 27);      
+  Ctrl.CM(2).C2C(1).PHY_READ_TIME                  <=  reg_data(9265)(23 downto  0);      
+  Ctrl.CM(2).C2C(1).ENABLE_PHY_CTRL                <=  reg_data(9265)(24);                
+  Ctrl.CM(2).C2C(1).PHY_LANE_STABLE                <=  reg_data(9266)(19 downto  0);      
+  Ctrl.CM(2).C2C(1).PHY_LANE_ERRORS_TO_RESET       <=  reg_data(9267)( 7 downto  0);      
+  Ctrl.CM(2).C2C(1).PHY_MAX_SINGLE_BIT_ERROR_RATE  <=  reg_data(9268)(31 downto  0);      
+  Ctrl.CM(2).C2C(1).PHY_MAX_MULTI_BIT_ERROR_RATE   <=  reg_data(9269)(31 downto  0);      
+  Ctrl.CM(2).C2C(2).STATUS.INITIALIZE              <=  reg_data(11264)( 5);               
+  Ctrl.CM(2).C2C(2).DEBUG.EYESCAN_RESET            <=  reg_data(11268)(22);               
+  Ctrl.CM(2).C2C(2).DEBUG.EYESCAN_TRIGGER          <=  reg_data(11268)(23);               
+  Ctrl.CM(2).C2C(2).DEBUG.RX.BUF_RESET             <=  reg_data(11270)(12);               
+  Ctrl.CM(2).C2C(2).DEBUG.RX.CDR_HOLD              <=  reg_data(11270)(13);               
+  Ctrl.CM(2).C2C(2).DEBUG.RX.DFE_AGC_HOLD          <=  reg_data(11270)(14);               
+  Ctrl.CM(2).C2C(2).DEBUG.RX.DFE_AGC_OVERRIDE      <=  reg_data(11270)(15);               
+  Ctrl.CM(2).C2C(2).DEBUG.RX.DFE_LF_HOLD           <=  reg_data(11270)(16);               
+  Ctrl.CM(2).C2C(2).DEBUG.RX.DFE_LPM_RESET         <=  reg_data(11270)(17);               
+  Ctrl.CM(2).C2C(2).DEBUG.RX.LPM_EN                <=  reg_data(11270)(18);               
+  Ctrl.CM(2).C2C(2).DEBUG.RX.LPM_HF_OVERRIDE       <=  reg_data(11270)(19);               
+  Ctrl.CM(2).C2C(2).DEBUG.RX.LPM_LFKL_OVERRIDE     <=  reg_data(11270)(20);               
+  Ctrl.CM(2).C2C(2).DEBUG.RX.MON_SEL               <=  reg_data(11270)(22 downto 21);     
+  Ctrl.CM(2).C2C(2).DEBUG.RX.PCS_RESET             <=  reg_data(11270)(23);               
+  Ctrl.CM(2).C2C(2).DEBUG.RX.PMA_RESET             <=  reg_data(11270)(24);               
+  Ctrl.CM(2).C2C(2).DEBUG.RX.PRBS_CNT_RST          <=  reg_data(11270)(25);               
+  Ctrl.CM(2).C2C(2).DEBUG.RX.PRBS_SEL              <=  reg_data(11270)(28 downto 26);     
+  Ctrl.CM(2).C2C(2).DEBUG.TX.DIFF_CTRL             <=  reg_data(11272)( 6 downto  3);     
+  Ctrl.CM(2).C2C(2).DEBUG.TX.INHIBIT               <=  reg_data(11272)( 7);               
+  Ctrl.CM(2).C2C(2).DEBUG.TX.MAIN_CURSOR           <=  reg_data(11272)(14 downto  8);     
+  Ctrl.CM(2).C2C(2).DEBUG.TX.PCS_RESET             <=  reg_data(11272)(15);               
+  Ctrl.CM(2).C2C(2).DEBUG.TX.PMA_RESET             <=  reg_data(11272)(16);               
+  Ctrl.CM(2).C2C(2).DEBUG.TX.POLARITY              <=  reg_data(11272)(17);               
+  Ctrl.CM(2).C2C(2).DEBUG.TX.POST_CURSOR           <=  reg_data(11272)(22 downto 18);     
+  Ctrl.CM(2).C2C(2).DEBUG.TX.PRBS_FORCE_ERR        <=  reg_data(11272)(23);               
+  Ctrl.CM(2).C2C(2).DEBUG.TX.PRBS_SEL              <=  reg_data(11272)(26 downto 24);     
+  Ctrl.CM(2).C2C(2).DEBUG.TX.PRE_CURSOR            <=  reg_data(11272)(31 downto 27);     
+  Ctrl.CM(2).C2C(2).PHY_READ_TIME                  <=  reg_data(11313)(23 downto  0);     
+  Ctrl.CM(2).C2C(2).ENABLE_PHY_CTRL                <=  reg_data(11313)(24);               
+  Ctrl.CM(2).C2C(2).PHY_LANE_STABLE                <=  reg_data(11314)(19 downto  0);     
+  Ctrl.CM(2).C2C(2).PHY_LANE_ERRORS_TO_RESET       <=  reg_data(11315)( 7 downto  0);     
+  Ctrl.CM(2).C2C(2).PHY_MAX_SINGLE_BIT_ERROR_RATE  <=  reg_data(11316)(31 downto  0);     
+  Ctrl.CM(2).C2C(2).PHY_MAX_MULTI_BIT_ERROR_RATE   <=  reg_data(11317)(31 downto  0);     
+  Ctrl.CM(2).CTRL.ENABLE_UC                        <=  reg_data(12288)( 0);               
+  Ctrl.CM(2).CTRL.ENABLE_PWR                       <=  reg_data(12288)( 1);               
+  Ctrl.CM(2).CTRL.OVERRIDE_PWR_GOOD                <=  reg_data(12288)( 2);               
+  Ctrl.CM(2).CTRL.ERROR_STATE_RESET                <=  reg_data(12288)( 8);               
+  Ctrl.CM(2).MONITOR.COUNT_16X_BAUD                <=  reg_data(12400)( 7 downto  0);     
+  Ctrl.CM(2).MONITOR.ENABLE                        <=  reg_data(12400)(16);               
+  Ctrl.CM(2).MONITOR.ERRORS.RESET                  <=  reg_data(12404)( 0);               
+  Ctrl.CM(2).MONITOR.SM_TIMEOUT                    <=  reg_data(12410)(31 downto  0);     
+  Ctrl.PB.RESET                                    <=  reg_data(18432)( 0);               
+  Ctrl.PB.IRQ_COUNT                                <=  reg_data(18433)(31 downto  0);     
+
+
+  reg_writes: process (clk_axi, reset_axi_n) is
+  begin  -- process reg_writes
+    if reset_axi_n = '0' then                 -- asynchronous reset (active low)
+      reg_data(1024)( 5)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).STATUS.INITIALIZE;
+      reg_data(1028)(22)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.EYESCAN_RESET;
+      reg_data(1028)(23)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.EYESCAN_TRIGGER;
+      reg_data(1030)(12)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.RX.BUF_RESET;
+      reg_data(1030)(13)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.RX.CDR_HOLD;
+      reg_data(1030)(14)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.RX.DFE_AGC_HOLD;
+      reg_data(1030)(15)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.RX.DFE_AGC_OVERRIDE;
+      reg_data(1030)(16)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.RX.DFE_LF_HOLD;
+      reg_data(1030)(17)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.RX.DFE_LPM_RESET;
+      reg_data(1030)(18)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.RX.LPM_EN;
+      reg_data(1030)(19)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.RX.LPM_HF_OVERRIDE;
+      reg_data(1030)(20)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.RX.LPM_LFKL_OVERRIDE;
+      reg_data(1030)(22 downto 21)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.RX.MON_SEL;
+      reg_data(1030)(23)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.RX.PCS_RESET;
+      reg_data(1030)(24)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.RX.PMA_RESET;
+      reg_data(1030)(25)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.RX.PRBS_CNT_RST;
+      reg_data(1030)(28 downto 26)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.RX.PRBS_SEL;
+      reg_data(1032)( 6 downto  3)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.TX.DIFF_CTRL;
+      reg_data(1032)( 7)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.TX.INHIBIT;
+      reg_data(1032)(14 downto  8)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.TX.MAIN_CURSOR;
+      reg_data(1032)(15)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.TX.PCS_RESET;
+      reg_data(1032)(16)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.TX.PMA_RESET;
+      reg_data(1032)(17)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.TX.POLARITY;
+      reg_data(1032)(22 downto 18)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.TX.POST_CURSOR;
+      reg_data(1032)(23)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.TX.PRBS_FORCE_ERR;
+      reg_data(1032)(26 downto 24)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.TX.PRBS_SEL;
+      reg_data(1032)(31 downto 27)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).DEBUG.TX.PRE_CURSOR;
+      reg_data(1048)( 0)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).COUNTERS.RESET_COUNTERS;
+      reg_data(1073)(23 downto  0)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).PHY_READ_TIME;
+      reg_data(1073)(24)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).ENABLE_PHY_CTRL;
+      reg_data(1074)(19 downto  0)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).PHY_LANE_STABLE;
+      reg_data(1075)( 7 downto  0)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).PHY_LANE_ERRORS_TO_RESET;
+      reg_data(1076)(31 downto  0)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).PHY_MAX_SINGLE_BIT_ERROR_RATE;
+      reg_data(1077)(31 downto  0)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(1).PHY_MAX_MULTI_BIT_ERROR_RATE;
+      reg_data(3072)( 5)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).STATUS.INITIALIZE;
+      reg_data(3076)(22)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.EYESCAN_RESET;
+      reg_data(3076)(23)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.EYESCAN_TRIGGER;
+      reg_data(3078)(12)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.RX.BUF_RESET;
+      reg_data(3078)(13)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.RX.CDR_HOLD;
+      reg_data(3078)(14)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.RX.DFE_AGC_HOLD;
+      reg_data(3078)(15)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.RX.DFE_AGC_OVERRIDE;
+      reg_data(3078)(16)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.RX.DFE_LF_HOLD;
+      reg_data(3078)(17)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.RX.DFE_LPM_RESET;
+      reg_data(3078)(18)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.RX.LPM_EN;
+      reg_data(3078)(19)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.RX.LPM_HF_OVERRIDE;
+      reg_data(3078)(20)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.RX.LPM_LFKL_OVERRIDE;
+      reg_data(3078)(22 downto 21)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.RX.MON_SEL;
+      reg_data(3078)(23)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.RX.PCS_RESET;
+      reg_data(3078)(24)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.RX.PMA_RESET;
+      reg_data(3078)(25)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.RX.PRBS_CNT_RST;
+      reg_data(3078)(28 downto 26)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.RX.PRBS_SEL;
+      reg_data(3080)( 6 downto  3)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.TX.DIFF_CTRL;
+      reg_data(3080)( 7)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.TX.INHIBIT;
+      reg_data(3080)(14 downto  8)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.TX.MAIN_CURSOR;
+      reg_data(3080)(15)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.TX.PCS_RESET;
+      reg_data(3080)(16)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.TX.PMA_RESET;
+      reg_data(3080)(17)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.TX.POLARITY;
+      reg_data(3080)(22 downto 18)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.TX.POST_CURSOR;
+      reg_data(3080)(23)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.TX.PRBS_FORCE_ERR;
+      reg_data(3080)(26 downto 24)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.TX.PRBS_SEL;
+      reg_data(3080)(31 downto 27)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).DEBUG.TX.PRE_CURSOR;
+      reg_data(3096)( 0)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).COUNTERS.RESET_COUNTERS;
+      reg_data(3121)(23 downto  0)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).PHY_READ_TIME;
+      reg_data(3121)(24)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).ENABLE_PHY_CTRL;
+      reg_data(3122)(19 downto  0)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).PHY_LANE_STABLE;
+      reg_data(3123)( 7 downto  0)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).PHY_LANE_ERRORS_TO_RESET;
+      reg_data(3124)(31 downto  0)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).PHY_MAX_SINGLE_BIT_ERROR_RATE;
+      reg_data(3125)(31 downto  0)  <= DEFAULT_CM_CTRL_t.CM(1).C2C(2).PHY_MAX_MULTI_BIT_ERROR_RATE;
+      reg_data(4096)( 0)  <= DEFAULT_CM_CTRL_t.CM(1).CTRL.ENABLE_UC;
+      reg_data(4096)( 1)  <= DEFAULT_CM_CTRL_t.CM(1).CTRL.ENABLE_PWR;
+      reg_data(4096)( 2)  <= DEFAULT_CM_CTRL_t.CM(1).CTRL.OVERRIDE_PWR_GOOD;
+      reg_data(4096)( 8)  <= DEFAULT_CM_CTRL_t.CM(1).CTRL.ERROR_STATE_RESET;
+      reg_data(4208)( 7 downto  0)  <= DEFAULT_CM_CTRL_t.CM(1).MONITOR.COUNT_16X_BAUD;
+      reg_data(4208)(16)  <= DEFAULT_CM_CTRL_t.CM(1).MONITOR.ENABLE;
+      reg_data(4212)( 0)  <= DEFAULT_CM_CTRL_t.CM(1).MONITOR.ERRORS.RESET;
+      reg_data(4218)(31 downto  0)  <= DEFAULT_CM_CTRL_t.CM(1).MONITOR.SM_TIMEOUT;
+      reg_data(9216)( 5)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).STATUS.INITIALIZE;
+      reg_data(9220)(22)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.EYESCAN_RESET;
+      reg_data(9220)(23)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.EYESCAN_TRIGGER;
+      reg_data(9222)(12)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.RX.BUF_RESET;
+      reg_data(9222)(13)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.RX.CDR_HOLD;
+      reg_data(9222)(14)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.RX.DFE_AGC_HOLD;
+      reg_data(9222)(15)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.RX.DFE_AGC_OVERRIDE;
+      reg_data(9222)(16)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.RX.DFE_LF_HOLD;
+      reg_data(9222)(17)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.RX.DFE_LPM_RESET;
+      reg_data(9222)(18)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.RX.LPM_EN;
+      reg_data(9222)(19)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.RX.LPM_HF_OVERRIDE;
+      reg_data(9222)(20)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.RX.LPM_LFKL_OVERRIDE;
+      reg_data(9222)(22 downto 21)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.RX.MON_SEL;
+      reg_data(9222)(23)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.RX.PCS_RESET;
+      reg_data(9222)(24)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.RX.PMA_RESET;
+      reg_data(9222)(25)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.RX.PRBS_CNT_RST;
+      reg_data(9222)(28 downto 26)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.RX.PRBS_SEL;
+      reg_data(9224)( 6 downto  3)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.TX.DIFF_CTRL;
+      reg_data(9224)( 7)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.TX.INHIBIT;
+      reg_data(9224)(14 downto  8)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.TX.MAIN_CURSOR;
+      reg_data(9224)(15)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.TX.PCS_RESET;
+      reg_data(9224)(16)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.TX.PMA_RESET;
+      reg_data(9224)(17)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.TX.POLARITY;
+      reg_data(9224)(22 downto 18)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.TX.POST_CURSOR;
+      reg_data(9224)(23)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.TX.PRBS_FORCE_ERR;
+      reg_data(9224)(26 downto 24)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.TX.PRBS_SEL;
+      reg_data(9224)(31 downto 27)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).DEBUG.TX.PRE_CURSOR;
+      reg_data(9240)( 0)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).COUNTERS.RESET_COUNTERS;
+      reg_data(9265)(23 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).PHY_READ_TIME;
+      reg_data(9265)(24)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).ENABLE_PHY_CTRL;
+      reg_data(9266)(19 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).PHY_LANE_STABLE;
+      reg_data(9267)( 7 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).PHY_LANE_ERRORS_TO_RESET;
+      reg_data(9268)(31 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).PHY_MAX_SINGLE_BIT_ERROR_RATE;
+      reg_data(9269)(31 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(1).PHY_MAX_MULTI_BIT_ERROR_RATE;
+      reg_data(11264)( 5)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).STATUS.INITIALIZE;
+      reg_data(11268)(22)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.EYESCAN_RESET;
+      reg_data(11268)(23)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.EYESCAN_TRIGGER;
+      reg_data(11270)(12)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.RX.BUF_RESET;
+      reg_data(11270)(13)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.RX.CDR_HOLD;
+      reg_data(11270)(14)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.RX.DFE_AGC_HOLD;
+      reg_data(11270)(15)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.RX.DFE_AGC_OVERRIDE;
+      reg_data(11270)(16)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.RX.DFE_LF_HOLD;
+      reg_data(11270)(17)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.RX.DFE_LPM_RESET;
+      reg_data(11270)(18)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.RX.LPM_EN;
+      reg_data(11270)(19)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.RX.LPM_HF_OVERRIDE;
+      reg_data(11270)(20)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.RX.LPM_LFKL_OVERRIDE;
+      reg_data(11270)(22 downto 21)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.RX.MON_SEL;
+      reg_data(11270)(23)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.RX.PCS_RESET;
+      reg_data(11270)(24)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.RX.PMA_RESET;
+      reg_data(11270)(25)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.RX.PRBS_CNT_RST;
+      reg_data(11270)(28 downto 26)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.RX.PRBS_SEL;
+      reg_data(11272)( 6 downto  3)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.TX.DIFF_CTRL;
+      reg_data(11272)( 7)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.TX.INHIBIT;
+      reg_data(11272)(14 downto  8)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.TX.MAIN_CURSOR;
+      reg_data(11272)(15)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.TX.PCS_RESET;
+      reg_data(11272)(16)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.TX.PMA_RESET;
+      reg_data(11272)(17)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.TX.POLARITY;
+      reg_data(11272)(22 downto 18)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.TX.POST_CURSOR;
+      reg_data(11272)(23)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.TX.PRBS_FORCE_ERR;
+      reg_data(11272)(26 downto 24)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.TX.PRBS_SEL;
+      reg_data(11272)(31 downto 27)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).DEBUG.TX.PRE_CURSOR;
+      reg_data(11288)( 0)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).COUNTERS.RESET_COUNTERS;
+      reg_data(11313)(23 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).PHY_READ_TIME;
+      reg_data(11313)(24)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).ENABLE_PHY_CTRL;
+      reg_data(11314)(19 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).PHY_LANE_STABLE;
+      reg_data(11315)( 7 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).PHY_LANE_ERRORS_TO_RESET;
+      reg_data(11316)(31 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).PHY_MAX_SINGLE_BIT_ERROR_RATE;
+      reg_data(11317)(31 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).C2C(2).PHY_MAX_MULTI_BIT_ERROR_RATE;
+      reg_data(12288)( 0)  <= DEFAULT_CM_CTRL_t.CM(2).CTRL.ENABLE_UC;
+      reg_data(12288)( 1)  <= DEFAULT_CM_CTRL_t.CM(2).CTRL.ENABLE_PWR;
+      reg_data(12288)( 2)  <= DEFAULT_CM_CTRL_t.CM(2).CTRL.OVERRIDE_PWR_GOOD;
+      reg_data(12288)( 8)  <= DEFAULT_CM_CTRL_t.CM(2).CTRL.ERROR_STATE_RESET;
+      reg_data(12400)( 7 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).MONITOR.COUNT_16X_BAUD;
+      reg_data(12400)(16)  <= DEFAULT_CM_CTRL_t.CM(2).MONITOR.ENABLE;
+      reg_data(12404)( 0)  <= DEFAULT_CM_CTRL_t.CM(2).MONITOR.ERRORS.RESET;
+      reg_data(12410)(31 downto  0)  <= DEFAULT_CM_CTRL_t.CM(2).MONITOR.SM_TIMEOUT;
+      reg_data(18432)( 0)  <= DEFAULT_CM_CTRL_t.PB.RESET;
+      reg_data(18433)(31 downto  0)  <= DEFAULT_CM_CTRL_t.PB.IRQ_COUNT;
+      reg_data(18448)( 0)  <= DEFAULT_CM_CTRL_t.C2C_RESET;
+
+    elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
+      Ctrl.CM(1).C2C(1).COUNTERS.RESET_COUNTERS <= '0';
+      Ctrl.CM(1).C2C(2).COUNTERS.RESET_COUNTERS <= '0';
+      Ctrl.CM(2).C2C(1).COUNTERS.RESET_COUNTERS <= '0';
+      Ctrl.CM(2).C2C(2).COUNTERS.RESET_COUNTERS <= '0';
+      Ctrl.C2C_RESET <= '0';
+      
+
+      
+      if localWrEn = '1' then
+        case to_integer(unsigned(localAddress(14 downto 0))) is
+        when 1024 => --0x400
+          reg_data(1024)( 5)                         <=  localWrData( 5);                --C2C initialize
+        when 1028 => --0x404
+          reg_data(1028)(22)                         <=  localWrData(22);                --DEBUG eyescan reset
+          reg_data(1028)(23)                         <=  localWrData(23);                --DEBUG eyescan trigger
+        when 1030 => --0x406
+          reg_data(1030)(12)                         <=  localWrData(12);                --DEBUG rx buf reset
+          reg_data(1030)(13)                         <=  localWrData(13);                --DEBUG rx CDR hold
+          reg_data(1030)(14)                         <=  localWrData(14);                --DEBUG rx DFE AGC HOLD
+          reg_data(1030)(15)                         <=  localWrData(15);                --DEBUG rx DFE AGC OVERRIDE
+          reg_data(1030)(16)                         <=  localWrData(16);                --DEBUG rx DFE LF HOLD
+          reg_data(1030)(17)                         <=  localWrData(17);                --DEBUG rx DFE LPM RESET
+          reg_data(1030)(18)                         <=  localWrData(18);                --DEBUG rx LPM ENABLE
+          reg_data(1030)(19)                         <=  localWrData(19);                --DEBUG rx LPM HF OVERRIDE enable
+          reg_data(1030)(20)                         <=  localWrData(20);                --DEBUG rx LPM LFKL override
+          reg_data(1030)(22 downto 21)               <=  localWrData(22 downto 21);      --DEBUG rx monitor select
+          reg_data(1030)(23)                         <=  localWrData(23);                --DEBUG rx pcs reset
+          reg_data(1030)(24)                         <=  localWrData(24);                --DEBUG rx pma reset
+          reg_data(1030)(25)                         <=  localWrData(25);                --DEBUG rx PRBS counter reset
+          reg_data(1030)(28 downto 26)               <=  localWrData(28 downto 26);      --DEBUG rx PRBS select
+        when 1032 => --0x408
+          reg_data(1032)( 6 downto  3)               <=  localWrData( 6 downto  3);      --DEBUG tx diff control
+          reg_data(1032)( 7)                         <=  localWrData( 7);                --DEBUG tx inhibit
+          reg_data(1032)(14 downto  8)               <=  localWrData(14 downto  8);      --DEBUG tx main cursor
+          reg_data(1032)(15)                         <=  localWrData(15);                --DEBUG tx pcs reset
+          reg_data(1032)(16)                         <=  localWrData(16);                --DEBUG tx pma reset
+          reg_data(1032)(17)                         <=  localWrData(17);                --DEBUG tx polarity
+          reg_data(1032)(22 downto 18)               <=  localWrData(22 downto 18);      --DEBUG post cursor
+          reg_data(1032)(23)                         <=  localWrData(23);                --DEBUG force PRBS error
+          reg_data(1032)(26 downto 24)               <=  localWrData(26 downto 24);      --DEBUG PRBS select
+          reg_data(1032)(31 downto 27)               <=  localWrData(31 downto 27);      --DEBUG pre cursor
+        when 1048 => --0x418
+          Ctrl.CM(1).C2C(1).COUNTERS.RESET_COUNTERS  <=  localWrData( 0);               
+        when 1073 => --0x431
+          reg_data(1073)(23 downto  0)               <=  localWrData(23 downto  0);      --Time spent waiting for phylane to stabilize
+          reg_data(1073)(24)                         <=  localWrData(24);                --phy_lane_control is enabled
+        when 1074 => --0x432
+          reg_data(1074)(19 downto  0)               <=  localWrData(19 downto  0);      --Contious phy_lane_up signals required to lock phylane control
+        when 1075 => --0x433
+          reg_data(1075)( 7 downto  0)               <=  localWrData( 7 downto  0);      --Number of failures before we reset the pma
+        when 1076 => --0x434
+          reg_data(1076)(31 downto  0)               <=  localWrData(31 downto  0);      --Max single bit error rate
+        when 1077 => --0x435
+          reg_data(1077)(31 downto  0)               <=  localWrData(31 downto  0);      --Max multi  bit error rate
+        when 3072 => --0xc00
+          reg_data(3072)( 5)                         <=  localWrData( 5);                --C2C initialize
+        when 3076 => --0xc04
+          reg_data(3076)(22)                         <=  localWrData(22);                --DEBUG eyescan reset
+          reg_data(3076)(23)                         <=  localWrData(23);                --DEBUG eyescan trigger
+        when 3078 => --0xc06
+          reg_data(3078)(12)                         <=  localWrData(12);                --DEBUG rx buf reset
+          reg_data(3078)(13)                         <=  localWrData(13);                --DEBUG rx CDR hold
+          reg_data(3078)(14)                         <=  localWrData(14);                --DEBUG rx DFE AGC HOLD
+          reg_data(3078)(15)                         <=  localWrData(15);                --DEBUG rx DFE AGC OVERRIDE
+          reg_data(3078)(16)                         <=  localWrData(16);                --DEBUG rx DFE LF HOLD
+          reg_data(3078)(17)                         <=  localWrData(17);                --DEBUG rx DFE LPM RESET
+          reg_data(3078)(18)                         <=  localWrData(18);                --DEBUG rx LPM ENABLE
+          reg_data(3078)(19)                         <=  localWrData(19);                --DEBUG rx LPM HF OVERRIDE enable
+          reg_data(3078)(20)                         <=  localWrData(20);                --DEBUG rx LPM LFKL override
+          reg_data(3078)(22 downto 21)               <=  localWrData(22 downto 21);      --DEBUG rx monitor select
+          reg_data(3078)(23)                         <=  localWrData(23);                --DEBUG rx pcs reset
+          reg_data(3078)(24)                         <=  localWrData(24);                --DEBUG rx pma reset
+          reg_data(3078)(25)                         <=  localWrData(25);                --DEBUG rx PRBS counter reset
+          reg_data(3078)(28 downto 26)               <=  localWrData(28 downto 26);      --DEBUG rx PRBS select
+        when 3080 => --0xc08
+          reg_data(3080)( 6 downto  3)               <=  localWrData( 6 downto  3);      --DEBUG tx diff control
+          reg_data(3080)( 7)                         <=  localWrData( 7);                --DEBUG tx inhibit
+          reg_data(3080)(14 downto  8)               <=  localWrData(14 downto  8);      --DEBUG tx main cursor
+          reg_data(3080)(15)                         <=  localWrData(15);                --DEBUG tx pcs reset
+          reg_data(3080)(16)                         <=  localWrData(16);                --DEBUG tx pma reset
+          reg_data(3080)(17)                         <=  localWrData(17);                --DEBUG tx polarity
+          reg_data(3080)(22 downto 18)               <=  localWrData(22 downto 18);      --DEBUG post cursor
+          reg_data(3080)(23)                         <=  localWrData(23);                --DEBUG force PRBS error
+          reg_data(3080)(26 downto 24)               <=  localWrData(26 downto 24);      --DEBUG PRBS select
+          reg_data(3080)(31 downto 27)               <=  localWrData(31 downto 27);      --DEBUG pre cursor
+        when 3096 => --0xc18
+          Ctrl.CM(1).C2C(2).COUNTERS.RESET_COUNTERS  <=  localWrData( 0);               
+        when 3121 => --0xc31
+          reg_data(3121)(23 downto  0)               <=  localWrData(23 downto  0);      --Time spent waiting for phylane to stabilize
+          reg_data(3121)(24)                         <=  localWrData(24);                --phy_lane_control is enabled
+        when 3122 => --0xc32
+          reg_data(3122)(19 downto  0)               <=  localWrData(19 downto  0);      --Contious phy_lane_up signals required to lock phylane control
+        when 3123 => --0xc33
+          reg_data(3123)( 7 downto  0)               <=  localWrData( 7 downto  0);      --Number of failures before we reset the pma
+        when 3124 => --0xc34
+          reg_data(3124)(31 downto  0)               <=  localWrData(31 downto  0);      --Max single bit error rate
+        when 3125 => --0xc35
+          reg_data(3125)(31 downto  0)               <=  localWrData(31 downto  0);      --Max multi  bit error rate
+        when 4096 => --0x1000
+          reg_data(4096)( 0)                         <=  localWrData( 0);                --Tell CM uC to power-up
+          reg_data(4096)( 1)                         <=  localWrData( 1);                --Tell CM uC to power-up the rest of the CM
+          reg_data(4096)( 2)                         <=  localWrData( 2);                --Ignore power good from CM
+          reg_data(4096)( 8)                         <=  localWrData( 8);                --CM power is good
+        when 4208 => --0x1070
+          reg_data(4208)( 7 downto  0)               <=  localWrData( 7 downto  0);      --Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
+          reg_data(4208)(16)                         <=  localWrData(16);                --Enable readout
+        when 4212 => --0x1074
+          reg_data(4212)( 0)                         <=  localWrData( 0);                --Reset monitoring error counters
+        when 4218 => --0x107a
+          reg_data(4218)(31 downto  0)               <=  localWrData(31 downto  0);      --Count to wait for in state machine before timing out (50Mhz clk)
+        when 9216 => --0x2400
+          reg_data(9216)( 5)                         <=  localWrData( 5);                --C2C initialize
+        when 9220 => --0x2404
+          reg_data(9220)(22)                         <=  localWrData(22);                --DEBUG eyescan reset
+          reg_data(9220)(23)                         <=  localWrData(23);                --DEBUG eyescan trigger
+        when 9222 => --0x2406
+          reg_data(9222)(12)                         <=  localWrData(12);                --DEBUG rx buf reset
+          reg_data(9222)(13)                         <=  localWrData(13);                --DEBUG rx CDR hold
+          reg_data(9222)(14)                         <=  localWrData(14);                --DEBUG rx DFE AGC HOLD
+          reg_data(9222)(15)                         <=  localWrData(15);                --DEBUG rx DFE AGC OVERRIDE
+          reg_data(9222)(16)                         <=  localWrData(16);                --DEBUG rx DFE LF HOLD
+          reg_data(9222)(17)                         <=  localWrData(17);                --DEBUG rx DFE LPM RESET
+          reg_data(9222)(18)                         <=  localWrData(18);                --DEBUG rx LPM ENABLE
+          reg_data(9222)(19)                         <=  localWrData(19);                --DEBUG rx LPM HF OVERRIDE enable
+          reg_data(9222)(20)                         <=  localWrData(20);                --DEBUG rx LPM LFKL override
+          reg_data(9222)(22 downto 21)               <=  localWrData(22 downto 21);      --DEBUG rx monitor select
+          reg_data(9222)(23)                         <=  localWrData(23);                --DEBUG rx pcs reset
+          reg_data(9222)(24)                         <=  localWrData(24);                --DEBUG rx pma reset
+          reg_data(9222)(25)                         <=  localWrData(25);                --DEBUG rx PRBS counter reset
+          reg_data(9222)(28 downto 26)               <=  localWrData(28 downto 26);      --DEBUG rx PRBS select
+        when 9224 => --0x2408
+          reg_data(9224)( 6 downto  3)               <=  localWrData( 6 downto  3);      --DEBUG tx diff control
+          reg_data(9224)( 7)                         <=  localWrData( 7);                --DEBUG tx inhibit
+          reg_data(9224)(14 downto  8)               <=  localWrData(14 downto  8);      --DEBUG tx main cursor
+          reg_data(9224)(15)                         <=  localWrData(15);                --DEBUG tx pcs reset
+          reg_data(9224)(16)                         <=  localWrData(16);                --DEBUG tx pma reset
+          reg_data(9224)(17)                         <=  localWrData(17);                --DEBUG tx polarity
+          reg_data(9224)(22 downto 18)               <=  localWrData(22 downto 18);      --DEBUG post cursor
+          reg_data(9224)(23)                         <=  localWrData(23);                --DEBUG force PRBS error
+          reg_data(9224)(26 downto 24)               <=  localWrData(26 downto 24);      --DEBUG PRBS select
+          reg_data(9224)(31 downto 27)               <=  localWrData(31 downto 27);      --DEBUG pre cursor
+        when 9240 => --0x2418
+          Ctrl.CM(2).C2C(1).COUNTERS.RESET_COUNTERS  <=  localWrData( 0);               
+        when 9265 => --0x2431
+          reg_data(9265)(23 downto  0)               <=  localWrData(23 downto  0);      --Time spent waiting for phylane to stabilize
+          reg_data(9265)(24)                         <=  localWrData(24);                --phy_lane_control is enabled
+        when 9266 => --0x2432
+          reg_data(9266)(19 downto  0)               <=  localWrData(19 downto  0);      --Contious phy_lane_up signals required to lock phylane control
+        when 9267 => --0x2433
+          reg_data(9267)( 7 downto  0)               <=  localWrData( 7 downto  0);      --Number of failures before we reset the pma
+        when 9268 => --0x2434
+          reg_data(9268)(31 downto  0)               <=  localWrData(31 downto  0);      --Max single bit error rate
+        when 9269 => --0x2435
+          reg_data(9269)(31 downto  0)               <=  localWrData(31 downto  0);      --Max multi  bit error rate
+        when 11264 => --0x2c00
+          reg_data(11264)( 5)                        <=  localWrData( 5);                --C2C initialize
+        when 11268 => --0x2c04
+          reg_data(11268)(22)                        <=  localWrData(22);                --DEBUG eyescan reset
+          reg_data(11268)(23)                        <=  localWrData(23);                --DEBUG eyescan trigger
+        when 11270 => --0x2c06
+          reg_data(11270)(12)                        <=  localWrData(12);                --DEBUG rx buf reset
+          reg_data(11270)(13)                        <=  localWrData(13);                --DEBUG rx CDR hold
+          reg_data(11270)(14)                        <=  localWrData(14);                --DEBUG rx DFE AGC HOLD
+          reg_data(11270)(15)                        <=  localWrData(15);                --DEBUG rx DFE AGC OVERRIDE
+          reg_data(11270)(16)                        <=  localWrData(16);                --DEBUG rx DFE LF HOLD
+          reg_data(11270)(17)                        <=  localWrData(17);                --DEBUG rx DFE LPM RESET
+          reg_data(11270)(18)                        <=  localWrData(18);                --DEBUG rx LPM ENABLE
+          reg_data(11270)(19)                        <=  localWrData(19);                --DEBUG rx LPM HF OVERRIDE enable
+          reg_data(11270)(20)                        <=  localWrData(20);                --DEBUG rx LPM LFKL override
+          reg_data(11270)(22 downto 21)              <=  localWrData(22 downto 21);      --DEBUG rx monitor select
+          reg_data(11270)(23)                        <=  localWrData(23);                --DEBUG rx pcs reset
+          reg_data(11270)(24)                        <=  localWrData(24);                --DEBUG rx pma reset
+          reg_data(11270)(25)                        <=  localWrData(25);                --DEBUG rx PRBS counter reset
+          reg_data(11270)(28 downto 26)              <=  localWrData(28 downto 26);      --DEBUG rx PRBS select
+        when 11272 => --0x2c08
+          reg_data(11272)( 6 downto  3)              <=  localWrData( 6 downto  3);      --DEBUG tx diff control
+          reg_data(11272)( 7)                        <=  localWrData( 7);                --DEBUG tx inhibit
+          reg_data(11272)(14 downto  8)              <=  localWrData(14 downto  8);      --DEBUG tx main cursor
+          reg_data(11272)(15)                        <=  localWrData(15);                --DEBUG tx pcs reset
+          reg_data(11272)(16)                        <=  localWrData(16);                --DEBUG tx pma reset
+          reg_data(11272)(17)                        <=  localWrData(17);                --DEBUG tx polarity
+          reg_data(11272)(22 downto 18)              <=  localWrData(22 downto 18);      --DEBUG post cursor
+          reg_data(11272)(23)                        <=  localWrData(23);                --DEBUG force PRBS error
+          reg_data(11272)(26 downto 24)              <=  localWrData(26 downto 24);      --DEBUG PRBS select
+          reg_data(11272)(31 downto 27)              <=  localWrData(31 downto 27);      --DEBUG pre cursor
+        when 11288 => --0x2c18
+          Ctrl.CM(2).C2C(2).COUNTERS.RESET_COUNTERS  <=  localWrData( 0);               
+        when 11313 => --0x2c31
+          reg_data(11313)(23 downto  0)              <=  localWrData(23 downto  0);      --Time spent waiting for phylane to stabilize
+          reg_data(11313)(24)                        <=  localWrData(24);                --phy_lane_control is enabled
+        when 11314 => --0x2c32
+          reg_data(11314)(19 downto  0)              <=  localWrData(19 downto  0);      --Contious phy_lane_up signals required to lock phylane control
+        when 11315 => --0x2c33
+          reg_data(11315)( 7 downto  0)              <=  localWrData( 7 downto  0);      --Number of failures before we reset the pma
+        when 11316 => --0x2c34
+          reg_data(11316)(31 downto  0)              <=  localWrData(31 downto  0);      --Max single bit error rate
+        when 11317 => --0x2c35
+          reg_data(11317)(31 downto  0)              <=  localWrData(31 downto  0);      --Max multi  bit error rate
+        when 12288 => --0x3000
+          reg_data(12288)( 0)                        <=  localWrData( 0);                --Tell CM uC to power-up
+          reg_data(12288)( 1)                        <=  localWrData( 1);                --Tell CM uC to power-up the rest of the CM
+          reg_data(12288)( 2)                        <=  localWrData( 2);                --Ignore power good from CM
+          reg_data(12288)( 8)                        <=  localWrData( 8);                --CM power is good
+        when 12400 => --0x3070
+          reg_data(12400)( 7 downto  0)              <=  localWrData( 7 downto  0);      --Baud 16x counter.  Set by 50Mhz/(baudrate(hz) * 16). Nominally 27
+          reg_data(12400)(16)                        <=  localWrData(16);                --Enable readout
+        when 12404 => --0x3074
+          reg_data(12404)( 0)                        <=  localWrData( 0);                --Reset monitoring error counters
+        when 12410 => --0x307a
+          reg_data(12410)(31 downto  0)              <=  localWrData(31 downto  0);      --Count to wait for in state machine before timing out (50Mhz clk)
+        when 18432 => --0x4800
+          reg_data(18432)( 0)                        <=  localWrData( 0);                --
+        when 18433 => --0x4801
+          reg_data(18433)(31 downto  0)              <=  localWrData(31 downto  0);      --
+        when 18448 => --0x4810
+          Ctrl.C2C_RESET                             <=  localWrData( 0);               
+
+          when others => null;
+        end case;
+      end if;
+    end if;
+  end process reg_writes;
+
+
+
+  
+  -------------------------------------------------------------------------------
+  -- BRAM decoding
+  -------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------
+
+  BRAM_reads: for iBRAM in 0 to BRAM_COUNT-1 generate
+    BRAM_read: process (clk_axi,reset_axi_n) is
+    begin  -- process BRAM_reads
+      if reset_axi_n = '0' then
+--        latchBRAM(iBRAM) <= '0';
+        BRAM_MOSI(iBRAM).enable  <= '0';
+      elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
+        BRAM_MOSI(iBRAM).address <= localAddress;
+--        latchBRAM(iBRAM) <= '0';
+        BRAM_MOSI(iBRAM).enable  <= '0';
+        if localAddress(14 downto BRAM_range(iBRAM)) = BRAM_addr(iBRAM)(14 downto BRAM_range(iBRAM)) then
+--          latchBRAM(iBRAM) <= localRdReq;
+--          BRAM_MOSI(iBRAM).enable  <= '1';
+          BRAM_MOSI(iBRAM).enable  <= localRdReq;
+        end if;
+      end if;
+    end process BRAM_read;
+  end generate BRAM_reads;
+
+
+
+  BRAM_asyncs: for iBRAM in 0 to BRAM_COUNT-1 generate
+    BRAM_MOSI(iBRAM).clk     <= clk_axi;
+    BRAM_MOSI(iBRAM).wr_data <= localWrData;
+  end generate BRAM_asyncs;
+  
+  Ctrl.CM(1).C2C(1).DRP.clk       <=  BRAM_MOSI(0).clk;
+  Ctrl.CM(1).C2C(1).DRP.enable    <=  BRAM_MOSI(0).enable;
+  Ctrl.CM(1).C2C(1).DRP.wr_enable <=  BRAM_MOSI(0).wr_enable;
+  Ctrl.CM(1).C2C(1).DRP.address   <=  BRAM_MOSI(0).address(9-1 downto 0);
+  Ctrl.CM(1).C2C(1).DRP.wr_data   <=  BRAM_MOSI(0).wr_data(16-1 downto 0);
+
+  Ctrl.CM(1).C2C(2).DRP.clk       <=  BRAM_MOSI(1).clk;
+  Ctrl.CM(1).C2C(2).DRP.enable    <=  BRAM_MOSI(1).enable;
+  Ctrl.CM(1).C2C(2).DRP.wr_enable <=  BRAM_MOSI(1).wr_enable;
+  Ctrl.CM(1).C2C(2).DRP.address   <=  BRAM_MOSI(1).address(9-1 downto 0);
+  Ctrl.CM(1).C2C(2).DRP.wr_data   <=  BRAM_MOSI(1).wr_data(16-1 downto 0);
+
+  Ctrl.CM(2).C2C(1).DRP.clk       <=  BRAM_MOSI(2).clk;
+  Ctrl.CM(2).C2C(1).DRP.enable    <=  BRAM_MOSI(2).enable;
+  Ctrl.CM(2).C2C(1).DRP.wr_enable <=  BRAM_MOSI(2).wr_enable;
+  Ctrl.CM(2).C2C(1).DRP.address   <=  BRAM_MOSI(2).address(9-1 downto 0);
+  Ctrl.CM(2).C2C(1).DRP.wr_data   <=  BRAM_MOSI(2).wr_data(16-1 downto 0);
+
+  Ctrl.CM(2).C2C(2).DRP.clk       <=  BRAM_MOSI(3).clk;
+  Ctrl.CM(2).C2C(2).DRP.enable    <=  BRAM_MOSI(3).enable;
+  Ctrl.CM(2).C2C(2).DRP.wr_enable <=  BRAM_MOSI(3).wr_enable;
+  Ctrl.CM(2).C2C(2).DRP.address   <=  BRAM_MOSI(3).address(9-1 downto 0);
+  Ctrl.CM(2).C2C(2).DRP.wr_data   <=  BRAM_MOSI(3).wr_data(16-1 downto 0);
+
+  Ctrl.PB.MEM.clk       <=  BRAM_MOSI(4).clk;
+  Ctrl.PB.MEM.enable    <=  BRAM_MOSI(4).enable;
+  Ctrl.PB.MEM.wr_enable <=  BRAM_MOSI(4).wr_enable;
+  Ctrl.PB.MEM.address   <=  BRAM_MOSI(4).address(11-1 downto 0);
+  Ctrl.PB.MEM.wr_data   <=  BRAM_MOSI(4).wr_data(18-1 downto 0);
+
+
+  BRAM_MISO(0).rd_data(16-1 downto 0) <= Mon.CM(1).C2C(1).DRP.rd_data;
+  BRAM_MISO(0).rd_data(31 downto 16) <= (others => '0');
+  BRAM_MISO(0).rd_data_valid <= Mon.CM(1).C2C(1).DRP.rd_data_valid;
+
+  BRAM_MISO(1).rd_data(16-1 downto 0) <= Mon.CM(1).C2C(2).DRP.rd_data;
+  BRAM_MISO(1).rd_data(31 downto 16) <= (others => '0');
+  BRAM_MISO(1).rd_data_valid <= Mon.CM(1).C2C(2).DRP.rd_data_valid;
+
+  BRAM_MISO(2).rd_data(16-1 downto 0) <= Mon.CM(2).C2C(1).DRP.rd_data;
+  BRAM_MISO(2).rd_data(31 downto 16) <= (others => '0');
+  BRAM_MISO(2).rd_data_valid <= Mon.CM(2).C2C(1).DRP.rd_data_valid;
+
+  BRAM_MISO(3).rd_data(16-1 downto 0) <= Mon.CM(2).C2C(2).DRP.rd_data;
+  BRAM_MISO(3).rd_data(31 downto 16) <= (others => '0');
+  BRAM_MISO(3).rd_data_valid <= Mon.CM(2).C2C(2).DRP.rd_data_valid;
+
+  BRAM_MISO(4).rd_data(18-1 downto 0) <= Mon.PB.MEM.rd_data;
+  BRAM_MISO(4).rd_data(31 downto 18) <= (others => '0');
+  BRAM_MISO(4).rd_data_valid <= Mon.PB.MEM.rd_data_valid;
+
+    
+
+  BRAM_writes: for iBRAM in 0 to BRAM_COUNT-1 generate
+    BRAM_write: process (clk_axi,reset_axi_n) is    
+    begin  -- process BRAM_reads
+      if reset_axi_n = '0' then
+        BRAM_MOSI(iBRAM).wr_enable   <= '0';
+      elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
+        BRAM_MOSI(iBRAM).wr_enable   <= '0';
+        if localAddress(14 downto BRAM_range(iBRAM)) = BRAM_addr(iBRAM)(14 downto BRAM_range(iBRAM)) then
+          BRAM_MOSI(iBRAM).wr_enable   <= localWrEn;
+        end if;
+      end if;
+    end process BRAM_write;
+  end generate BRAM_writes;
+
+
+  
+end architecture behavioral;
