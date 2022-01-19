@@ -1,4 +1,4 @@
-include mk/helpers.mk
+include build-scripts/mk/helpers.mk
 
 #################################################################################
 # VIVADO stuff
@@ -14,10 +14,11 @@ BUILD_VIVADO_SHELL=${BUILD_VIVADO_BASE}"/"$(BUILD_VIVADO_VERSION)"/settings64.sh
 #################################################################################
 # TCL scripts
 #################################################################################
-SETUP_TCL=${MAKE_PATH}/scripts/Setup.tcl
-BUILD_TCL=${MAKE_PATH}/scripts/Build.tcl
-SETUP_BUILD_TCL=${MAKE_PATH}/scripts/SetupAndBuild.tcl
-HW_TCL=${MAKE_PATH}/scripts/Run_hw.tcl
+BUILD_SCRIPTS_PATH=${MAKE_PATH}/build-scripts/
+SETUP_TCL=${BUILD_SCRIPTS_PATH}/Setup.tcl
+BUILD_TCL=${BUILD_SCRIPTS_PATH}/Build.tcl
+SETUP_BUILD_TCL=${BUILD_SCRIPTS_PATH}/SetupAndBuild.tcl
+HW_TCL=${BUILD_SCRIPTS_PATH}/Run_hw.tcl
 
 
 
@@ -57,23 +58,23 @@ ADDRESS_TABLE_CREATION_PATH=${MAKE_PATH}/os/
 SLAVE_DTSI_PATH=${MAKE_PATH}/kernel/
 MAP_TEMPLATE_FILE=${MAKE_PATH}/regmap_helper/templates/axi_generic/template_map.vhd
 
-ifneq ("$(wildcard ${MAKE_PATH}/mk/preBuild.mk)","")
-  include ${MAKE_PATH}/mk/preBuild.mk
+ifneq ("$(wildcard ${BUILD_SCRIPTS_PATH}/mk/preBuild.mk)","")
+  include ${BUILD_SCRIPTS_PATH}/mk/preBuild.mk
 endif
 
 #################################################################################
 # pull_cm
 # fetch the CM files for building OS/Kernel
 #################################################################################
-ifneq ("$(wildcard ${MAKE_PATH}/mk/pull_CM.mk)","")
-  include ${MAKE_PATH}/mk/pull_CM.mk
+ifneq ("$(wildcard ${BUILD_SCRIPTS_PATH}/mk/pull_CM.mk)","")
+  include ${BUILD_SCRIPTS_PATH}/mk/pull_CM.mk
 endif
 
 #################################################################################
 # address tables
 #################################################################################
-ifneq ("$(wildcard ${MAKE_PATH}/mk/addrTable.mk)","")
-  include ${MAKE_PATH}/mk/addrTable.mk
+ifneq ("$(wildcard ${BUILD_SCRIPTS_PATH}/mk/addrTable.mk)","")
+  include ${BUILD_SCRIPTS_PATH}/mk/addrTable.mk
 endif
 
 
@@ -156,7 +157,7 @@ $(BIT_BASE)%.bit	: $(SLAVE_DTSI_PATH)/slaves_%.yaml $(ADDRESS_TABLE_CREATION_PAT
 	mkdir -p ${MAKE_PATH}/proj &&\
 	mkdir -p ${MAKE_PATH}/bit &&\
 	cd proj &&\
-	vivado $(VIVADO_FLAGS) -source $(SETUP_BUILD_TCL) -tclargs ${MAKE_PATH} $(subst .bit,,$(subst ${BIT_BASE},,$@)) $(OUTPUT_MARKUP)
+	vivado $(VIVADO_FLAGS) -source $(SETUP_BUILD_TCL) -tclargs ${MAKE_PATH} ${BUILD_SCRIPTS_PATH} $(subst .bit,,$(subst ${BIT_BASE},,$@)) $(OUTPUT_MARKUP)
 	$(MAKE) NOTIFY_DAN_GOOD
 
 full_%: BUILD_NAME=%
@@ -168,13 +169,6 @@ full_%: clean clean_bd clean_kernel clean_bit clean_remote clean_CM clean_prebui
 	$(MAKE) ${ADDRESS_TABLE}
 	cd kernel && $(MAKE) {BUILD_NAME} && cd ${MAKE_PATH}
 	cd os     && $(MAKE) {BUILD_NAME}.tar.gz && cd ${MAKE_PATH}
-#################################################################################         
-# Sim     
-#################################################################################         
-ifneq ("$(wildcard ${MAKE_PATH}/sim/sim.mk)","") 
-include ${MAKE_PATH}/sim/sim.mk
-endif
-
 
 init:
 	git submodule update --init --recursive 

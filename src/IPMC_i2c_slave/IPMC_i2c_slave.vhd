@@ -12,7 +12,9 @@ Library UNISIM;
 use UNISIM.vcomponents.all;
 
 entity IPMC_i2c_slave is
-  
+  generic (
+    CLK_FREQ            : integer
+  );
   port (
     clk_axi         : in  std_logic;
     reset_axi_n     : in  std_logic;
@@ -181,9 +183,9 @@ begin  -- architecture behavioral
   counter_1: entity work.counter
     generic map (
       roll_over   => '0',
-      end_value   => x"1DCD6500",
+      end_value   => std_logic_vector(to_unsigned(10*CLK_FREQ,32)),
       start_value => x"00000000",
-      A_RST_CNT   => x"1DCD6500",
+      A_RST_CNT   => std_logic_vector(to_unsigned(10*CLK_FREQ,32)),
       DATA_WIDTH  => 32)
     port map (
       clk         => clk_axi,

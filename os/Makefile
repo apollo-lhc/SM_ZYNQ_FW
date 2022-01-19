@@ -14,6 +14,7 @@ SECURE_PATH=${PWD}/secure
 CONFIG_BASE_DIR=${PWD}/config
 rev1_% : CONFIG_DIR=${CONFIG_BASE_DIR}/rev1
 rev2_% : CONFIG_DIR=${CONFIG_BASE_DIR}/rev2
+rev2a_% : CONFIG_DIR=${CONFIG_BASE_DIR}/rev2a
 
 INSTALL_BASE_PATH=${PWD}/image/
 #INSTALL_PATH=${INSTALL_BASE_PATH}
@@ -22,6 +23,7 @@ rev1_xc7z045.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev1_xc7z035/
 rev2_xc7z035.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev2_xc7z035/
 rev2_xc7z045.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev2_xc7z045/
 rev2_xczu7ev.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev2_xczu7ev/
+rev2a_xczu7ev.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev2a_xczu7ev/
 
 SCRIPTS_PATH=${PWD}/scripts
 

@@ -1,5 +1,5 @@
 #add path so build can be more generic
-include ../mk/helpers.mk
+include ../build-scripts/mk/helpers.mk
 
 #################################################################################
 # VIVADO stuff

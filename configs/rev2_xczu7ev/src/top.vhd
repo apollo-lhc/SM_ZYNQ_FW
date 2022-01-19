@@ -892,6 +892,8 @@ begin  -- architecture structure
       writeMISO   => AXI_BUS_WMISO(3));
   
   IPMC_i2c_slave_1: entity work.IPMC_i2c_slave
+    generic map(
+      CLK_FREQ => AXI_MASTER_CLK_FREQ)
     port map (
       clk_axi      => axi_clk,
       reset_axi_n  => pl_reset_n,

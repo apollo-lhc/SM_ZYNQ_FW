@@ -939,6 +939,8 @@ begin  -- architecture structure
       writeMISO   => AXI_BUS_WMISO(3));
   
   IPMC_i2c_slave_1: entity work.IPMC_i2c_slave
+    generic map(
+      CLK_FREQ => AXI_MASTER_CLK_FREQ)    
     port map (
       clk_axi      => axi_clk,
       reset_axi_n  => pl_reset_n,
@@ -962,21 +964,22 @@ begin  -- architecture structure
   -------------------------------------------------------------------------------
   -- Command modules and C2C links
   -------------------------------------------------------------------------------
-  AXI_C2C_powerdown(1) <= not CM_enable_IOs(1);
-  AXI_C2C_powerdown(2) <= not CM_enable_IOs(1);
+  AXI_C2C_powerdown <= (others => '0');
+--  AXI_C2C_powerdown(1) <= not CM_enable_IOs(1);
+--  AXI_C2C_powerdown(2) <= not CM_enable_IOs(1);
 
   CM_COUNT_IS_1_ASSIGNMENTS: if CM_COUNT = 1 generate
-    AXI_C2C_powerdown(3) <= not CM_enable_IOs(1);
-    AXI_C2C_powerdown(4) <= not CM_enable_IOs(1);
+--    AXI_C2C_powerdown(3) <= not CM_enable_IOs(1);
+--    AXI_C2C_powerdown(4) <= not CM_enable_IOs(1);
     CM_C2C_Mon.Link(3).status.phy_mmcm_lol  <= '0';
-    CM_C2C_Mon.Link(3).debug.cpll_lock <= '0';
+    CM_C2C_Mon.Link(3).debug.cpll_lock      <= '0';
     CM_C2C_Mon.Link(4).status.phy_mmcm_lol  <= '0';
-    CM_C2C_Mon.Link(4).debug.cpll_lock <= '0';
+    CM_C2C_Mon.Link(4).debug.cpll_lock      <= '0';
   end generate CM_COUNT_IS_1_ASSIGNMENTS;
   
   CM_COUNT_IS_2_ASSIGNMENTS: if CM_COUNT = 2 generate
-    AXI_C2C_powerdown(3) <= not CM_enable_IOs(2);
-    AXI_C2C_powerdown(4) <= not CM_enable_IOs(2);
+--    AXI_C2C_powerdown(3) <= not CM_enable_IOs(2);
+--    AXI_C2C_powerdown(4) <= not CM_enable_IOs(2);
   end generate CM_COUNT_IS_2_ASSIGNMENTS;
 
   CM_interface_1: entity work.CM_intf
@@ -1091,7 +1094,7 @@ begin  -- architecture structure
   onboardCLK_1: entity work.onboardCLK
     port map (
       clk_200Mhz => clk_200Mhz,
-      clk_71_427856Mhz  => AXI_C2C_aurora_init_clk,
+      clk_50Mhz  => AXI_C2C_aurora_init_clk,
       clk_125Mhz => clk_125Mhz,
       reset      =>  SI_init_reset,--'0',
       locked     => clk_200Mhz_locked,

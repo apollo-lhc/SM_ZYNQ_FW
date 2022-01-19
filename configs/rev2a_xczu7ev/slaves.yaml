@@ -67,23 +67,23 @@ AXI_SLAVES:
               addr_lite:
                 offset: 0xB3000000
                 range: "16M"
-              SUB_SLAVES:    
-                C2C2_AXI_FW:
-                  TCL_CALL:
-                    command: "AXI_IP_AXI_FW"
-                    axi_fw_bus: "/C2C2/s_axi"
-                    axi_control: "${::AXI_C2C_CTRL}"
-                  XML:
-                    - "address_table/modules/C2C2_AXI_FW.xml"
-                  UHAL_BASE: 0x13000000
-                C2C2_AXILITE_FW:
-                  TCL_CALL:
-                    command: "AXI_IP_AXI_FW"
-                    axi_fw_bus: "/C2C2B/s_axi_lite"
-                    axi_control: "${::AXI_C2C_CTRL}"
-                  XML:
-                    - "address_table/modules/C2C2_AXILITE_FW.xml"
-                  UHAL_BASE: 0x14000000
+            SUB_SLAVES:    
+              C2C2_AXI_FW:
+                TCL_CALL:
+                  command: "AXI_IP_AXI_FW"
+                  axi_fw_bus: "/C2C2/s_axi"
+                  axi_control: "${::AXI_C2C_CTRL}"
+                XML:
+                  - "address_table/modules/C2C2_AXI_FW.xml"
+                UHAL_BASE: 0x13000000
+              C2C2_AXILITE_FW:
+                TCL_CALL:
+                  command: "AXI_IP_AXI_FW"
+                  axi_fw_bus: "/C2C2B/s_axi_lite"
+                  axi_control: "${::AXI_C2C_CTRL}"
+                XML:
+                  - "address_table/modules/C2C2_AXILITE_FW.xml"
+                UHAL_BASE: 0x14000000
       C2C1_AXI_FW:
         TCL_CALL:
           command: "AXI_IP_AXI_FW"
@@ -313,5 +313,5 @@ CORES:
       in_clk_freq_MHZ: 100
       out_clks:
         1: 200
-        2: 71.427856
+        2: 50
         3: 125
