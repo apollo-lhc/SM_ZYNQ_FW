@@ -1,4 +1,4 @@
--- (c) Copyright 1995-2021 Xilinx, Inc. All rights reserved.
+-- (c) Copyright 1995-2022 Xilinx, Inc. All rights reserved.
 -- 
 -- This file contains confidential and proprietary information
 -- of Xilinx, Inc. and is protected under U.S. and
@@ -77,23 +77,55 @@ COMPONENT LOCAL_TCDS2
     gtwiz_reset_qpll0reset_out : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
     gtwiz_userdata_tx_in : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
     gtwiz_userdata_rx_out : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+    drpaddr_in : IN STD_LOGIC_VECTOR(9 DOWNTO 0);
+    drpclk_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+    drpdi_in : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
+    drpen_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+    drpwe_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+    eyescanreset_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+    eyescantrigger_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
     gthrxn_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
     gthrxp_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+    pcsrsvdin_in : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
     qpll0clk_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
     qpll0refclk_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
     qpll1clk_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
     qpll1refclk_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
     rx8b10ben_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+    rxbufreset_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+    rxcdrhold_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
     rxcommadeten_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+    rxdfelpmreset_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+    rxlpmen_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
     rxmcommaalignen_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
     rxpcommaalignen_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+    rxpcsreset_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+    rxpmareset_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+    rxprbscntreset_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+    rxprbssel_in : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
+    rxrate_in : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
     tx8b10ben_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
     txctrl0_in : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
     txctrl1_in : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
     txctrl2_in : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
+    txdiffctrl_in : IN STD_LOGIC_VECTOR(4 DOWNTO 0);
+    txinhibit_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+    txpcsreset_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+    txpmareset_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+    txpolarity_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+    txpostcursor_in : IN STD_LOGIC_VECTOR(4 DOWNTO 0);
+    txprbsforceerr_in : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+    txprbssel_in : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
+    txprecursor_in : IN STD_LOGIC_VECTOR(4 DOWNTO 0);
+    cplllock_out : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
+    dmonitorout_out : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
+    drpdo_out : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
+    drprdy_out : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
+    eyescandataerror_out : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
     gthtxn_out : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
     gthtxp_out : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
     gtpowergood_out : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
+    rxbufstatus_out : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
     rxbyteisaligned_out : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
     rxbyterealign_out : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
     rxcommadet_out : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
@@ -102,6 +134,9 @@ COMPONENT LOCAL_TCDS2
     rxctrl2_out : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
     rxctrl3_out : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
     rxpmaresetdone_out : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
+    rxprbserr_out : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
+    rxsyncdone_out : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
+    txbufstatus_out : OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
     txpmaresetdone_out : OUT STD_LOGIC_VECTOR(0 DOWNTO 0)
   );
 END COMPONENT;
@@ -136,23 +171,55 @@ your_instance_name : LOCAL_TCDS2
     gtwiz_reset_qpll0reset_out => gtwiz_reset_qpll0reset_out,
     gtwiz_userdata_tx_in => gtwiz_userdata_tx_in,
     gtwiz_userdata_rx_out => gtwiz_userdata_rx_out,
+    drpaddr_in => drpaddr_in,
+    drpclk_in => drpclk_in,
+    drpdi_in => drpdi_in,
+    drpen_in => drpen_in,
+    drpwe_in => drpwe_in,
+    eyescanreset_in => eyescanreset_in,
+    eyescantrigger_in => eyescantrigger_in,
     gthrxn_in => gthrxn_in,
     gthrxp_in => gthrxp_in,
+    pcsrsvdin_in => pcsrsvdin_in,
     qpll0clk_in => qpll0clk_in,
     qpll0refclk_in => qpll0refclk_in,
     qpll1clk_in => qpll1clk_in,
     qpll1refclk_in => qpll1refclk_in,
     rx8b10ben_in => rx8b10ben_in,
+    rxbufreset_in => rxbufreset_in,
+    rxcdrhold_in => rxcdrhold_in,
     rxcommadeten_in => rxcommadeten_in,
+    rxdfelpmreset_in => rxdfelpmreset_in,
+    rxlpmen_in => rxlpmen_in,
     rxmcommaalignen_in => rxmcommaalignen_in,
     rxpcommaalignen_in => rxpcommaalignen_in,
+    rxpcsreset_in => rxpcsreset_in,
+    rxpmareset_in => rxpmareset_in,
+    rxprbscntreset_in => rxprbscntreset_in,
+    rxprbssel_in => rxprbssel_in,
+    rxrate_in => rxrate_in,
     tx8b10ben_in => tx8b10ben_in,
     txctrl0_in => txctrl0_in,
     txctrl1_in => txctrl1_in,
     txctrl2_in => txctrl2_in,
+    txdiffctrl_in => txdiffctrl_in,
+    txinhibit_in => txinhibit_in,
+    txpcsreset_in => txpcsreset_in,
+    txpmareset_in => txpmareset_in,
+    txpolarity_in => txpolarity_in,
+    txpostcursor_in => txpostcursor_in,
+    txprbsforceerr_in => txprbsforceerr_in,
+    txprbssel_in => txprbssel_in,
+    txprecursor_in => txprecursor_in,
+    cplllock_out => cplllock_out,
+    dmonitorout_out => dmonitorout_out,
+    drpdo_out => drpdo_out,
+    drprdy_out => drprdy_out,
+    eyescandataerror_out => eyescandataerror_out,
     gthtxn_out => gthtxn_out,
     gthtxp_out => gthtxp_out,
     gtpowergood_out => gtpowergood_out,
+    rxbufstatus_out => rxbufstatus_out,
     rxbyteisaligned_out => rxbyteisaligned_out,
     rxbyterealign_out => rxbyterealign_out,
     rxcommadet_out => rxcommadet_out,
@@ -161,6 +228,9 @@ your_instance_name : LOCAL_TCDS2
     rxctrl2_out => rxctrl2_out,
     rxctrl3_out => rxctrl3_out,
     rxpmaresetdone_out => rxpmaresetdone_out,
+    rxprbserr_out => rxprbserr_out,
+    rxsyncdone_out => rxsyncdone_out,
+    txbufstatus_out => txbufstatus_out,
     txpmaresetdone_out => txpmaresetdone_out
   );
 -- INST_TAG_END ------ End INSTANTIATION Template ---------

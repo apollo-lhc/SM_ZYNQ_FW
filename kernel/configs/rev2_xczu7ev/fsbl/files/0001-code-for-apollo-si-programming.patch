@@ -1,29 +1,29 @@
-From 3a6e647a24e7c92a1cc585d15450f399ca7572e2 Mon Sep 17 00:00:00 2001
+From fa56b69267a54183eea9c1cd88e943eed67877b1 Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
-Date: Tue, 1 Dec 2020 12:00:52 -0500
-Subject: [PATCH 1/7] Addes SI programming
+Date: Fri, 14 May 2021 15:13:36 -0400
+Subject: [PATCH 1/9] code for apollo si programming
 
 ---
- lib/sw_apps/zynqmp_fsbl/src/xfsbl_hooks.c     |   4 +
- lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c | 172 ++++++++++++++++++++++++++
- 2 files changed, 176 insertions(+)
+ lib/sw_apps/zynqmp_fsbl/src/xfsbl_hooks.c     |   2 +
+ lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c | 169 ++++++++++++++++++++++++++
+ lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.h |  24 ++++
+ 3 files changed, 195 insertions(+)
  create mode 100644 lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c
+ create mode 100644 lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.h
 
 diff --git a/lib/sw_apps/zynqmp_fsbl/src/xfsbl_hooks.c b/lib/sw_apps/zynqmp_fsbl/src/xfsbl_hooks.c
-index b3cb159..510b838 100644
+index 80a1314..fcde6a4 100644
 --- a/lib/sw_apps/zynqmp_fsbl/src/xfsbl_hooks.c
 +++ b/lib/sw_apps/zynqmp_fsbl/src/xfsbl_hooks.c
-@@ -86,6 +86,9 @@ u32 XFsbl_HookAfterBSDownload(void )
- }
- #endif
+@@ -29,6 +29,7 @@
+ #include "xfsbl_hw.h"
+ #include "xfsbl_hooks.h"
+ #include "psu_init.h"
++#include "xfsbl_programSI.h"
+ /************************** Constant Definitions *****************************/
  
-+//hacky I know, but I'm just going to include it directly here
-+//update address in xfsbl_programSI.c
-+#include "xfsbl_programSI.c"
- u32 XFsbl_HookBeforeHandoff(u32 EarlyHandoff)
- {
- 	u32 Status = XFSBL_SUCCESS;
-@@ -93,6 +96,7 @@ u32 XFsbl_HookBeforeHandoff(u32 EarlyHandoff)
+ /**************************** Type Definitions *******************************/
+@@ -93,6 +94,7 @@ u32 XFsbl_HookBeforeFallback(void)
  	/**
  	 * Add the code here
  	 */
@@ -33,26 +33,30 @@ index b3cb159..510b838 100644
  }
 diff --git a/lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c b/lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c
 new file mode 100644
-index 0000000..4d743b8
+index 0000000..797c9d2
 --- /dev/null
 +++ b/lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c
-@@ -0,0 +1,172 @@
-+#define SI_CONFIG_BASE_ADDR 0xA1600000
+@@ -0,0 +1,169 @@
++#include "xfsbl_programSI.h"
 +
-+u32 FsblHookAfterBitstreamDload(void)
-+{
-+	u32 Status;
++#define PRINTF XFsbl_Printf
 +
-+	Status = XST_SUCCESS;
++#define SI_I2C_ADDRESS   0xD0
++#define I2C_RX_FIFO_PIRQ (SI_I2C_BASE_ADDR + (sizeof(u32)*0x46))
++#define I2C_CONTROL      (SI_I2C_BASE_ADDR + (sizeof(u32)*0x40))
++#define I2C_STATUS       (SI_I2C_BASE_ADDR + (sizeof(u32)*0x41))
++#define I2C_RX_FIFO      (SI_I2C_BASE_ADDR + (sizeof(u32)*0x43))
++#define I2C_TX_FIFO      (SI_I2C_BASE_ADDR + (sizeof(u32)*0x42))
++#define I2C_RESET        (SI_I2C_BASE_ADDR + (sizeof(u32)*0x10))
 +
-+	/*
-+	 * User logic to be added here.
-+	 * Errors to be stored in the status variable and returned
-+	 */
-+	fsbl_printf(DEBUG_INFO, "In FsblHookAfterBitstreamDload function \r\n");
-+
-+	return (Status);
-+}
++/*
++I2C_RX_FIFO_PIRQ (SI_I2C_BASE_ADDR + 0x118))
++I2C_CONTROL      (SI_I2C_BASE_ADDR + 0x100))
++I2C_STATUS       (SI_I2C_BASE_ADDR + 0x104))
++I2C_RX_FIFO      (SI_I2C_BASE_ADDR + 0x10C))
++I2C_TX_FIFO      (SI_I2C_BASE_ADDR + 0x108))
++I2C_RESET        (SI_I2C_BASE_ADDR + 0x040))
++*/
 +
 +u16 ConfigData[] = {
 +  0x010B, //0xb
@@ -137,14 +141,6 @@ index 0000000..4d743b8
 +  0x010B, //0xb
 +  0x24C3, 0x2502};
 +
-+#define SI_I2C_ADDRESS   0xD0
-+#define SI_I2C_BASE_ADDR 0x41600000
-+#define I2C_RX_FIFO_PIRQ (SI_I2C_BASE_ADDR + (sizeof(u32)*0x46))
-+#define I2C_CONTROL      (SI_I2C_BASE_ADDR + (sizeof(u32)*0x40))
-+#define I2C_STATUS       (SI_I2C_BASE_ADDR + (sizeof(u32)*0x41))
-+#define I2C_RX_FIFO      (SI_I2C_BASE_ADDR + (sizeof(u32)*0x43))
-+#define I2C_TX_FIFO      (SI_I2C_BASE_ADDR + (sizeof(u32)*0x42))
-+#define I2C_RESET        (SI_I2C_BASE_ADDR + (sizeof(u32)*0x10))
 +
 +void SiI2cWrite(u8 address,u8 data){
 +  Xil_Out32(I2C_RESET    , 0xA);
@@ -160,22 +156,23 @@ index 0000000..4d743b8
 +  while((Xil_In32(I2C_STATUS) & 0x4)){
 +    tries--;
 +    if(!tries){
-+      fsbl_printf(DEBUG_GENERAL,"Timeout on 0x%02X @ 0x%02X\r\n",data,address);
++      PRINTF(DEBUG_GENERAL,"Timeout on 0x%02X @ 0x%02X\r\n",data,address);
 +      break;
 +    }
 +  }
 +  //  usleep(50);
 +  Xil_Out32(I2C_CONTROL, 0x0);
 +
-+  //  fsbl_printf(DEBUG_GENERAL,"I2C Write: 0x%02X @ 0x%02X\r\n",data,address);
++  //  PRINTF(DEBUG_GENERAL,"I2C Write: 0x%02X @ 0x%02X\r\n",data,address);
 +}
 +
 +
 +void ProgramSI(){
 +  /*https://www.beyond-circuits.com/wordpress/2018/05/updating-the-first-stage-bootloader-in-petalinux-v2017-4/*/
-+  fsbl_printf(DEBUG_GENERAL,"\r\n\r\n\r\n\r\n\r\n");
-+  fsbl_printf(DEBUG_GENERAL,"========================================\r\n");
-+  fsbl_printf(DEBUG_GENERAL,"Programming Si-5344 \r\n");
++  PRINTF(DEBUG_GENERAL,"\r\n\r\n\r\n\r\n\r\n");
++  PRINTF(DEBUG_GENERAL,"========================================\r\n");
++  PRINTF(DEBUG_GENERAL,"Programming Si-5344 \r\n");
++  PRINTF(DEBUG_GENERAL,"Si status:    0x%08X\r\n",Xil_In32(SI_CONFIG_BASE_ADDR));
 +  
 +  Xil_Out32(SI_CONFIG_BASE_ADDR,0x2);
 +  u16 iWrite=0;
@@ -188,7 +185,7 @@ index 0000000..4d743b8
 +    SiI2cWrite((u8)((ConfigData[iWrite] >> 8) & 0xFF)  ,
 +	       (u8)((ConfigData[iWrite]     ) & 0xFF));
 +  }
-+  fsbl_printf(DEBUG_GENERAL,"Waiting for lock\r\n");
++  PRINTF(DEBUG_GENERAL,"Waiting for lock\r\n");
 +  
 +  Xil_Out32(SI_CONFIG_BASE_ADDR,0x3);
 +  usleep(1000000); //wait 1s
@@ -199,16 +196,46 @@ index 0000000..4d743b8
 +    usleep(1000);
 +    tries--;
 +    if(!tries){
-+      fsbl_printf(DEBUG_GENERAL,"Warning: Timeout waiting for Si lock\r\n");
++      PRINTF(DEBUG_GENERAL,"Warning: Timeout waiting for Si lock\r\n");
 +      break;
 +    }
 +  }
 +  
-+  fsbl_printf(DEBUG_GENERAL,"Si status:    0x%08X\r\n",Xil_In32(SI_CONFIG_BASE_ADDR));
-+  fsbl_printf(DEBUG_GENERAL,"========================================\r\n");
-+  fsbl_printf(DEBUG_GENERAL,"\r\n\r\n\r\n\r\n\r\n");
++  PRINTF(DEBUG_GENERAL,"Si status:    0x%08X\r\n",Xil_In32(SI_CONFIG_BASE_ADDR));
++  PRINTF(DEBUG_GENERAL,"========================================\r\n");
++  PRINTF(DEBUG_GENERAL,"\r\n\r\n\r\n\r\n\r\n");
 +  
 +}
+diff --git a/lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.h b/lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.h
+new file mode 100644
+index 0000000..118b53e
+--- /dev/null
++++ b/lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.h
+@@ -0,0 +1,24 @@
++#ifndef XFSBL_PROGRAMSI_H
++#define XFSBL_PROGRAMSI_H
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++#include "xfsbl_hw.h"
++#include "xil_types.h"
++#include "AXI_slave_addrs.h"
++  /*serv base*/
++#define SI_CONFIG_BASE_ADDR AXI_ADDR_SERV
++  /*i2c base*/
++#define SI_I2C_BASE_ADDR AXI_ADDR_SI
++void SiI2cWrite(u8 address,u8 data);
++
++
++void ProgramSI();
++
++#ifdef __cplusplus
++}
++#endif
++
++#endif  /* XFSBL_PROGRAMSI_H */
 -- 
 1.8.3.1
 

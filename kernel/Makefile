@@ -4,8 +4,9 @@ include ../build-scripts/mk/helpers.mk
 #################################################################################
 # VIVADO stuff
 #################################################################################
-BUILD_VIVADO_VERSION=2020.2
+BUILD_VIVADO_VERSION?=2020.2
 BUILD_VIVADO_PETALINUX="/work/Xilinx/PetaLinux/"$(BUILD_VIVADO_VERSION)"/tool/settings.sh"
+#BUILD_VIVADO_PETALINUX="/work/Xilinx/petalinux/"$(BUILD_VIVADO_VERSION)"/settings.sh"
 
 ifeq ($(BUILD_VIVADO_VERSION),2018.2)
 	PETALINUX_OLD_CONFIG_OPTION=--oldconfig

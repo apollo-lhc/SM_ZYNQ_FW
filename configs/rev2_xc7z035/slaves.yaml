@@ -112,6 +112,7 @@ AXI_SLAVES:
         range: "8K"
     XML:
       - "address_table/modules/PL_MEM.xml"
+      - "address_table/modules/PL_MEM_CM.xml"
       - "address_table/modules/I2C_REGULATOR_MONITOR.xml"
     UHAL_BASE: 0x15000000
     

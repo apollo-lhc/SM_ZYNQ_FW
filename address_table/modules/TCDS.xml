@@ -1,5 +1,5 @@
 <node id="TCDS">
   <node id="TCDS_2" address="0x00000000" module="file://top_secret/ipbus_tcds2_interface_accessor.xml"/>
-  <node id="LTCDS_1" fwinfo="type=array" address="0x200" module="file://LTCDS.xml"/>
-  <node id="LTCDS_2" fwinfo="type=array" address="0x220" module="file://LTCDS.xml"/>
+  <node id="LTCDS_1" fwinfo="type=array" address="0x400" module="file://LTCDS.xml"/>
+  <node id="LTCDS_2" fwinfo="type=array" address="0x800" module="file://LTCDS.xml"/>
 </node> 

@@ -1,66 +1,66 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<node id="tcds2_interface_accessor" fwinfo="endpoint; width=10">
+<node id="TCDS2_INTERFACE_ACCESSOR" fwinfo="endpoint; width=10">
 
   <!-- Flags representing the implementation choices of the TCDS2
        link/interface. -->
-  <node id="hw_cfg" address="0x00000000" fwinfo="endpoint; width=3">
-    <node id="has_spy_registers"  address="0x00000000" mask="0x00000001" permission="r" />
-    <node id="has_link_test_mode" address="0x00000000" mask="0x00000002" permission="r" />
+  <node id="HW_CFG" address="0x00000000" fwinfo="endpoint; width=3">
+    <node id="HAS_SPY_REGISTERS"  address="0x00000000" mask="0x00000001" permission="r" />
+    <node id="HAS_LINK_TEST_MODE" address="0x00000000" mask="0x00000002" permission="r" />
   </node>
 
   <!-- Core TCDS2 and TCLink link control and status. -->
-  <node id="csr"
+  <node id="CSR"
         module="file://tcds2_link_csr_master.xml"
         address="0x00000040" />
 
-  <node id="link_test" address="0x00000008" fwinfo="endpoint; width=3">
+  <node id="LINK_TEST" address="0x00000008" fwinfo="endpoint; width=3">
 
-    <node id="control" address="0x00000000">
+    <node id="CONTROL" address="0x00000000">
       <!-- Link test mode switch. -->
-      <node id="link_test_mode" address="0x00000000" mask="0x00000001" permission="rw" />
+      <node id="LINK_TEST_MODE" address="0x00000000" mask="0x00000001" permission="rw" />
 
       <!-- PRBS generator/checker resets. -->
-      <node id="prbs_gen_reset"  address="0x00000001" mask="0x00000001" permission="rw" />
-      <node id="prbs_chk_reset"  address="0x00000001" mask="0x00000002" permission="rw" />
+      <node id="PRBS_GEN_RESET"  address="0x00000001" mask="0x00000001" permission="rw" />
+      <node id="PRBS_CHK_RESET"  address="0x00000001" mask="0x00000002" permission="rw" />
     </node>
 
-    <node id="status" address="0x00000004">
+    <node id="STATUS" address="0x00000004">
       <!-- PRBS checked status. -->
-      <node id="prbs_chk_error"          address="0x00000000" mask="0x00000001" permission="r" />
-      <node id="prbs_chk_locked"         address="0x00000000" mask="0x00000002" permission="r" />
-      <node id="prbs_chk_unlock_counter" address="0x00000001" mask="0xffffffff" permission="r" />
+      <node id="PRBS_CHK_ERROR"          address="0x00000000" mask="0x00000001" permission="r" />
+      <node id="PRBS_CHK_LOCKED"         address="0x00000000" mask="0x00000002" permission="r" />
+      <node id="PRBS_CHK_UNLOCK_COUNTER" address="0x00000001" mask="0xffffffff" permission="r" />
 
       <!-- Some insight into what's going on with the PRBS generator
            and checker. -->
-      <node id="prbs_gen_o_hint" address="0x00000002" mask="0x000000ff" permission="r" />
-      <node id="prbs_chk_i_hint" address="0x00000002" mask="0x0000ff00" permission="r" />
-      <node id="prbs_chk_o_hint" address="0x00000002" mask="0x00ff0000" permission="r" />
+      <node id="PRBS_GEN_O_HINT" address="0x00000002" mask="0x000000ff" permission="r" />
+      <node id="PRBS_CHK_I_HINT" address="0x00000002" mask="0x0000ff00" permission="r" />
+      <node id="PRBS_CHK_O_HINT" address="0x00000002" mask="0x00ff0000" permission="r" />
     </node>
 
   </node>
 
   <!-- Spy access to the raw TX and RX serial stream frames. -->
-  <node id="spy_frame_tx"
+  <node id="SPY_FRAME_TX"
         module="file://tcds2_frame_spy.xml"
         address="0x00000100" />
-  <node id="spy_frame_rx"
+  <node id="SPY_FRAME_RX"
         module="file://tcds2_frame_spy.xml"
         address="0x00000110" />
 
   <!-- Spy access to both TTC2 channels. -->
-  <node id="spy_ttc2_channel0"
+  <node id="SPY_TTC2_CHANNEL0"
         module="file://tcds2_ttc2_spy.xml"
         address="0x00000120" />
-  <node id="spy_ttc2_channel1"
+  <node id="SPY_TTC2_CHANNEL1"
         module="file://tcds2_ttc2_spy.xml"
         address="0x00000130" />
 
   <!-- Spy access to both TTS2 channels. -->
-  <node id="spy_tts2_channel0"
+  <node id="SPY_TTS2_CHANNEL0"
         module="file://tcds2_tts2_spy.xml"
         address="0x00000140" />
-  <node id="spy_tts2_channel1"
+  <node id="SPY_TTS2_CHANNEL1"
         module="file://tcds2_tts2_spy.xml"
         address="0x00000150" />
 

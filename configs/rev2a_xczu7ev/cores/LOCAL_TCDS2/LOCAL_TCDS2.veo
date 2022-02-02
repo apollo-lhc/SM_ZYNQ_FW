@@ -1,4 +1,4 @@
-// (c) Copyright 1995-2021 Xilinx, Inc. All rights reserved.
+// (c) Copyright 1995-2022 Xilinx, Inc. All rights reserved.
 // 
 // This file contains confidential and proprietary information
 // of Xilinx, Inc. and is protected under U.S. and
@@ -78,23 +78,55 @@ LOCAL_TCDS2 your_instance_name (
   .gtwiz_reset_qpll0reset_out(gtwiz_reset_qpll0reset_out),                  // output wire [0 : 0] gtwiz_reset_qpll0reset_out
   .gtwiz_userdata_tx_in(gtwiz_userdata_tx_in),                              // input wire [31 : 0] gtwiz_userdata_tx_in
   .gtwiz_userdata_rx_out(gtwiz_userdata_rx_out),                            // output wire [31 : 0] gtwiz_userdata_rx_out
+  .drpaddr_in(drpaddr_in),                                                  // input wire [9 : 0] drpaddr_in
+  .drpclk_in(drpclk_in),                                                    // input wire [0 : 0] drpclk_in
+  .drpdi_in(drpdi_in),                                                      // input wire [15 : 0] drpdi_in
+  .drpen_in(drpen_in),                                                      // input wire [0 : 0] drpen_in
+  .drpwe_in(drpwe_in),                                                      // input wire [0 : 0] drpwe_in
+  .eyescanreset_in(eyescanreset_in),                                        // input wire [0 : 0] eyescanreset_in
+  .eyescantrigger_in(eyescantrigger_in),                                    // input wire [0 : 0] eyescantrigger_in
   .gthrxn_in(gthrxn_in),                                                    // input wire [0 : 0] gthrxn_in
   .gthrxp_in(gthrxp_in),                                                    // input wire [0 : 0] gthrxp_in
+  .pcsrsvdin_in(pcsrsvdin_in),                                              // input wire [15 : 0] pcsrsvdin_in
   .qpll0clk_in(qpll0clk_in),                                                // input wire [0 : 0] qpll0clk_in
   .qpll0refclk_in(qpll0refclk_in),                                          // input wire [0 : 0] qpll0refclk_in
   .qpll1clk_in(qpll1clk_in),                                                // input wire [0 : 0] qpll1clk_in
   .qpll1refclk_in(qpll1refclk_in),                                          // input wire [0 : 0] qpll1refclk_in
   .rx8b10ben_in(rx8b10ben_in),                                              // input wire [0 : 0] rx8b10ben_in
+  .rxbufreset_in(rxbufreset_in),                                            // input wire [0 : 0] rxbufreset_in
+  .rxcdrhold_in(rxcdrhold_in),                                              // input wire [0 : 0] rxcdrhold_in
   .rxcommadeten_in(rxcommadeten_in),                                        // input wire [0 : 0] rxcommadeten_in
+  .rxdfelpmreset_in(rxdfelpmreset_in),                                      // input wire [0 : 0] rxdfelpmreset_in
+  .rxlpmen_in(rxlpmen_in),                                                  // input wire [0 : 0] rxlpmen_in
   .rxmcommaalignen_in(rxmcommaalignen_in),                                  // input wire [0 : 0] rxmcommaalignen_in
   .rxpcommaalignen_in(rxpcommaalignen_in),                                  // input wire [0 : 0] rxpcommaalignen_in
+  .rxpcsreset_in(rxpcsreset_in),                                            // input wire [0 : 0] rxpcsreset_in
+  .rxpmareset_in(rxpmareset_in),                                            // input wire [0 : 0] rxpmareset_in
+  .rxprbscntreset_in(rxprbscntreset_in),                                    // input wire [0 : 0] rxprbscntreset_in
+  .rxprbssel_in(rxprbssel_in),                                              // input wire [3 : 0] rxprbssel_in
+  .rxrate_in(rxrate_in),                                                    // input wire [2 : 0] rxrate_in
   .tx8b10ben_in(tx8b10ben_in),                                              // input wire [0 : 0] tx8b10ben_in
   .txctrl0_in(txctrl0_in),                                                  // input wire [15 : 0] txctrl0_in
   .txctrl1_in(txctrl1_in),                                                  // input wire [15 : 0] txctrl1_in
   .txctrl2_in(txctrl2_in),                                                  // input wire [7 : 0] txctrl2_in
+  .txdiffctrl_in(txdiffctrl_in),                                            // input wire [4 : 0] txdiffctrl_in
+  .txinhibit_in(txinhibit_in),                                              // input wire [0 : 0] txinhibit_in
+  .txpcsreset_in(txpcsreset_in),                                            // input wire [0 : 0] txpcsreset_in
+  .txpmareset_in(txpmareset_in),                                            // input wire [0 : 0] txpmareset_in
+  .txpolarity_in(txpolarity_in),                                            // input wire [0 : 0] txpolarity_in
+  .txpostcursor_in(txpostcursor_in),                                        // input wire [4 : 0] txpostcursor_in
+  .txprbsforceerr_in(txprbsforceerr_in),                                    // input wire [0 : 0] txprbsforceerr_in
+  .txprbssel_in(txprbssel_in),                                              // input wire [3 : 0] txprbssel_in
+  .txprecursor_in(txprecursor_in),                                          // input wire [4 : 0] txprecursor_in
+  .cplllock_out(cplllock_out),                                              // output wire [0 : 0] cplllock_out
+  .dmonitorout_out(dmonitorout_out),                                        // output wire [15 : 0] dmonitorout_out
+  .drpdo_out(drpdo_out),                                                    // output wire [15 : 0] drpdo_out
+  .drprdy_out(drprdy_out),                                                  // output wire [0 : 0] drprdy_out
+  .eyescandataerror_out(eyescandataerror_out),                              // output wire [0 : 0] eyescandataerror_out
   .gthtxn_out(gthtxn_out),                                                  // output wire [0 : 0] gthtxn_out
   .gthtxp_out(gthtxp_out),                                                  // output wire [0 : 0] gthtxp_out
   .gtpowergood_out(gtpowergood_out),                                        // output wire [0 : 0] gtpowergood_out
+  .rxbufstatus_out(rxbufstatus_out),                                        // output wire [2 : 0] rxbufstatus_out
   .rxbyteisaligned_out(rxbyteisaligned_out),                                // output wire [0 : 0] rxbyteisaligned_out
   .rxbyterealign_out(rxbyterealign_out),                                    // output wire [0 : 0] rxbyterealign_out
   .rxcommadet_out(rxcommadet_out),                                          // output wire [0 : 0] rxcommadet_out
@@ -103,6 +135,9 @@ LOCAL_TCDS2 your_instance_name (
   .rxctrl2_out(rxctrl2_out),                                                // output wire [7 : 0] rxctrl2_out
   .rxctrl3_out(rxctrl3_out),                                                // output wire [7 : 0] rxctrl3_out
   .rxpmaresetdone_out(rxpmaresetdone_out),                                  // output wire [0 : 0] rxpmaresetdone_out
+  .rxprbserr_out(rxprbserr_out),                                            // output wire [0 : 0] rxprbserr_out
+  .rxsyncdone_out(rxsyncdone_out),                                          // output wire [0 : 0] rxsyncdone_out
+  .txbufstatus_out(txbufstatus_out),                                        // output wire [1 : 0] txbufstatus_out
   .txpmaresetdone_out(txpmaresetdone_out)                                  // output wire [0 : 0] txpmaresetdone_out
 );
 // INST_TAG_END ------ End INSTANTIATION Template ---------

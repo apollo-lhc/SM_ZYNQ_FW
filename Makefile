@@ -28,7 +28,7 @@ HW_TCL=${BUILD_SCRIPTS_PATH}/Run_hw.tcl
 PL_PATH=${MAKE_PATH}/src
 BD_PATH=${MAKE_PATH}/bd
 CORES_PATH=${MAKE_PATH}/cores
-ADDRESS_TABLE = ${MAKE_PATH}/os/address_table/address_apollo.xml
+#ADDRESS_TABLE = ${MAKE_PATH}/os/address_table/address_apollo.xml
 
 ################################################################################
 # Configs
@@ -54,7 +54,8 @@ BIT_BASE=${MAKE_PATH}/bit/top_
 #################################################################################
 SLAVE_DEF_FILE_BASE=${MAKE_PATH}/${CONFIGS_BASE_PATH}
 ADDSLAVE_TCL_PATH=${MAKE_PATH}/src/ZynqPS/
-ADDRESS_TABLE_CREATION_PATH=${MAKE_PATH}/os/
+OS_BUILD_PATH=${MAKE_PATH}/os/
+ADDRESS_TABLE_CREATION_PATH=${OS_BUILD_PATH}
 SLAVE_DTSI_PATH=${MAKE_PATH}/kernel/
 MAP_TEMPLATE_FILE=${MAKE_PATH}/regmap_helper/templates/axi_generic/template_map.vhd
 
@@ -87,25 +88,19 @@ endif
 #################################################################################
 # Clean
 #################################################################################
-clean_remote:
-	@echo "Cleaning up remote files"
-	@rm -f ${MAKE_PATH}/os/*_slaves.yaml
-	@rm -f ${MAKE_PATH}/kernel/*_slaves.yaml
+clean_os:
+	@rm -f ${OS_BUILD_PATH}/*.yaml
+	@rm -rf ${OS_BUILD_PATH}/address_table
 clean_ip:
 	@echo "Cleaning up ip dcps"
 	@find ${MAKE_PATH}/cores -type f | { grep -v xci || true; } | awk '{print "rm " $$1}' | bash
-#	@find ${MAKE_PATH}/cores -type f -name '*.dcp' -delete
-clean_bd:
-	@echo "Cleaning up bd generated files"
-	@rm -rf ${MAKE_PATH}/bd/zynq_bd
-	@rm -rf ${MAKE_PATH}/bd/c2cSlave
 clean_bit:
 	@echo "Cleaning up bit files"
 	@rm -rf ${MAKE_PATH}/bit/*
 clean_kernel:
 	@echo "Clean hw files"
 	@rm -f ${MAKE_PATH}/kernel/hw/*
-clean: clean_bd clean_ip clean_bit clean_kernel
+clean: clean_ip clean_bit clean_kernel
 	@rm -rf ${MAKE_PATH}/proj/*
 	@echo "Cleaning up"
 clean_ip_%:
@@ -151,7 +146,8 @@ interactive :
 	cd proj &&\
 	vivado -mode tcl
 
-$(BIT_BASE)%.bit	: $(SLAVE_DTSI_PATH)/slaves_%.yaml $(ADDRESS_TABLE_CREATION_PATH)/slaves_%.yaml
+$(BIT_BASE)%.bit	: $(SLAVE_DTSI_PATH)/slaves_%.yaml $(ADDRESS_TABLE_CREATION_PATH)/slaves_%.yaml ${MAKE_PATH}/os/address_table/address_apollo.xml
+	@ln -s $(ADDRESS_TABLE_CREATION_PATH)/slaves_$*.yaml $(ADDRESS_TABLE_CREATION_PATH)/slaves.yaml
 	source $(BUILD_VIVADO_SHELL) &&\
 	mkdir -p ${MAKE_PATH}/kernel/hw &&\
 	mkdir -p ${MAKE_PATH}/proj &&\

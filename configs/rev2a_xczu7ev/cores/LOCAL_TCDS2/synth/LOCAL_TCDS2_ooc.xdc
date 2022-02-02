@@ -62,6 +62,9 @@ create_clock -period 3.898 [get_pins -filter {REF_PIN_NAME=~*TXOUTCLK} -of_objec
 # RXOUTCLK constraint, required in OOC flows when reference clock input port is external to the IP instance
 create_clock -period 3.898 [get_pins -filter {REF_PIN_NAME=~*RXOUTCLK} -of_objects [get_cells -hierarchical -filter {NAME =~ *gen_channel_container[3].*gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST}]]
 
+# DRP clock constraint for CHANNEL primitive
+create_clock -period 20.0 [get_ports drpclk_in[0]]
+
 
 ##set_false_path -to [get_cells -hierarchical -filter {NAME =~ *reset_synchronizer*inst/rst_in_*_reg}] -quiet
 set_false_path -to [get_pins -filter {REF_PIN_NAME=~*D} -of_objects [get_cells -hierarchical -filter {NAME =~ *reset_synchronizer*inst/rst_in_meta*}]] -quiet

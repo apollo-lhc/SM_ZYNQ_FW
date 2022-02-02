@@ -109,6 +109,7 @@ AXI_SLAVES:
         range: "8K"
     XML:
       - "address_table/modules/PL_MEM.xml"
+      - "address_table/modules/PL_MEM_CM.xml"
       - "address_table/modules/I2C_REGULATOR_MONITOR.xml"
     UHAL_BASE: 0x15000000
     
@@ -290,7 +291,7 @@ AXI_SLAVES:
       - "address_table/modules/LTCDS.xml"
     UHAL_BASE: 0x30000000
     HDL: 
-      map_template: "axi_generic/template_map.vhd"
+      map_template: "axi_generic/template_map_withbram.vhd"
   
   LDAQ:
     TCL_CALL:

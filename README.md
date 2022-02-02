@@ -8,6 +8,24 @@ The default branch is develop and you should branch off of that.
 The Apollo SM has several different configurations and this build system can be instructed to make any of them.
 The differences between these configurations are located in the "configs" directory.
 The build process uses Vivado but is directed by makefiles. 
+Type "make list" for a list of builds
+```bash
+make list
+
+Apollo CM config:
+rev1_xc7z035	rev1_xc7z045	rev2a_xczu7ev	rev2_xc7z035	rev2_xc7z045	rev2_xczu7ev
+
+Prebuilds:
+prebuild_rev1_xc7z035	prebuild_rev2a_xczu7ev	prebuild_rev2_xc7z045	prebuild_xc7z035
+prebuild_rev1_xc7z045	prebuild_rev2_xc7z035	prebuild_rev2_xczu7ev
+
+Vivado:
+open_hw		open_impl	open_project	open_synth
+
+Clean:
+clean_address_tables	clean_bd		clean_CM		clean_ip		clean_make_log		clean_remote
+clean_autogen					clean_bit					clean_everything	clean_kernel  clean_prebuild
+```
 
 ### configs
 The configs directory contains directories for each different configuraiton and the name of this directory is used by make for the make rule

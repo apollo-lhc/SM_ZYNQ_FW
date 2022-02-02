@@ -45,6 +45,8 @@ all: rev1_xc7z035.tar.gz rev2_xc7z035.tar.gz rev2_xczu7ev.tar.gz
 shell:
 	sudo chroot ${INSTALL_PATH} /${QEMU_PATH}/${QEMU}  /bin/bash
 clean:
+	rm -f *.yaml
+	rm -rf address_table
 	sudo rm -rf ${INSTALL_BASE_PATH}
 
 ${INSTALL_BASE_PATH}/%/:
@@ -99,7 +101,7 @@ include mk/overlay-tools.mk
 	sudo chown ${ATLAS_UID}:${ATLAS_GID} ${HOME_PATH}/atlas
 	sudo chmod u+wX ${HOME_PATH}/atlas
 	#setup software and libraries
-	#	${MAKE} pip_install
+	${MAKE} pip_install
 	${MAKE} ${OPT_PATH}/BUTool/bin ${OPT_PATH}/cactus ${OPT_PATH}/mcu_tools ${OPT_PATH}/Graphite_Monitor ${INSTALL_PATH}usr/local/bin/mmc ${OPT_PATH}/overlay-tools
 	sudo cp ${SCRIPTS_PATH}/cleanup_locale.sh ${TMP_PATH}
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/cleanup_locale.sh

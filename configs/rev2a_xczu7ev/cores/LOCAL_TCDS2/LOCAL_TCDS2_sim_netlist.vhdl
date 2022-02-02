@@ -1,10 +1,10 @@
 -- Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2020.2 (lin64) Build 3064766 Wed Nov 18 09:12:47 MST 2020
--- Date        : Tue Jul  6 11:43:45 2021
+-- Date        : Mon Jan 31 10:47:28 2022
 -- Host        : tesla.bu.edu running 64-bit CentOS Linux release 7.9.2009 (Core)
 -- Command     : write_vhdl -force -mode funcsim
---               /work/dan/Apollo/SM_ZYNQ_FW/configs/rev2a_xczu7ev/cores/LOCAL_TCDS2/LOCAL_TCDS2_sim_netlist.vhdl
+--               /work/dan/Apollo/FW/SM_ZYNQ_FW/configs/rev2a_xczu7ev/cores/LOCAL_TCDS2/LOCAL_TCDS2_sim_netlist.vhdl
 -- Design      : LOCAL_TCDS2
 -- Purpose     : This VHDL netlist is a functional simulation representation of the design and should not be modified or
 --               synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -1593,6 +1593,9 @@ library UNISIM;
 use UNISIM.VCOMPONENTS.ALL;
 entity LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel is
   port (
+    cplllock_out : out STD_LOGIC_VECTOR ( 0 to 0 );
+    drprdy_out : out STD_LOGIC_VECTOR ( 0 to 0 );
+    eyescandataerror_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     gthtxn_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     gthtxp_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     \gen_gtwizard_gthe4.gtpowergood_int\ : out STD_LOGIC;
@@ -1603,16 +1606,27 @@ entity LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel is
     gtwiz_userclk_rx_srcclk_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     rxoutclkpcs_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     rxpmaresetdone_out : out STD_LOGIC_VECTOR ( 0 to 0 );
+    rxprbserr_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     rxresetdone_out : out STD_LOGIC_VECTOR ( 0 to 0 );
+    rxsyncdone_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     gtwiz_userclk_tx_srcclk_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     txpmaresetdone_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     txresetdone_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     gtwiz_userdata_rx_out : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    dmonitorout_out : out STD_LOGIC_VECTOR ( 15 downto 0 );
+    drpdo_out : out STD_LOGIC_VECTOR ( 15 downto 0 );
     rxctrl0_out : out STD_LOGIC_VECTOR ( 15 downto 0 );
     rxctrl1_out : out STD_LOGIC_VECTOR ( 15 downto 0 );
+    txbufstatus_out : out STD_LOGIC_VECTOR ( 1 downto 0 );
+    rxbufstatus_out : out STD_LOGIC_VECTOR ( 2 downto 0 );
     rxctrl2_out : out STD_LOGIC_VECTOR ( 7 downto 0 );
     rxctrl3_out : out STD_LOGIC_VECTOR ( 7 downto 0 );
-    gthrxn_in_0_sp_1 : out STD_LOGIC;
+    drpclk_in_0_sp_1 : out STD_LOGIC;
+    drpclk_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    drpen_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    drpwe_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    eyescanreset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    eyescantrigger_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     gthrxn_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     gthrxp_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     \gen_gtwizard_gthe4.gtrxreset_ch_int\ : in STD_LOGIC;
@@ -1622,21 +1636,42 @@ entity LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel is
     qpll1clk_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     qpll1refclk_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     rx8b10ben_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    rxbufreset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    rxcdrhold_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     rxcommadeten_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    rxdfelpmreset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    rxlpmen_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     rxmcommaalignen_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     rxpcommaalignen_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    rxpcsreset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    \gen_gtwizard_gthe4.rxpmareset_ch_int\ : in STD_LOGIC;
+    rxprbscntreset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     \gen_gtwizard_gthe4.rxprogdivreset_int\ : in STD_LOGIC;
-    RXRATE : in STD_LOGIC_VECTOR ( 0 to 0 );
+    RXPD : in STD_LOGIC_VECTOR ( 0 to 0 );
     \gen_gtwizard_gthe4.rxuserrdy_int\ : in STD_LOGIC;
     gtwiz_userclk_rx_usrclk2_out : in STD_LOGIC_VECTOR ( 0 to 0 );
     tx8b10ben_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    txinhibit_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    txpcsreset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    txpmareset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    txpolarity_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    txprbsforceerr_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     \gen_gtwizard_gthe4.txprogdivreset_int\ : in STD_LOGIC;
     \gen_gtwizard_gthe4.txuserrdy_int\ : in STD_LOGIC;
     gtwiz_userclk_tx_usrclk2_out : in STD_LOGIC_VECTOR ( 0 to 0 );
     gtwiz_userdata_tx_in : in STD_LOGIC_VECTOR ( 31 downto 0 );
+    drpdi_in : in STD_LOGIC_VECTOR ( 15 downto 0 );
+    pcsrsvdin_in : in STD_LOGIC_VECTOR ( 15 downto 0 );
     txctrl0_in : in STD_LOGIC_VECTOR ( 15 downto 0 );
     txctrl1_in : in STD_LOGIC_VECTOR ( 15 downto 0 );
+    RXRATE : in STD_LOGIC_VECTOR ( 2 downto 0 );
+    rxprbssel_in : in STD_LOGIC_VECTOR ( 3 downto 0 );
+    txprbssel_in : in STD_LOGIC_VECTOR ( 3 downto 0 );
+    txdiffctrl_in : in STD_LOGIC_VECTOR ( 4 downto 0 );
+    txpostcursor_in : in STD_LOGIC_VECTOR ( 4 downto 0 );
+    txprecursor_in : in STD_LOGIC_VECTOR ( 4 downto 0 );
     txctrl2_in : in STD_LOGIC_VECTOR ( 7 downto 0 );
+    drpaddr_in : in STD_LOGIC_VECTOR ( 9 downto 0 );
     lopt : in STD_LOGIC;
     lopt_1 : in STD_LOGIC;
     lopt_2 : out STD_LOGIC;
@@ -1651,6 +1686,7 @@ entity LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel is
 end LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel;
 
 architecture STRUCTURE of LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel is
+  signal drpclk_in_0_sn_1 : STD_LOGIC;
   signal \^gen_gtwizard_gthe4.gtpowergood_int\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_0\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_1\ : STD_LOGIC;
@@ -1740,38 +1776,6 @@ architecture STRUCTURE of LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel is
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_19\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_2\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_20\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_207\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_208\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_209\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_210\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_211\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_212\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_213\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_214\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_215\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_216\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_217\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_218\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_219\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_220\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_221\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_222\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_223\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_224\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_225\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_226\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_227\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_228\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_229\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_230\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_231\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_232\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_233\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_234\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_235\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_236\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_237\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_238\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_239\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_24\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_240\ : STD_LOGIC;
@@ -1810,7 +1814,6 @@ architecture STRUCTURE of LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel is
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_270\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_28\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_29\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_3\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_303\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_304\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_305\ : STD_LOGIC;
@@ -1824,8 +1827,6 @@ architecture STRUCTURE of LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel is
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_312\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_313\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_314\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_315\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_316\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_317\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_318\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_319\ : STD_LOGIC;
@@ -1833,9 +1834,6 @@ architecture STRUCTURE of LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel is
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_320\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_321\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_322\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_323\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_324\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_325\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_326\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_327\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_328\ : STD_LOGIC;
@@ -1888,7 +1886,6 @@ architecture STRUCTURE of LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel is
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_43\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_45\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_46\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_48\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_49\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_5\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_50\ : STD_LOGIC;
@@ -1900,8 +1897,6 @@ architecture STRUCTURE of LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel is
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_57\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_58\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_59\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_6\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_60\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_61\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_62\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_63\ : STD_LOGIC;
@@ -1910,7 +1905,6 @@ architecture STRUCTURE of LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel is
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_67\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_68\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_69\ : STD_LOGIC;
-  signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_7\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_70\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_72\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_73\ : STD_LOGIC;
@@ -1939,7 +1933,6 @@ architecture STRUCTURE of LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel is
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_97\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_98\ : STD_LOGIC;
   signal \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_99\ : STD_LOGIC;
-  signal gthrxn_in_0_sn_1 : STD_LOGIC;
   signal \^gtwiz_userclk_rx_srcclk_out\ : STD_LOGIC_VECTOR ( 0 to 0 );
   signal \^gtwiz_userclk_tx_srcclk_out\ : STD_LOGIC_VECTOR ( 0 to 0 );
   signal \^lopt_2\ : STD_LOGIC;
@@ -1956,8 +1949,8 @@ architecture STRUCTURE of LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel is
 begin
   \^lopt_2\ <= lopt_4;
   \^lopt_3\ <= lopt_5;
+  drpclk_in_0_sp_1 <= drpclk_in_0_sn_1;
   \gen_gtwizard_gthe4.gtpowergood_int\ <= \^gen_gtwizard_gthe4.gtpowergood_int\;
-  gthrxn_in_0_sp_1 <= gthrxn_in_0_sn_1;
   gtwiz_userclk_rx_srcclk_out(0) <= \^gtwiz_userclk_rx_srcclk_out\(0);
   gtwiz_userclk_tx_srcclk_out(0) <= \^gtwiz_userclk_tx_srcclk_out\(0);
   lopt_2 <= \xlnx_opt_\;
@@ -1986,7 +1979,7 @@ BUFG_GT_SYNC_1: unisim.vcomponents.BUFG_GT_SYNC
     )
         port map (
       I0 => \^gen_gtwizard_gthe4.gtpowergood_int\,
-      O => gthrxn_in_0_sn_1
+      O => drpclk_in_0_sn_1
     );
 \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST\: unisim.vcomponents.GTHE4_CHANNEL
     generic map(
@@ -2521,7 +2514,7 @@ BUFG_GT_SYNC_1: unisim.vcomponents.BUFG_GT_SYNC
       CLKRSVD1 => '0',
       CPLLFBCLKLOST => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_2\,
       CPLLFREQLOCK => '0',
-      CPLLLOCK => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_3\,
+      CPLLLOCK => cplllock_out(0),
       CPLLLOCKDETCLK => '0',
       CPLLLOCKEN => '0',
       CPLLPD => '1',
@@ -2530,49 +2523,19 @@ BUFG_GT_SYNC_1: unisim.vcomponents.BUFG_GT_SYNC
       CPLLRESET => '1',
       DMONFIFORESET => '0',
       DMONITORCLK => '0',
-      DMONITOROUT(15) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_207\,
-      DMONITOROUT(14) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_208\,
-      DMONITOROUT(13) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_209\,
-      DMONITOROUT(12) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_210\,
-      DMONITOROUT(11) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_211\,
-      DMONITOROUT(10) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_212\,
-      DMONITOROUT(9) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_213\,
-      DMONITOROUT(8) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_214\,
-      DMONITOROUT(7) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_215\,
-      DMONITOROUT(6) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_216\,
-      DMONITOROUT(5) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_217\,
-      DMONITOROUT(4) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_218\,
-      DMONITOROUT(3) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_219\,
-      DMONITOROUT(2) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_220\,
-      DMONITOROUT(1) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_221\,
-      DMONITOROUT(0) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_222\,
+      DMONITOROUT(15 downto 0) => dmonitorout_out(15 downto 0),
       DMONITOROUTCLK => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_5\,
-      DRPADDR(9 downto 0) => B"0000000000",
-      DRPCLK => '0',
-      DRPDI(15 downto 0) => B"0000000000000000",
-      DRPDO(15) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_223\,
-      DRPDO(14) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_224\,
-      DRPDO(13) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_225\,
-      DRPDO(12) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_226\,
-      DRPDO(11) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_227\,
-      DRPDO(10) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_228\,
-      DRPDO(9) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_229\,
-      DRPDO(8) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_230\,
-      DRPDO(7) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_231\,
-      DRPDO(6) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_232\,
-      DRPDO(5) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_233\,
-      DRPDO(4) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_234\,
-      DRPDO(3) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_235\,
-      DRPDO(2) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_236\,
-      DRPDO(1) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_237\,
-      DRPDO(0) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_238\,
-      DRPEN => '0',
-      DRPRDY => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_6\,
+      DRPADDR(9 downto 0) => drpaddr_in(9 downto 0),
+      DRPCLK => drpclk_in(0),
+      DRPDI(15 downto 0) => drpdi_in(15 downto 0),
+      DRPDO(15 downto 0) => drpdo_out(15 downto 0),
+      DRPEN => drpen_in(0),
+      DRPRDY => drprdy_out(0),
       DRPRST => '0',
-      DRPWE => '0',
-      EYESCANDATAERROR => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_7\,
-      EYESCANRESET => '0',
-      EYESCANTRIGGER => '0',
+      DRPWE => drpwe_in(0),
+      EYESCANDATAERROR => eyescandataerror_out(0),
+      EYESCANRESET => eyescanreset_in(0),
+      EYESCANTRIGGER => eyescantrigger_in(0),
       FREQOS => '0',
       GTGREFCLK => '0',
       GTHRXN => gthrxn_in(0),
@@ -2608,7 +2571,7 @@ BUFG_GT_SYNC_1: unisim.vcomponents.BUFG_GT_SYNC
       PCIEUSERPHYSTATUSRST => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_16\,
       PCIEUSERRATEDONE => '0',
       PCIEUSERRATESTART => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_17\,
-      PCSRSVDIN(15 downto 0) => B"0000000000000000",
+      PCSRSVDIN(15 downto 0) => pcsrsvdin_in(15 downto 0),
       PCSRSVDOUT(15) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_239\,
       PCSRSVDOUT(14) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_240\,
       PCSRSVDOUT(13) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_241\,
@@ -2653,14 +2616,12 @@ BUFG_GT_SYNC_1: unisim.vcomponents.BUFG_GT_SYNC
       RESETOVRD => '0',
       RX8B10BEN => rx8b10ben_in(0),
       RXAFECFOKEN => '1',
-      RXBUFRESET => '0',
-      RXBUFSTATUS(2) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_323\,
-      RXBUFSTATUS(1) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_324\,
-      RXBUFSTATUS(0) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_325\,
+      RXBUFRESET => rxbufreset_in(0),
+      RXBUFSTATUS(2 downto 0) => rxbufstatus_out(2 downto 0),
       RXBYTEISALIGNED => rxbyteisaligned_out(0),
       RXBYTEREALIGN => rxbyterealign_out(0),
       RXCDRFREQRESET => '0',
-      RXCDRHOLD => '0',
+      RXCDRHOLD => rxcdrhold_in(0),
       RXCDRLOCK => rxcdrlock_out(0),
       RXCDROVRDEN => '0',
       RXCDRPHDONE => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_24\,
@@ -2811,7 +2772,7 @@ BUFG_GT_SYNC_1: unisim.vcomponents.BUFG_GT_SYNC
       RXDFEKHOVRDEN => '0',
       RXDFELFHOLD => '0',
       RXDFELFOVRDEN => '0',
-      RXDFELPMRESET => '0',
+      RXDFELPMRESET => rxdfelpmreset_in(0),
       RXDFETAP10HOLD => '0',
       RXDFETAP10OVRDEN => '0',
       RXDFETAP11HOLD => '0',
@@ -2866,7 +2827,7 @@ BUFG_GT_SYNC_1: unisim.vcomponents.BUFG_GT_SYNC
       RXLFPSTRESETDET => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_35\,
       RXLFPSU2LPEXITDET => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_36\,
       RXLFPSU3WAKEDET => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_37\,
-      RXLPMEN => '0',
+      RXLPMEN => rxlpmen_in(0),
       RXLPMGCHOLD => '0',
       RXLPMGCOVRDEN => '0',
       RXLPMHFHOLD => '0',
@@ -2898,9 +2859,9 @@ BUFG_GT_SYNC_1: unisim.vcomponents.BUFG_GT_SYNC
       RXOUTCLKPCS => rxoutclkpcs_out(0),
       RXOUTCLKSEL(2 downto 0) => B"010",
       RXPCOMMAALIGNEN => rxpcommaalignen_in(0),
-      RXPCSRESET => '0',
-      RXPD(1) => RXRATE(0),
-      RXPD(0) => RXRATE(0),
+      RXPCSRESET => rxpcsreset_in(0),
+      RXPD(1) => RXPD(0),
+      RXPD(0) => RXPD(0),
       RXPHALIGN => '0',
       RXPHALIGNDONE => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_45\,
       RXPHALIGNEN => '0',
@@ -2909,22 +2870,21 @@ BUFG_GT_SYNC_1: unisim.vcomponents.BUFG_GT_SYNC
       RXPHDLYRESET => '0',
       RXPHOVRDEN => '0',
       RXPLLCLKSEL(1 downto 0) => B"11",
-      RXPMARESET => '0',
+      RXPMARESET => \gen_gtwizard_gthe4.rxpmareset_ch_int\,
       RXPMARESETDONE => rxpmaresetdone_out(0),
       RXPOLARITY => '0',
-      RXPRBSCNTRESET => '0',
-      RXPRBSERR => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_48\,
+      RXPRBSCNTRESET => rxprbscntreset_in(0),
+      RXPRBSERR => rxprbserr_out(0),
       RXPRBSLOCKED => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_49\,
-      RXPRBSSEL(3 downto 0) => B"0000",
+      RXPRBSSEL(3 downto 0) => rxprbssel_in(3 downto 0),
       RXPRGDIVRESETDONE => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_50\,
       RXPROGDIVRESET => \gen_gtwizard_gthe4.rxprogdivreset_int\,
       RXQPIEN => '0',
       RXQPISENN => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_51\,
       RXQPISENP => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_52\,
-      RXRATE(2 downto 1) => B"00",
-      RXRATE(0) => RXRATE(0),
+      RXRATE(2 downto 0) => RXRATE(2 downto 0),
       RXRATEDONE => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_53\,
-      RXRATEMODE => RXRATE(0),
+      RXRATEMODE => RXPD(0),
       RXRECCLKOUT => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_54\,
       RXRESETDONE => rxresetdone_out(0),
       RXSLIDE => '0',
@@ -2940,7 +2900,7 @@ BUFG_GT_SYNC_1: unisim.vcomponents.BUFG_GT_SYNC
       RXSTATUS(1) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_327\,
       RXSTATUS(0) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_328\,
       RXSYNCALLIN => '0',
-      RXSYNCDONE => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_60\,
+      RXSYNCDONE => rxsyncdone_out(0),
       RXSYNCIN => '0',
       RXSYNCMODE => '0',
       RXSYNCOUT => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_61\,
@@ -2954,8 +2914,7 @@ BUFG_GT_SYNC_1: unisim.vcomponents.BUFG_GT_SYNC
       TSTIN(19 downto 0) => B"00000000000000000000",
       TX8B10BBYPASS(7 downto 0) => B"00000000",
       TX8B10BEN => tx8b10ben_in(0),
-      TXBUFSTATUS(1) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_315\,
-      TXBUFSTATUS(0) => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_316\,
+      TXBUFSTATUS(1 downto 0) => txbufstatus_out(1 downto 0),
       TXCOMFINISH => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_63\,
       TXCOMINIT => '0',
       TXCOMSAS => '0',
@@ -2971,7 +2930,7 @@ BUFG_GT_SYNC_1: unisim.vcomponents.BUFG_GT_SYNC
       TXDCCRESET => '0',
       TXDEEMPH(1 downto 0) => B"00",
       TXDETECTRX => '0',
-      TXDIFFCTRL(4 downto 0) => B"11000",
+      TXDIFFCTRL(4 downto 0) => txdiffctrl_in(4 downto 0),
       TXDLYBYPASS => '1',
       TXDLYEN => '0',
       TXDLYHOLD => '0',
@@ -2981,7 +2940,7 @@ BUFG_GT_SYNC_1: unisim.vcomponents.BUFG_GT_SYNC
       TXDLYUPDOWN => '0',
       TXELECIDLE => '0',
       TXHEADER(5 downto 0) => B"000000",
-      TXINHIBIT => '0',
+      TXINHIBIT => txinhibit_in(0),
       TXLATCLK => '0',
       TXLFPSTRESET => '0',
       TXLFPSU2LPEXIT => '0',
@@ -2995,7 +2954,7 @@ BUFG_GT_SYNC_1: unisim.vcomponents.BUFG_GT_SYNC
       TXOUTCLKFABRIC => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_67\,
       TXOUTCLKPCS => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_68\,
       TXOUTCLKSEL(2 downto 0) => B"010",
-      TXPCSRESET => '0',
+      TXPCSRESET => txpcsreset_in(0),
       TXPD(1 downto 0) => B"00",
       TXPDELECIDLEMODE => '0',
       TXPHALIGN => '0',
@@ -3014,13 +2973,13 @@ BUFG_GT_SYNC_1: unisim.vcomponents.BUFG_GT_SYNC
       TXPIPPMSTEPSIZE(4 downto 0) => B"00000",
       TXPISOPD => '0',
       TXPLLCLKSEL(1 downto 0) => B"11",
-      TXPMARESET => '0',
+      TXPMARESET => txpmareset_in(0),
       TXPMARESETDONE => txpmaresetdone_out(0),
-      TXPOLARITY => '0',
-      TXPOSTCURSOR(4 downto 0) => B"00000",
-      TXPRBSFORCEERR => '0',
-      TXPRBSSEL(3 downto 0) => B"0000",
-      TXPRECURSOR(4 downto 0) => B"00000",
+      TXPOLARITY => txpolarity_in(0),
+      TXPOSTCURSOR(4 downto 0) => txpostcursor_in(4 downto 0),
+      TXPRBSFORCEERR => txprbsforceerr_in(0),
+      TXPRBSSEL(3 downto 0) => txprbssel_in(3 downto 0),
+      TXPRECURSOR(4 downto 0) => txprecursor_in(4 downto 0),
       TXPRGDIVRESETDONE => \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_72\,
       TXPROGDIVRESET => \gen_gtwizard_gthe4.txprogdivreset_int\,
       TXQPIBIASEN => '0',
@@ -3051,9 +3010,13 @@ use UNISIM.VCOMPONENTS.ALL;
 entity LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_delay_powergood is
   port (
     \out\ : out STD_LOGIC;
-    RXRATE : out STD_LOGIC_VECTOR ( 0 to 0 );
+    RXRATE : out STD_LOGIC_VECTOR ( 2 downto 0 );
+    RXPD : out STD_LOGIC_VECTOR ( 0 to 0 );
+    \gen_gtwizard_gthe4.rxpmareset_ch_int\ : out STD_LOGIC;
     rxoutclkpcs_out : in STD_LOGIC_VECTOR ( 0 to 0 );
-    \gen_powergood_delay.intclk_rrst_n_r_reg[4]_0\ : in STD_LOGIC
+    \gen_powergood_delay.intclk_rrst_n_r_reg[4]_0\ : in STD_LOGIC;
+    rxrate_in : in STD_LOGIC_VECTOR ( 2 downto 0 );
+    rxpmareset_in : in STD_LOGIC_VECTOR ( 0 to 0 )
   );
   attribute ORIG_REF_NAME : string;
   attribute ORIG_REF_NAME of LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_delay_powergood : entity is "gtwizard_ultrascale_v1_7_9_gthe4_delay_powergood";
@@ -3316,12 +3279,48 @@ begin
       Q => \gen_powergood_delay.wait_cnt\(8),
       R => \gen_powergood_delay.wait_cnt[8]_i_1_n_0\
     );
-\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_i_2\: unisim.vcomponents.LUT1
+\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_i_2\: unisim.vcomponents.LUT2
+    generic map(
+      INIT => X"8"
+    )
+        port map (
+      I0 => \gen_powergood_delay.pwr_on_fsm\,
+      I1 => rxpmareset_in(0),
+      O => \gen_gtwizard_gthe4.rxpmareset_ch_int\
+    );
+\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_i_3\: unisim.vcomponents.LUT1
     generic map(
       INIT => X"1"
     )
         port map (
       I0 => \gen_powergood_delay.pwr_on_fsm\,
+      O => RXPD(0)
+    );
+\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_i_4\: unisim.vcomponents.LUT2
+    generic map(
+      INIT => X"8"
+    )
+        port map (
+      I0 => \gen_powergood_delay.pwr_on_fsm\,
+      I1 => rxrate_in(2),
+      O => RXRATE(2)
+    );
+\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_i_5\: unisim.vcomponents.LUT2
+    generic map(
+      INIT => X"8"
+    )
+        port map (
+      I0 => \gen_powergood_delay.pwr_on_fsm\,
+      I1 => rxrate_in(1),
+      O => RXRATE(1)
+    );
+\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_i_6\: unisim.vcomponents.LUT2
+    generic map(
+      INIT => X"B"
+    )
+        port map (
+      I0 => rxrate_in(0),
+      I1 => \gen_powergood_delay.pwr_on_fsm\,
       O => RXRATE(0)
     );
 end STRUCTURE;
@@ -4581,6 +4580,9 @@ library UNISIM;
 use UNISIM.VCOMPONENTS.ALL;
 entity LOCAL_TCDS2LOCAL_TCDS2_gthe4_channel_wrapper is
   port (
+    cplllock_out : out STD_LOGIC_VECTOR ( 0 to 0 );
+    drprdy_out : out STD_LOGIC_VECTOR ( 0 to 0 );
+    eyescandataerror_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     gthtxn_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     gthtxp_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     \gen_gtwizard_gthe4.gtpowergood_int\ : out STD_LOGIC;
@@ -4591,16 +4593,27 @@ entity LOCAL_TCDS2LOCAL_TCDS2_gthe4_channel_wrapper is
     gtwiz_userclk_rx_srcclk_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     rxoutclkpcs_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     rxpmaresetdone_out : out STD_LOGIC_VECTOR ( 0 to 0 );
+    rxprbserr_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     rxresetdone_out : out STD_LOGIC_VECTOR ( 0 to 0 );
+    rxsyncdone_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     gtwiz_userclk_tx_srcclk_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     txpmaresetdone_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     txresetdone_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     gtwiz_userdata_rx_out : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    dmonitorout_out : out STD_LOGIC_VECTOR ( 15 downto 0 );
+    drpdo_out : out STD_LOGIC_VECTOR ( 15 downto 0 );
     rxctrl0_out : out STD_LOGIC_VECTOR ( 15 downto 0 );
     rxctrl1_out : out STD_LOGIC_VECTOR ( 15 downto 0 );
+    txbufstatus_out : out STD_LOGIC_VECTOR ( 1 downto 0 );
+    rxbufstatus_out : out STD_LOGIC_VECTOR ( 2 downto 0 );
     rxctrl2_out : out STD_LOGIC_VECTOR ( 7 downto 0 );
     rxctrl3_out : out STD_LOGIC_VECTOR ( 7 downto 0 );
-    gthrxn_in_0_sp_1 : out STD_LOGIC;
+    drpclk_in_0_sp_1 : out STD_LOGIC;
+    drpclk_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    drpen_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    drpwe_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    eyescanreset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    eyescantrigger_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     gthrxn_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     gthrxp_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     \gen_gtwizard_gthe4.gtrxreset_ch_int\ : in STD_LOGIC;
@@ -4610,21 +4623,42 @@ entity LOCAL_TCDS2LOCAL_TCDS2_gthe4_channel_wrapper is
     qpll1clk_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     qpll1refclk_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     rx8b10ben_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    rxbufreset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    rxcdrhold_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     rxcommadeten_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    rxdfelpmreset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    rxlpmen_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     rxmcommaalignen_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     rxpcommaalignen_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    rxpcsreset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    \gen_gtwizard_gthe4.rxpmareset_ch_int\ : in STD_LOGIC;
+    rxprbscntreset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     \gen_gtwizard_gthe4.rxprogdivreset_int\ : in STD_LOGIC;
-    RXRATE : in STD_LOGIC_VECTOR ( 0 to 0 );
+    RXPD : in STD_LOGIC_VECTOR ( 0 to 0 );
     \gen_gtwizard_gthe4.rxuserrdy_int\ : in STD_LOGIC;
     gtwiz_userclk_rx_usrclk2_out : in STD_LOGIC_VECTOR ( 0 to 0 );
     tx8b10ben_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    txinhibit_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    txpcsreset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    txpmareset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    txpolarity_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    txprbsforceerr_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     \gen_gtwizard_gthe4.txprogdivreset_int\ : in STD_LOGIC;
     \gen_gtwizard_gthe4.txuserrdy_int\ : in STD_LOGIC;
     gtwiz_userclk_tx_usrclk2_out : in STD_LOGIC_VECTOR ( 0 to 0 );
     gtwiz_userdata_tx_in : in STD_LOGIC_VECTOR ( 31 downto 0 );
+    drpdi_in : in STD_LOGIC_VECTOR ( 15 downto 0 );
+    pcsrsvdin_in : in STD_LOGIC_VECTOR ( 15 downto 0 );
     txctrl0_in : in STD_LOGIC_VECTOR ( 15 downto 0 );
     txctrl1_in : in STD_LOGIC_VECTOR ( 15 downto 0 );
+    RXRATE : in STD_LOGIC_VECTOR ( 2 downto 0 );
+    rxprbssel_in : in STD_LOGIC_VECTOR ( 3 downto 0 );
+    txprbssel_in : in STD_LOGIC_VECTOR ( 3 downto 0 );
+    txdiffctrl_in : in STD_LOGIC_VECTOR ( 4 downto 0 );
+    txpostcursor_in : in STD_LOGIC_VECTOR ( 4 downto 0 );
+    txprecursor_in : in STD_LOGIC_VECTOR ( 4 downto 0 );
     txctrl2_in : in STD_LOGIC_VECTOR ( 7 downto 0 );
+    drpaddr_in : in STD_LOGIC_VECTOR ( 9 downto 0 );
     lopt : in STD_LOGIC;
     lopt_1 : in STD_LOGIC;
     lopt_2 : out STD_LOGIC;
@@ -4639,21 +4673,35 @@ entity LOCAL_TCDS2LOCAL_TCDS2_gthe4_channel_wrapper is
 end LOCAL_TCDS2LOCAL_TCDS2_gthe4_channel_wrapper;
 
 architecture STRUCTURE of LOCAL_TCDS2LOCAL_TCDS2_gthe4_channel_wrapper is
-  signal gthrxn_in_0_sn_1 : STD_LOGIC;
+  signal drpclk_in_0_sn_1 : STD_LOGIC;
 begin
-  gthrxn_in_0_sp_1 <= gthrxn_in_0_sn_1;
+  drpclk_in_0_sp_1 <= drpclk_in_0_sn_1;
 channel_inst: entity work.LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
      port map (
-      RXRATE(0) => RXRATE(0),
+      RXPD(0) => RXPD(0),
+      RXRATE(2 downto 0) => RXRATE(2 downto 0),
+      cplllock_out(0) => cplllock_out(0),
+      dmonitorout_out(15 downto 0) => dmonitorout_out(15 downto 0),
+      drpaddr_in(9 downto 0) => drpaddr_in(9 downto 0),
+      drpclk_in(0) => drpclk_in(0),
+      drpclk_in_0_sp_1 => drpclk_in_0_sn_1,
+      drpdi_in(15 downto 0) => drpdi_in(15 downto 0),
+      drpdo_out(15 downto 0) => drpdo_out(15 downto 0),
+      drpen_in(0) => drpen_in(0),
+      drprdy_out(0) => drprdy_out(0),
+      drpwe_in(0) => drpwe_in(0),
+      eyescandataerror_out(0) => eyescandataerror_out(0),
+      eyescanreset_in(0) => eyescanreset_in(0),
+      eyescantrigger_in(0) => eyescantrigger_in(0),
       \gen_gtwizard_gthe4.gtpowergood_int\ => \gen_gtwizard_gthe4.gtpowergood_int\,
       \gen_gtwizard_gthe4.gtrxreset_ch_int\ => \gen_gtwizard_gthe4.gtrxreset_ch_int\,
       \gen_gtwizard_gthe4.gttxreset_int\ => \gen_gtwizard_gthe4.gttxreset_int\,
+      \gen_gtwizard_gthe4.rxpmareset_ch_int\ => \gen_gtwizard_gthe4.rxpmareset_ch_int\,
       \gen_gtwizard_gthe4.rxprogdivreset_int\ => \gen_gtwizard_gthe4.rxprogdivreset_int\,
       \gen_gtwizard_gthe4.rxuserrdy_int\ => \gen_gtwizard_gthe4.rxuserrdy_int\,
       \gen_gtwizard_gthe4.txprogdivreset_int\ => \gen_gtwizard_gthe4.txprogdivreset_int\,
       \gen_gtwizard_gthe4.txuserrdy_int\ => \gen_gtwizard_gthe4.txuserrdy_int\,
       gthrxn_in(0) => gthrxn_in(0),
-      gthrxn_in_0_sp_1 => gthrxn_in_0_sn_1,
       gthrxp_in(0) => gthrxp_in(0),
       gthtxn_out(0) => gthtxn_out(0),
       gthtxp_out(0) => gthtxp_out(0),
@@ -4671,13 +4719,17 @@ channel_inst: entity work.LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
       lopt_5 => lopt_5,
       lopt_6 => lopt_6,
       lopt_7 => lopt_7,
+      pcsrsvdin_in(15 downto 0) => pcsrsvdin_in(15 downto 0),
       qpll0clk_in(0) => qpll0clk_in(0),
       qpll0refclk_in(0) => qpll0refclk_in(0),
       qpll1clk_in(0) => qpll1clk_in(0),
       qpll1refclk_in(0) => qpll1refclk_in(0),
       rx8b10ben_in(0) => rx8b10ben_in(0),
+      rxbufreset_in(0) => rxbufreset_in(0),
+      rxbufstatus_out(2 downto 0) => rxbufstatus_out(2 downto 0),
       rxbyteisaligned_out(0) => rxbyteisaligned_out(0),
       rxbyterealign_out(0) => rxbyterealign_out(0),
+      rxcdrhold_in(0) => rxcdrhold_in(0),
       rxcdrlock_out(0) => rxcdrlock_out(0),
       rxcommadet_out(0) => rxcommadet_out(0),
       rxcommadeten_in(0) => rxcommadeten_in(0),
@@ -4685,16 +4737,33 @@ channel_inst: entity work.LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
       rxctrl1_out(15 downto 0) => rxctrl1_out(15 downto 0),
       rxctrl2_out(7 downto 0) => rxctrl2_out(7 downto 0),
       rxctrl3_out(7 downto 0) => rxctrl3_out(7 downto 0),
+      rxdfelpmreset_in(0) => rxdfelpmreset_in(0),
+      rxlpmen_in(0) => rxlpmen_in(0),
       rxmcommaalignen_in(0) => rxmcommaalignen_in(0),
       rxoutclkpcs_out(0) => rxoutclkpcs_out(0),
       rxpcommaalignen_in(0) => rxpcommaalignen_in(0),
+      rxpcsreset_in(0) => rxpcsreset_in(0),
       rxpmaresetdone_out(0) => rxpmaresetdone_out(0),
+      rxprbscntreset_in(0) => rxprbscntreset_in(0),
+      rxprbserr_out(0) => rxprbserr_out(0),
+      rxprbssel_in(3 downto 0) => rxprbssel_in(3 downto 0),
       rxresetdone_out(0) => rxresetdone_out(0),
+      rxsyncdone_out(0) => rxsyncdone_out(0),
       tx8b10ben_in(0) => tx8b10ben_in(0),
+      txbufstatus_out(1 downto 0) => txbufstatus_out(1 downto 0),
       txctrl0_in(15 downto 0) => txctrl0_in(15 downto 0),
       txctrl1_in(15 downto 0) => txctrl1_in(15 downto 0),
       txctrl2_in(7 downto 0) => txctrl2_in(7 downto 0),
+      txdiffctrl_in(4 downto 0) => txdiffctrl_in(4 downto 0),
+      txinhibit_in(0) => txinhibit_in(0),
+      txpcsreset_in(0) => txpcsreset_in(0),
+      txpmareset_in(0) => txpmareset_in(0),
       txpmaresetdone_out(0) => txpmaresetdone_out(0),
+      txpolarity_in(0) => txpolarity_in(0),
+      txpostcursor_in(4 downto 0) => txpostcursor_in(4 downto 0),
+      txprbsforceerr_in(0) => txprbsforceerr_in(0),
+      txprbssel_in(3 downto 0) => txprbssel_in(3 downto 0),
+      txprecursor_in(4 downto 0) => txprecursor_in(4 downto 0),
       txresetdone_out(0) => txresetdone_out(0)
     );
 end STRUCTURE;
@@ -7128,6 +7197,10 @@ library UNISIM;
 use UNISIM.VCOMPONENTS.ALL;
 entity LOCAL_TCDS2LOCAL_TCDS2_gtwizard_gthe4 is
   port (
+    gtpowergood_out : out STD_LOGIC_VECTOR ( 0 to 0 );
+    cplllock_out : out STD_LOGIC_VECTOR ( 0 to 0 );
+    drprdy_out : out STD_LOGIC_VECTOR ( 0 to 0 );
+    eyescandataerror_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     gthtxn_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     gthtxp_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     rxbyteisaligned_out : out STD_LOGIC_VECTOR ( 0 to 0 );
@@ -7135,22 +7208,33 @@ entity LOCAL_TCDS2LOCAL_TCDS2_gtwizard_gthe4 is
     rxcommadet_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     gtwiz_userclk_rx_srcclk_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     rxpmaresetdone_out : out STD_LOGIC_VECTOR ( 0 to 0 );
+    rxprbserr_out : out STD_LOGIC_VECTOR ( 0 to 0 );
+    rxsyncdone_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     gtwiz_userclk_tx_srcclk_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     txpmaresetdone_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     gtwiz_userdata_rx_out : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    dmonitorout_out : out STD_LOGIC_VECTOR ( 15 downto 0 );
+    drpdo_out : out STD_LOGIC_VECTOR ( 15 downto 0 );
     rxctrl0_out : out STD_LOGIC_VECTOR ( 15 downto 0 );
     rxctrl1_out : out STD_LOGIC_VECTOR ( 15 downto 0 );
+    txbufstatus_out : out STD_LOGIC_VECTOR ( 1 downto 0 );
+    rxbufstatus_out : out STD_LOGIC_VECTOR ( 2 downto 0 );
     rxctrl2_out : out STD_LOGIC_VECTOR ( 7 downto 0 );
     rxctrl3_out : out STD_LOGIC_VECTOR ( 7 downto 0 );
     gtwiz_userclk_rx_usrclk2_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     gtwiz_userclk_tx_usrclk2_out : out STD_LOGIC_VECTOR ( 0 to 0 );
-    gtpowergood_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     gtwiz_userclk_tx_active_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     gtwiz_userclk_rx_active_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     gtwiz_reset_tx_done_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     gtwiz_reset_rx_cdr_stable_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     gtwiz_reset_rx_done_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     gtwiz_reset_qpll0reset_out : out STD_LOGIC_VECTOR ( 0 to 0 );
+    rxrate_in : in STD_LOGIC_VECTOR ( 2 downto 0 );
+    drpclk_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    drpen_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    drpwe_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    eyescanreset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    eyescantrigger_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     gthrxn_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     gthrxp_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     qpll0clk_in : in STD_LOGIC_VECTOR ( 0 to 0 );
@@ -7158,20 +7242,40 @@ entity LOCAL_TCDS2LOCAL_TCDS2_gtwizard_gthe4 is
     qpll1clk_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     qpll1refclk_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     rx8b10ben_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    rxbufreset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    rxcdrhold_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     rxcommadeten_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    rxdfelpmreset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    rxlpmen_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     rxmcommaalignen_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     rxpcommaalignen_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    rxpcsreset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    rxprbscntreset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     tx8b10ben_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    txinhibit_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    txpcsreset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    txpmareset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    txpolarity_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    txprbsforceerr_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     gtwiz_userdata_tx_in : in STD_LOGIC_VECTOR ( 31 downto 0 );
+    drpdi_in : in STD_LOGIC_VECTOR ( 15 downto 0 );
+    pcsrsvdin_in : in STD_LOGIC_VECTOR ( 15 downto 0 );
     txctrl0_in : in STD_LOGIC_VECTOR ( 15 downto 0 );
     txctrl1_in : in STD_LOGIC_VECTOR ( 15 downto 0 );
+    rxprbssel_in : in STD_LOGIC_VECTOR ( 3 downto 0 );
+    txprbssel_in : in STD_LOGIC_VECTOR ( 3 downto 0 );
+    txdiffctrl_in : in STD_LOGIC_VECTOR ( 4 downto 0 );
+    txpostcursor_in : in STD_LOGIC_VECTOR ( 4 downto 0 );
+    txprecursor_in : in STD_LOGIC_VECTOR ( 4 downto 0 );
     txctrl2_in : in STD_LOGIC_VECTOR ( 7 downto 0 );
+    drpaddr_in : in STD_LOGIC_VECTOR ( 9 downto 0 );
     gtwiz_userclk_tx_reset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     gtwiz_userclk_rx_reset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     gtwiz_reset_qpll0lock_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     gtwiz_reset_clk_freerun_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     gtwiz_reset_all_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     gtwiz_reset_tx_datapath_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    rxpmareset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     gtwiz_reset_tx_pll_and_datapath_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     gtwiz_reset_rx_datapath_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     gtwiz_reset_rx_pll_and_datapath_in : in STD_LOGIC_VECTOR ( 0 to 0 )
@@ -7181,17 +7285,20 @@ entity LOCAL_TCDS2LOCAL_TCDS2_gtwizard_gthe4 is
 end LOCAL_TCDS2LOCAL_TCDS2_gtwizard_gthe4;
 
 architecture STRUCTURE of LOCAL_TCDS2LOCAL_TCDS2_gtwizard_gthe4 is
-  signal \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_10\ : STD_LOGIC;
-  signal \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_13\ : STD_LOGIC;
-  signal \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_5\ : STD_LOGIC;
+  signal \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_11\ : STD_LOGIC;
+  signal \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_136\ : STD_LOGIC;
+  signal \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_14\ : STD_LOGIC;
+  signal \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_18\ : STD_LOGIC;
   signal \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_8\ : STD_LOGIC;
-  signal \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_94\ : STD_LOGIC;
+  signal \gen_gtwizard_gthe4.gen_pwrgood_delay_inst[0].delay_powergood_inst_n_3\ : STD_LOGIC;
   signal \gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.rxresetdone_sync\ : STD_LOGIC;
   signal \gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.txresetdone_sync\ : STD_LOGIC;
   signal \gen_gtwizard_gthe4.gtpowergood_int\ : STD_LOGIC;
   signal \gen_gtwizard_gthe4.gtrxreset_ch_int\ : STD_LOGIC;
   signal \gen_gtwizard_gthe4.gttxreset_int\ : STD_LOGIC;
+  signal \gen_gtwizard_gthe4.rxpmareset_ch_int\ : STD_LOGIC;
   signal \gen_gtwizard_gthe4.rxprogdivreset_int\ : STD_LOGIC;
+  signal \gen_gtwizard_gthe4.rxrate_ch_int\ : STD_LOGIC_VECTOR ( 2 downto 1 );
   signal \gen_gtwizard_gthe4.rxratemode_ch_int\ : STD_LOGIC;
   signal \gen_gtwizard_gthe4.rxuserrdy_int\ : STD_LOGIC;
   signal \gen_gtwizard_gthe4.txprogdivreset_int\ : STD_LOGIC;
@@ -7219,16 +7326,31 @@ begin
   gtwiz_userclk_tx_usrclk2_out(0) <= \^gtwiz_userclk_tx_usrclk2_out\(0);
 \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst\: entity work.LOCAL_TCDS2LOCAL_TCDS2_gthe4_channel_wrapper
      port map (
-      RXRATE(0) => \gen_gtwizard_gthe4.rxratemode_ch_int\,
+      RXPD(0) => \gen_gtwizard_gthe4.rxratemode_ch_int\,
+      RXRATE(2 downto 1) => \gen_gtwizard_gthe4.rxrate_ch_int\(2 downto 1),
+      RXRATE(0) => \gen_gtwizard_gthe4.gen_pwrgood_delay_inst[0].delay_powergood_inst_n_3\,
+      cplllock_out(0) => cplllock_out(0),
+      dmonitorout_out(15 downto 0) => dmonitorout_out(15 downto 0),
+      drpaddr_in(9 downto 0) => drpaddr_in(9 downto 0),
+      drpclk_in(0) => drpclk_in(0),
+      drpclk_in_0_sp_1 => \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_136\,
+      drpdi_in(15 downto 0) => drpdi_in(15 downto 0),
+      drpdo_out(15 downto 0) => drpdo_out(15 downto 0),
+      drpen_in(0) => drpen_in(0),
+      drprdy_out(0) => drprdy_out(0),
+      drpwe_in(0) => drpwe_in(0),
+      eyescandataerror_out(0) => eyescandataerror_out(0),
+      eyescanreset_in(0) => eyescanreset_in(0),
+      eyescantrigger_in(0) => eyescantrigger_in(0),
       \gen_gtwizard_gthe4.gtpowergood_int\ => \gen_gtwizard_gthe4.gtpowergood_int\,
       \gen_gtwizard_gthe4.gtrxreset_ch_int\ => \gen_gtwizard_gthe4.gtrxreset_ch_int\,
       \gen_gtwizard_gthe4.gttxreset_int\ => \gen_gtwizard_gthe4.gttxreset_int\,
+      \gen_gtwizard_gthe4.rxpmareset_ch_int\ => \gen_gtwizard_gthe4.rxpmareset_ch_int\,
       \gen_gtwizard_gthe4.rxprogdivreset_int\ => \gen_gtwizard_gthe4.rxprogdivreset_int\,
       \gen_gtwizard_gthe4.rxuserrdy_int\ => \gen_gtwizard_gthe4.rxuserrdy_int\,
       \gen_gtwizard_gthe4.txprogdivreset_int\ => \gen_gtwizard_gthe4.txprogdivreset_int\,
       \gen_gtwizard_gthe4.txuserrdy_int\ => \gen_gtwizard_gthe4.txuserrdy_int\,
       gthrxn_in(0) => gthrxn_in(0),
-      gthrxn_in_0_sp_1 => \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_94\,
       gthrxp_in(0) => gthrxp_in(0),
       gthtxn_out(0) => gthtxn_out(0),
       gthtxp_out(0) => gthtxp_out(0),
@@ -7246,50 +7368,76 @@ begin
       lopt_5 => gtwiz_userclk_tx_reset_in(0),
       lopt_6 => lopt_4,
       lopt_7 => lopt_5,
+      pcsrsvdin_in(15 downto 0) => pcsrsvdin_in(15 downto 0),
       qpll0clk_in(0) => qpll0clk_in(0),
       qpll0refclk_in(0) => qpll0refclk_in(0),
       qpll1clk_in(0) => qpll1clk_in(0),
       qpll1refclk_in(0) => qpll1refclk_in(0),
       rx8b10ben_in(0) => rx8b10ben_in(0),
+      rxbufreset_in(0) => rxbufreset_in(0),
+      rxbufstatus_out(2 downto 0) => rxbufstatus_out(2 downto 0),
       rxbyteisaligned_out(0) => rxbyteisaligned_out(0),
       rxbyterealign_out(0) => rxbyterealign_out(0),
-      rxcdrlock_out(0) => \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_5\,
+      rxcdrhold_in(0) => rxcdrhold_in(0),
+      rxcdrlock_out(0) => \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_8\,
       rxcommadet_out(0) => rxcommadet_out(0),
       rxcommadeten_in(0) => rxcommadeten_in(0),
       rxctrl0_out(15 downto 0) => rxctrl0_out(15 downto 0),
       rxctrl1_out(15 downto 0) => rxctrl1_out(15 downto 0),
       rxctrl2_out(7 downto 0) => rxctrl2_out(7 downto 0),
       rxctrl3_out(7 downto 0) => rxctrl3_out(7 downto 0),
+      rxdfelpmreset_in(0) => rxdfelpmreset_in(0),
+      rxlpmen_in(0) => rxlpmen_in(0),
       rxmcommaalignen_in(0) => rxmcommaalignen_in(0),
-      rxoutclkpcs_out(0) => \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_8\,
+      rxoutclkpcs_out(0) => \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_11\,
       rxpcommaalignen_in(0) => rxpcommaalignen_in(0),
+      rxpcsreset_in(0) => rxpcsreset_in(0),
       rxpmaresetdone_out(0) => rxpmaresetdone_out(0),
-      rxresetdone_out(0) => \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_10\,
+      rxprbscntreset_in(0) => rxprbscntreset_in(0),
+      rxprbserr_out(0) => rxprbserr_out(0),
+      rxprbssel_in(3 downto 0) => rxprbssel_in(3 downto 0),
+      rxresetdone_out(0) => \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_14\,
+      rxsyncdone_out(0) => rxsyncdone_out(0),
       tx8b10ben_in(0) => tx8b10ben_in(0),
+      txbufstatus_out(1 downto 0) => txbufstatus_out(1 downto 0),
       txctrl0_in(15 downto 0) => txctrl0_in(15 downto 0),
       txctrl1_in(15 downto 0) => txctrl1_in(15 downto 0),
       txctrl2_in(7 downto 0) => txctrl2_in(7 downto 0),
+      txdiffctrl_in(4 downto 0) => txdiffctrl_in(4 downto 0),
+      txinhibit_in(0) => txinhibit_in(0),
+      txpcsreset_in(0) => txpcsreset_in(0),
+      txpmareset_in(0) => txpmareset_in(0),
       txpmaresetdone_out(0) => txpmaresetdone_out(0),
-      txresetdone_out(0) => \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_13\
+      txpolarity_in(0) => txpolarity_in(0),
+      txpostcursor_in(4 downto 0) => txpostcursor_in(4 downto 0),
+      txprbsforceerr_in(0) => txprbsforceerr_in(0),
+      txprbssel_in(3 downto 0) => txprbssel_in(3 downto 0),
+      txprecursor_in(4 downto 0) => txprecursor_in(4 downto 0),
+      txresetdone_out(0) => \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_18\
     );
 \gen_gtwizard_gthe4.gen_pwrgood_delay_inst[0].delay_powergood_inst\: entity work.LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_delay_powergood
      port map (
-      RXRATE(0) => \gen_gtwizard_gthe4.rxratemode_ch_int\,
-      \gen_powergood_delay.intclk_rrst_n_r_reg[4]_0\ => \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_94\,
+      RXPD(0) => \gen_gtwizard_gthe4.rxratemode_ch_int\,
+      RXRATE(2 downto 1) => \gen_gtwizard_gthe4.rxrate_ch_int\(2 downto 1),
+      RXRATE(0) => \gen_gtwizard_gthe4.gen_pwrgood_delay_inst[0].delay_powergood_inst_n_3\,
+      \gen_gtwizard_gthe4.rxpmareset_ch_int\ => \gen_gtwizard_gthe4.rxpmareset_ch_int\,
+      \gen_powergood_delay.intclk_rrst_n_r_reg[4]_0\ => \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_136\,
       \out\ => \^gtpowergood_out\(0),
-      rxoutclkpcs_out(0) => \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_8\
+      rxoutclkpcs_out(0) => \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_11\,
+      rxpmareset_in(0) => rxpmareset_in(0),
+      rxrate_in(2 downto 0) => rxrate_in(2 downto 0)
     );
 \gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.gen_ch_xrd[0].bit_synchronizer_rxresetdone_inst\: entity work.LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_bit_synchronizer
      port map (
       \gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.rxresetdone_sync\ => \gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.rxresetdone_sync\,
       gtwiz_reset_clk_freerun_in(0) => gtwiz_reset_clk_freerun_in(0),
-      rxresetdone_out(0) => \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_10\
+      rxresetdone_out(0) => \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_14\
     );
 \gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.gen_ch_xrd[0].bit_synchronizer_txresetdone_inst\: entity work.LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_bit_synchronizer_0
      port map (
       \gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.txresetdone_sync\ => \gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.txresetdone_sync\,
       gtwiz_reset_clk_freerun_in(0) => gtwiz_reset_clk_freerun_in(0),
-      txresetdone_out(0) => \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_13\
+      txresetdone_out(0) => \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_18\
     );
 \gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.gtwiz_reset_inst\: entity work.LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gtwiz_reset
      port map (
@@ -7318,7 +7466,7 @@ begin
       gtwiz_userclk_rx_usrclk2_out(0) => \^gtwiz_userclk_rx_usrclk2_out\(0),
       gtwiz_userclk_tx_active_out(0) => \^gtwiz_userclk_tx_active_out\(0),
       gtwiz_userclk_tx_usrclk2_out(0) => \^gtwiz_userclk_tx_usrclk2_out\(0),
-      rxcdrlock_out(0) => \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_5\
+      rxcdrlock_out(0) => \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_8\
     );
 \gen_gtwizard_gthe4.gen_rx_user_clocking_internal.gen_single_instance.gtwiz_userclk_rx_inst\: entity work.LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gtwiz_userclk_rx
      port map (
@@ -8093,24 +8241,7 @@ begin
   bufgtrstmask_out(1) <= \<const0>\;
   bufgtrstmask_out(0) <= \<const0>\;
   cpllfbclklost_out(0) <= \<const0>\;
-  cplllock_out(0) <= \<const0>\;
   cpllrefclklost_out(0) <= \<const0>\;
-  dmonitorout_out(15) <= \<const0>\;
-  dmonitorout_out(14) <= \<const0>\;
-  dmonitorout_out(13) <= \<const0>\;
-  dmonitorout_out(12) <= \<const0>\;
-  dmonitorout_out(11) <= \<const0>\;
-  dmonitorout_out(10) <= \<const0>\;
-  dmonitorout_out(9) <= \<const0>\;
-  dmonitorout_out(8) <= \<const0>\;
-  dmonitorout_out(7) <= \<const0>\;
-  dmonitorout_out(6) <= \<const0>\;
-  dmonitorout_out(5) <= \<const0>\;
-  dmonitorout_out(4) <= \<const0>\;
-  dmonitorout_out(3) <= \<const0>\;
-  dmonitorout_out(2) <= \<const0>\;
-  dmonitorout_out(1) <= \<const0>\;
-  dmonitorout_out(0) <= \<const0>\;
   dmonitoroutclk_out(0) <= \<const0>\;
   drpdo_common_out(15) <= \<const0>\;
   drpdo_common_out(14) <= \<const0>\;
@@ -8128,25 +8259,7 @@ begin
   drpdo_common_out(2) <= \<const0>\;
   drpdo_common_out(1) <= \<const0>\;
   drpdo_common_out(0) <= \<const0>\;
-  drpdo_out(15) <= \<const0>\;
-  drpdo_out(14) <= \<const0>\;
-  drpdo_out(13) <= \<const0>\;
-  drpdo_out(12) <= \<const0>\;
-  drpdo_out(11) <= \<const0>\;
-  drpdo_out(10) <= \<const0>\;
-  drpdo_out(9) <= \<const0>\;
-  drpdo_out(8) <= \<const0>\;
-  drpdo_out(7) <= \<const0>\;
-  drpdo_out(6) <= \<const0>\;
-  drpdo_out(5) <= \<const0>\;
-  drpdo_out(4) <= \<const0>\;
-  drpdo_out(3) <= \<const0>\;
-  drpdo_out(2) <= \<const0>\;
-  drpdo_out(1) <= \<const0>\;
-  drpdo_out(0) <= \<const0>\;
   drprdy_common_out(0) <= \<const0>\;
-  drprdy_out(0) <= \<const0>\;
-  eyescandataerror_out(0) <= \<const0>\;
   gtrefclkmonitor_out(0) <= \<const0>\;
   gtwiz_buffbypass_rx_done_out(0) <= \<const0>\;
   gtwiz_buffbypass_rx_error_out(0) <= \<const0>\;
@@ -8248,9 +8361,6 @@ begin
   refclkoutmonitor0_out(0) <= \<const0>\;
   refclkoutmonitor1_out(0) <= \<const0>\;
   resetexception_out(0) <= \<const0>\;
-  rxbufstatus_out(2) <= \<const0>\;
-  rxbufstatus_out(1) <= \<const0>\;
-  rxbufstatus_out(0) <= \<const0>\;
   rxcdrlock_out(0) <= \<const0>\;
   rxcdrphdone_out(0) <= \<const0>\;
   rxchanbondseq_out(0) <= \<const0>\;
@@ -8435,7 +8545,6 @@ begin
   rxoutclkpcs_out(0) <= \<const0>\;
   rxphaligndone_out(0) <= \<const0>\;
   rxphalignerr_out(0) <= \<const0>\;
-  rxprbserr_out(0) <= \<const0>\;
   rxprbslocked_out(0) <= \<const0>\;
   rxprgdivresetdone_out(0) <= \<const0>\;
   rxqpisenn_out(0) <= \<const0>\;
@@ -8458,7 +8567,6 @@ begin
   rxstatus_out(2) <= \<const0>\;
   rxstatus_out(1) <= \<const0>\;
   rxstatus_out(0) <= \<const0>\;
-  rxsyncdone_out(0) <= \<const0>\;
   rxsyncout_out(0) <= \<const0>\;
   rxvalid_out(0) <= \<const0>\;
   sdm0finalout_out(3) <= \<const0>\;
@@ -8510,8 +8618,6 @@ begin
   tcongpo_out(1) <= \<const0>\;
   tcongpo_out(0) <= \<const0>\;
   tconrsvdout0_out(0) <= \<const0>\;
-  txbufstatus_out(1) <= \<const0>\;
-  txbufstatus_out(0) <= \<const0>\;
   txcomfinish_out(0) <= \<const0>\;
   txdccdone_out(0) <= \<const0>\;
   txdlysresetdone_out(0) <= \<const0>\;
@@ -8540,6 +8646,18 @@ GND: unisim.vcomponents.GND
     );
 \gen_gtwizard_gthe4_top.LOCAL_TCDS2_gtwizard_gthe4_inst\: entity work.LOCAL_TCDS2LOCAL_TCDS2_gtwizard_gthe4
      port map (
+      cplllock_out(0) => cplllock_out(0),
+      dmonitorout_out(15 downto 0) => dmonitorout_out(15 downto 0),
+      drpaddr_in(9 downto 0) => drpaddr_in(9 downto 0),
+      drpclk_in(0) => drpclk_in(0),
+      drpdi_in(15 downto 0) => drpdi_in(15 downto 0),
+      drpdo_out(15 downto 0) => drpdo_out(15 downto 0),
+      drpen_in(0) => drpen_in(0),
+      drprdy_out(0) => drprdy_out(0),
+      drpwe_in(0) => drpwe_in(0),
+      eyescandataerror_out(0) => eyescandataerror_out(0),
+      eyescanreset_in(0) => eyescanreset_in(0),
+      eyescantrigger_in(0) => eyescantrigger_in(0),
       gthrxn_in(0) => gthrxn_in(0),
       gthrxp_in(0) => gthrxp_in(0),
       gthtxn_out(0) => gthtxn_out(0),
@@ -8566,27 +8684,50 @@ GND: unisim.vcomponents.GND
       gtwiz_userclk_tx_usrclk2_out(0) => \^gtwiz_userclk_tx_usrclk2_out\(0),
       gtwiz_userdata_rx_out(31 downto 0) => gtwiz_userdata_rx_out(31 downto 0),
       gtwiz_userdata_tx_in(31 downto 0) => gtwiz_userdata_tx_in(31 downto 0),
+      pcsrsvdin_in(15 downto 0) => pcsrsvdin_in(15 downto 0),
       qpll0clk_in(0) => qpll0clk_in(0),
       qpll0refclk_in(0) => qpll0refclk_in(0),
       qpll1clk_in(0) => qpll1clk_in(0),
       qpll1refclk_in(0) => qpll1refclk_in(0),
       rx8b10ben_in(0) => rx8b10ben_in(0),
+      rxbufreset_in(0) => rxbufreset_in(0),
+      rxbufstatus_out(2 downto 0) => rxbufstatus_out(2 downto 0),
       rxbyteisaligned_out(0) => rxbyteisaligned_out(0),
       rxbyterealign_out(0) => rxbyterealign_out(0),
+      rxcdrhold_in(0) => rxcdrhold_in(0),
       rxcommadet_out(0) => rxcommadet_out(0),
       rxcommadeten_in(0) => rxcommadeten_in(0),
       rxctrl0_out(15 downto 0) => rxctrl0_out(15 downto 0),
       rxctrl1_out(15 downto 0) => rxctrl1_out(15 downto 0),
       rxctrl2_out(7 downto 0) => rxctrl2_out(7 downto 0),
       rxctrl3_out(7 downto 0) => rxctrl3_out(7 downto 0),
+      rxdfelpmreset_in(0) => rxdfelpmreset_in(0),
+      rxlpmen_in(0) => rxlpmen_in(0),
       rxmcommaalignen_in(0) => rxmcommaalignen_in(0),
       rxpcommaalignen_in(0) => rxpcommaalignen_in(0),
+      rxpcsreset_in(0) => rxpcsreset_in(0),
+      rxpmareset_in(0) => rxpmareset_in(0),
       rxpmaresetdone_out(0) => rxpmaresetdone_out(0),
+      rxprbscntreset_in(0) => rxprbscntreset_in(0),
+      rxprbserr_out(0) => rxprbserr_out(0),
+      rxprbssel_in(3 downto 0) => rxprbssel_in(3 downto 0),
+      rxrate_in(2 downto 0) => rxrate_in(2 downto 0),
+      rxsyncdone_out(0) => rxsyncdone_out(0),
       tx8b10ben_in(0) => tx8b10ben_in(0),
+      txbufstatus_out(1 downto 0) => txbufstatus_out(1 downto 0),
       txctrl0_in(15 downto 0) => txctrl0_in(15 downto 0),
       txctrl1_in(15 downto 0) => txctrl1_in(15 downto 0),
       txctrl2_in(7 downto 0) => txctrl2_in(7 downto 0),
-      txpmaresetdone_out(0) => txpmaresetdone_out(0)
+      txdiffctrl_in(4 downto 0) => txdiffctrl_in(4 downto 0),
+      txinhibit_in(0) => txinhibit_in(0),
+      txpcsreset_in(0) => txpcsreset_in(0),
+      txpmareset_in(0) => txpmareset_in(0),
+      txpmaresetdone_out(0) => txpmaresetdone_out(0),
+      txpolarity_in(0) => txpolarity_in(0),
+      txpostcursor_in(4 downto 0) => txpostcursor_in(4 downto 0),
+      txprbsforceerr_in(0) => txprbsforceerr_in(0),
+      txprbssel_in(3 downto 0) => txprbssel_in(3 downto 0),
+      txprecursor_in(4 downto 0) => txprecursor_in(4 downto 0)
     );
 end STRUCTURE;
 library IEEE;
@@ -8618,23 +8759,55 @@ entity LOCAL_TCDS2 is
     gtwiz_reset_qpll0reset_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     gtwiz_userdata_tx_in : in STD_LOGIC_VECTOR ( 31 downto 0 );
     gtwiz_userdata_rx_out : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    drpaddr_in : in STD_LOGIC_VECTOR ( 9 downto 0 );
+    drpclk_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    drpdi_in : in STD_LOGIC_VECTOR ( 15 downto 0 );
+    drpen_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    drpwe_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    eyescanreset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    eyescantrigger_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     gthrxn_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     gthrxp_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    pcsrsvdin_in : in STD_LOGIC_VECTOR ( 15 downto 0 );
     qpll0clk_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     qpll0refclk_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     qpll1clk_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     qpll1refclk_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     rx8b10ben_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    rxbufreset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    rxcdrhold_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     rxcommadeten_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    rxdfelpmreset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    rxlpmen_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     rxmcommaalignen_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     rxpcommaalignen_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    rxpcsreset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    rxpmareset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    rxprbscntreset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    rxprbssel_in : in STD_LOGIC_VECTOR ( 3 downto 0 );
+    rxrate_in : in STD_LOGIC_VECTOR ( 2 downto 0 );
     tx8b10ben_in : in STD_LOGIC_VECTOR ( 0 to 0 );
     txctrl0_in : in STD_LOGIC_VECTOR ( 15 downto 0 );
     txctrl1_in : in STD_LOGIC_VECTOR ( 15 downto 0 );
     txctrl2_in : in STD_LOGIC_VECTOR ( 7 downto 0 );
+    txdiffctrl_in : in STD_LOGIC_VECTOR ( 4 downto 0 );
+    txinhibit_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    txpcsreset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    txpmareset_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    txpolarity_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    txpostcursor_in : in STD_LOGIC_VECTOR ( 4 downto 0 );
+    txprbsforceerr_in : in STD_LOGIC_VECTOR ( 0 to 0 );
+    txprbssel_in : in STD_LOGIC_VECTOR ( 3 downto 0 );
+    txprecursor_in : in STD_LOGIC_VECTOR ( 4 downto 0 );
+    cplllock_out : out STD_LOGIC_VECTOR ( 0 to 0 );
+    dmonitorout_out : out STD_LOGIC_VECTOR ( 15 downto 0 );
+    drpdo_out : out STD_LOGIC_VECTOR ( 15 downto 0 );
+    drprdy_out : out STD_LOGIC_VECTOR ( 0 to 0 );
+    eyescandataerror_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     gthtxn_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     gthtxp_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     gtpowergood_out : out STD_LOGIC_VECTOR ( 0 to 0 );
+    rxbufstatus_out : out STD_LOGIC_VECTOR ( 2 downto 0 );
     rxbyteisaligned_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     rxbyterealign_out : out STD_LOGIC_VECTOR ( 0 to 0 );
     rxcommadet_out : out STD_LOGIC_VECTOR ( 0 to 0 );
@@ -8643,6 +8816,9 @@ entity LOCAL_TCDS2 is
     rxctrl2_out : out STD_LOGIC_VECTOR ( 7 downto 0 );
     rxctrl3_out : out STD_LOGIC_VECTOR ( 7 downto 0 );
     rxpmaresetdone_out : out STD_LOGIC_VECTOR ( 0 to 0 );
+    rxprbserr_out : out STD_LOGIC_VECTOR ( 0 to 0 );
+    rxsyncdone_out : out STD_LOGIC_VECTOR ( 0 to 0 );
+    txbufstatus_out : out STD_LOGIC_VECTOR ( 1 downto 0 );
     txpmaresetdone_out : out STD_LOGIC_VECTOR ( 0 to 0 )
   );
   attribute NotValidForBitStream : boolean;
@@ -8662,15 +8838,10 @@ architecture STRUCTURE of LOCAL_TCDS2 is
   signal NLW_inst_bufgtreset_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
   signal NLW_inst_bufgtrstmask_out_UNCONNECTED : STD_LOGIC_VECTOR ( 2 downto 0 );
   signal NLW_inst_cpllfbclklost_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
-  signal NLW_inst_cplllock_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
   signal NLW_inst_cpllrefclklost_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
-  signal NLW_inst_dmonitorout_out_UNCONNECTED : STD_LOGIC_VECTOR ( 15 downto 0 );
   signal NLW_inst_dmonitoroutclk_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
   signal NLW_inst_drpdo_common_out_UNCONNECTED : STD_LOGIC_VECTOR ( 15 downto 0 );
-  signal NLW_inst_drpdo_out_UNCONNECTED : STD_LOGIC_VECTOR ( 15 downto 0 );
   signal NLW_inst_drprdy_common_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
-  signal NLW_inst_drprdy_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
-  signal NLW_inst_eyescandataerror_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
   signal NLW_inst_gtrefclkmonitor_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
   signal NLW_inst_gtwiz_buffbypass_rx_done_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
   signal NLW_inst_gtwiz_buffbypass_rx_error_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
@@ -8708,7 +8879,6 @@ architecture STRUCTURE of LOCAL_TCDS2 is
   signal NLW_inst_refclkoutmonitor0_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
   signal NLW_inst_refclkoutmonitor1_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
   signal NLW_inst_resetexception_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
-  signal NLW_inst_rxbufstatus_out_UNCONNECTED : STD_LOGIC_VECTOR ( 2 downto 0 );
   signal NLW_inst_rxcdrlock_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
   signal NLW_inst_rxcdrphdone_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
   signal NLW_inst_rxchanbondseq_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
@@ -8740,7 +8910,6 @@ architecture STRUCTURE of LOCAL_TCDS2 is
   signal NLW_inst_rxoutclkpcs_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
   signal NLW_inst_rxphaligndone_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
   signal NLW_inst_rxphalignerr_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
-  signal NLW_inst_rxprbserr_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
   signal NLW_inst_rxprbslocked_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
   signal NLW_inst_rxprgdivresetdone_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
   signal NLW_inst_rxqpisenn_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
@@ -8758,7 +8927,6 @@ architecture STRUCTURE of LOCAL_TCDS2 is
   signal NLW_inst_rxslippmardy_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
   signal NLW_inst_rxstartofseq_out_UNCONNECTED : STD_LOGIC_VECTOR ( 1 downto 0 );
   signal NLW_inst_rxstatus_out_UNCONNECTED : STD_LOGIC_VECTOR ( 2 downto 0 );
-  signal NLW_inst_rxsyncdone_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
   signal NLW_inst_rxsyncout_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
   signal NLW_inst_rxvalid_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
   signal NLW_inst_sdm0finalout_out_UNCONNECTED : STD_LOGIC_VECTOR ( 3 downto 0 );
@@ -8767,7 +8935,6 @@ architecture STRUCTURE of LOCAL_TCDS2 is
   signal NLW_inst_sdm1testdata_out_UNCONNECTED : STD_LOGIC_VECTOR ( 14 downto 0 );
   signal NLW_inst_tcongpo_out_UNCONNECTED : STD_LOGIC_VECTOR ( 9 downto 0 );
   signal NLW_inst_tconrsvdout0_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
-  signal NLW_inst_txbufstatus_out_UNCONNECTED : STD_LOGIC_VECTOR ( 1 downto 0 );
   signal NLW_inst_txcomfinish_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
   signal NLW_inst_txdccdone_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
   signal NLW_inst_txdlysresetdone_out_UNCONNECTED : STD_LOGIC_VECTOR ( 0 to 0 );
@@ -8995,7 +9162,7 @@ inst: entity work.LOCAL_TCDS2LOCAL_TCDS2_gtwizard_top
       clkrsvd1_in(0) => '0',
       cpllfbclklost_out(0) => NLW_inst_cpllfbclklost_out_UNCONNECTED(0),
       cpllfreqlock_in(0) => '0',
-      cplllock_out(0) => NLW_inst_cplllock_out_UNCONNECTED(0),
+      cplllock_out(0) => cplllock_out(0),
       cplllockdetclk_in(0) => '0',
       cplllocken_in(0) => '0',
       cpllpd_in(0) => '1',
@@ -9004,23 +9171,23 @@ inst: entity work.LOCAL_TCDS2LOCAL_TCDS2_gtwizard_top
       cpllreset_in(0) => '1',
       dmonfiforeset_in(0) => '0',
       dmonitorclk_in(0) => '0',
-      dmonitorout_out(15 downto 0) => NLW_inst_dmonitorout_out_UNCONNECTED(15 downto 0),
+      dmonitorout_out(15 downto 0) => dmonitorout_out(15 downto 0),
       dmonitoroutclk_out(0) => NLW_inst_dmonitoroutclk_out_UNCONNECTED(0),
       drpaddr_common_in(15 downto 0) => B"0000000000000000",
-      drpaddr_in(9 downto 0) => B"0000000000",
+      drpaddr_in(9 downto 0) => drpaddr_in(9 downto 0),
       drpclk_common_in(0) => '0',
-      drpclk_in(0) => '0',
+      drpclk_in(0) => drpclk_in(0),
       drpdi_common_in(15 downto 0) => B"0000000000000000",
-      drpdi_in(15 downto 0) => B"0000000000000000",
+      drpdi_in(15 downto 0) => drpdi_in(15 downto 0),
       drpdo_common_out(15 downto 0) => NLW_inst_drpdo_common_out_UNCONNECTED(15 downto 0),
-      drpdo_out(15 downto 0) => NLW_inst_drpdo_out_UNCONNECTED(15 downto 0),
+      drpdo_out(15 downto 0) => drpdo_out(15 downto 0),
       drpen_common_in(0) => '0',
-      drpen_in(0) => '0',
+      drpen_in(0) => drpen_in(0),
       drprdy_common_out(0) => NLW_inst_drprdy_common_out_UNCONNECTED(0),
-      drprdy_out(0) => NLW_inst_drprdy_out_UNCONNECTED(0),
+      drprdy_out(0) => drprdy_out(0),
       drprst_in(0) => '0',
       drpwe_common_in(0) => '0',
-      drpwe_in(0) => '0',
+      drpwe_in(0) => drpwe_in(0),
       elpcaldvorwren_in(0) => '0',
       elpcalpaorwren_in(0) => '0',
       evoddphicaldone_in(0) => '0',
@@ -9029,10 +9196,10 @@ inst: entity work.LOCAL_TCDS2LOCAL_TCDS2_gtwizard_top
       evoddphidwren_in(0) => '0',
       evoddphixrden_in(0) => '0',
       evoddphixwren_in(0) => '0',
-      eyescandataerror_out(0) => NLW_inst_eyescandataerror_out_UNCONNECTED(0),
+      eyescandataerror_out(0) => eyescandataerror_out(0),
       eyescanmode_in(0) => '0',
-      eyescanreset_in(0) => '0',
-      eyescantrigger_in(0) => '0',
+      eyescanreset_in(0) => eyescanreset_in(0),
+      eyescantrigger_in(0) => eyescantrigger_in(0),
       freqos_in(0) => '0',
       gtgrefclk0_in(0) => '0',
       gtgrefclk1_in(0) => '0',
@@ -9137,7 +9304,7 @@ inst: entity work.LOCAL_TCDS2LOCAL_TCDS2_gtwizard_top
       pcieuserratedone_in(0) => '0',
       pcieuserratestart_out(0) => NLW_inst_pcieuserratestart_out_UNCONNECTED(0),
       pcsrsvdin2_in(0) => '0',
-      pcsrsvdin_in(15 downto 0) => B"0000000000000000",
+      pcsrsvdin_in(15 downto 0) => pcsrsvdin_in(15 downto 0),
       pcsrsvdout_out(15 downto 0) => NLW_inst_pcsrsvdout_out_UNCONNECTED(15 downto 0),
       phystatus_out(0) => NLW_inst_phystatus_out_UNCONNECTED(0),
       pinrsrvdas_out(15 downto 0) => NLW_inst_pinrsrvdas_out_UNCONNECTED(15 downto 0),
@@ -9193,12 +9360,12 @@ inst: entity work.LOCAL_TCDS2LOCAL_TCDS2_gtwizard_top
       rstclkentx_in(0) => '0',
       rx8b10ben_in(0) => rx8b10ben_in(0),
       rxafecfoken_in(0) => '1',
-      rxbufreset_in(0) => '0',
-      rxbufstatus_out(2 downto 0) => NLW_inst_rxbufstatus_out_UNCONNECTED(2 downto 0),
+      rxbufreset_in(0) => rxbufreset_in(0),
+      rxbufstatus_out(2 downto 0) => rxbufstatus_out(2 downto 0),
       rxbyteisaligned_out(0) => rxbyteisaligned_out(0),
       rxbyterealign_out(0) => rxbyterealign_out(0),
       rxcdrfreqreset_in(0) => '0',
-      rxcdrhold_in(0) => '0',
+      rxcdrhold_in(0) => rxcdrhold_in(0),
       rxcdrlock_out(0) => NLW_inst_rxcdrlock_out_UNCONNECTED(0),
       rxcdrovrden_in(0) => '0',
       rxcdrphdone_out(0) => NLW_inst_rxcdrphdone_out_UNCONNECTED(0),
@@ -9242,7 +9409,7 @@ inst: entity work.LOCAL_TCDS2LOCAL_TCDS2_gtwizard_top
       rxdfekhovrden_in(0) => '0',
       rxdfelfhold_in(0) => '0',
       rxdfelfovrden_in(0) => '0',
-      rxdfelpmreset_in(0) => '0',
+      rxdfelpmreset_in(0) => rxdfelpmreset_in(0),
       rxdfetap10hold_in(0) => '0',
       rxdfetap10ovrden_in(0) => '0',
       rxdfetap11hold_in(0) => '0',
@@ -9292,7 +9459,7 @@ inst: entity work.LOCAL_TCDS2LOCAL_TCDS2_gtwizard_top
       rxlfpstresetdet_out(0) => NLW_inst_rxlfpstresetdet_out_UNCONNECTED(0),
       rxlfpsu2lpexitdet_out(0) => NLW_inst_rxlfpsu2lpexitdet_out_UNCONNECTED(0),
       rxlfpsu3wakedet_out(0) => NLW_inst_rxlfpsu3wakedet_out_UNCONNECTED(0),
-      rxlpmen_in(0) => '0',
+      rxlpmen_in(0) => rxlpmen_in(0),
       rxlpmgchold_in(0) => '0',
       rxlpmgcovrden_in(0) => '0',
       rxlpmhfhold_in(0) => '0',
@@ -9323,7 +9490,7 @@ inst: entity work.LOCAL_TCDS2LOCAL_TCDS2_gtwizard_top
       rxoutclkpcs_out(0) => NLW_inst_rxoutclkpcs_out_UNCONNECTED(0),
       rxoutclksel_in(2 downto 0) => B"010",
       rxpcommaalignen_in(0) => rxpcommaalignen_in(0),
-      rxpcsreset_in(0) => '0',
+      rxpcsreset_in(0) => rxpcsreset_in(0),
       rxpd_in(1 downto 0) => B"00",
       rxphalign_in(0) => '0',
       rxphaligndone_out(0) => NLW_inst_rxphaligndone_out_UNCONNECTED(0),
@@ -9333,19 +9500,19 @@ inst: entity work.LOCAL_TCDS2LOCAL_TCDS2_gtwizard_top
       rxphdlyreset_in(0) => '0',
       rxphovrden_in(0) => '0',
       rxpllclksel_in(1 downto 0) => B"11",
-      rxpmareset_in(0) => '0',
+      rxpmareset_in(0) => rxpmareset_in(0),
       rxpmaresetdone_out(0) => rxpmaresetdone_out(0),
       rxpolarity_in(0) => '0',
-      rxprbscntreset_in(0) => '0',
-      rxprbserr_out(0) => NLW_inst_rxprbserr_out_UNCONNECTED(0),
+      rxprbscntreset_in(0) => rxprbscntreset_in(0),
+      rxprbserr_out(0) => rxprbserr_out(0),
       rxprbslocked_out(0) => NLW_inst_rxprbslocked_out_UNCONNECTED(0),
-      rxprbssel_in(3 downto 0) => B"0000",
+      rxprbssel_in(3 downto 0) => rxprbssel_in(3 downto 0),
       rxprgdivresetdone_out(0) => NLW_inst_rxprgdivresetdone_out_UNCONNECTED(0),
       rxprogdivreset_in(0) => '0',
       rxqpien_in(0) => '0',
       rxqpisenn_out(0) => NLW_inst_rxqpisenn_out_UNCONNECTED(0),
       rxqpisenp_out(0) => NLW_inst_rxqpisenp_out_UNCONNECTED(0),
-      rxrate_in(2 downto 0) => B"000",
+      rxrate_in(2 downto 0) => rxrate_in(2 downto 0),
       rxratedone_out(0) => NLW_inst_rxratedone_out_UNCONNECTED(0),
       rxratemode_in(0) => '0',
       rxrecclk0_sel_out(0) => NLW_inst_rxrecclk0_sel_out_UNCONNECTED(0),
@@ -9364,7 +9531,7 @@ inst: entity work.LOCAL_TCDS2LOCAL_TCDS2_gtwizard_top
       rxstartofseq_out(1 downto 0) => NLW_inst_rxstartofseq_out_UNCONNECTED(1 downto 0),
       rxstatus_out(2 downto 0) => NLW_inst_rxstatus_out_UNCONNECTED(2 downto 0),
       rxsyncallin_in(0) => '0',
-      rxsyncdone_out(0) => NLW_inst_rxsyncdone_out_UNCONNECTED(0),
+      rxsyncdone_out(0) => rxsyncdone_out(0),
       rxsyncin_in(0) => '0',
       rxsyncmode_in(0) => '0',
       rxsyncout_out(0) => NLW_inst_rxsyncout_out_UNCONNECTED(0),
@@ -9397,7 +9564,7 @@ inst: entity work.LOCAL_TCDS2LOCAL_TCDS2_gtwizard_top
       tx8b10bbypass_in(7 downto 0) => B"00000000",
       tx8b10ben_in(0) => tx8b10ben_in(0),
       txbufdiffctrl_in(0) => '0',
-      txbufstatus_out(1 downto 0) => NLW_inst_txbufstatus_out_UNCONNECTED(1 downto 0),
+      txbufstatus_out(1 downto 0) => txbufstatus_out(1 downto 0),
       txcomfinish_out(0) => NLW_inst_txcomfinish_out_UNCONNECTED(0),
       txcominit_in(0) => '0',
       txcomsas_in(0) => '0',
@@ -9412,7 +9579,7 @@ inst: entity work.LOCAL_TCDS2LOCAL_TCDS2_gtwizard_top
       txdccreset_in(0) => '0',
       txdeemph_in(1 downto 0) => B"00",
       txdetectrx_in(0) => '0',
-      txdiffctrl_in(4 downto 0) => B"11000",
+      txdiffctrl_in(4 downto 0) => txdiffctrl_in(4 downto 0),
       txdiffpd_in(0) => '0',
       txdlybypass_in(0) => '1',
       txdlyen_in(0) => '0',
@@ -9424,7 +9591,7 @@ inst: entity work.LOCAL_TCDS2LOCAL_TCDS2_gtwizard_top
       txelecidle_in(0) => '0',
       txelforcestart_in(0) => '0',
       txheader_in(5 downto 0) => B"000000",
-      txinhibit_in(0) => '0',
+      txinhibit_in(0) => txinhibit_in(0),
       txlatclk_in(0) => '0',
       txlfpstreset_in(0) => '0',
       txlfpsu2lpexit_in(0) => '0',
@@ -9438,7 +9605,7 @@ inst: entity work.LOCAL_TCDS2LOCAL_TCDS2_gtwizard_top
       txoutclkfabric_out(0) => NLW_inst_txoutclkfabric_out_UNCONNECTED(0),
       txoutclkpcs_out(0) => NLW_inst_txoutclkpcs_out_UNCONNECTED(0),
       txoutclksel_in(2 downto 0) => B"010",
-      txpcsreset_in(0) => '0',
+      txpcsreset_in(0) => txpcsreset_in(0),
       txpd_in(1 downto 0) => B"00",
       txpdelecidlemode_in(0) => '0',
       txphalign_in(0) => '0',
@@ -9457,14 +9624,14 @@ inst: entity work.LOCAL_TCDS2LOCAL_TCDS2_gtwizard_top
       txpippmstepsize_in(4 downto 0) => B"00000",
       txpisopd_in(0) => '0',
       txpllclksel_in(1 downto 0) => B"11",
-      txpmareset_in(0) => '0',
+      txpmareset_in(0) => txpmareset_in(0),
       txpmaresetdone_out(0) => txpmaresetdone_out(0),
-      txpolarity_in(0) => '0',
-      txpostcursor_in(4 downto 0) => B"00000",
+      txpolarity_in(0) => txpolarity_in(0),
+      txpostcursor_in(4 downto 0) => txpostcursor_in(4 downto 0),
       txpostcursorinv_in(0) => '0',
-      txprbsforceerr_in(0) => '0',
-      txprbssel_in(3 downto 0) => B"0000",
-      txprecursor_in(4 downto 0) => B"00000",
+      txprbsforceerr_in(0) => txprbsforceerr_in(0),
+      txprbssel_in(3 downto 0) => txprbssel_in(3 downto 0),
+      txprecursor_in(4 downto 0) => txprecursor_in(4 downto 0),
       txprecursorinv_in(0) => '0',
       txprgdivresetdone_out(0) => NLW_inst_txprgdivresetdone_out_UNCONNECTED(0),
       txprogdivreset_in(0) => '0',
