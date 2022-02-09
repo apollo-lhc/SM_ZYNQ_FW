@@ -90,7 +90,7 @@ endif
 #################################################################################
 clean_os:
 	@rm -f ${OS_BUILD_PATH}/*.yaml
-	@rm -rf ${OS_BUILD_PATH}/address_table
+	@rm -rf ${OS_BUILD_PATH}/address_table*
 clean_ip:
 	@echo "Cleaning up ip dcps"
 	@find ${MAKE_PATH}/cores -type f | { grep -v xci || true; } | awk '{print "rm " $$1}' | bash
@@ -100,9 +100,6 @@ clean_bit:
 clean_kernel:
 	@echo "Clean hw files"
 	@rm -f ${MAKE_PATH}/kernel/hw/*
-clean: clean_ip clean_bit clean_kernel
-	@rm -rf ${MAKE_PATH}/proj/*
-	@echo "Cleaning up"
 clean_ip_%:
 	source $(BUILD_VIVADO_SHELL) &&\
 	cd ${MAKE_PATH}/proj &&\
@@ -110,7 +107,12 @@ clean_ip_%:
 clean_autogen:
 	rm -rf configs/*/autogen/*
 
-clean_everything: clean clean_remote clean_CM clean_prebuild
+clean: clean_os clean_ip clean_bit clean_kernel
+	@rm -rf ${MAKE_PATH}/proj/*
+	@echo "Cleaning up"
+
+clean_everything: clean clean_prebuild
+
 
 #################################################################################
 # Open vivado
@@ -146,7 +148,7 @@ interactive :
 	cd proj &&\
 	vivado -mode tcl
 
-$(BIT_BASE)%.bit	: $(SLAVE_DTSI_PATH)/slaves_%.yaml $(ADDRESS_TABLE_CREATION_PATH)/slaves_%.yaml ${MAKE_PATH}/os/address_table/address_apollo.xml
+$(BIT_BASE)%.bit	: $(SLAVE_DTSI_PATH)/slaves_%.yaml $(ADDRESS_TABLE_CREATION_PATH)/slaves_%.yaml 
 	@ln -s $(ADDRESS_TABLE_CREATION_PATH)/slaves_$*.yaml $(ADDRESS_TABLE_CREATION_PATH)/slaves.yaml
 	source $(BUILD_VIVADO_SHELL) &&\
 	mkdir -p ${MAKE_PATH}/kernel/hw &&\

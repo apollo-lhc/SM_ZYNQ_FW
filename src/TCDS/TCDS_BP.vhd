@@ -42,6 +42,8 @@ entity TCDS_BP is
 
     ttc_data     : out slv_32_t;
     tts_data     : in  slv_32_t;
+
+    pcs_clk      : out std_logic_vector(1 downto 0);
     
     Mon      : out TCDS_2_TCDS_2_MON_t;
     Ctrl     : in  TCDS_2_TCDS_2_CTRL_t
@@ -147,7 +149,7 @@ begin
   
   mgt : entity work.tcds2_interface_mgt
     generic map (
-      G_MGT_TYPE   => MGT_TYPE_GTHE3,
+      G_MGT_TYPE   => MGT_TYPE_GTHE4,
       G_LINK_SPEED => TCDS2_LINK_SPEED_10G
       )
     port map (
@@ -235,6 +237,8 @@ begin
       );
 
 
+  pcs_clk(0) <= mgt_clk_ctrl.txusrclk;
+  pcs_clk(1) <= mgt_clk_ctrl.rxusrclk;
   -------------------------------------------------------------------------------
   -- Recovered TCDS out
   -------------------------------------------------------------------------------
@@ -483,8 +487,7 @@ begin
 
   channel0_tts2_i(0) <= to_integer(unsigned(tts_data(6 downto 0)));
 
-  
- 
+   
   
 end behavioral;
 

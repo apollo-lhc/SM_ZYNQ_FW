@@ -1,0 +1,110 @@
+#!/usr/bin/env python
+
+#################################################################################
+## Force python3
+#################################################################################
+import sys
+if not sys.version_info.major == 3:
+    raise BaseException("Wrong Python version detected.  Please ensure that you are using Python 3.")
+#################################################################################
+
+from enum import Enum
+class ParseState(Enum):
+    START     = 0
+    PREAMBLE  = 1
+    CONFIG    = 2
+    POSTAMBLE = 3
+    END       = 4
+    
+def ParseRegLine(line,regs,reg_page):
+    #validate line
+    if (line[0] == "0" and 
+        line[1] == "x" and
+        line[6] == "," and
+        line[7] == "0" and 
+        line[8] == "x"):
+        page=int(line[2:4],base=16)
+        address=int(line[4:6],base=16)
+        data=int(line[7:11],base=16)
+        if(page != reg_page):
+            regs.append(((1<<8) + page))
+            reg_page = page
+        regs.append(((address << 8) + data))
+    return regs,reg_page
+    
+
+def PrintArrays(name,regs):
+    reg_count = len(regs)
+    if reg_count == 0:
+        return
+
+    regs_per_line=8
+    regs_on_line=0    
+    padding=" "
+
+    print("uint16_t const * const "+name+" = { ")    
+    
+    for i in range(0,reg_count):
+        
+        if regs_on_line >= regs_per_line:
+            print("\n"+2*padding,end='')
+            regs_on_line = 0
+        elif regs[i]>>8 == 0x1:
+            if i != 0:
+                print("")
+            print(2*padding,end='')
+            regs_on_line = 0
+        print(" 0x"+hex(regs[i])[2:].zfill(4),end='')            
+        if i < reg_count-1:
+            print(", ",end='')
+        if regs[i]>>8 == 0x1:
+            print("// Page 0x"+hex(regs[i]&0xFF)[2:].zfill(2))            
+            print(2*padding,end='')
+            regs_on_line = 0
+        regs_on_line=regs_on_line+1
+    print("\n};")
+
+def GetRegWrites(filename):
+    inFile = open(filename,"r")
+
+    preamble  = []
+    config    = []
+    postamble = []
+
+    state = ParseState.START
+    reg_page = -1
+
+    for line in inFile:
+        #find Start config preamble    
+        if state == ParseState.START:
+            if line.find("# Start configuration preamble") >= 0:
+                state = ParseState.PREAMBLE
+                reg_page = -1
+        #capture the preamble
+        elif state == ParseState.PREAMBLE:
+            if line.find("# Start configuration registers") >= 0:
+                state = ParseState.CONFIG
+                reg_page = -1
+            elif line[0] != "#":
+                preamble,reg_page = ParseRegLine(line,preamble,reg_page)
+        #capture the config
+        elif state == ParseState.CONFIG:
+            if line.find("# Start configuration postamble") >= 0:
+                state = ParseState.POSTAMBLE
+                reg_page = -1
+            elif line[0] != "#":
+                config,reg_page = ParseRegLine(line,config,reg_page)
+        #capture the postamble
+        elif state == ParseState.POSTAMBLE:
+            if line[0] != "#":
+                postamble,reg_page = ParseRegLine(line,postamble,reg_page)
+
+
+    PrintArrays("preamble",preamble)
+    PrintArrays("config",config)
+    PrintArrays("postamble",postamble)
+
+
+
+
+GetRegWrites("Si5344-RevD-TCDS2-Registers.txt")

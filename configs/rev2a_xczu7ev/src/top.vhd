@@ -1189,6 +1189,8 @@ begin  -- architecture structure
 
   
   TCDS_1: entity work.TCDS
+    generic map (
+      AXI_CLK_FREQ => AXI_MASTER_CLK_FREQ)
     port map (
       clk_axi           => clk_125Mhz,
       reset_axi_n       => pl_reset_n,

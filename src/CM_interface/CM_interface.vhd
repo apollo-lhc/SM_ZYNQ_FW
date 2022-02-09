@@ -107,7 +107,8 @@ architecture behavioral of CM_intf is
 
   type DRP_MOSI_array_t is array (1 to 4) of CM_CM_C2C_DRP_MOSI_t;
   signal DRP_MOSI : DRP_MOSI_array_t;
-  
+
+  signal clk_TCDS_o : std_logic;
 begin
   --reset
   reset <= not reset_axi_n;

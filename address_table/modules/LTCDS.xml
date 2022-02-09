@@ -7,6 +7,7 @@
     <node id="RX_DATAPATH"         permission="w" mask="0X00000080"/>
     <node id="USERCLK_TX"          permission="w" mask="0X00000100"/>
     <node id="USERCLK_RX"          permission="w" mask="0x00000200"/>
+    <node id="DRP"                 permission="w" mask="0x00000400"/>
   </node>
   <node id="STATUS"                        address="0x010" module="file://CM_C2C_Status.xml"/>
   <!-- DEBUG 0x0 to 0x5 -> 0x404 to 0x409 -->
@@ -30,5 +31,10 @@
     <node id="FIXED_SEND_D"     address="0x006" mask="0xFFFFFFFF" permission="rw"/>
     <node id="FIXED_SEND_K"     address="0x007" mask="0x0000000F" permission="rw"/>   
   </node>
+  <node id="TX_CLK_FREQ"        address="0x60"  mask="0xFFFFFFFF" permission="r"/>
+  <node id="TX_CLK_PCS_FREQ"    address="0x61" mask="0xFFFFFFFF" permission="r"/>
+  <node id="RX_CLK_PCS_FREQ"    address="0x62" mask="0xFFFFFFFF" permission="r"/>
+  <node id="LOOPBACK"           address="0x63" mask="0x7" permission="rw" parameters="default=0x0"/>
+  
   <node id="DRP"                address="0x400" fwinfo="type=mem16_0x400" module="file://DRP_USP_GTH.xml"/>
 </node>

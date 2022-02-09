@@ -17,6 +17,8 @@ use work.TCDS_2_Ctrl.all;
 use work.tclink_lpgbt_pkg.all;
 
 entity TCDS is
+  generic (
+    AXI_CLK_FREQ : integer);
   port (
     -- AXI interface
     clk_axi          : in  std_logic;
@@ -101,9 +103,15 @@ architecture behavioral of TCDS is
 
   signal ttc_data : slv_32_t;
   signal tts_data : slv_32_t;
-  
+
+  signal clk_TCDS_o : std_logic;
+  signal reset      : std_logic;
+
+  signal pcs_clk    : std_logic_vector(1 downto 0);
 begin
 
+  reset <= not reset_axi_n;
+  
   -------------------------------------------------------------------------------
   -- AXI slave interface
   -------------------------------------------------------------------------------
@@ -136,19 +144,51 @@ begin
       clk_TCDS_320_in_n  => clk_TCDS_320_in_n,
       clk_TCDS_REC_out_p => clk_TCDS_REC_out_p,
       clk_TCDS_REC_out_n => clk_TCDS_REC_out_n,
-      clk_TCDS           => clk_TCDS,
+      clk_TCDS           => clk_TCDS_o,
       QPLL_clk           => QPLL_clk,
       QPLL_refclk        => QPLL_refclk,
       QPLL_locked        => QPLL_locked,
       ttc_data           => ttc_data,
       tts_data           => tts_data,
+      pcs_clk            => pcs_clk,
       Mon                => Mon.TCDS_2,
       Ctrl               => Ctrl.TCDS_2);
+  clk_TCDS <= clk_TCDS_o;
   
-  
+  rate_counter_1: entity work.rate_counter
+    generic map (
+      CLK_A_1_SECOND => AXI_CLK_FREQ)
+    port map (
+      clk_A         => clk_axi,
+      clk_B         => clk_TCDS_o,
+      reset_A_async => reset,
+      event_b       => '1'    ,
+      rate          => Mon.TCDS2_FREQ);
+
+  rate_counter_2: entity work.rate_counter
+    generic map (
+      CLK_A_1_SECOND => AXI_CLK_FREQ)
+    port map (
+      clk_A         => clk_axi,
+      clk_B         => pcs_clk(0),
+      reset_A_async => reset,
+      event_b       => '1'    ,
+      rate          => Mon.TCDS2_TX_PCS_FREQ);
+
+  rate_counter_3: entity work.rate_counter
+    generic map (
+      CLK_A_1_SECOND => AXI_CLK_FREQ)
+    port map (
+      clk_A         => clk_axi,
+      clk_B         => pcs_clk(1),
+      reset_A_async => reset,
+      event_b       => '1'    ,
+      rate          => Mon.TCDS2_RX_PCS_FREQ);
 
 
   TCDS_local_1: entity work.TCDS_local
+    generic map (
+      AXI_CLK_FREQ => AXI_CLK_FREQ)
     port map (
       clk_axi     => clk_axi,
       reset_axi_n => reset_axi_n,

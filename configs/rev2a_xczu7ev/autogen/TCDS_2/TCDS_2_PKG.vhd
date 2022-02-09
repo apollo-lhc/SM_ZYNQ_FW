@@ -411,6 +411,7 @@ package TCDS_2_CTRL is
     RX_DATAPATH                :std_logic;   
     USERCLK_TX                 :std_logic;   
     USERCLK_RX                 :std_logic;   
+    DRP                        :std_logic;   
   end record TCDS_2_LTCDS_RESET_CTRL_t;
 
 
@@ -421,7 +422,8 @@ package TCDS_2_CTRL is
                                                                              RX_PLL_AND_DATAPATH => '0',
                                                                              RX_DATAPATH => '0',
                                                                              USERCLK_TX => '0',
-                                                                             USERCLK_RX => '0'
+                                                                             USERCLK_RX => '0',
+                                                                             DRP => '0'
                                                                             );
   type TCDS_2_LTCDS_STATUS_MON_t is record
     CONFIG_ERROR               :std_logic;     -- C2C config error
@@ -598,7 +600,10 @@ package TCDS_2_CTRL is
     DEBUG                      :TCDS_2_LTCDS_DEBUG_MON_t; 
     RX                         :TCDS_2_LTCDS_RX_MON_t;    
     DATA_CTRL                  :TCDS_2_LTCDS_DATA_CTRL_MON_t;
-    DRP                        :TCDS_2_LTCDS_DRP_MISO_t;     
+    TX_CLK_FREQ                :std_logic_vector(31 downto 0);
+    TX_CLK_PCS_FREQ            :std_logic_vector(31 downto 0);
+    RX_CLK_PCS_FREQ            :std_logic_vector(31 downto 0);
+    DRP                        :TCDS_2_LTCDS_DRP_MISO_t;      
   end record TCDS_2_LTCDS_MON_t;
   type TCDS_2_LTCDS_MON_t_ARRAY is array(1 to 2) of TCDS_2_LTCDS_MON_t;
 
@@ -608,6 +613,7 @@ package TCDS_2_CTRL is
     DEBUG                      :TCDS_2_LTCDS_DEBUG_CTRL_t; 
     TX                         :TCDS_2_LTCDS_TX_CTRL_t;    
     DATA_CTRL                  :TCDS_2_LTCDS_DATA_CTRL_CTRL_t;
+    LOOPBACK                   :std_logic_vector( 2 downto 0);
     DRP                        :TCDS_2_LTCDS_DRP_MOSI_t;      
   end record TCDS_2_LTCDS_CTRL_t;
   type TCDS_2_LTCDS_CTRL_t_ARRAY is array(1 to 2) of TCDS_2_LTCDS_CTRL_t;
@@ -618,11 +624,15 @@ package TCDS_2_CTRL is
                                                                  DEBUG => DEFAULT_TCDS_2_LTCDS_DEBUG_CTRL_t,
                                                                  TX => DEFAULT_TCDS_2_LTCDS_TX_CTRL_t,
                                                                  DATA_CTRL => DEFAULT_TCDS_2_LTCDS_DATA_CTRL_CTRL_t,
+                                                                 LOOPBACK => "000",
                                                                  DRP => Default_TCDS_2_LTCDS_DRP_MOSI_t
                                                                 );
   type TCDS_2_MON_t is record
     TCDS_2                     :TCDS_2_TCDS_2_MON_t;
-    LTCDS                      :TCDS_2_LTCDS_MON_t_ARRAY;
+    TCDS2_FREQ                 :std_logic_vector(31 downto 0);
+    TCDS2_TX_PCS_FREQ          :std_logic_vector(31 downto 0);
+    TCDS2_RX_PCS_FREQ          :std_logic_vector(31 downto 0);
+    LTCDS                      :TCDS_2_LTCDS_MON_t_ARRAY;     
   end record TCDS_2_MON_t;
 
 

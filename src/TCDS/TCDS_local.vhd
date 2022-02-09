@@ -7,6 +7,8 @@ use work.types.all;
 use work.TCDS_2_Ctrl.all;
 
 entity TCDS_local is
+  generic (
+    AXI_CLK_FREQ : integer);
   port (
     -- AXI interface
     clk_axi      : in  std_logic;
@@ -36,6 +38,8 @@ architecture behavioral of TCDS_local is
   signal rx_k_datas        : slv4_array_t(1 downto 0);
 
   signal clk_tx_int        : std_logic_vector( 1 downto 0);
+  signal clk_tx_pcs        : std_logic_vector( 1 downto 0);
+  signal clk_rx_pcs        : std_logic_vector( 1 downto 0);
                          
   signal tx_datas          : slv32_array_t(1 downto 0);
   signal tx_k_datas        : slv4_array_t(1 downto 0);
@@ -122,7 +126,8 @@ begin
     end process data_proc;
 
     
-    local_TCDS_MGBT_1: entity work.LOCAL_TCDS2
+--    local_TCDS_MGBT_1: entity work.LOCAL_TCDS2
+    local_TCDS_MGBT_1: entity work.localTCDS_MGT
     port map (
       gtwiz_userclk_tx_reset_in(0)          => Ctrl(iCM).RESET.USERCLK_TX,
       gtwiz_userclk_tx_srcclk_out(0)        => open,
@@ -140,11 +145,11 @@ begin
       gtwiz_reset_tx_datapath_in(0)         => Ctrl(iCM).RESET.TX_DATAPATH,
       gtwiz_reset_rx_pll_and_datapath_in(0) => Ctrl(iCM).RESET.RX_PLL_AND_DATAPATH,
       gtwiz_reset_rx_datapath_in(0)         => Ctrl(iCM).RESET.RX_DATAPATH,
-      gtwiz_reset_qpll0lock_in(0)           => QPLL_locked(1),
+      gtwiz_reset_qpll1lock_in(0)           => QPLL_locked(1),
       gtwiz_reset_rx_cdr_stable_out(0)      => open,--Mon(iCM).STATUS.reset_rx_cdr_stable,
       gtwiz_reset_tx_done_out(0)            => Mon(iCM).DEBUG.tx.reset_done,
       gtwiz_reset_rx_done_out(0)            => Mon(iCM).DEBUG.rx.reset_done,
-      gtwiz_reset_qpll0reset_out(0)         => open,
+      gtwiz_reset_qpll1reset_out(0)         => open,
       gtwiz_userdata_tx_in                  => tx_datas(iCM-1),
       gtwiz_userdata_rx_out                 => rx_datas(iCM-1),
       drpaddr_in                            => Ctrl(iCM).DRP.address,
@@ -211,9 +216,44 @@ begin
 --      rxresetdone_out(0)                    => Mon(iCM).DEBUG.RX.RESET_DONE,
       txbufstatus_out                       => Mon(iCM).DEBUG.TX.BUF_STATUS,
 --      txresetdone_out(0)                    => Mon(iCM).DEBUG.TX.RESET_DONE,
-      txpmaresetdone_out(0)                 => open);--Mon(iCM).DEBUG.tx.pma_reset_done);
-  end generate local_TCDS;
+      txpmaresetdone_out(0)                 => open,
+      loopback_in                           => Ctrl(iCM).LOOPBACK,
+      drprst_in(0)                          => Ctrl(iCM).RESET.DRP,
+      txoutclkpcs_out(0)                       => clk_tx_pcs(iCM-1),
+      rxoutclkpcs_out(0)                       => clk_rx_pcs(iCM-1));--Mon(iCM).DEBUG.tx.pma_reset_done);
+    
+    
+    rate_counter_1: entity work.rate_counter
+      generic map (
+        CLK_A_1_SECOND => AXI_CLK_FREQ)
+      port map (
+        clk_A         => clk_axi,
+        clk_B         => clk_tx_int(iCM-1),
+        reset_A_async => reset,
+        event_b       => '1',
+        rate          => Mon(iCM).TX_CLK_FREQ);
+    rate_counter_2: entity work.rate_counter
+      generic map (
+        CLK_A_1_SECOND => AXI_CLK_FREQ)
+      port map (
+        clk_A         => clk_axi,
+        clk_B         => clk_tx_pcs(iCM-1),
+        reset_A_async => reset,
+        event_b       => '1',
+        rate          => Mon(iCM).TX_CLK_PCS_FREQ);
+    rate_counter_3: entity work.rate_counter
+      generic map (
+        CLK_A_1_SECOND => AXI_CLK_FREQ)
+      port map (
+        clk_A         => clk_axi,
+        clk_B         => clk_rx_pcs(iCM-1),
+        reset_A_async => reset,
+        event_b       => '1',
+        rate          => Mon(iCM).RX_CLK_PCS_FREQ);
 
+
+
+  end generate local_TCDS;
 
 
 
