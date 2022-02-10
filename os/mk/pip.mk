@@ -1,4 +1,4 @@
-PIP_PACKAGES="pybind11"
+PIP_PACKAGES="pyserial pybind"
 #PIP_INSTALL_PATH=${INSTALL_PATH}usr/lib/python2.7/site-packages/
 PIP_INSTALL_PATH=${INSTALL_PATH}usr/lib/python3.6/site-packages/
 pip_install:

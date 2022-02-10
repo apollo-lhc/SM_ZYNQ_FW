@@ -291,6 +291,7 @@ AXI_SLAVES:
       - "address_table/modules/top_secret/tcds2_link_csr_master_control.xml"
       - "address_table/modules/top_secret/tcds2_link_csr_master_status.xml"
       - "address_table/modules/LTCDS.xml"
+      - "address_table/modules/MGT_USP_Status.xml"
     UHAL_BASE: 0x30000000
     HDL: 
       map_template: "axi_generic/template_map_withbram.vhd"
@@ -352,4 +353,4 @@ CORES:
         X0Y12:
           RX: clk0
           TX: clk0
-      optional: "drpaddr_in drpclk_in drpdi_in drpen_in drpwe_in eyescanreset_in eyescantrigger_in pcsrsvdin_in rxbufreset_in rxcdrhold_in rxdfelpmreset_in rxlpmen_in rxpcsreset_in rxpmareset_in rxprbscntreset_in rxprbssel_in rxrate_in txdiffctrl_in txinhibit_in txpcsreset_in txpmareset_in txpolarity_in txpostcursor_in txprbsforceerr_in txprbssel_in txprecursor_in cplllock_out dmonitorout_out drpdo_out drprdy_out eyescandataerror_out rxprbserr_out rxresetdone_out txbufstatus_out txresetdone_out txoutclkpcs_out rxoutclkpcs_out"
+      optional: "drpaddr_in drpclk_in drpdi_in drpen_in drpwe_in eyescanreset_in eyescantrigger_in pcsrsvdin_in rxbufreset_in rxcdrhold_in rxdfelpmreset_in rxlpmen_in rxpcsreset_in rxpmareset_in rxprbscntreset_in rxprbssel_in rxrate_in txdiffctrl_in txinhibit_in txpcsreset_in txpmareset_in txpolarity_in txpostcursor_in txprbsforceerr_in txprbssel_in txprecursor_in cplllock_out dmonitorout_out drpdo_out drprdy_out eyescandataerror_out rxprbserr_out rxresetdone_out txbufstatus_out txresetdone_out txoutclksel_in rxoutclksel_in"

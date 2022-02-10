@@ -1,4 +1,4 @@
-include build-scripts/mk/helpers.mk
+-include build-scripts/mk/helpers.mk
 
 #################################################################################
 # VIVADO stuff

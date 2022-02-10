@@ -426,29 +426,12 @@ package TCDS_2_CTRL is
                                                                              DRP => '0'
                                                                             );
   type TCDS_2_LTCDS_STATUS_MON_t is record
-    CONFIG_ERROR               :std_logic;     -- C2C config error
-    LINK_ERROR                 :std_logic;     -- C2C link error
-    LINK_GOOD                  :std_logic;     -- C2C link FSM in SYNC
-    MB_ERROR                   :std_logic;     -- C2C multi-bit error
-    DO_CC                      :std_logic;     -- Aurora do CC
     PHY_RESET                  :std_logic;     -- Aurora phy in reset
     PHY_GT_PLL_LOCK            :std_logic;     -- Aurora phy GT PLL locked
     PHY_MMCM_LOL               :std_logic;     -- Aurora phy mmcm LOL
-    PHY_LANE_UP                :std_logic_vector( 1 downto 0);  -- Aurora phy lanes up
-    PHY_HARD_ERR               :std_logic;                      -- Aurora phy hard error
-    PHY_SOFT_ERR               :std_logic;                      -- Aurora phy soft error
-    LINK_IN_FW                 :std_logic;                      -- FW includes this link
   end record TCDS_2_LTCDS_STATUS_MON_t;
 
 
-  type TCDS_2_LTCDS_STATUS_CTRL_t is record
-    INITIALIZE                 :std_logic;     -- C2C initialize
-  end record TCDS_2_LTCDS_STATUS_CTRL_t;
-
-
-  constant DEFAULT_TCDS_2_LTCDS_STATUS_CTRL_t : TCDS_2_LTCDS_STATUS_CTRL_t := (
-                                                                               INITIALIZE => '0'
-                                                                              );
   type TCDS_2_LTCDS_DEBUG_RX_MON_t is record
     BUF_STATUS                 :std_logic_vector( 2 downto 0);  -- DEBUG rx buf status
     PMA_RESET_DONE             :std_logic;                      -- DEBUG rx reset done
@@ -601,30 +584,34 @@ package TCDS_2_CTRL is
     RX                         :TCDS_2_LTCDS_RX_MON_t;    
     DATA_CTRL                  :TCDS_2_LTCDS_DATA_CTRL_MON_t;
     TX_CLK_FREQ                :std_logic_vector(31 downto 0);
-    TX_CLK_PCS_FREQ            :std_logic_vector(31 downto 0);
-    RX_CLK_PCS_FREQ            :std_logic_vector(31 downto 0);
+    TX_CLK_OUT_FREQ            :std_logic_vector(31 downto 0);
+    RX_CLK_OUT_FREQ            :std_logic_vector(31 downto 0);
+    TX_USRCLK_ACTIVE           :std_logic;                    
+    RX_USRCLK_ACTIVE           :std_logic;                    
     DRP                        :TCDS_2_LTCDS_DRP_MISO_t;      
   end record TCDS_2_LTCDS_MON_t;
   type TCDS_2_LTCDS_MON_t_ARRAY is array(1 to 2) of TCDS_2_LTCDS_MON_t;
 
   type TCDS_2_LTCDS_CTRL_t is record
     RESET                      :TCDS_2_LTCDS_RESET_CTRL_t;
-    STATUS                     :TCDS_2_LTCDS_STATUS_CTRL_t;
-    DEBUG                      :TCDS_2_LTCDS_DEBUG_CTRL_t; 
-    TX                         :TCDS_2_LTCDS_TX_CTRL_t;    
+    DEBUG                      :TCDS_2_LTCDS_DEBUG_CTRL_t;
+    TX                         :TCDS_2_LTCDS_TX_CTRL_t;   
     DATA_CTRL                  :TCDS_2_LTCDS_DATA_CTRL_CTRL_t;
     LOOPBACK                   :std_logic_vector( 2 downto 0);
+    TX_OUTCLK_SEL              :std_logic_vector( 2 downto 0);
+    RX_OUTCLK_SEL              :std_logic_vector( 2 downto 0);
     DRP                        :TCDS_2_LTCDS_DRP_MOSI_t;      
   end record TCDS_2_LTCDS_CTRL_t;
   type TCDS_2_LTCDS_CTRL_t_ARRAY is array(1 to 2) of TCDS_2_LTCDS_CTRL_t;
 
   constant DEFAULT_TCDS_2_LTCDS_CTRL_t : TCDS_2_LTCDS_CTRL_t := (
                                                                  RESET => DEFAULT_TCDS_2_LTCDS_RESET_CTRL_t,
-                                                                 STATUS => DEFAULT_TCDS_2_LTCDS_STATUS_CTRL_t,
                                                                  DEBUG => DEFAULT_TCDS_2_LTCDS_DEBUG_CTRL_t,
                                                                  TX => DEFAULT_TCDS_2_LTCDS_TX_CTRL_t,
                                                                  DATA_CTRL => DEFAULT_TCDS_2_LTCDS_DATA_CTRL_CTRL_t,
                                                                  LOOPBACK => "000",
+                                                                 TX_OUTCLK_SEL => "010",
+                                                                 RX_OUTCLK_SEL => "010",
                                                                  DRP => Default_TCDS_2_LTCDS_DRP_MOSI_t
                                                                 );
   type TCDS_2_MON_t is record

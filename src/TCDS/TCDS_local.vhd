@@ -6,6 +6,9 @@ use work.types.all;
 
 use work.TCDS_2_Ctrl.all;
 
+library UNISIM;
+use UNISIM.VCOMPONENTS.ALL;
+
 entity TCDS_local is
   generic (
     AXI_CLK_FREQ : integer);
@@ -38,8 +41,10 @@ architecture behavioral of TCDS_local is
   signal rx_k_datas        : slv4_array_t(1 downto 0);
 
   signal clk_tx_int        : std_logic_vector( 1 downto 0);
-  signal clk_tx_pcs        : std_logic_vector( 1 downto 0);
-  signal clk_rx_pcs        : std_logic_vector( 1 downto 0);
+  signal clk_rx_int        : std_logic_vector( 1 downto 0);
+
+  signal clk_tx_out        : std_logic_vector( 1 downto 0);
+  signal clk_rx_out        : std_logic_vector( 1 downto 0);
                          
   signal tx_datas          : slv32_array_t(1 downto 0);
   signal tx_k_datas        : slv4_array_t(1 downto 0);
@@ -132,13 +137,13 @@ begin
       gtwiz_userclk_tx_reset_in(0)          => Ctrl(iCM).RESET.USERCLK_TX,
       gtwiz_userclk_tx_srcclk_out(0)        => open,
       gtwiz_userclk_tx_usrclk_out(0)        => open,
-      gtwiz_userclk_tx_usrclk2_out(0)       => open,
-      gtwiz_userclk_tx_active_out(0)        => open,--Mon(iCM).STATUS.userclk_tx_active,
+      gtwiz_userclk_tx_usrclk2_out(0)       => clk_tx_int(iCM-1),
+      gtwiz_userclk_tx_active_out(0)        => Mon(iCM).TX_USRCLK_ACTIVE,
       gtwiz_userclk_rx_reset_in(0)          => Ctrl(iCM).RESET.USERCLK_RX,
       gtwiz_userclk_rx_srcclk_out(0)        => open,
       gtwiz_userclk_rx_usrclk_out(0)        => open,
-      gtwiz_userclk_rx_usrclk2_out(0)       => clk_tx_int(iCM-1),
-      gtwiz_userclk_rx_active_out(0)        => open,--Mon(iCM).STATUS.userclk_rx_active,
+      gtwiz_userclk_rx_usrclk2_out(0)       => clk_rx_int(iCM-1),
+      gtwiz_userclk_rx_active_out(0)        => Mon(iCM).rX_USRCLK_ACTIVE,
       gtwiz_reset_clk_freerun_in(0)         => '0',
       gtwiz_reset_all_in(0)                 => Ctrl(iCM).RESET.RESET_ALL,
       gtwiz_reset_tx_pll_and_datapath_in(0) => Ctrl(iCM).RESET.TX_PLL_AND_DATAPATH,
@@ -219,10 +224,32 @@ begin
       txpmaresetdone_out(0)                 => open,
       loopback_in                           => Ctrl(iCM).LOOPBACK,
       drprst_in(0)                          => Ctrl(iCM).RESET.DRP,
-      txoutclkpcs_out(0)                       => clk_tx_pcs(iCM-1),
-      rxoutclkpcs_out(0)                       => clk_rx_pcs(iCM-1));--Mon(iCM).DEBUG.tx.pma_reset_done);
+      txoutclksel_in                        => Ctrl(iCM).TX_OUTCLK_SEL,
+      rxoutclksel_in                        => Ctrl(iCM).RX_OUTCLK_SEL);--Mon(iCM).DEBUG.tx.pma_reset_done);
     
+
+    clk_tx_out(iCM-1) <= clk_tx_int(iCM-1);
+    clk_rx_out(iCM-1) <= clk_rx_int(iCM-1);
+    rate_counter_2: entity work.rate_counter
+      generic map (
+        CLK_A_1_SECOND => AXI_CLK_FREQ)
+      port map (
+        clk_A         => clk_axi,
+        clk_B         => clk_tx_out(iCM-1),
+        reset_A_async => reset,
+        event_b       => '1',
+        rate          => Mon(iCM).TX_CLK_OUT_FREQ);
+    rate_counter_3: entity work.rate_counter
+      generic map (
+        CLK_A_1_SECOND => AXI_CLK_FREQ)
+      port map (
+        clk_A         => clk_axi,
+        clk_B         => clk_rx_out(iCM-1),
+        reset_A_async => reset,
+        event_b       => '1',
+        rate          => Mon(iCM).RX_CLK_OUT_FREQ);
     
+      
     rate_counter_1: entity work.rate_counter
       generic map (
         CLK_A_1_SECOND => AXI_CLK_FREQ)
@@ -232,27 +259,8 @@ begin
         reset_A_async => reset,
         event_b       => '1',
         rate          => Mon(iCM).TX_CLK_FREQ);
-    rate_counter_2: entity work.rate_counter
-      generic map (
-        CLK_A_1_SECOND => AXI_CLK_FREQ)
-      port map (
-        clk_A         => clk_axi,
-        clk_B         => clk_tx_pcs(iCM-1),
-        reset_A_async => reset,
-        event_b       => '1',
-        rate          => Mon(iCM).TX_CLK_PCS_FREQ);
-    rate_counter_3: entity work.rate_counter
-      generic map (
-        CLK_A_1_SECOND => AXI_CLK_FREQ)
-      port map (
-        clk_A         => clk_axi,
-        clk_B         => clk_rx_pcs(iCM-1),
-        reset_A_async => reset,
-        event_b       => '1',
-        rate          => Mon(iCM).RX_CLK_PCS_FREQ);
 
-
-
+    
   end generate local_TCDS;
 
 

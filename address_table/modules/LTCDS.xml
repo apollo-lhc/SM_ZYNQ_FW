@@ -9,7 +9,7 @@
     <node id="USERCLK_RX"          permission="w" mask="0x00000200"/>
     <node id="DRP"                 permission="w" mask="0x00000400"/>
   </node>
-  <node id="STATUS"                        address="0x010" module="file://CM_C2C_Status.xml"/>
+  <node id="STATUS"                        address="0x010" module="file://MGT_USP_Status.xml"/>
   <!-- DEBUG 0x0 to 0x5 -> 0x404 to 0x409 -->
   <node id="DEBUG"                         address="0x020" module="file://CM_C2C_DEBUG_USP.xml"/>
   <node id="TX" address="0x30">
@@ -32,9 +32,12 @@
     <node id="FIXED_SEND_K"     address="0x007" mask="0x0000000F" permission="rw"/>   
   </node>
   <node id="TX_CLK_FREQ"        address="0x60"  mask="0xFFFFFFFF" permission="r"/>
-  <node id="TX_CLK_PCS_FREQ"    address="0x61" mask="0xFFFFFFFF" permission="r"/>
-  <node id="RX_CLK_PCS_FREQ"    address="0x62" mask="0xFFFFFFFF" permission="r"/>
+  <node id="TX_CLK_OUT_FREQ"    address="0x61" mask="0xFFFFFFFF" permission="r"/>
+  <node id="RX_CLK_OUT_FREQ"    address="0x62" mask="0xFFFFFFFF" permission="r"/>
   <node id="LOOPBACK"           address="0x63" mask="0x7" permission="rw" parameters="default=0x0"/>
-  
+  <node id="TX_OUTCLK_SEL"      address="0x63" mask="0x70" permission="rw" parameters="default=0x2"/>
+  <node id="RX_OUTCLK_SEL"      address="0x63" mask="0x700" permission="rw" parameters="default=0x2"/>
+  <node id="TX_USRCLK_ACTIVE"   address="0x63" mask="0x1000" permission="r"/>
+  <node id="RX_USRCLK_ACTIVE"   address="0x63" mask="0x2000" permission="r"/>
   <node id="DRP"                address="0x400" fwinfo="type=mem16_0x400" module="file://DRP_USP_GTH.xml"/>
 </node>
