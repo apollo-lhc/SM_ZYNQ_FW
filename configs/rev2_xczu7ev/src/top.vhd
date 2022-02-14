@@ -170,8 +170,8 @@ entity top is
 --    refclk_SSD_P   : in    std_logic; 
 --    refclk_SSD_N   : in    std_logic; 
 --    
-    REFCLK_C2C1_P          : in    std_logic_vector(1 downto 1);
-    REFCLK_C2C1_N          : in    std_logic_vector(1 downto 1);
+    REFCLK_C2C1_P          : in    std_logic_vector(1 downto 0);
+    REFCLK_C2C1_N          : in    std_logic_vector(1 downto 0);
 
  
     -------------------------------------------------------------------------------------------
@@ -1054,7 +1054,7 @@ begin  -- architecture structure
   onboardCLK_1: entity work.onboardCLK
     port map (
       clk_200Mhz => clk_200Mhz,
-      clk_71_427856Mhz  => AXI_C2C_aurora_init_clk,
+      clk_50Mhz  => AXI_C2C_aurora_init_clk,
       reset      =>  SI_init_reset,--'0',
       locked     => clk_200Mhz_locked,
       clk_in1_n  => onboard_clk_n,

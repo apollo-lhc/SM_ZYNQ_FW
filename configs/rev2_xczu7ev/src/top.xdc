@@ -177,8 +177,8 @@ set_property -dict {PACKAGE_PIN AD12 IOSTANDARD LVCMOS18 PULLDOWN TRUE} [get_por
 #set_property -dict {PACKAGE_PIN M23 }  [get_ports REFCLK_SSD_P]
 #set_property -dict {PACKAGE_PIN M24 }  [get_ports REFCLK_SSD_N]
 
-#set_property -dict {PACKAGE_PIN D10 }  [get_ports REFCLK_C2C1_P[0]]
-#set_property -dict {PACKAGE_PIN D9  }  [get_ports REFCLK_C2C1_N[0]]
+set_property -dict {PACKAGE_PIN D10 }  [get_ports REFCLK_C2C1_P[0]]
+set_property -dict {PACKAGE_PIN D9  }  [get_ports REFCLK_C2C1_N[0]]
 
 #set_property -dict {PACKAGE_PIN B10 }  [get_ports REFCLK_CMS_P[0]]
 #set_property -dict {PACKAGE_PIN B9  }  [get_ports REFCLK_CMS_N[0]]

@@ -119,6 +119,7 @@ AXI_SLAVES:
     TCL_CALL:
       command: "AXI_IP_I2C"
       axi_control: "${::AXI_MASTER_CTRL}"
+      irq_port: "${::IRQ0_INTR_CTRL}"
 
   SERV:
     TCL_CALL:
@@ -301,4 +302,4 @@ CORES:
       in_clk_freq_MHZ: 100
       out_clks:
         1: 200
-        2: 71.427856
+        2: 50
