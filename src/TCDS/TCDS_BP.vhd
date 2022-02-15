@@ -24,10 +24,8 @@ entity TCDS_BP is
     mgt_rx_p_i : in std_logic;
     mgt_rx_n_i : in std_logic;
 
-    clk_TCDS_REC_in_p  : in  std_logic;
-    clk_TCDS_REC_in_n  : in  std_logic;
-    clk_TCDS_320_in_p  : in  std_logic;
-    clk_TCDS_320_in_n  : in  std_logic;
+    clk_TCDS_REC  : in  std_logic;
+    clk_TCDS_320  : in  std_logic;
 
     clk_TCDS_REC_out_p : out std_logic;
     clk_TCDS_REC_out_n : out std_logic;
@@ -73,8 +71,6 @@ architecture behavioral of TCDS_BP is
   signal clk_40_oddr_d2 : std_logic;
   signal clk_40_out     : std_logic;
 
-  signal clk_TCDS_320   : std_logic;
-  signal clk_TCDS_REC   : std_logic;
 
   -- TCDS2 channel 0 interface.
   signal channel0_ttc2_o : tcds2_ttc2;
@@ -129,20 +125,6 @@ begin
   ------------------------------------------
   -- The transceiver.
   ------------------------------------------
-  TCDS_320 : ibufds_gte4
-    port map (
-      i   => clk_TCDS_320_in_p,
-      ib  => clk_TCDS_320_in_n,
-      o   => clk_TCDS_320,
-      ceb => zero--'0'
-      );
-  TCDS_REC : ibufds_gte4
-    port map (
-      i   => clk_TCDS_REC_in_p,
-      ib  => clk_TCDS_REC_in_n,
-      o   => clk_TCDS_REC,
-      ceb => zero--'0'
-      );
   
   
   QPLL_locked <= mgt_stat.rxplllock_out & mgt_stat.txplllock_out;
@@ -162,8 +144,10 @@ begin
       gtwiz_reset_rx_datapath_in            => mgt_ctrl.gtwiz_reset_rx_datapath_in,
 
 
-      gtrefclk00_in(0)                      => clk_TCDS_320,
-      gtrefclk01_in(0)                      => clk_TCDS_REC,
+--      gtrefclk00_in(0)                      => clk_TCDS_320,
+--      gtrefclk01_in(0)                      => clk_TCDS_REC,
+      gtrefclk00_in(0)                      => clk_TCDS_REC,
+      gtrefclk01_in(0)                      => clk_TCDS_320,
       qpll0outclk_out(0)                    => QPLL_clk(1),
       qpll0outrefclk_out(0)                 => QPLL_refclk(1),
       qpll1outclk_out(0)                    => QPLL_clk(2),

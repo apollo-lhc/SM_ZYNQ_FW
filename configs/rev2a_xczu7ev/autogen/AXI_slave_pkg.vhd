@@ -52,6 +52,6 @@ constant AXI_RANGE_CM_PB_UART : unsigned(31 downto 0) :=  x"00010000";
 constant AXI_RANGE_ESM_UART : unsigned(31 downto 0) :=  x"00010000";
 constant AXI_RANGE_AXI_MON : unsigned(31 downto 0) :=  x"00010000";
 constant AXI_RANGE_INT_AXI_FW : unsigned(31 downto 0) :=  x"00010000";
-constant AXI_RANGE_TCDS_2 : unsigned(31 downto 0) :=  x"00001000";
+constant AXI_RANGE_TCDS_2 : unsigned(31 downto 0) :=  x"00004000";
 constant AXI_RANGE_LDAQ : unsigned(31 downto 0) :=  x"00001000";
 end package AXISlaveAddrPkg;

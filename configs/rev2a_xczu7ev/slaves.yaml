@@ -280,7 +280,7 @@ AXI_SLAVES:
         axi_freq: "125000000"
       addr:
         offset: "0xA0170000"
-        range: "4K"
+        range: "64K"
     XML:
       - "address_table/modules/TCDS.xml"
       - "address_table/modules/top_secret/ipbus_tcds2_interface_accessor.xml"
@@ -323,16 +323,16 @@ CORES:
     TCL_CALL:
       command: BuildMGTCores
       GT_TYPE: GTH
-      freerun_frequency: 50
+      freerun_frequency: 125
       clocking:
         TX:
           LINE_RATE: 10.260224
-          PLL_TYPE: QPLL1
+          PLL_TYPE: CPLL
           REFCLK_FREQUENCY: 320.632
           OUTCLK_SOURCE: TXOUTCLKPMA
         RX:
           LINE_RATE: 10.260224
-          PLL_TYPE: QPLL1
+          PLL_TYPE: CPLL
           REFCLK_FREQUENCY: 320.632
           OUTCLK_SOURCE: RXOUTCLKPMA
       protocol:
