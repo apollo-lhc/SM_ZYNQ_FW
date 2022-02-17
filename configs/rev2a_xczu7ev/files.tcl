@@ -134,7 +134,7 @@ set vhdl_files "\
      ${autogen_path}/TCDS_2/TCDS_2_map.vhd \
      ${autogen_path}/TCDS_2/TCDS_2_PKG.vhd \
      src/TCDS/TCDS_BP.vhd \
-     src/TCDS/TCDS_local.vhd \
+     src/TCDS/TCDS_localCPLL.vhd \
      src/TCDS/TCDS.vhd \
      ${autogen_path}/LDAQ/LDAQ_map.vhd \
      ${autogen_path}/LDAQ/LDAQ_PKG.vhd \

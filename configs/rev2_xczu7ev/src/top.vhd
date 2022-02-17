@@ -8,6 +8,7 @@ use work.AXIRegPKG.all;
 use work.CM_package.all;
 use work.SERV_CTRL.all;
 use work.Global_PKG.all; 
+use work.AXISlaveAddrPkg.all;
 
 Library UNISIM;
 use UNISIM.vcomponents.all;
@@ -784,25 +785,6 @@ begin  -- architecture structure
 
 
       
-      MEM_TEST_araddr               => AXI_BUS_RMOSI(7).address,
-      MEM_TEST_arprot               => AXI_BUS_RMOSI(7).protection_type,
-      MEM_TEST_arready              => AXI_BUS_RMISO(7).ready_for_address,
-      MEM_TEST_arvalid              => AXI_BUS_RMOSI(7).address_valid,
-      MEM_TEST_awaddr               => AXI_BUS_WMOSI(7).address,
-      MEM_TEST_awprot               => AXI_BUS_WMOSI(7).protection_type,
-      MEM_TEST_awready              => AXI_BUS_WMISO(7).ready_for_address,
-      MEM_TEST_awvalid              => AXI_BUS_WMOSI(7).address_valid,
-      MEM_TEST_bready               => AXI_BUS_WMOSI(7).ready_for_response,
-      MEM_TEST_bresp                => AXI_BUS_WMISO(7).response,
-      MEM_TEST_bvalid               => AXI_BUS_WMISO(7).response_valid,
-      MEM_TEST_rdata                => AXI_BUS_RMISO(7).data,
-      MEM_TEST_rready               => AXI_BUS_RMOSI(7).ready_for_data,
-      MEM_TEST_rresp                => AXI_BUS_RMISO(7).response,
-      MEM_TEST_rvalid               => AXI_BUS_RMISO(7).data_valid,
-      MEM_TEST_wdata                => AXI_BUS_WMOSI(7).data,
-      MEM_TEST_wready               => AXI_BUS_WMISO(7).ready_for_data,
-      MEM_TEST_wstrb                => AXI_BUS_WMOSI(7).data_write_strobe,
-      MEM_TEST_wvalid               => AXI_BUS_WMOSI(7).data_valid,
 
 
 
@@ -850,7 +832,9 @@ begin  -- architecture structure
   
   services_1: entity work.services
     generic map(
-      CLK_FREQ => AXI_MASTER_CLK_FREQ)
+      CLK_FREQ => AXI_MASTER_CLK_FREQ,
+      ALLOCATED_MEMORY_RANGE => to_integer(AXI_RANGE_SERV)
+      )
     port map (
       clk_axi         => axi_clk,
       reset_axi_n     => pl_reset_n,
@@ -883,6 +867,9 @@ begin  -- architecture structure
       CPLD_Ctrl       => CPLD_Ctrl);
 
   SM_info_1: entity work.SM_info
+    generic map (
+      ALLOCATED_MEMORY_RANGE =>  to_integer(AXI_RANGE_SM_INFO)
+      )
     port map (
       clk_axi     => axi_clk,
       reset_axi_n => pl_reset_n,
@@ -893,7 +880,9 @@ begin  -- architecture structure
   
   IPMC_i2c_slave_1: entity work.IPMC_i2c_slave
     generic map(
-      CLK_FREQ => AXI_MASTER_CLK_FREQ)
+      CLK_FREQ => AXI_MASTER_CLK_FREQ,
+      ALLOCATED_MEMORY_RANGE =>  to_integer(AXI_RANGE_SLAVE_I2C)
+      )
     port map (
       clk_axi      => axi_clk,
       reset_axi_n  => pl_reset_n,
@@ -944,7 +933,9 @@ begin  -- architecture structure
       CM_COUNT             => 2,
       COUNTER_COUNT        => 5,
       CLKFREQ              => AXI_MASTER_CLK_FREQ,
-      ERROR_WAIT_TIME      => AXI_MASTER_CLK_FREQ)
+      ERROR_WAIT_TIME      => AXI_MASTER_CLK_FREQ,
+      ALLOCATED_MEMORY_RANGE =>  to_integer(AXI_RANGE_CM)
+      )
     port map (
       clk_axi              => axi_clk,
       reset_axi_n          => pl_reset_n,
@@ -1031,7 +1022,9 @@ begin  -- architecture structure
     generic map (
       --TCK_RATIO         => 1,
       COUNT           => XVC_COUNT,
-      IRQ_LENGTH      => 1)           
+      IRQ_LENGTH      => 1,
+      ALLOCATED_MEMORY_RANGE =>  to_integer(AXI_RANGE_PLXVC)
+      )           
     port map (
       clk_axi         => axi_clk,
       reset_axi_n     => pl_reset_n,
@@ -1145,14 +1138,6 @@ begin  -- architecture structure
       rate          => Clocking_Mon.AXI_CLK_FREQ);
 
 
-  mem_test_1: entity work.mem_test
-    port map (
-      clk_axi     => axi_clk,
-      reset_axi_n => pl_reset_n,
-      readMOSI    => AXI_BUS_RMOSI(7),
-      readMISO    => AXI_BUS_RMISO(7),
-      writeMOSI   => AXI_BUS_WMOSI(7),
-      writeMISO   => AXI_BUS_WMISO(7));
 
   
 end architecture structure;

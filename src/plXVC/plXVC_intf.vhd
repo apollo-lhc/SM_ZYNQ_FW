@@ -10,7 +10,8 @@ entity plXVC_intf is
   generic (
     --TCK_RATIO : integer := 1; --ratio of axi_clk to TCK
     COUNT       : integer :=2;  --Number of plXVCs inside of array
-    IRQ_LENGTH  : integer :=1); --Length of IRQ in axi_clk ticks
+    IRQ_LENGTH  : integer :=1;  --Length of IRQ in axi_clk ticks
+    ALLOCATED_MEMORY_RANGE : integer);            
   port (
     --signals for plXVC_interface
     clk_axi     : in  std_logic;
@@ -45,6 +46,9 @@ begin
 
 --Instansiate plXVC_interface Module
   PLXVC_interface_1: entity work.PLXVC_map
+    generic map(
+      ALLOCATED_MEMORY_RANGE => ALLOCATED_MEMORY_RANGE
+      )
     port map (
       clk_axi             => clk_axi,     --AXI_clk in
       reset_axi_n         => reset_axi_n, --AXI_reset in

@@ -7,7 +7,7 @@ use work.AXIRegPKG.all;
 use work.CM_package.all;
 use work.SERV_CTRL.all;
 use work.Global_PKG.all; 
- 
+use work.AXISlaveAddrPkg.all;
 
 library UNISIM;
 use UNISIM.vcomponents.all;
@@ -892,7 +892,9 @@ begin  -- architecture structure
   
   services_1: entity work.services
     generic map(
-      CLK_FREQ => AXI_MASTER_CLK_FREQ)
+      CLK_FREQ => AXI_MASTER_CLK_FREQ,
+      ALLOCATED_MEMORY_RANGE => to_integer(AXI_RANGE_SERV)
+      )
     port map (
       clk_axi         => axi_clk,
       reset_axi_n     => pl_reset_n,
@@ -930,6 +932,9 @@ begin  -- architecture structure
       CPLD_Ctrl       => CPLD_Ctrl);
 
   SM_info_1: entity work.SM_info
+    generic map (
+      ALLOCATED_MEMORY_RANGE => to_integer(AXI_RANGE_SM_INFO)
+      )
     port map (
       clk_axi     => axi_clk,
       reset_axi_n => pl_reset_n,
@@ -940,7 +945,9 @@ begin  -- architecture structure
   
   IPMC_i2c_slave_1: entity work.IPMC_i2c_slave
     generic map(
-      CLK_FREQ => AXI_MASTER_CLK_FREQ)    
+      CLK_FREQ => AXI_MASTER_CLK_FREQ,
+      ALLOCATED_MEMORY_RANGE => to_integer(AXI_RANGE_SLAVE_I2C)
+      )
     port map (
       clk_axi      => axi_clk,
       reset_axi_n  => pl_reset_n,
@@ -987,7 +994,9 @@ begin  -- architecture structure
       CM_COUNT             => 2,
       COUNTER_COUNT        => 5,
       CLKFREQ              => AXI_MASTER_CLK_FREQ,
-      ERROR_WAIT_TIME      => AXI_MASTER_CLK_FREQ)
+      ERROR_WAIT_TIME      => AXI_MASTER_CLK_FREQ,
+      ALLOCATED_MEMORY_RANGE => to_integer(AXI_RANGE_CM)
+      )
     port map (
       clk_axi              => axi_clk,
       reset_axi_n          => pl_reset_n,
@@ -1074,7 +1083,9 @@ begin  -- architecture structure
     generic map (
       --TCK_RATIO         => 1,
       COUNT           => XVC_COUNT,
-      IRQ_LENGTH      => 1)           
+      IRQ_LENGTH      => 1,
+      ALLOCATED_MEMORY_RANGE => to_integer(AXI_RANGE_PLXVC)
+      )           
     port map (
       clk_axi         => axi_clk,
       reset_axi_n     => pl_reset_n,
@@ -1190,7 +1201,8 @@ begin  -- architecture structure
   
   TCDS_1: entity work.TCDS
     generic map (
-      AXI_CLK_FREQ => AXI_MASTER_CLK_FREQ)
+      ALLOCATED_MEMORY_RANGE => to_integer(AXI_RANGE_TCDS_2),
+      AXI_CLK_FREQ => 125000000)
     port map (
       clk_axi           => clk_125Mhz,
       reset_axi_n       => pl_reset_n,
@@ -1221,6 +1233,9 @@ begin  -- architecture structure
       );
 
   LDAQ_1: entity work.LDAQ
+    generic map (
+      ALLOCATED_MEMORY_RANGE => to_integer(AXI_RANGE_LDAQ)
+      )
     port map (
       clk_axi         => axi_clk,         
       reset_axi_n     => pl_reset_n,      

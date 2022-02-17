@@ -4,7 +4,7 @@ array set bd_files [list {zynq_bd} {src/ZynqPS/build_Zynq_rev1_xc7z035.tcl} \
 		       ]
 
 set vhdl_files "\
-     configs/rev1_xc7z035/top.vhd \
+     configs/rev1_xc7z035/src/top.vhd \
      src/misc/types.vhd \
      src/misc/counter.vhd \
      src/misc/counter_CDC.vhd \
@@ -56,7 +56,7 @@ set vhdl_files "\
      "
 
 set xdc_files "\
-     configs/rev1_xc7z035/top.xdc \
+     configs/rev1_xc7z035/src/top.xdc \
      "
 
 

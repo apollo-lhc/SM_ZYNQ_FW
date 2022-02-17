@@ -20,6 +20,9 @@ entity TCDS_local is
     QPLL_refclk  : in  std_logic_vector(2 downto 1);
     QPLL_locked  : in  std_logic_vector(2 downto 1);
 
+    clk_TCDS_REC : in  std_logic;
+    clk_TCDS_320 : in  std_logic;
+    
     LTTC_P       : out std_logic_vector(1 downto 0);
     LTTC_N       : out std_logic_vector(1 downto 0);
     LTTS_P       : in  std_logic_vector(1 downto 0);
@@ -134,6 +137,7 @@ begin
 --    local_TCDS_MGBT_1: entity work.LOCAL_TCDS2
     local_TCDS_MGBT_1: entity work.localTCDS_MGT
     port map (
+      gtrefclk0_in(0)                       => clk_TCDS_320,
       gtwiz_userclk_tx_reset_in(0)          => Ctrl(iCM).RESET.USERCLK_TX,
       gtwiz_userclk_tx_srcclk_out(0)        => open,
       gtwiz_userclk_tx_usrclk_out(0)        => open,
@@ -150,11 +154,11 @@ begin
       gtwiz_reset_tx_datapath_in(0)         => Ctrl(iCM).RESET.TX_DATAPATH,
       gtwiz_reset_rx_pll_and_datapath_in(0) => Ctrl(iCM).RESET.RX_PLL_AND_DATAPATH,
       gtwiz_reset_rx_datapath_in(0)         => Ctrl(iCM).RESET.RX_DATAPATH,
-      gtwiz_reset_qpll1lock_in(0)           => QPLL_locked(1),
+--      gtwiz_reset_qpll1lock_in(0)           => QPLL_locked(1),
       gtwiz_reset_rx_cdr_stable_out(0)      => open,--Mon(iCM).STATUS.reset_rx_cdr_stable,
       gtwiz_reset_tx_done_out(0)            => Mon(iCM).DEBUG.tx.reset_done,
       gtwiz_reset_rx_done_out(0)            => Mon(iCM).DEBUG.rx.reset_done,
-      gtwiz_reset_qpll1reset_out(0)         => open,
+--      gtwiz_reset_qpll1reset_out(0)         => open,
       gtwiz_userdata_tx_in                  => tx_datas(iCM-1),
       gtwiz_userdata_rx_out                 => rx_datas(iCM-1),
       drpaddr_in                            => Ctrl(iCM).DRP.address,
@@ -168,10 +172,10 @@ begin
       gthrxp_in(0)                          => LTTS_P(iCM-1),
       pcsrsvdin_in                          => Ctrl(iCM).DEBUG.PCS_RSV_DIN,
 --      loopback_in                           => ,
-      qpll0clk_in(0)                        => QPLL_clk(1),   
-      qpll0refclk_in(0)                     => QPLL_refclk(1),
-      qpll1clk_in(0)                        => QPLL_clk(2),   
-      qpll1refclk_in(0)                     => QPLL_refclk(2),
+--      qpll0clk_in(0)                        => QPLL_clk(1),   
+--      qpll0refclk_in(0)                     => QPLL_refclk(1),
+--      qpll1clk_in(0)                        => QPLL_clk(2),   
+--      qpll1refclk_in(0)                     => QPLL_refclk(2),
       rx8b10ben_in(0)                       => '1',
       rxbufreset_in(0)                      => Ctrl(iCM).DEBUG.RX.BUF_RESET,
       rxcdrhold_in(0)                       => Ctrl(iCM).DEBUG.RX.CDR_HOLD,

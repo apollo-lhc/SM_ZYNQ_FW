@@ -6,6 +6,7 @@ use work.types.all;
 use work.AXIRegPKG.all;
 use work.CM_package.all;
 use work.SERV_CTRL.all;
+use work.AXISlaveAddrPkg.all;
 
 
 Library UNISIM;
@@ -943,6 +944,10 @@ begin  -- architecture structure
   LHC_SRC_SEL                   <= Clocking_Ctrl.LHC_SEL;
   HQ_SRC_SEL                    <= Clocking_Ctrl.HQ_SEL;      
   services_1: entity work.services
+    generic map(
+      CLK_FREQ => AXI_MASTER_CLK_FREQ,
+      ALLOCATED_MEMORY_RANGE =>  to_integer(AXI_RANGE_SERV)
+      )
     port map (
       clk_axi         => axi_clk,
       reset_axi_n     => pl_reset_n,
@@ -971,6 +976,9 @@ begin  -- architecture structure
       CM2_C2C_Mon     => CM_C2C_Mon.Link(3));
 
   SM_info_1: entity work.SM_info
+    generic map (
+      ALLOCATED_MEMORY_RANGE =>  to_integer(AXI_RANGE_SM_INFO)
+      )
     port map (
       clk_axi     => axi_clk,
       reset_axi_n => pl_reset_n,
@@ -980,6 +988,10 @@ begin  -- architecture structure
       writeMISO   => AXI_BUS_WMISO(3));
   
   IPMC_i2c_slave_1: entity work.IPMC_i2c_slave
+    generic map(
+      CLK_FREQ => AXI_MASTER_CLK_FREQ,
+      ALLOCATED_MEMORY_RANGE =>  to_integer(AXI_RANGE_SLAVE_I2C)
+      )
     port map (
       clk_axi      => axi_clk,
       reset_axi_n  => pl_reset_n,
@@ -1021,8 +1033,10 @@ begin  -- architecture structure
     generic map (
       CM_COUNT             => 2,
       COUNTER_COUNT        => 5,
-      CLKFREQ              => 50000000,
-      ERROR_WAIT_TIME      => 50000000)
+      CLKFREQ              => AXI_MASTER_CLK_FREQ,
+      ERROR_WAIT_TIME      => AXI_MASTER_CLK_FREQ,
+      ALLOCATED_MEMORY_RANGE =>  to_integer(AXI_RANGE_CM)
+      )
     port map (
       clk_axi              => axi_clk,
       reset_axi_n          => pl_reset_n,
@@ -1088,7 +1102,9 @@ begin  -- architecture structure
     generic map (
       --TCK_RATIO         => 1,
       COUNT           => XVC_COUNT,
-      IRQ_LENGTH      => 1)           
+      IRQ_LENGTH      => 1,
+      ALLOCATED_MEMORY_RANGE =>  to_integer(AXI_RANGE_PLXVC)
+      )
     port map (
       clk_axi         => axi_clk,
       reset_axi_n     => pl_reset_n,

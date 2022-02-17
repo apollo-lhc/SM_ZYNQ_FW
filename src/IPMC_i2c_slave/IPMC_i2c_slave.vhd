@@ -13,7 +13,8 @@ use UNISIM.vcomponents.all;
 
 entity IPMC_i2c_slave is
   generic (
-    CLK_FREQ            : integer
+    CLK_FREQ            : integer;
+    ALLOCATED_MEMORY_RANGE : integer            
   );
   port (
     clk_axi         : in  std_logic;
@@ -118,6 +119,9 @@ begin  -- architecture behavioral
   end process i2c_shutdown_filter;
   
   AXIRegBridge : entity work.axiLiteReg
+--    generic map(
+--      ALLOCATED_MEMORY_RANGE =>         ALLOCATED_MEMORY_RANGE
+--      )              
     port map (
       clk_axi     => clk_axi,
       reset_axi_n => reset_axi_n,

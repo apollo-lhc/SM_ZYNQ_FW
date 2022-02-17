@@ -16,9 +16,14 @@ use work.TCDS_2_Ctrl.all;
 
 use work.tclink_lpgbt_pkg.all;
 
+library UNISIM;
+use UNISIM.VCOMPONENTS.ALL;
+
 entity TCDS is
   generic (
-    AXI_CLK_FREQ : integer);
+    AXI_CLK_FREQ : integer;
+    ALLOCATED_MEMORY_RANGE : integer
+    );
   port (
     -- AXI interface
     clk_axi          : in  std_logic;
@@ -108,6 +113,8 @@ architecture behavioral of TCDS is
   signal reset      : std_logic;
 
   signal pcs_clk    : std_logic_vector(1 downto 0);
+
+
 begin
 
   reset <= not reset_axi_n;
@@ -117,6 +124,9 @@ begin
   -------------------------------------------------------------------------------
   -------------------------------------------------------------------------------
   TCDS_2_map_1: entity work.TCDS_2_map
+    generic map(
+      ALLOCATED_MEMORY_RANGE => ALLOCATED_MEMORY_RANGE
+      )
     port map (
       clk_axi         => clk_axi,
       reset_axi_n     => reset_axi_n,
@@ -131,6 +141,23 @@ begin
   ------------------------------------------
   -- TCDS2
   ------------------------------------------
+
+  TCDS_320 : ibufds_gte4
+    port map (
+      i   => clk_TCDS_320_in_p,
+      ib  => clk_TCDS_320_in_n,
+      o   => clk_TCDS_320,
+      ceb => '0'
+      );
+  TCDS_REC : ibufds_gte4
+    port map (
+      i   => clk_TCDS_REC_in_p,
+      ib  => clk_TCDS_REC_in_n,
+      o   => clk_TCDS_REC,
+      ceb => '0'
+      );
+
+
   TCDS_BP_1: entity work.TCDS_BP
     port map (
       clk_sys_125mhz     => clk_sys_125mhz,
@@ -138,10 +165,8 @@ begin
       mgt_tx_n_o         => mgt_tx_n_o,
       mgt_rx_p_i         => mgt_rx_p_i,
       mgt_rx_n_i         => mgt_rx_n_i,
-      clk_TCDS_REC_in_p  => clk_TCDS_REC_in_p,
-      clk_TCDS_REC_in_n  => clk_TCDS_REC_in_n,
-      clk_TCDS_320_in_p  => clk_TCDS_320_in_p,
-      clk_TCDS_320_in_n  => clk_TCDS_320_in_n,
+      clk_TCDS_REC       => clk_TCDS_REC,
+      clk_TCDS_320       => clk_TCDS_320,
       clk_TCDS_REC_out_p => clk_TCDS_REC_out_p,
       clk_TCDS_REC_out_n => clk_TCDS_REC_out_n,
       clk_TCDS           => clk_TCDS_o,
@@ -195,6 +220,8 @@ begin
       QPLL_clk    => QPLL_clk,
       QPLL_refclk => QPLL_refclk,
       QPLL_locked => QPLL_locked,
+      clk_TCDS_REC       => clk_TCDS_REC,
+      clk_TCDS_320       => clk_TCDS_320,
       LTTC_P      => LTTC_P,
       LTTC_N      => LTTC_N,
       LTTS_P      => LTTS_P,

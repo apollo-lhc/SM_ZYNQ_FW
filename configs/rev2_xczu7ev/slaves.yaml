@@ -254,20 +254,6 @@ AXI_SLAVES:
       - "address_table/modules/AXI_MONITOR_COUNTER.xml"
     UHAL_BASE: 0x1F000000
 
-
-  MEM_TEST:
-    TCL_CALL:
-      command: "AXI_PL_DEV_CONNECT"
-      axi_control: "${::AXI_MASTER_CTRL}"
-      addr:
-        offset: "-1"
-        range: "8K"
-    XML:
-      - "address_table/modules/MEM_TEST.xml"
-    UHAL_BASE: 0x0F000000
-    HDL: 
-      map_template: "axi_generic/template_map_withbram.vhd"
-
   IRQ_CTRL:
     XML:
       - "address_table/modules/INTERRUPT_CONTROLLER.xml"

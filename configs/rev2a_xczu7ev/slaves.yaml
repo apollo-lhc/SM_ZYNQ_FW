@@ -280,7 +280,7 @@ AXI_SLAVES:
         axi_freq: "125000000"
       addr:
         offset: "0xA0170000"
-        range: "4K"
+        range: "64K"
     XML:
       - "address_table/modules/TCDS.xml"
       - "address_table/modules/top_secret/ipbus_tcds2_interface_accessor.xml"
@@ -292,7 +292,7 @@ AXI_SLAVES:
       - "address_table/modules/top_secret/tcds2_link_csr_master_status.xml"
       - "address_table/modules/LTCDS.xml"
       - "address_table/modules/MGT_USP_Status.xml"
-    UHAL_BASE: 0x30000000
+    UHAL_BASE: 0x31000000
     HDL: 
       map_template: "axi_generic/template_map_withbram.vhd"
   
@@ -305,7 +305,7 @@ AXI_SLAVES:
         range: "4K"
     XML:
       - "address_table/modules/LDAQ.xml"
-    UHAL_BASE: 0x40000000
+    UHAL_BASE: 0x32000000
     HDL: 
       map_template: "axi_generic/template_map.vhd"
 
@@ -323,16 +323,16 @@ CORES:
     TCL_CALL:
       command: BuildMGTCores
       GT_TYPE: GTH
-      freerun_frequency: 50
+      freerun_frequency: 125
       clocking:
         TX:
           LINE_RATE: 10.260224
-          PLL_TYPE: QPLL1
+          PLL_TYPE: CPLL
           REFCLK_FREQUENCY: 320.632
           OUTCLK_SOURCE: TXOUTCLKPMA
         RX:
           LINE_RATE: 10.260224
-          PLL_TYPE: QPLL1
+          PLL_TYPE: CPLL
           REFCLK_FREQUENCY: 320.632
           OUTCLK_SOURCE: RXOUTCLKPMA
       protocol:

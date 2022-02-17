@@ -245,6 +245,7 @@ AXI_SLAVES:
       addr:
         offset: "0x41600000"
         range: "8K"
+      irq_port: "${::IRQ_ORR}/in0"
 
   SERV:
     TCL_CALL:

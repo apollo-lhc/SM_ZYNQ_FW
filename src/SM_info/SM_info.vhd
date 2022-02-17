@@ -16,7 +16,9 @@ use UNISIM.vcomponents.all;
 
 
 entity SM_info is
-  
+  generic (
+    ALLOCATED_MEMORY_RANGE : integer
+    );            
   port (
     clk_axi         : in  std_logic;
     reset_axi_n     : in  std_logic;
@@ -37,6 +39,9 @@ begin  -- architecture behavioral
   -------------------------------------------------------------------------------
   -------------------------------------------------------------------------------
   SM_INFO_interface_1: entity work.SM_INFO_map
+    generic map(
+      ALLOCATED_MEMORY_RANGE => ALLOCATED_MEMORY_RANGE
+      )              
     port map (
       clk_axi         => clk_axi,
       reset_axi_n     => reset_axi_n,
