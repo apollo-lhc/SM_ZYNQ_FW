@@ -1,8 +1,0 @@
-  &IRQ0_INTR_CTRL{
-    compatible = "xlnx,axi-intc-4.1", "xlnx,xps-intc-1.00.a";
-    interrupt-parent = <&gic>;
-    interrupts = <0 89 0>;
-    xlnx,kind-of-intr = <0x0>;
-    label = "IRQ0_INTR_CTRL";
-    linux,uio-name = "IRQ0_INTR_CTRL";
-  };

@@ -7,29 +7,37 @@
     <node id="RX_DATAPATH"         permission="w" mask="0X00000080"/>
     <node id="USERCLK_TX"          permission="w" mask="0X00000100"/>
     <node id="USERCLK_RX"          permission="w" mask="0x00000200"/>
+    <node id="DRP"                 permission="w" mask="0x00000400"/>
   </node>
-  <node id="STATUS" address="0x2">
-    <node id="RESET_RX_CDR_STABLE" permission="r" mask="0X00000001" />
-    <node id="RESET_TX_DONE"       permission="r" mask="0X00000002" />
-    <node id="RESET_RX_DONE"       permission="r" mask="0X00000004" />
-    <node id="USERCLK_TX_ACTIVE"   permission="r" mask="0X00000100" />
-    <node id="USERCLK_RX_ACTIVE"   permission="r" mask="0X00000200" />
-    <node id="GT_POWER_GOOD"       permission="r" mask="0X00010000" />
-    <node id="RX_BYTE_ISALIGNED"   permission="r" mask="0X00020000" />
-    <node id="RX_BYTE_REALIGN"     permission="r" mask="0X00040000" />
-    <node id="RX_COMMADET"         permission="r" mask="0X00080000" />
-    <node id="RX_PMA_RESET_DONE"   permission="r" mask="0X00100000" />
-    <node id="TX_PMA_RESET_DONE"   permission="r" mask="0x00200000" />
-  </node>
-  <node id="TX" address="0x10">
+  <node id="STATUS"                        address="0x010" module="file://MGT_USP_Status.xml"/>
+  <!-- DEBUG 0x0 to 0x5 -> 0x404 to 0x409 -->
+  <node id="DEBUG"                         address="0x020" module="file://CM_C2C_DEBUG_USP.xml"/>
+  <node id="TX" address="0x30">
     <node id="CTRL0" address="0x0" permission="rw" mask="0x0000FFFF" />
     <node id="CTRL1" address="0x0" permission="rw" mask="0xFFFF0000" />
     <node id="CTRL2" address="0x1" permission="rw" mask="0x000000FF" />
   </node>
-  <node id="RX" address="0x12">
+  <node id="RX" address="0x40">
     <node id="CTRL0" address="0x0" permission="r" mask="0x0000FFFF" />
     <node id="CTRL1" address="0x0" permission="r" mask="0xFFFF0000" />
     <node id="CTRL2" address="0x1" permission="r" mask="0x000000FF" />
     <node id="CTRL3" address="0x1" permission="r" mask="0x0000FF00" />
   </node>
+  <node id="DATA_CTRL"          address="0x050">
+    <node id="CAPTURE"          address="0x000" mask="0x00000001" permission="w"/>
+    <node id="MODE"             address="0x002" mask="0x0000000F" permission="rw"/>
+    <node id="CAPTURE_D"        address="0x004" mask="0xFFFFFFFF" permission="r"/>
+    <node id="CAPTURE_K"        address="0x005" mask="0x0000000F" permission="r"/>
+    <node id="FIXED_SEND_D"     address="0x006" mask="0xFFFFFFFF" permission="rw"/>
+    <node id="FIXED_SEND_K"     address="0x007" mask="0x0000000F" permission="rw"/>   
+  </node>
+  <node id="TX_CLK_FREQ"        address="0x60"  mask="0xFFFFFFFF" permission="r" parameters="Table=CLOCKING;Column=FREQ;Row=_2_3;Status=3;Show=nz;Format=m_1_1_1000000_1_0_1"/>
+  <node id="TX_CLK_OUT_FREQ"    address="0x61" mask="0xFFFFFFFF" permission="r"  parameters="Table=CLOCKING;Column=FREQ;Row=_2_3;Status=3;Show=nz;Format=m_1_1_1000000_1_0_1"/>
+  <node id="RX_CLK_OUT_FREQ"    address="0x62" mask="0xFFFFFFFF" permission="r"  parameters="Table=CLOCKING;Column=FREQ;Row=_2_3;Status=3;Show=nz;Format=m_1_1_1000000_1_0_1"/>
+  <node id="LOOPBACK"           address="0x63" mask="0x7" permission="rw" parameters="default=0x0"/>
+  <node id="TX_OUTCLK_SEL"      address="0x63" mask="0x70" permission="rw" parameters="default=0x2"/>
+  <node id="RX_OUTCLK_SEL"      address="0x63" mask="0x700" permission="rw" parameters="default=0x2"/>
+  <node id="TX_USRCLK_ACTIVE"   address="0x63" mask="0x1000" permission="r"/>
+  <node id="RX_USRCLK_ACTIVE"   address="0x63" mask="0x2000" permission="r"/>
+  <node id="DRP"                address="0x400" fwinfo="type=mem16_0x400" module="file://DRP_USP_GTH.xml"/>
 </node>

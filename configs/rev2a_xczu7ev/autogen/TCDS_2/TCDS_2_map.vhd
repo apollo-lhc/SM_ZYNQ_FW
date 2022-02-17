@@ -2,13 +2,21 @@
 --Modifications might be lost.
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.std_logic_misc.all;
 use ieee.numeric_std.all;
 use work.AXIRegWidthPkg.all;
 use work.AXIRegPkg.all;
 use work.types.all;
+use work.BRAMPortPkg.all;
 use work.TCDS_2_Ctrl.all;
 
+
+
 entity TCDS_2_map is
+  generic (
+    READ_TIMEOUT     : integer := 2048;
+    ALLOCATED_MEMORY_RANGE : integer
+    );
   port (
     clk_axi          : in  std_logic;
     reset_axi_n      : in  std_logic;
@@ -16,8 +24,10 @@ entity TCDS_2_map is
     slave_readMISO   : out AXIReadMISO  := DefaultAXIReadMISO;
     slave_writeMOSI  : in  AXIWriteMOSI;
     slave_writeMISO  : out AXIWriteMISO := DefaultAXIWriteMISO;
+    
     Mon              : in  TCDS_2_Mon_t;
     Ctrl             : out TCDS_2_Ctrl_t
+        
     );
 end entity TCDS_2_map;
 architecture behavioral of TCDS_2_map is
@@ -28,17 +38,39 @@ architecture behavioral of TCDS_2_map is
   signal localWrEn          : std_logic;
   signal localRdReq         : std_logic;
   signal localRdAck         : std_logic;
+  signal regRdAck           : std_logic;
 
-
-  signal reg_data :  slv32_array_t(integer range 0 to 563);
-  constant Default_reg_data : slv32_array_t(integer range 0 to 563) := (others => x"00000000");
+  
+  constant BRAM_COUNT       : integer := 2;
+--  signal latchBRAM          : std_logic_vector(BRAM_COUNT-1 downto 0);
+--  signal delayLatchBRAM          : std_logic_vector(BRAM_COUNT-1 downto 0);
+  constant BRAM_range       : int_array_t(0 to BRAM_COUNT-1) := (0 => 10
+,			1 => 10);
+  constant BRAM_addr        : slv32_array_t(0 to BRAM_COUNT-1) := (0 => x"00000800"
+,			1 => x"00001000");
+  signal BRAM_MOSI          : BRAMPortMOSI_array_t(0 to BRAM_COUNT-1);
+  signal BRAM_MISO          : BRAMPortMISO_array_t(0 to BRAM_COUNT-1);
+  
+  
+  signal reg_data :  slv32_array_t(integer range 0 to 5120);
+  constant Default_reg_data : slv32_array_t(integer range 0 to 5120) := (others => x"00000000");
 begin  -- architecture behavioral
 
   -------------------------------------------------------------------------------
   -- AXI 
   -------------------------------------------------------------------------------
   -------------------------------------------------------------------------------
-  AXIRegBridge : entity work.axiLiteReg
+  assert ((4*5120) < ALLOCATED_MEMORY_RANGE)
+    report "TCDS_2: Regmap addressing range " & integer'image(4*5120) & " is outside of AXI mapped range " & integer'image(ALLOCATED_MEMORY_RANGE)
+  severity ERROR;
+  assert ((4*5120) >= ALLOCATED_MEMORY_RANGE)
+    report "TCDS_2: Regmap addressing range " & integer'image(4*5120) & " is inside of AXI mapped range " & integer'image(ALLOCATED_MEMORY_RANGE)
+  severity NOTE;
+
+  AXIRegBridge : entity work.axiLiteRegBlocking
+    generic map (
+      READ_TIMEOUT => READ_TIMEOUT
+      )
     port map (
       clk_axi     => clk_axi,
       reset_axi_n => reset_axi_n,
@@ -53,39 +85,61 @@ begin  -- architecture behavioral
       read_req    => localRdReq,
       read_ack    => localRdAck);
 
-  latch_reads: process (clk_axi) is
+  -------------------------------------------------------------------------------
+  -- Record read decoding
+  -------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------
+
+  latch_reads: process (clk_axi,reset_axi_n) is
   begin  -- process latch_reads
-    if clk_axi'event and clk_axi = '1' then  -- rising clock edge
-      if localRdReq = '1' then
-        localRdData_latch <= localRdData;        
+    if reset_axi_n = '0' then
+      localRdAck <= '0';
+    elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
+      localRdAck <= '0';
+      
+      if regRdAck = '1' then
+        localRdData_latch <= localRdData;
+        localRdAck <= '1';
+      elsif BRAM_MISO(0).rd_data_valid = '1' then
+        localRdAck <= '1';
+        localRdData_latch <= BRAM_MISO(0).rd_data;
+elsif BRAM_MISO(1).rd_data_valid = '1' then
+        localRdAck <= '1';
+        localRdData_latch <= BRAM_MISO(1).rd_data;
+
       end if;
     end if;
   end process latch_reads;
-  reads: process (localRdReq,localAddress,reg_data) is
-  begin  -- process reads
-    localRdAck  <= '0';
-    localRdData <= x"00000000";
-    if localRdReq = '1' then
-      localRdAck  <= '1';
-      case to_integer(unsigned(localAddress(9 downto 0))) is
 
+  
+  reads: process (clk_axi,reset_axi_n) is
+  begin  -- process latch_reads
+    if reset_axi_n = '0' then
+      regRdAck <= '0';
+    elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
+      regRdAck  <= '0';
+      localRdData <= x"00000000";
+      if localRdReq = '1' then
+        regRdAck  <= '1';
+        case to_integer(unsigned(localAddress(12 downto 0))) is
+          
         when 0 => --0x0
-          localRdData( 0)            <=  Mon.TCDS_2.hw_cfg.has_spy_registers;                        --
-          localRdData( 1)            <=  Mon.TCDS_2.hw_cfg.has_link_test_mode;                       --
+          localRdData( 0)            <=  Mon.TCDS_2.HW_CFG.HAS_SPY_REGISTERS;                        --
+          localRdData( 1)            <=  Mon.TCDS_2.HW_CFG.HAS_LINK_TEST_MODE;                       --
         when 8 => --0x8
           localRdData( 0)            <=  reg_data( 8)( 0);                                           --
         when 9 => --0x9
           localRdData( 0)            <=  reg_data( 9)( 0);                                           --
           localRdData( 1)            <=  reg_data( 9)( 1);                                           --
         when 12 => --0xc
-          localRdData( 0)            <=  Mon.TCDS_2.link_test.status.prbs_chk_error;                 --
-          localRdData( 1)            <=  Mon.TCDS_2.link_test.status.prbs_chk_locked;                --
+          localRdData( 0)            <=  Mon.TCDS_2.LINK_TEST.STATUS.PRBS_CHK_ERROR;                 --
+          localRdData( 1)            <=  Mon.TCDS_2.LINK_TEST.STATUS.PRBS_CHK_LOCKED;                --
         when 13 => --0xd
-          localRdData(31 downto  0)  <=  Mon.TCDS_2.link_test.status.prbs_chk_unlock_counter;        --
+          localRdData(31 downto  0)  <=  Mon.TCDS_2.LINK_TEST.STATUS.PRBS_CHK_UNLOCK_COUNTER;        --
         when 14 => --0xe
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.link_test.status.prbs_gen_o_hint;                --
-          localRdData(15 downto  8)  <=  Mon.TCDS_2.link_test.status.prbs_chk_i_hint;                --
-          localRdData(23 downto 16)  <=  Mon.TCDS_2.link_test.status.prbs_chk_o_hint;                --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.LINK_TEST.STATUS.PRBS_GEN_O_HINT;                --
+          localRdData(15 downto  8)  <=  Mon.TCDS_2.LINK_TEST.STATUS.PRBS_CHK_I_HINT;                --
+          localRdData(23 downto 16)  <=  Mon.TCDS_2.LINK_TEST.STATUS.PRBS_CHK_O_HINT;                --
         when 64 => --0x40
           localRdData( 0)            <=  reg_data(64)( 0);                                           --
           localRdData( 4)            <=  reg_data(64)( 4);                                           --Direct full (i.e., both TX and RX) reset of the MGT. Only enabled when the TCLink channel controller is disabled (i.e., control.tclink_channel_ctrl_enable is low).
@@ -149,374 +203,571 @@ begin  -- architecture behavioral
         when 82 => --0x52
           localRdData(15 downto  0)  <=  reg_data(82)(15 downto  0);                                 --
         when 96 => --0x60
-          localRdData( 0)            <=  Mon.TCDS_2.csr.status.is_link_optical;                      --
-          localRdData( 1)            <=  Mon.TCDS_2.csr.status.is_link_speed_10g;                    --
-          localRdData( 2)            <=  Mon.TCDS_2.csr.status.is_leader;                            --
-          localRdData( 3)            <=  Mon.TCDS_2.csr.status.is_quad_leader;                       --
-          localRdData( 4)            <=  Mon.TCDS_2.csr.status.is_mgt_rx_mode_lpm;                   --
+          localRdData( 0)            <=  Mon.TCDS_2.CSR.STATUS.IS_LINK_OPTICAL;                      --
+          localRdData( 1)            <=  Mon.TCDS_2.CSR.STATUS.IS_LINK_SPEED_10G;                    --
+          localRdData( 2)            <=  Mon.TCDS_2.CSR.STATUS.IS_LEADER;                            --
+          localRdData( 3)            <=  Mon.TCDS_2.CSR.STATUS.IS_QUAD_LEADER;                       --
+          localRdData( 4)            <=  Mon.TCDS_2.CSR.STATUS.IS_MGT_RX_MODE_LPM;                   --
         when 97 => --0x61
-          localRdData( 0)            <=  Mon.TCDS_2.csr.status.mmcm_locked;                          --
-          localRdData( 1)            <=  Mon.TCDS_2.csr.status.mgt_power_good;                       --
-          localRdData( 4)            <=  Mon.TCDS_2.csr.status.mgt_tx_pll_locked;                    --
-          localRdData( 5)            <=  Mon.TCDS_2.csr.status.mgt_rx_pll_locked;                    --
-          localRdData( 8)            <=  Mon.TCDS_2.csr.status.mgt_reset_tx_done;                    --
-          localRdData( 9)            <=  Mon.TCDS_2.csr.status.mgt_reset_rx_done;                    --
-          localRdData(12)            <=  Mon.TCDS_2.csr.status.mgt_tx_ready;                         --
-          localRdData(13)            <=  Mon.TCDS_2.csr.status.mgt_rx_ready;                         --
-          localRdData(14)            <=  Mon.TCDS_2.csr.status.cdc40_tx_ready;                       --
-          localRdData(15)            <=  Mon.TCDS_2.csr.status.cdc40_rx_ready;                       --
-          localRdData(16)            <=  Mon.TCDS_2.csr.status.rx_data_not_idle;                     --
-          localRdData(17)            <=  Mon.TCDS_2.csr.status.rx_frame_locked;                      --
-          localRdData(18)            <=  Mon.TCDS_2.csr.status.tx_user_data_ready;                   --
-          localRdData(19)            <=  Mon.TCDS_2.csr.status.rx_user_data_ready;                   --
-          localRdData(20)            <=  Mon.TCDS_2.csr.status.tclink_ready;                         --
+          localRdData( 0)            <=  Mon.TCDS_2.CSR.STATUS.MMCM_LOCKED;                          --
+          localRdData( 1)            <=  Mon.TCDS_2.CSR.STATUS.MGT_POWER_GOOD;                       --
+          localRdData( 4)            <=  Mon.TCDS_2.CSR.STATUS.MGT_TX_PLL_LOCKED;                    --
+          localRdData( 5)            <=  Mon.TCDS_2.CSR.STATUS.MGT_RX_PLL_LOCKED;                    --
+          localRdData( 8)            <=  Mon.TCDS_2.CSR.STATUS.MGT_RESET_TX_DONE;                    --
+          localRdData( 9)            <=  Mon.TCDS_2.CSR.STATUS.MGT_RESET_RX_DONE;                    --
+          localRdData(12)            <=  Mon.TCDS_2.CSR.STATUS.MGT_TX_READY;                         --
+          localRdData(13)            <=  Mon.TCDS_2.CSR.STATUS.MGT_RX_READY;                         --
+          localRdData(14)            <=  Mon.TCDS_2.CSR.STATUS.CDC40_TX_READY;                       --
+          localRdData(15)            <=  Mon.TCDS_2.CSR.STATUS.CDC40_RX_READY;                       --
+          localRdData(16)            <=  Mon.TCDS_2.CSR.STATUS.RX_DATA_NOT_IDLE;                     --
+          localRdData(17)            <=  Mon.TCDS_2.CSR.STATUS.RX_FRAME_LOCKED;                      --
+          localRdData(18)            <=  Mon.TCDS_2.CSR.STATUS.TX_USER_DATA_READY;                   --
+          localRdData(19)            <=  Mon.TCDS_2.CSR.STATUS.RX_USER_DATA_READY;                   --
+          localRdData(20)            <=  Mon.TCDS_2.CSR.STATUS.TCLINK_READY;                         --
         when 98 => --0x62
-          localRdData(30 downto  0)  <=  Mon.TCDS_2.csr.status.initializer_fsm_state;                --
-          localRdData(31)            <=  Mon.TCDS_2.csr.status.initializer_fsm_running;              --
+          localRdData(30 downto  0)  <=  Mon.TCDS_2.CSR.STATUS.INITIALIZER_FSM_STATE;                --
+          localRdData(31)            <=  Mon.TCDS_2.CSR.STATUS.INITIALIZER_FSM_RUNNING;              --
         when 99 => --0x63
-          localRdData(31 downto  0)  <=  Mon.TCDS_2.csr.status.rx_frame_unlock_counter;              --
+          localRdData(31 downto  0)  <=  Mon.TCDS_2.CSR.STATUS.RX_FRAME_UNLOCK_COUNTER;              --
         when 100 => --0x64
-          localRdData( 9 downto  0)  <=  Mon.TCDS_2.csr.status.phase_cdc40_tx_measured;              --
-          localRdData(18 downto 16)  <=  Mon.TCDS_2.csr.status.phase_cdc40_rx_measured;              --
-          localRdData(30 downto 24)  <=  Mon.TCDS_2.csr.status.phase_pi_tx_measured;                 --
+          localRdData( 9 downto  0)  <=  Mon.TCDS_2.CSR.STATUS.PHASE_CDC40_TX_MEASURED;              --
+          localRdData(18 downto 16)  <=  Mon.TCDS_2.CSR.STATUS.PHASE_CDC40_RX_MEASURED;              --
+          localRdData(30 downto 24)  <=  Mon.TCDS_2.CSR.STATUS.PHASE_PI_TX_MEASURED;                 --
         when 101 => --0x65
-          localRdData( 0)            <=  Mon.TCDS_2.csr.status.fec_correction_applied;               --Latched flag indicating that the link is not error-free.
+          localRdData( 0)            <=  Mon.TCDS_2.CSR.STATUS.FEC_CORRECTION_APPLIED;               --Latched flag indicating that the link is not error-free.
         when 102 => --0x66
-          localRdData( 0)            <=  Mon.TCDS_2.csr.status.tclink_loop_closed;                   --High if the TCLink control loop is closed (i.e. configured as closed and not internally opened due to issues).
-          localRdData( 1)            <=  Mon.TCDS_2.csr.status.tclink_operation_error;               --High if the TCLink encountered a DCO error during operation.
+          localRdData( 0)            <=  Mon.TCDS_2.CSR.STATUS.TCLINK_LOOP_CLOSED;                   --High if the TCLink control loop is closed (i.e. configured as closed and not internally opened due to issues).
+          localRdData( 1)            <=  Mon.TCDS_2.CSR.STATUS.TCLINK_OPERATION_ERROR;               --High if the TCLink encountered a DCO error during operation.
         when 103 => --0x67
-          localRdData(31 downto  0)  <=  Mon.TCDS_2.csr.status.tclink_phase_measured;                --Phase value measured by the TCLink. Signed two's complement number. Conversion to ps: DDMTD_UNIT / navg * value.
+          localRdData(31 downto  0)  <=  Mon.TCDS_2.CSR.STATUS.TCLINK_PHASE_MEASURED;                --Phase value measured by the TCLink. Signed two's complement number. Conversion to ps: DDMTD_UNIT / navg * value.
         when 104 => --0x68
-          localRdData(31 downto  0)  <=  Mon.TCDS_2.csr.status.tclink_phase_error.lo;                --
+          localRdData(31 downto  0)  <=  Mon.TCDS_2.CSR.STATUS.TCLINK_PHASE_ERROR.LO;                --
         when 105 => --0x69
-          localRdData(15 downto  0)  <=  Mon.TCDS_2.csr.status.tclink_phase_error.hi;                --
+          localRdData(15 downto  0)  <=  Mon.TCDS_2.CSR.STATUS.TCLINK_PHASE_ERROR.HI;                --
         when 256 => --0x100
-          localRdData(31 downto  0)  <=  Mon.TCDS_2.spy_frame_tx.word0;                              --
+          localRdData(31 downto  0)  <=  Mon.TCDS_2.SPY_FRAME_TX.WORD0;                              --
         when 257 => --0x101
-          localRdData(31 downto  0)  <=  Mon.TCDS_2.spy_frame_tx.word1;                              --
+          localRdData(31 downto  0)  <=  Mon.TCDS_2.SPY_FRAME_TX.WORD1;                              --
         when 258 => --0x102
-          localRdData(31 downto  0)  <=  Mon.TCDS_2.spy_frame_tx.word2;                              --
+          localRdData(31 downto  0)  <=  Mon.TCDS_2.SPY_FRAME_TX.WORD2;                              --
         when 259 => --0x103
-          localRdData(31 downto  0)  <=  Mon.TCDS_2.spy_frame_tx.word3;                              --
+          localRdData(31 downto  0)  <=  Mon.TCDS_2.SPY_FRAME_TX.WORD3;                              --
         when 260 => --0x104
-          localRdData(31 downto  0)  <=  Mon.TCDS_2.spy_frame_tx.word4;                              --
+          localRdData(31 downto  0)  <=  Mon.TCDS_2.SPY_FRAME_TX.WORD4;                              --
         when 261 => --0x105
-          localRdData(31 downto  0)  <=  Mon.TCDS_2.spy_frame_tx.word5;                              --
+          localRdData(31 downto  0)  <=  Mon.TCDS_2.SPY_FRAME_TX.WORD5;                              --
         when 262 => --0x106
-          localRdData(31 downto  0)  <=  Mon.TCDS_2.spy_frame_tx.word6;                              --
+          localRdData(31 downto  0)  <=  Mon.TCDS_2.SPY_FRAME_TX.WORD6;                              --
         when 263 => --0x107
-          localRdData( 9 downto  0)  <=  Mon.TCDS_2.spy_frame_tx.word7;                              --
+          localRdData( 9 downto  0)  <=  Mon.TCDS_2.SPY_FRAME_TX.WORD7;                              --
         when 272 => --0x110
-          localRdData(31 downto  0)  <=  Mon.TCDS_2.spy_frame_rx.word0;                              --
+          localRdData(31 downto  0)  <=  Mon.TCDS_2.SPY_FRAME_RX.WORD0;                              --
         when 273 => --0x111
-          localRdData(31 downto  0)  <=  Mon.TCDS_2.spy_frame_rx.word1;                              --
+          localRdData(31 downto  0)  <=  Mon.TCDS_2.SPY_FRAME_RX.WORD1;                              --
         when 274 => --0x112
-          localRdData(31 downto  0)  <=  Mon.TCDS_2.spy_frame_rx.word2;                              --
+          localRdData(31 downto  0)  <=  Mon.TCDS_2.SPY_FRAME_RX.WORD2;                              --
         when 275 => --0x113
-          localRdData(31 downto  0)  <=  Mon.TCDS_2.spy_frame_rx.word3;                              --
+          localRdData(31 downto  0)  <=  Mon.TCDS_2.SPY_FRAME_RX.WORD3;                              --
         when 276 => --0x114
-          localRdData(31 downto  0)  <=  Mon.TCDS_2.spy_frame_rx.word4;                              --
+          localRdData(31 downto  0)  <=  Mon.TCDS_2.SPY_FRAME_RX.WORD4;                              --
         when 277 => --0x115
-          localRdData(31 downto  0)  <=  Mon.TCDS_2.spy_frame_rx.word5;                              --
+          localRdData(31 downto  0)  <=  Mon.TCDS_2.SPY_FRAME_RX.WORD5;                              --
         when 278 => --0x116
-          localRdData(31 downto  0)  <=  Mon.TCDS_2.spy_frame_rx.word6;                              --
+          localRdData(31 downto  0)  <=  Mon.TCDS_2.SPY_FRAME_RX.WORD6;                              --
         when 279 => --0x117
-          localRdData( 9 downto  0)  <=  Mon.TCDS_2.spy_frame_rx.word7;                              --
+          localRdData( 9 downto  0)  <=  Mon.TCDS_2.SPY_FRAME_RX.WORD7;                              --
         when 288 => --0x120
-          localRdData( 0)            <=  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.physics;              --
-          localRdData( 1)            <=  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.calibration;          --
-          localRdData( 2)            <=  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.random;               --
-          localRdData( 3)            <=  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.software;             --
-          localRdData( 4)            <=  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_4;           --
-          localRdData( 5)            <=  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_5;           --
-          localRdData( 6)            <=  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_6;           --
-          localRdData( 7)            <=  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_7;           --
-          localRdData( 8)            <=  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_8;           --
-          localRdData( 9)            <=  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_9;           --
-          localRdData(10)            <=  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_10;          --
-          localRdData(11)            <=  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_11;          --
-          localRdData(12)            <=  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_12;          --
-          localRdData(13)            <=  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_13;          --
-          localRdData(14)            <=  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_14;          --
-          localRdData(15)            <=  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.reserved_15;          --
+          localRdData( 0)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL0.L1A_INFO.PHYSICS;              --
+          localRdData( 1)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL0.L1A_INFO.CALIBRATION;          --
+          localRdData( 2)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL0.L1A_INFO.RANDOM;               --
+          localRdData( 3)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL0.L1A_INFO.SOFTWARE;             --
+          localRdData( 4)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL0.L1A_INFO.RESERVED_4;           --
+          localRdData( 5)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL0.L1A_INFO.RESERVED_5;           --
+          localRdData( 6)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL0.L1A_INFO.RESERVED_6;           --
+          localRdData( 7)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL0.L1A_INFO.RESERVED_7;           --
+          localRdData( 8)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL0.L1A_INFO.RESERVED_8;           --
+          localRdData( 9)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL0.L1A_INFO.RESERVED_9;           --
+          localRdData(10)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL0.L1A_INFO.RESERVED_10;          --
+          localRdData(11)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL0.L1A_INFO.RESERVED_11;          --
+          localRdData(12)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL0.L1A_INFO.RESERVED_12;          --
+          localRdData(13)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL0.L1A_INFO.RESERVED_13;          --
+          localRdData(14)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL0.L1A_INFO.RESERVED_14;          --
+          localRdData(15)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL0.L1A_INFO.RESERVED_15;          --
         when 289 => --0x121
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_ttc2_channel0.l1a_info.physics_subtype;      --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTC2_CHANNEL0.L1A_INFO.PHYSICS_SUBTYPE;      --
         when 290 => --0x122
-          localRdData(15 downto  0)  <=  Mon.TCDS_2.spy_ttc2_channel0.bril_trigger_info;             --
+          localRdData(15 downto  0)  <=  Mon.TCDS_2.SPY_TTC2_CHANNEL0.BRIL_TRIGGER_INFO;             --
         when 291 => --0x123
-          localRdData(31 downto  0)  <=  Mon.TCDS_2.spy_ttc2_channel0.timing_and_sync_info.lo;       --
+          localRdData(31 downto  0)  <=  Mon.TCDS_2.SPY_TTC2_CHANNEL0.TIMING_AND_SYNC_INFO.LO;       --
         when 292 => --0x124
-          localRdData(16 downto  0)  <=  Mon.TCDS_2.spy_ttc2_channel0.timing_and_sync_info.hi;       --
+          localRdData(16 downto  0)  <=  Mon.TCDS_2.SPY_TTC2_CHANNEL0.TIMING_AND_SYNC_INFO.HI;       --
         when 293 => --0x125
-          localRdData( 4 downto  0)  <=  Mon.TCDS_2.spy_ttc2_channel0.status_info;                   --
+          localRdData( 4 downto  0)  <=  Mon.TCDS_2.SPY_TTC2_CHANNEL0.STATUS_INFO;                   --
         when 294 => --0x126
-          localRdData(17 downto  0)  <=  Mon.TCDS_2.spy_ttc2_channel0.reserved;                      --
+          localRdData(17 downto  0)  <=  Mon.TCDS_2.SPY_TTC2_CHANNEL0.RESERVED;                      --
         when 304 => --0x130
-          localRdData( 0)            <=  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.physics;              --
-          localRdData( 1)            <=  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.calibration;          --
-          localRdData( 2)            <=  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.random;               --
-          localRdData( 3)            <=  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.software;             --
-          localRdData( 4)            <=  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_4;           --
-          localRdData( 5)            <=  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_5;           --
-          localRdData( 6)            <=  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_6;           --
-          localRdData( 7)            <=  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_7;           --
-          localRdData( 8)            <=  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_8;           --
-          localRdData( 9)            <=  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_9;           --
-          localRdData(10)            <=  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_10;          --
-          localRdData(11)            <=  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_11;          --
-          localRdData(12)            <=  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_12;          --
-          localRdData(13)            <=  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_13;          --
-          localRdData(14)            <=  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_14;          --
-          localRdData(15)            <=  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.reserved_15;          --
+          localRdData( 0)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL1.L1A_INFO.PHYSICS;              --
+          localRdData( 1)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL1.L1A_INFO.CALIBRATION;          --
+          localRdData( 2)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL1.L1A_INFO.RANDOM;               --
+          localRdData( 3)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL1.L1A_INFO.SOFTWARE;             --
+          localRdData( 4)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL1.L1A_INFO.RESERVED_4;           --
+          localRdData( 5)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL1.L1A_INFO.RESERVED_5;           --
+          localRdData( 6)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL1.L1A_INFO.RESERVED_6;           --
+          localRdData( 7)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL1.L1A_INFO.RESERVED_7;           --
+          localRdData( 8)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL1.L1A_INFO.RESERVED_8;           --
+          localRdData( 9)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL1.L1A_INFO.RESERVED_9;           --
+          localRdData(10)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL1.L1A_INFO.RESERVED_10;          --
+          localRdData(11)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL1.L1A_INFO.RESERVED_11;          --
+          localRdData(12)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL1.L1A_INFO.RESERVED_12;          --
+          localRdData(13)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL1.L1A_INFO.RESERVED_13;          --
+          localRdData(14)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL1.L1A_INFO.RESERVED_14;          --
+          localRdData(15)            <=  Mon.TCDS_2.SPY_TTC2_CHANNEL1.L1A_INFO.RESERVED_15;          --
         when 305 => --0x131
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_ttc2_channel1.l1a_info.physics_subtype;      --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTC2_CHANNEL1.L1A_INFO.PHYSICS_SUBTYPE;      --
         when 306 => --0x132
-          localRdData(15 downto  0)  <=  Mon.TCDS_2.spy_ttc2_channel1.bril_trigger_info;             --
+          localRdData(15 downto  0)  <=  Mon.TCDS_2.SPY_TTC2_CHANNEL1.BRIL_TRIGGER_INFO;             --
         when 307 => --0x133
-          localRdData(31 downto  0)  <=  Mon.TCDS_2.spy_ttc2_channel1.timing_and_sync_info.lo;       --
+          localRdData(31 downto  0)  <=  Mon.TCDS_2.SPY_TTC2_CHANNEL1.TIMING_AND_SYNC_INFO.LO;       --
         when 308 => --0x134
-          localRdData(16 downto  0)  <=  Mon.TCDS_2.spy_ttc2_channel1.timing_and_sync_info.hi;       --
+          localRdData(16 downto  0)  <=  Mon.TCDS_2.SPY_TTC2_CHANNEL1.TIMING_AND_SYNC_INFO.HI;       --
         when 309 => --0x135
-          localRdData( 4 downto  0)  <=  Mon.TCDS_2.spy_ttc2_channel1.status_info;                   --
+          localRdData( 4 downto  0)  <=  Mon.TCDS_2.SPY_TTC2_CHANNEL1.STATUS_INFO;                   --
         when 310 => --0x136
-          localRdData(17 downto  0)  <=  Mon.TCDS_2.spy_ttc2_channel1.reserved;                      --
+          localRdData(17 downto  0)  <=  Mon.TCDS_2.SPY_TTC2_CHANNEL1.RESERVED;                      --
         when 320 => --0x140
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel0.value_0;                       --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL0.VALUE_0;                       --
         when 321 => --0x141
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel0.value_1;                       --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL0.VALUE_1;                       --
         when 322 => --0x142
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel0.value_2;                       --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL0.VALUE_2;                       --
         when 323 => --0x143
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel0.value_3;                       --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL0.VALUE_3;                       --
         when 324 => --0x144
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel0.value_4;                       --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL0.VALUE_4;                       --
         when 325 => --0x145
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel0.value_5;                       --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL0.VALUE_5;                       --
         when 326 => --0x146
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel0.value_6;                       --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL0.VALUE_6;                       --
         when 327 => --0x147
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel0.value_7;                       --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL0.VALUE_7;                       --
         when 328 => --0x148
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel0.value_8;                       --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL0.VALUE_8;                       --
         when 329 => --0x149
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel0.value_9;                       --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL0.VALUE_9;                       --
         when 330 => --0x14a
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel0.value_10;                      --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL0.VALUE_10;                      --
         when 331 => --0x14b
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel0.value_11;                      --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL0.VALUE_11;                      --
         when 332 => --0x14c
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel0.value_12;                      --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL0.VALUE_12;                      --
         when 333 => --0x14d
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel0.value_13;                      --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL0.VALUE_13;                      --
         when 336 => --0x150
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel1.value_0;                       --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL1.VALUE_0;                       --
         when 337 => --0x151
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel1.value_1;                       --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL1.VALUE_1;                       --
         when 338 => --0x152
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel1.value_2;                       --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL1.VALUE_2;                       --
         when 339 => --0x153
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel1.value_3;                       --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL1.VALUE_3;                       --
         when 340 => --0x154
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel1.value_4;                       --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL1.VALUE_4;                       --
         when 341 => --0x155
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel1.value_5;                       --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL1.VALUE_5;                       --
         when 342 => --0x156
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel1.value_6;                       --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL1.VALUE_6;                       --
         when 343 => --0x157
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel1.value_7;                       --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL1.VALUE_7;                       --
         when 344 => --0x158
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel1.value_8;                       --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL1.VALUE_8;                       --
         when 345 => --0x159
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel1.value_9;                       --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL1.VALUE_9;                       --
         when 346 => --0x15a
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel1.value_10;                      --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL1.VALUE_10;                      --
         when 347 => --0x15b
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel1.value_11;                      --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL1.VALUE_11;                      --
         when 348 => --0x15c
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel1.value_12;                      --
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL1.VALUE_12;                      --
         when 349 => --0x15d
-          localRdData( 7 downto  0)  <=  Mon.TCDS_2.spy_tts2_channel1.value_13;                      --
-        when 514 => --0x202
-          localRdData( 0)            <=  Mon.LTCDS(1).STATUS.RESET_RX_CDR_STABLE;                    --
-          localRdData( 1)            <=  Mon.LTCDS(1).STATUS.RESET_TX_DONE;                          --
-          localRdData( 2)            <=  Mon.LTCDS(1).STATUS.RESET_RX_DONE;                          --
-          localRdData( 8)            <=  Mon.LTCDS(1).STATUS.USERCLK_TX_ACTIVE;                      --
-          localRdData( 9)            <=  Mon.LTCDS(1).STATUS.USERCLK_RX_ACTIVE;                      --
-          localRdData(16)            <=  Mon.LTCDS(1).STATUS.GT_POWER_GOOD;                          --
-          localRdData(17)            <=  Mon.LTCDS(1).STATUS.RX_BYTE_ISALIGNED;                      --
-          localRdData(18)            <=  Mon.LTCDS(1).STATUS.RX_BYTE_REALIGN;                        --
-          localRdData(19)            <=  Mon.LTCDS(1).STATUS.RX_COMMADET;                            --
-          localRdData(20)            <=  Mon.LTCDS(1).STATUS.RX_PMA_RESET_DONE;                      --
-          localRdData(21)            <=  Mon.LTCDS(1).STATUS.TX_PMA_RESET_DONE;                      --
-        when 528 => --0x210
-          localRdData(15 downto  0)  <=  reg_data(528)(15 downto  0);                                --
-          localRdData(31 downto 16)  <=  reg_data(528)(31 downto 16);                                --
-        when 529 => --0x211
-          localRdData( 7 downto  0)  <=  reg_data(529)( 7 downto  0);                                --
-        when 530 => --0x212
+          localRdData( 7 downto  0)  <=  Mon.TCDS_2.SPY_TTS2_CHANNEL1.VALUE_13;                      --
+        when 768 => --0x300
+          localRdData(31 downto  0)  <=  Mon.TCDS2_FREQ;                                             --
+        when 769 => --0x301
+          localRdData(31 downto  0)  <=  Mon.TCDS2_TX_PCS_FREQ;                                      --
+        when 770 => --0x302
+          localRdData(31 downto  0)  <=  Mon.TCDS2_RX_PCS_FREQ;                                      --
+        when 1040 => --0x410
+          localRdData( 8)            <=  Mon.LTCDS(1).STATUS.PHY_RESET;                              --Aurora phy in reset
+          localRdData( 9)            <=  Mon.LTCDS(1).STATUS.PHY_GT_PLL_LOCK;                        --Aurora phy GT PLL locked
+          localRdData(10)            <=  Mon.LTCDS(1).STATUS.PHY_MMCM_LOL;                           --Aurora phy mmcm LOL
+        when 1056 => --0x420
+          localRdData(15 downto  0)  <=  Mon.LTCDS(1).DEBUG.DMONITOR;                                --DEBUG d monitor
+          localRdData(16)            <=  Mon.LTCDS(1).DEBUG.QPLL_LOCK;                               --DEBUG cplllock
+          localRdData(20)            <=  Mon.LTCDS(1).DEBUG.CPLL_LOCK;                               --DEBUG cplllock
+          localRdData(21)            <=  Mon.LTCDS(1).DEBUG.EYESCAN_DATA_ERROR;                      --DEBUG eyescan data error
+          localRdData(23)            <=  reg_data(1056)(23);                                         --DEBUG eyescan trigger
+        when 1057 => --0x421
+          localRdData(15 downto  0)  <=  reg_data(1057)(15 downto  0);                               --bit 2 is DRP uber reset
+        when 1058 => --0x422
+          localRdData( 2 downto  0)  <=  Mon.LTCDS(1).DEBUG.RX.BUF_STATUS;                           --DEBUG rx buf status
+          localRdData( 5)            <=  Mon.LTCDS(1).DEBUG.RX.PMA_RESET_DONE;                       --DEBUG rx reset done
+          localRdData(10)            <=  Mon.LTCDS(1).DEBUG.RX.PRBS_ERR;                             --DEBUG rx PRBS error
+          localRdData(11)            <=  Mon.LTCDS(1).DEBUG.RX.RESET_DONE;                           --DEBUG rx reset done
+          localRdData(13)            <=  reg_data(1058)(13);                                         --DEBUG rx CDR hold
+          localRdData(18)            <=  reg_data(1058)(18);                                         --DEBUG rx LPM ENABLE
+          localRdData(25)            <=  reg_data(1058)(25);                                         --DEBUG rx PRBS counter reset
+          localRdData(29 downto 26)  <=  reg_data(1058)(29 downto 26);                               --DEBUG rx PRBS select
+        when 1059 => --0x423
+          localRdData( 2 downto  0)  <=  reg_data(1059)( 2 downto  0);                               --DEBUG rx rate
+        when 1060 => --0x424
+          localRdData( 1 downto  0)  <=  Mon.LTCDS(1).DEBUG.TX.BUF_STATUS;                           --DEBUG tx buf status
+          localRdData( 2)            <=  Mon.LTCDS(1).DEBUG.TX.RESET_DONE;                           --DEBUG tx reset done
+          localRdData( 7)            <=  reg_data(1060)( 7);                                         --DEBUG tx inhibit
+          localRdData(17)            <=  reg_data(1060)(17);                                         --DEBUG tx polarity
+          localRdData(22 downto 18)  <=  reg_data(1060)(22 downto 18);                               --DEBUG post cursor
+          localRdData(23)            <=  reg_data(1060)(23);                                         --DEBUG force PRBS error
+          localRdData(31 downto 27)  <=  reg_data(1060)(31 downto 27);                               --DEBUG pre cursor
+        when 1061 => --0x425
+          localRdData( 3 downto  0)  <=  reg_data(1061)( 3 downto  0);                               --DEBUG PRBS select
+          localRdData( 8 downto  4)  <=  reg_data(1061)( 8 downto  4);                               --DEBUG tx diff control
+        when 1072 => --0x430
+          localRdData(15 downto  0)  <=  reg_data(1072)(15 downto  0);                               --
+          localRdData(31 downto 16)  <=  reg_data(1072)(31 downto 16);                               --
+        when 1073 => --0x431
+          localRdData( 7 downto  0)  <=  reg_data(1073)( 7 downto  0);                               --
+        when 1088 => --0x440
           localRdData(15 downto  0)  <=  Mon.LTCDS(1).RX.CTRL0;                                      --
           localRdData(31 downto 16)  <=  Mon.LTCDS(1).RX.CTRL1;                                      --
-        when 531 => --0x213
+        when 1089 => --0x441
           localRdData( 7 downto  0)  <=  Mon.LTCDS(1).RX.CTRL2;                                      --
           localRdData(15 downto  8)  <=  Mon.LTCDS(1).RX.CTRL3;                                      --
-        when 546 => --0x222
-          localRdData( 0)            <=  Mon.LTCDS(2).STATUS.RESET_RX_CDR_STABLE;                    --
-          localRdData( 1)            <=  Mon.LTCDS(2).STATUS.RESET_TX_DONE;                          --
-          localRdData( 2)            <=  Mon.LTCDS(2).STATUS.RESET_RX_DONE;                          --
-          localRdData( 8)            <=  Mon.LTCDS(2).STATUS.USERCLK_TX_ACTIVE;                      --
-          localRdData( 9)            <=  Mon.LTCDS(2).STATUS.USERCLK_RX_ACTIVE;                      --
-          localRdData(16)            <=  Mon.LTCDS(2).STATUS.GT_POWER_GOOD;                          --
-          localRdData(17)            <=  Mon.LTCDS(2).STATUS.RX_BYTE_ISALIGNED;                      --
-          localRdData(18)            <=  Mon.LTCDS(2).STATUS.RX_BYTE_REALIGN;                        --
-          localRdData(19)            <=  Mon.LTCDS(2).STATUS.RX_COMMADET;                            --
-          localRdData(20)            <=  Mon.LTCDS(2).STATUS.RX_PMA_RESET_DONE;                      --
-          localRdData(21)            <=  Mon.LTCDS(2).STATUS.TX_PMA_RESET_DONE;                      --
-        when 560 => --0x230
-          localRdData(15 downto  0)  <=  reg_data(560)(15 downto  0);                                --
-          localRdData(31 downto 16)  <=  reg_data(560)(31 downto 16);                                --
-        when 561 => --0x231
-          localRdData( 7 downto  0)  <=  reg_data(561)( 7 downto  0);                                --
-        when 562 => --0x232
+        when 1106 => --0x452
+          localRdData( 3 downto  0)  <=  reg_data(1106)( 3 downto  0);                               --
+        when 1108 => --0x454
+          localRdData(31 downto  0)  <=  Mon.LTCDS(1).DATA_CTRL.CAPTURE_D;                           --
+        when 1109 => --0x455
+          localRdData( 3 downto  0)  <=  Mon.LTCDS(1).DATA_CTRL.CAPTURE_K;                           --
+        when 1110 => --0x456
+          localRdData(31 downto  0)  <=  reg_data(1110)(31 downto  0);                               --
+        when 1111 => --0x457
+          localRdData( 3 downto  0)  <=  reg_data(1111)( 3 downto  0);                               --
+        when 1120 => --0x460
+          localRdData(31 downto  0)  <=  Mon.LTCDS(1).TX_CLK_FREQ;                                   --
+        when 1121 => --0x461
+          localRdData(31 downto  0)  <=  Mon.LTCDS(1).TX_CLK_OUT_FREQ;                               --
+        when 1122 => --0x462
+          localRdData(31 downto  0)  <=  Mon.LTCDS(1).RX_CLK_OUT_FREQ;                               --
+        when 1123 => --0x463
+          localRdData( 2 downto  0)  <=  reg_data(1123)( 2 downto  0);                               --
+          localRdData( 6 downto  4)  <=  reg_data(1123)( 6 downto  4);                               --
+          localRdData(10 downto  8)  <=  reg_data(1123)(10 downto  8);                               --
+          localRdData(12)            <=  Mon.LTCDS(1).TX_USRCLK_ACTIVE;                              --
+          localRdData(13)            <=  Mon.LTCDS(1).RX_USRCLK_ACTIVE;                              --
+        when 3088 => --0xc10
+          localRdData( 8)            <=  Mon.LTCDS(2).STATUS.PHY_RESET;                              --Aurora phy in reset
+          localRdData( 9)            <=  Mon.LTCDS(2).STATUS.PHY_GT_PLL_LOCK;                        --Aurora phy GT PLL locked
+          localRdData(10)            <=  Mon.LTCDS(2).STATUS.PHY_MMCM_LOL;                           --Aurora phy mmcm LOL
+        when 3104 => --0xc20
+          localRdData(15 downto  0)  <=  Mon.LTCDS(2).DEBUG.DMONITOR;                                --DEBUG d monitor
+          localRdData(16)            <=  Mon.LTCDS(2).DEBUG.QPLL_LOCK;                               --DEBUG cplllock
+          localRdData(20)            <=  Mon.LTCDS(2).DEBUG.CPLL_LOCK;                               --DEBUG cplllock
+          localRdData(21)            <=  Mon.LTCDS(2).DEBUG.EYESCAN_DATA_ERROR;                      --DEBUG eyescan data error
+          localRdData(23)            <=  reg_data(3104)(23);                                         --DEBUG eyescan trigger
+        when 3105 => --0xc21
+          localRdData(15 downto  0)  <=  reg_data(3105)(15 downto  0);                               --bit 2 is DRP uber reset
+        when 3106 => --0xc22
+          localRdData( 2 downto  0)  <=  Mon.LTCDS(2).DEBUG.RX.BUF_STATUS;                           --DEBUG rx buf status
+          localRdData( 5)            <=  Mon.LTCDS(2).DEBUG.RX.PMA_RESET_DONE;                       --DEBUG rx reset done
+          localRdData(10)            <=  Mon.LTCDS(2).DEBUG.RX.PRBS_ERR;                             --DEBUG rx PRBS error
+          localRdData(11)            <=  Mon.LTCDS(2).DEBUG.RX.RESET_DONE;                           --DEBUG rx reset done
+          localRdData(13)            <=  reg_data(3106)(13);                                         --DEBUG rx CDR hold
+          localRdData(18)            <=  reg_data(3106)(18);                                         --DEBUG rx LPM ENABLE
+          localRdData(25)            <=  reg_data(3106)(25);                                         --DEBUG rx PRBS counter reset
+          localRdData(29 downto 26)  <=  reg_data(3106)(29 downto 26);                               --DEBUG rx PRBS select
+        when 3107 => --0xc23
+          localRdData( 2 downto  0)  <=  reg_data(3107)( 2 downto  0);                               --DEBUG rx rate
+        when 3108 => --0xc24
+          localRdData( 1 downto  0)  <=  Mon.LTCDS(2).DEBUG.TX.BUF_STATUS;                           --DEBUG tx buf status
+          localRdData( 2)            <=  Mon.LTCDS(2).DEBUG.TX.RESET_DONE;                           --DEBUG tx reset done
+          localRdData( 7)            <=  reg_data(3108)( 7);                                         --DEBUG tx inhibit
+          localRdData(17)            <=  reg_data(3108)(17);                                         --DEBUG tx polarity
+          localRdData(22 downto 18)  <=  reg_data(3108)(22 downto 18);                               --DEBUG post cursor
+          localRdData(23)            <=  reg_data(3108)(23);                                         --DEBUG force PRBS error
+          localRdData(31 downto 27)  <=  reg_data(3108)(31 downto 27);                               --DEBUG pre cursor
+        when 3109 => --0xc25
+          localRdData( 3 downto  0)  <=  reg_data(3109)( 3 downto  0);                               --DEBUG PRBS select
+          localRdData( 8 downto  4)  <=  reg_data(3109)( 8 downto  4);                               --DEBUG tx diff control
+        when 3120 => --0xc30
+          localRdData(15 downto  0)  <=  reg_data(3120)(15 downto  0);                               --
+          localRdData(31 downto 16)  <=  reg_data(3120)(31 downto 16);                               --
+        when 3121 => --0xc31
+          localRdData( 7 downto  0)  <=  reg_data(3121)( 7 downto  0);                               --
+        when 3136 => --0xc40
           localRdData(15 downto  0)  <=  Mon.LTCDS(2).RX.CTRL0;                                      --
           localRdData(31 downto 16)  <=  Mon.LTCDS(2).RX.CTRL1;                                      --
-        when 563 => --0x233
+        when 3137 => --0xc41
           localRdData( 7 downto  0)  <=  Mon.LTCDS(2).RX.CTRL2;                                      --
           localRdData(15 downto  8)  <=  Mon.LTCDS(2).RX.CTRL3;                                      --
+        when 3154 => --0xc52
+          localRdData( 3 downto  0)  <=  reg_data(3154)( 3 downto  0);                               --
+        when 3156 => --0xc54
+          localRdData(31 downto  0)  <=  Mon.LTCDS(2).DATA_CTRL.CAPTURE_D;                           --
+        when 3157 => --0xc55
+          localRdData( 3 downto  0)  <=  Mon.LTCDS(2).DATA_CTRL.CAPTURE_K;                           --
+        when 3158 => --0xc56
+          localRdData(31 downto  0)  <=  reg_data(3158)(31 downto  0);                               --
+        when 3159 => --0xc57
+          localRdData( 3 downto  0)  <=  reg_data(3159)( 3 downto  0);                               --
+        when 3168 => --0xc60
+          localRdData(31 downto  0)  <=  Mon.LTCDS(2).TX_CLK_FREQ;                                   --
+        when 3169 => --0xc61
+          localRdData(31 downto  0)  <=  Mon.LTCDS(2).TX_CLK_OUT_FREQ;                               --
+        when 3170 => --0xc62
+          localRdData(31 downto  0)  <=  Mon.LTCDS(2).RX_CLK_OUT_FREQ;                               --
+        when 3171 => --0xc63
+          localRdData( 2 downto  0)  <=  reg_data(3171)( 2 downto  0);                               --
+          localRdData( 6 downto  4)  <=  reg_data(3171)( 6 downto  4);                               --
+          localRdData(10 downto  8)  <=  reg_data(3171)(10 downto  8);                               --
+          localRdData(12)            <=  Mon.LTCDS(2).TX_USRCLK_ACTIVE;                              --
+          localRdData(13)            <=  Mon.LTCDS(2).RX_USRCLK_ACTIVE;                              --
 
 
-        when others =>
-          localRdData <= x"00000000";
-      end case;
+          when others =>
+            regRdAck <= '0';
+            localRdData <= x"00000000";
+        end case;
+      end if;
     end if;
   end process reads;
 
 
-
+  -------------------------------------------------------------------------------
+  -- Record write decoding
+  -------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------
 
   -- Register mapping to ctrl structures
-  Ctrl.TCDS_2.link_test.control.link_test_mode                   <=  reg_data( 8)( 0);                
-  Ctrl.TCDS_2.link_test.control.prbs_gen_reset                   <=  reg_data( 9)( 0);                
-  Ctrl.TCDS_2.link_test.control.prbs_chk_reset                   <=  reg_data( 9)( 1);                
-  Ctrl.TCDS_2.csr.control.reset_all                              <=  reg_data(64)( 0);                
-  Ctrl.TCDS_2.csr.control.mgt_reset_all                          <=  reg_data(64)( 4);                
-  Ctrl.TCDS_2.csr.control.mgt_reset_tx_pll_and_datapath          <=  reg_data(64)( 5);                
-  Ctrl.TCDS_2.csr.control.mgt_reset_tx_datapath                  <=  reg_data(64)( 6);                
-  Ctrl.TCDS_2.csr.control.mgt_reset_rx_pll_and_datapath          <=  reg_data(64)( 7);                
-  Ctrl.TCDS_2.csr.control.mgt_reset_rx_datapath                  <=  reg_data(64)( 8);                
-  Ctrl.TCDS_2.csr.control.tclink_channel_ctrl_reset              <=  reg_data(64)(12);                
-  Ctrl.TCDS_2.csr.control.tclink_channel_ctrl_enable             <=  reg_data(64)(13);                
-  Ctrl.TCDS_2.csr.control.tclink_channel_ctrl_gentle             <=  reg_data(64)(14);                
-  Ctrl.TCDS_2.csr.control.tclink_close_loop                      <=  reg_data(64)(16);                
-  Ctrl.TCDS_2.csr.control.tclink_phase_offset.lo                 <=  reg_data(65)(31 downto  0);      
-  Ctrl.TCDS_2.csr.control.tclink_phase_offset.hi                 <=  reg_data(66)(15 downto  0);      
-  Ctrl.TCDS_2.csr.control.phase_cdc40_tx_calib                   <=  reg_data(67)( 9 downto  0);      
-  Ctrl.TCDS_2.csr.control.phase_cdc40_tx_force                   <=  reg_data(67)(10);                
-  Ctrl.TCDS_2.csr.control.phase_cdc40_rx_calib                   <=  reg_data(67)(18 downto 16);      
-  Ctrl.TCDS_2.csr.control.phase_cdc40_rx_force                   <=  reg_data(67)(19);                
-  Ctrl.TCDS_2.csr.control.phase_pi_tx_calib                      <=  reg_data(67)(30 downto 24);      
-  Ctrl.TCDS_2.csr.control.phase_pi_tx_force                      <=  reg_data(67)(31);                
-  Ctrl.TCDS_2.csr.control.mgt_rx_dfe_vs_lpm                      <=  reg_data(68)( 0);                
-  Ctrl.TCDS_2.csr.control.mgt_rx_dfe_vs_lpm_reset                <=  reg_data(68)( 1);                
-  Ctrl.TCDS_2.csr.control.mgt_rxeq_params.lpm.rxlpmgcovrden      <=  reg_data(69)( 4);                
-  Ctrl.TCDS_2.csr.control.mgt_rxeq_params.lpm.rxlpmhfovrden      <=  reg_data(69)( 5);                
-  Ctrl.TCDS_2.csr.control.mgt_rxeq_params.lpm.rxlpmlfklovrden    <=  reg_data(69)( 6);                
-  Ctrl.TCDS_2.csr.control.mgt_rxeq_params.lpm.rxlpmosovrden      <=  reg_data(69)( 7);                
-  Ctrl.TCDS_2.csr.control.mgt_rxeq_params.dfe.rxosovrden         <=  reg_data(70)( 8);                
-  Ctrl.TCDS_2.csr.control.mgt_rxeq_params.dfe.rxdfeagcovrden     <=  reg_data(70)( 9);                
-  Ctrl.TCDS_2.csr.control.mgt_rxeq_params.dfe.rxdfelfovrden      <=  reg_data(70)(10);                
-  Ctrl.TCDS_2.csr.control.mgt_rxeq_params.dfe.rxdfeutovrden      <=  reg_data(70)(11);                
-  Ctrl.TCDS_2.csr.control.mgt_rxeq_params.dfe.rxdfevpovrden      <=  reg_data(70)(12);                
-  Ctrl.TCDS_2.csr.control.fec_monitor_reset                      <=  reg_data(71)( 0);                
-  Ctrl.TCDS_2.csr.control.tclink_param_metastability_deglitch    <=  reg_data(72)(15 downto  0);      
-  Ctrl.TCDS_2.csr.control.tclink_param_phase_detector_navg       <=  reg_data(73)(11 downto  0);      
-  Ctrl.TCDS_2.csr.control.tclink_param_modulo_carrier_period.lo  <=  reg_data(74)(31 downto  0);      
-  Ctrl.TCDS_2.csr.control.tclink_param_modulo_carrier_period.hi  <=  reg_data(75)(15 downto  0);      
-  Ctrl.TCDS_2.csr.control.tclink_param_master_rx_ui_period.lo    <=  reg_data(76)(31 downto  0);      
-  Ctrl.TCDS_2.csr.control.tclink_param_master_rx_ui_period.hi    <=  reg_data(77)(15 downto  0);      
-  Ctrl.TCDS_2.csr.control.tclink_param_aie                       <=  reg_data(78)( 3 downto  0);      
-  Ctrl.TCDS_2.csr.control.tclink_param_aie_enable                <=  reg_data(78)( 4);                
-  Ctrl.TCDS_2.csr.control.tclink_param_ape                       <=  reg_data(78)(11 downto  8);      
-  Ctrl.TCDS_2.csr.control.tclink_param_sigma_delta_clk_div       <=  reg_data(79)(31 downto 16);      
-  Ctrl.TCDS_2.csr.control.tclink_param_enable_mirror             <=  reg_data(80)( 0);                
-  Ctrl.TCDS_2.csr.control.tclink_param_adco.lo                   <=  reg_data(81)(31 downto  0);      
-  Ctrl.TCDS_2.csr.control.tclink_param_adco.hi                   <=  reg_data(82)(15 downto  0);      
-  Ctrl.LTCDS(1).TX.CTRL0                                         <=  reg_data(528)(15 downto  0);     
-  Ctrl.LTCDS(1).TX.CTRL1                                         <=  reg_data(528)(31 downto 16);     
-  Ctrl.LTCDS(1).TX.CTRL2                                         <=  reg_data(529)( 7 downto  0);     
-  Ctrl.LTCDS(2).TX.CTRL0                                         <=  reg_data(560)(15 downto  0);     
-  Ctrl.LTCDS(2).TX.CTRL1                                         <=  reg_data(560)(31 downto 16);     
-  Ctrl.LTCDS(2).TX.CTRL2                                         <=  reg_data(561)( 7 downto  0);     
+  Ctrl.TCDS_2.LINK_TEST.CONTROL.LINK_TEST_MODE                   <=  reg_data( 8)( 0);                 
+  Ctrl.TCDS_2.LINK_TEST.CONTROL.PRBS_GEN_RESET                   <=  reg_data( 9)( 0);                 
+  Ctrl.TCDS_2.LINK_TEST.CONTROL.PRBS_CHK_RESET                   <=  reg_data( 9)( 1);                 
+  Ctrl.TCDS_2.CSR.CONTROL.RESET_ALL                              <=  reg_data(64)( 0);                 
+  Ctrl.TCDS_2.CSR.CONTROL.MGT_RESET_ALL                          <=  reg_data(64)( 4);                 
+  Ctrl.TCDS_2.CSR.CONTROL.MGT_RESET_TX_PLL_AND_DATAPATH          <=  reg_data(64)( 5);                 
+  Ctrl.TCDS_2.CSR.CONTROL.MGT_RESET_TX_DATAPATH                  <=  reg_data(64)( 6);                 
+  Ctrl.TCDS_2.CSR.CONTROL.MGT_RESET_RX_PLL_AND_DATAPATH          <=  reg_data(64)( 7);                 
+  Ctrl.TCDS_2.CSR.CONTROL.MGT_RESET_RX_DATAPATH                  <=  reg_data(64)( 8);                 
+  Ctrl.TCDS_2.CSR.CONTROL.TCLINK_CHANNEL_CTRL_RESET              <=  reg_data(64)(12);                 
+  Ctrl.TCDS_2.CSR.CONTROL.TCLINK_CHANNEL_CTRL_ENABLE             <=  reg_data(64)(13);                 
+  Ctrl.TCDS_2.CSR.CONTROL.TCLINK_CHANNEL_CTRL_GENTLE             <=  reg_data(64)(14);                 
+  Ctrl.TCDS_2.CSR.CONTROL.TCLINK_CLOSE_LOOP                      <=  reg_data(64)(16);                 
+  Ctrl.TCDS_2.CSR.CONTROL.TCLINK_PHASE_OFFSET.LO                 <=  reg_data(65)(31 downto  0);       
+  Ctrl.TCDS_2.CSR.CONTROL.TCLINK_PHASE_OFFSET.HI                 <=  reg_data(66)(15 downto  0);       
+  Ctrl.TCDS_2.CSR.CONTROL.PHASE_CDC40_TX_CALIB                   <=  reg_data(67)( 9 downto  0);       
+  Ctrl.TCDS_2.CSR.CONTROL.PHASE_CDC40_TX_FORCE                   <=  reg_data(67)(10);                 
+  Ctrl.TCDS_2.CSR.CONTROL.PHASE_CDC40_RX_CALIB                   <=  reg_data(67)(18 downto 16);       
+  Ctrl.TCDS_2.CSR.CONTROL.PHASE_CDC40_RX_FORCE                   <=  reg_data(67)(19);                 
+  Ctrl.TCDS_2.CSR.CONTROL.PHASE_PI_TX_CALIB                      <=  reg_data(67)(30 downto 24);       
+  Ctrl.TCDS_2.CSR.CONTROL.PHASE_PI_TX_FORCE                      <=  reg_data(67)(31);                 
+  Ctrl.TCDS_2.CSR.CONTROL.MGT_RX_DFE_VS_LPM                      <=  reg_data(68)( 0);                 
+  Ctrl.TCDS_2.CSR.CONTROL.MGT_RX_DFE_VS_LPM_RESET                <=  reg_data(68)( 1);                 
+  Ctrl.TCDS_2.CSR.CONTROL.MGT_RXEQ_PARAMS.LPM.RXLPMGCOVRDEN      <=  reg_data(69)( 4);                 
+  Ctrl.TCDS_2.CSR.CONTROL.MGT_RXEQ_PARAMS.LPM.RXLPMHFOVRDEN      <=  reg_data(69)( 5);                 
+  Ctrl.TCDS_2.CSR.CONTROL.MGT_RXEQ_PARAMS.LPM.RXLPMLFKLOVRDEN    <=  reg_data(69)( 6);                 
+  Ctrl.TCDS_2.CSR.CONTROL.MGT_RXEQ_PARAMS.LPM.RXLPMOSOVRDEN      <=  reg_data(69)( 7);                 
+  Ctrl.TCDS_2.CSR.CONTROL.MGT_RXEQ_PARAMS.DFE.RXOSOVRDEN         <=  reg_data(70)( 8);                 
+  Ctrl.TCDS_2.CSR.CONTROL.MGT_RXEQ_PARAMS.DFE.RXDFEAGCOVRDEN     <=  reg_data(70)( 9);                 
+  Ctrl.TCDS_2.CSR.CONTROL.MGT_RXEQ_PARAMS.DFE.RXDFELFOVRDEN      <=  reg_data(70)(10);                 
+  Ctrl.TCDS_2.CSR.CONTROL.MGT_RXEQ_PARAMS.DFE.RXDFEUTOVRDEN      <=  reg_data(70)(11);                 
+  Ctrl.TCDS_2.CSR.CONTROL.MGT_RXEQ_PARAMS.DFE.RXDFEVPOVRDEN      <=  reg_data(70)(12);                 
+  Ctrl.TCDS_2.CSR.CONTROL.FEC_MONITOR_RESET                      <=  reg_data(71)( 0);                 
+  Ctrl.TCDS_2.CSR.CONTROL.TCLINK_PARAM_METASTABILITY_DEGLITCH    <=  reg_data(72)(15 downto  0);       
+  Ctrl.TCDS_2.CSR.CONTROL.TCLINK_PARAM_PHASE_DETECTOR_NAVG       <=  reg_data(73)(11 downto  0);       
+  Ctrl.TCDS_2.CSR.CONTROL.TCLINK_PARAM_MODULO_CARRIER_PERIOD.LO  <=  reg_data(74)(31 downto  0);       
+  Ctrl.TCDS_2.CSR.CONTROL.TCLINK_PARAM_MODULO_CARRIER_PERIOD.HI  <=  reg_data(75)(15 downto  0);       
+  Ctrl.TCDS_2.CSR.CONTROL.TCLINK_PARAM_MASTER_RX_UI_PERIOD.LO    <=  reg_data(76)(31 downto  0);       
+  Ctrl.TCDS_2.CSR.CONTROL.TCLINK_PARAM_MASTER_RX_UI_PERIOD.HI    <=  reg_data(77)(15 downto  0);       
+  Ctrl.TCDS_2.CSR.CONTROL.TCLINK_PARAM_AIE                       <=  reg_data(78)( 3 downto  0);       
+  Ctrl.TCDS_2.CSR.CONTROL.TCLINK_PARAM_AIE_ENABLE                <=  reg_data(78)( 4);                 
+  Ctrl.TCDS_2.CSR.CONTROL.TCLINK_PARAM_APE                       <=  reg_data(78)(11 downto  8);       
+  Ctrl.TCDS_2.CSR.CONTROL.TCLINK_PARAM_SIGMA_DELTA_CLK_DIV       <=  reg_data(79)(31 downto 16);       
+  Ctrl.TCDS_2.CSR.CONTROL.TCLINK_PARAM_ENABLE_MIRROR             <=  reg_data(80)( 0);                 
+  Ctrl.TCDS_2.CSR.CONTROL.TCLINK_PARAM_ADCO.LO                   <=  reg_data(81)(31 downto  0);       
+  Ctrl.TCDS_2.CSR.CONTROL.TCLINK_PARAM_ADCO.HI                   <=  reg_data(82)(15 downto  0);       
+  Ctrl.LTCDS(1).DEBUG.EYESCAN_TRIGGER                            <=  reg_data(1056)(23);               
+  Ctrl.LTCDS(1).DEBUG.PCS_RSV_DIN                                <=  reg_data(1057)(15 downto  0);     
+  Ctrl.LTCDS(1).DEBUG.RX.CDR_HOLD                                <=  reg_data(1058)(13);               
+  Ctrl.LTCDS(1).DEBUG.RX.LPM_EN                                  <=  reg_data(1058)(18);               
+  Ctrl.LTCDS(1).DEBUG.RX.PRBS_CNT_RST                            <=  reg_data(1058)(25);               
+  Ctrl.LTCDS(1).DEBUG.RX.PRBS_SEL                                <=  reg_data(1058)(29 downto 26);     
+  Ctrl.LTCDS(1).DEBUG.RX.RATE                                    <=  reg_data(1059)( 2 downto  0);     
+  Ctrl.LTCDS(1).DEBUG.TX.INHIBIT                                 <=  reg_data(1060)( 7);               
+  Ctrl.LTCDS(1).DEBUG.TX.POLARITY                                <=  reg_data(1060)(17);               
+  Ctrl.LTCDS(1).DEBUG.TX.POST_CURSOR                             <=  reg_data(1060)(22 downto 18);     
+  Ctrl.LTCDS(1).DEBUG.TX.PRBS_FORCE_ERR                          <=  reg_data(1060)(23);               
+  Ctrl.LTCDS(1).DEBUG.TX.PRE_CURSOR                              <=  reg_data(1060)(31 downto 27);     
+  Ctrl.LTCDS(1).DEBUG.TX.PRBS_SEL                                <=  reg_data(1061)( 3 downto  0);     
+  Ctrl.LTCDS(1).DEBUG.TX.DIFF_CTRL                               <=  reg_data(1061)( 8 downto  4);     
+  Ctrl.LTCDS(1).TX.CTRL0                                         <=  reg_data(1072)(15 downto  0);     
+  Ctrl.LTCDS(1).TX.CTRL1                                         <=  reg_data(1072)(31 downto 16);     
+  Ctrl.LTCDS(1).TX.CTRL2                                         <=  reg_data(1073)( 7 downto  0);     
+  Ctrl.LTCDS(1).DATA_CTRL.MODE                                   <=  reg_data(1106)( 3 downto  0);     
+  Ctrl.LTCDS(1).DATA_CTRL.FIXED_SEND_D                           <=  reg_data(1110)(31 downto  0);     
+  Ctrl.LTCDS(1).DATA_CTRL.FIXED_SEND_K                           <=  reg_data(1111)( 3 downto  0);     
+  Ctrl.LTCDS(1).LOOPBACK                                         <=  reg_data(1123)( 2 downto  0);     
+  Ctrl.LTCDS(1).TX_OUTCLK_SEL                                    <=  reg_data(1123)( 6 downto  4);     
+  Ctrl.LTCDS(1).RX_OUTCLK_SEL                                    <=  reg_data(1123)(10 downto  8);     
+  Ctrl.LTCDS(2).DEBUG.EYESCAN_TRIGGER                            <=  reg_data(3104)(23);               
+  Ctrl.LTCDS(2).DEBUG.PCS_RSV_DIN                                <=  reg_data(3105)(15 downto  0);     
+  Ctrl.LTCDS(2).DEBUG.RX.CDR_HOLD                                <=  reg_data(3106)(13);               
+  Ctrl.LTCDS(2).DEBUG.RX.LPM_EN                                  <=  reg_data(3106)(18);               
+  Ctrl.LTCDS(2).DEBUG.RX.PRBS_CNT_RST                            <=  reg_data(3106)(25);               
+  Ctrl.LTCDS(2).DEBUG.RX.PRBS_SEL                                <=  reg_data(3106)(29 downto 26);     
+  Ctrl.LTCDS(2).DEBUG.RX.RATE                                    <=  reg_data(3107)( 2 downto  0);     
+  Ctrl.LTCDS(2).DEBUG.TX.INHIBIT                                 <=  reg_data(3108)( 7);               
+  Ctrl.LTCDS(2).DEBUG.TX.POLARITY                                <=  reg_data(3108)(17);               
+  Ctrl.LTCDS(2).DEBUG.TX.POST_CURSOR                             <=  reg_data(3108)(22 downto 18);     
+  Ctrl.LTCDS(2).DEBUG.TX.PRBS_FORCE_ERR                          <=  reg_data(3108)(23);               
+  Ctrl.LTCDS(2).DEBUG.TX.PRE_CURSOR                              <=  reg_data(3108)(31 downto 27);     
+  Ctrl.LTCDS(2).DEBUG.TX.PRBS_SEL                                <=  reg_data(3109)( 3 downto  0);     
+  Ctrl.LTCDS(2).DEBUG.TX.DIFF_CTRL                               <=  reg_data(3109)( 8 downto  4);     
+  Ctrl.LTCDS(2).TX.CTRL0                                         <=  reg_data(3120)(15 downto  0);     
+  Ctrl.LTCDS(2).TX.CTRL1                                         <=  reg_data(3120)(31 downto 16);     
+  Ctrl.LTCDS(2).TX.CTRL2                                         <=  reg_data(3121)( 7 downto  0);     
+  Ctrl.LTCDS(2).DATA_CTRL.MODE                                   <=  reg_data(3154)( 3 downto  0);     
+  Ctrl.LTCDS(2).DATA_CTRL.FIXED_SEND_D                           <=  reg_data(3158)(31 downto  0);     
+  Ctrl.LTCDS(2).DATA_CTRL.FIXED_SEND_K                           <=  reg_data(3159)( 3 downto  0);     
+  Ctrl.LTCDS(2).LOOPBACK                                         <=  reg_data(3171)( 2 downto  0);     
+  Ctrl.LTCDS(2).TX_OUTCLK_SEL                                    <=  reg_data(3171)( 6 downto  4);     
+  Ctrl.LTCDS(2).RX_OUTCLK_SEL                                    <=  reg_data(3171)(10 downto  8);     
 
 
   reg_writes: process (clk_axi, reset_axi_n) is
   begin  -- process reg_writes
     if reset_axi_n = '0' then                 -- asynchronous reset (active low)
-      reg_data( 8)( 0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.link_test.control.link_test_mode;
-      reg_data( 9)( 0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.link_test.control.prbs_gen_reset;
-      reg_data( 9)( 1)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.link_test.control.prbs_chk_reset;
-      reg_data(64)( 0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.reset_all;
-      reg_data(64)( 4)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.mgt_reset_all;
-      reg_data(64)( 5)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.mgt_reset_tx_pll_and_datapath;
-      reg_data(64)( 6)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.mgt_reset_tx_datapath;
-      reg_data(64)( 7)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.mgt_reset_rx_pll_and_datapath;
-      reg_data(64)( 8)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.mgt_reset_rx_datapath;
-      reg_data(64)(12)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.tclink_channel_ctrl_reset;
-      reg_data(64)(13)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.tclink_channel_ctrl_enable;
-      reg_data(64)(14)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.tclink_channel_ctrl_gentle;
-      reg_data(64)(16)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.tclink_close_loop;
-      reg_data(65)(31 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.tclink_phase_offset.lo;
-      reg_data(66)(15 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.tclink_phase_offset.hi;
-      reg_data(67)( 9 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.phase_cdc40_tx_calib;
-      reg_data(67)(10)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.phase_cdc40_tx_force;
-      reg_data(67)(18 downto 16)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.phase_cdc40_rx_calib;
-      reg_data(67)(19)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.phase_cdc40_rx_force;
-      reg_data(67)(30 downto 24)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.phase_pi_tx_calib;
-      reg_data(67)(31)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.phase_pi_tx_force;
-      reg_data(68)( 0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.mgt_rx_dfe_vs_lpm;
-      reg_data(68)( 1)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.mgt_rx_dfe_vs_lpm_reset;
-      reg_data(69)( 4)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.mgt_rxeq_params.lpm.rxlpmgcovrden;
-      reg_data(69)( 5)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.mgt_rxeq_params.lpm.rxlpmhfovrden;
-      reg_data(69)( 6)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.mgt_rxeq_params.lpm.rxlpmlfklovrden;
-      reg_data(69)( 7)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.mgt_rxeq_params.lpm.rxlpmosovrden;
-      reg_data(70)( 8)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.mgt_rxeq_params.dfe.rxosovrden;
-      reg_data(70)( 9)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.mgt_rxeq_params.dfe.rxdfeagcovrden;
-      reg_data(70)(10)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.mgt_rxeq_params.dfe.rxdfelfovrden;
-      reg_data(70)(11)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.mgt_rxeq_params.dfe.rxdfeutovrden;
-      reg_data(70)(12)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.mgt_rxeq_params.dfe.rxdfevpovrden;
-      reg_data(71)( 0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.fec_monitor_reset;
-      reg_data(72)(15 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.tclink_param_metastability_deglitch;
-      reg_data(73)(11 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.tclink_param_phase_detector_navg;
-      reg_data(74)(31 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.tclink_param_modulo_carrier_period.lo;
-      reg_data(75)(15 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.tclink_param_modulo_carrier_period.hi;
-      reg_data(76)(31 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.tclink_param_master_rx_ui_period.lo;
-      reg_data(77)(15 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.tclink_param_master_rx_ui_period.hi;
-      reg_data(78)( 3 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.tclink_param_aie;
-      reg_data(78)( 4)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.tclink_param_aie_enable;
-      reg_data(78)(11 downto  8)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.tclink_param_ape;
-      reg_data(79)(31 downto 16)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.tclink_param_sigma_delta_clk_div;
-      reg_data(80)( 0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.tclink_param_enable_mirror;
-      reg_data(81)(31 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.tclink_param_adco.lo;
-      reg_data(82)(15 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.csr.control.tclink_param_adco.hi;
-      reg_data(512)( 0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).RESET.RESET_ALL;
-      reg_data(512)( 4)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).RESET.TX_PLL_AND_DATAPATH;
-      reg_data(512)( 5)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).RESET.TX_DATAPATH;
-      reg_data(512)( 6)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).RESET.RX_PLL_AND_DATAPATH;
-      reg_data(512)( 7)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).RESET.RX_DATAPATH;
-      reg_data(512)( 8)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).RESET.USERCLK_TX;
-      reg_data(512)( 9)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).RESET.USERCLK_RX;
-      reg_data(528)(15 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).TX.CTRL0;
-      reg_data(528)(31 downto 16)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).TX.CTRL1;
-      reg_data(529)( 7 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).TX.CTRL2;
-      reg_data(544)( 0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).RESET.RESET_ALL;
-      reg_data(544)( 4)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).RESET.TX_PLL_AND_DATAPATH;
-      reg_data(544)( 5)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).RESET.TX_DATAPATH;
-      reg_data(544)( 6)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).RESET.RX_PLL_AND_DATAPATH;
-      reg_data(544)( 7)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).RESET.RX_DATAPATH;
-      reg_data(544)( 8)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).RESET.USERCLK_TX;
-      reg_data(544)( 9)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).RESET.USERCLK_RX;
-      reg_data(560)(15 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).TX.CTRL0;
-      reg_data(560)(31 downto 16)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).TX.CTRL1;
-      reg_data(561)( 7 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).TX.CTRL2;
+      reg_data( 8)( 0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.LINK_TEST.CONTROL.LINK_TEST_MODE;
+      reg_data( 9)( 0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.LINK_TEST.CONTROL.PRBS_GEN_RESET;
+      reg_data( 9)( 1)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.LINK_TEST.CONTROL.PRBS_CHK_RESET;
+      reg_data(64)( 0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.RESET_ALL;
+      reg_data(64)( 4)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.MGT_RESET_ALL;
+      reg_data(64)( 5)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.MGT_RESET_TX_PLL_AND_DATAPATH;
+      reg_data(64)( 6)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.MGT_RESET_TX_DATAPATH;
+      reg_data(64)( 7)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.MGT_RESET_RX_PLL_AND_DATAPATH;
+      reg_data(64)( 8)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.MGT_RESET_RX_DATAPATH;
+      reg_data(64)(12)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.TCLINK_CHANNEL_CTRL_RESET;
+      reg_data(64)(13)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.TCLINK_CHANNEL_CTRL_ENABLE;
+      reg_data(64)(14)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.TCLINK_CHANNEL_CTRL_GENTLE;
+      reg_data(64)(16)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.TCLINK_CLOSE_LOOP;
+      reg_data(65)(31 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.TCLINK_PHASE_OFFSET.LO;
+      reg_data(66)(15 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.TCLINK_PHASE_OFFSET.HI;
+      reg_data(67)( 9 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.PHASE_CDC40_TX_CALIB;
+      reg_data(67)(10)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.PHASE_CDC40_TX_FORCE;
+      reg_data(67)(18 downto 16)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.PHASE_CDC40_RX_CALIB;
+      reg_data(67)(19)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.PHASE_CDC40_RX_FORCE;
+      reg_data(67)(30 downto 24)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.PHASE_PI_TX_CALIB;
+      reg_data(67)(31)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.PHASE_PI_TX_FORCE;
+      reg_data(68)( 0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.MGT_RX_DFE_VS_LPM;
+      reg_data(68)( 1)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.MGT_RX_DFE_VS_LPM_RESET;
+      reg_data(69)( 4)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.MGT_RXEQ_PARAMS.LPM.RXLPMGCOVRDEN;
+      reg_data(69)( 5)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.MGT_RXEQ_PARAMS.LPM.RXLPMHFOVRDEN;
+      reg_data(69)( 6)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.MGT_RXEQ_PARAMS.LPM.RXLPMLFKLOVRDEN;
+      reg_data(69)( 7)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.MGT_RXEQ_PARAMS.LPM.RXLPMOSOVRDEN;
+      reg_data(70)( 8)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.MGT_RXEQ_PARAMS.DFE.RXOSOVRDEN;
+      reg_data(70)( 9)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.MGT_RXEQ_PARAMS.DFE.RXDFEAGCOVRDEN;
+      reg_data(70)(10)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.MGT_RXEQ_PARAMS.DFE.RXDFELFOVRDEN;
+      reg_data(70)(11)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.MGT_RXEQ_PARAMS.DFE.RXDFEUTOVRDEN;
+      reg_data(70)(12)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.MGT_RXEQ_PARAMS.DFE.RXDFEVPOVRDEN;
+      reg_data(71)( 0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.FEC_MONITOR_RESET;
+      reg_data(72)(15 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.TCLINK_PARAM_METASTABILITY_DEGLITCH;
+      reg_data(73)(11 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.TCLINK_PARAM_PHASE_DETECTOR_NAVG;
+      reg_data(74)(31 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.TCLINK_PARAM_MODULO_CARRIER_PERIOD.LO;
+      reg_data(75)(15 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.TCLINK_PARAM_MODULO_CARRIER_PERIOD.HI;
+      reg_data(76)(31 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.TCLINK_PARAM_MASTER_RX_UI_PERIOD.LO;
+      reg_data(77)(15 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.TCLINK_PARAM_MASTER_RX_UI_PERIOD.HI;
+      reg_data(78)( 3 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.TCLINK_PARAM_AIE;
+      reg_data(78)( 4)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.TCLINK_PARAM_AIE_ENABLE;
+      reg_data(78)(11 downto  8)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.TCLINK_PARAM_APE;
+      reg_data(79)(31 downto 16)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.TCLINK_PARAM_SIGMA_DELTA_CLK_DIV;
+      reg_data(80)( 0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.TCLINK_PARAM_ENABLE_MIRROR;
+      reg_data(81)(31 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.TCLINK_PARAM_ADCO.LO;
+      reg_data(82)(15 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.TCDS_2.CSR.CONTROL.TCLINK_PARAM_ADCO.HI;
+      reg_data(1024)( 0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).RESET.RESET_ALL;
+      reg_data(1024)( 4)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).RESET.TX_PLL_AND_DATAPATH;
+      reg_data(1024)( 5)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).RESET.TX_DATAPATH;
+      reg_data(1024)( 6)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).RESET.RX_PLL_AND_DATAPATH;
+      reg_data(1024)( 7)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).RESET.RX_DATAPATH;
+      reg_data(1024)( 8)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).RESET.USERCLK_TX;
+      reg_data(1024)( 9)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).RESET.USERCLK_RX;
+      reg_data(1024)(10)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).RESET.DRP;
+      reg_data(1056)(22)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).DEBUG.EYESCAN_RESET;
+      reg_data(1056)(23)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).DEBUG.EYESCAN_TRIGGER;
+      reg_data(1057)(15 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).DEBUG.PCS_RSV_DIN;
+      reg_data(1058)(12)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).DEBUG.RX.BUF_RESET;
+      reg_data(1058)(13)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).DEBUG.RX.CDR_HOLD;
+      reg_data(1058)(17)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).DEBUG.RX.DFE_LPM_RESET;
+      reg_data(1058)(18)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).DEBUG.RX.LPM_EN;
+      reg_data(1058)(23)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).DEBUG.RX.PCS_RESET;
+      reg_data(1058)(24)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).DEBUG.RX.PMA_RESET;
+      reg_data(1058)(25)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).DEBUG.RX.PRBS_CNT_RST;
+      reg_data(1058)(29 downto 26)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).DEBUG.RX.PRBS_SEL;
+      reg_data(1059)( 2 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).DEBUG.RX.RATE;
+      reg_data(1060)( 7)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).DEBUG.TX.INHIBIT;
+      reg_data(1060)(15)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).DEBUG.TX.PCS_RESET;
+      reg_data(1060)(16)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).DEBUG.TX.PMA_RESET;
+      reg_data(1060)(17)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).DEBUG.TX.POLARITY;
+      reg_data(1060)(22 downto 18)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).DEBUG.TX.POST_CURSOR;
+      reg_data(1060)(23)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).DEBUG.TX.PRBS_FORCE_ERR;
+      reg_data(1060)(31 downto 27)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).DEBUG.TX.PRE_CURSOR;
+      reg_data(1061)( 3 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).DEBUG.TX.PRBS_SEL;
+      reg_data(1061)( 8 downto  4)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).DEBUG.TX.DIFF_CTRL;
+      reg_data(1072)(15 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).TX.CTRL0;
+      reg_data(1072)(31 downto 16)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).TX.CTRL1;
+      reg_data(1073)( 7 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).TX.CTRL2;
+      reg_data(1104)( 0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).DATA_CTRL.CAPTURE;
+      reg_data(1106)( 3 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).DATA_CTRL.MODE;
+      reg_data(1110)(31 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).DATA_CTRL.FIXED_SEND_D;
+      reg_data(1111)( 3 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).DATA_CTRL.FIXED_SEND_K;
+      reg_data(1123)( 2 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).LOOPBACK;
+      reg_data(1123)( 6 downto  4)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).TX_OUTCLK_SEL;
+      reg_data(1123)(10 downto  8)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(1).RX_OUTCLK_SEL;
+      reg_data(3072)( 0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).RESET.RESET_ALL;
+      reg_data(3072)( 4)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).RESET.TX_PLL_AND_DATAPATH;
+      reg_data(3072)( 5)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).RESET.TX_DATAPATH;
+      reg_data(3072)( 6)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).RESET.RX_PLL_AND_DATAPATH;
+      reg_data(3072)( 7)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).RESET.RX_DATAPATH;
+      reg_data(3072)( 8)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).RESET.USERCLK_TX;
+      reg_data(3072)( 9)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).RESET.USERCLK_RX;
+      reg_data(3072)(10)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).RESET.DRP;
+      reg_data(3104)(22)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).DEBUG.EYESCAN_RESET;
+      reg_data(3104)(23)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).DEBUG.EYESCAN_TRIGGER;
+      reg_data(3105)(15 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).DEBUG.PCS_RSV_DIN;
+      reg_data(3106)(12)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).DEBUG.RX.BUF_RESET;
+      reg_data(3106)(13)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).DEBUG.RX.CDR_HOLD;
+      reg_data(3106)(17)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).DEBUG.RX.DFE_LPM_RESET;
+      reg_data(3106)(18)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).DEBUG.RX.LPM_EN;
+      reg_data(3106)(23)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).DEBUG.RX.PCS_RESET;
+      reg_data(3106)(24)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).DEBUG.RX.PMA_RESET;
+      reg_data(3106)(25)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).DEBUG.RX.PRBS_CNT_RST;
+      reg_data(3106)(29 downto 26)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).DEBUG.RX.PRBS_SEL;
+      reg_data(3107)( 2 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).DEBUG.RX.RATE;
+      reg_data(3108)( 7)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).DEBUG.TX.INHIBIT;
+      reg_data(3108)(15)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).DEBUG.TX.PCS_RESET;
+      reg_data(3108)(16)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).DEBUG.TX.PMA_RESET;
+      reg_data(3108)(17)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).DEBUG.TX.POLARITY;
+      reg_data(3108)(22 downto 18)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).DEBUG.TX.POST_CURSOR;
+      reg_data(3108)(23)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).DEBUG.TX.PRBS_FORCE_ERR;
+      reg_data(3108)(31 downto 27)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).DEBUG.TX.PRE_CURSOR;
+      reg_data(3109)( 3 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).DEBUG.TX.PRBS_SEL;
+      reg_data(3109)( 8 downto  4)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).DEBUG.TX.DIFF_CTRL;
+      reg_data(3120)(15 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).TX.CTRL0;
+      reg_data(3120)(31 downto 16)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).TX.CTRL1;
+      reg_data(3121)( 7 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).TX.CTRL2;
+      reg_data(3152)( 0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).DATA_CTRL.CAPTURE;
+      reg_data(3154)( 3 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).DATA_CTRL.MODE;
+      reg_data(3158)(31 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).DATA_CTRL.FIXED_SEND_D;
+      reg_data(3159)( 3 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).DATA_CTRL.FIXED_SEND_K;
+      reg_data(3171)( 2 downto  0)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).LOOPBACK;
+      reg_data(3171)( 6 downto  4)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).TX_OUTCLK_SEL;
+      reg_data(3171)(10 downto  8)  <= DEFAULT_TCDS_2_CTRL_t.LTCDS(2).RX_OUTCLK_SEL;
 
     elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
       Ctrl.LTCDS(1).RESET.RESET_ALL <= '0';
@@ -526,6 +777,15 @@ begin  -- architecture behavioral
       Ctrl.LTCDS(1).RESET.RX_DATAPATH <= '0';
       Ctrl.LTCDS(1).RESET.USERCLK_TX <= '0';
       Ctrl.LTCDS(1).RESET.USERCLK_RX <= '0';
+      Ctrl.LTCDS(1).RESET.DRP <= '0';
+      Ctrl.LTCDS(1).DEBUG.EYESCAN_RESET <= '0';
+      Ctrl.LTCDS(1).DEBUG.RX.BUF_RESET <= '0';
+      Ctrl.LTCDS(1).DEBUG.RX.DFE_LPM_RESET <= '0';
+      Ctrl.LTCDS(1).DEBUG.RX.PCS_RESET <= '0';
+      Ctrl.LTCDS(1).DEBUG.RX.PMA_RESET <= '0';
+      Ctrl.LTCDS(1).DEBUG.TX.PCS_RESET <= '0';
+      Ctrl.LTCDS(1).DEBUG.TX.PMA_RESET <= '0';
+      Ctrl.LTCDS(1).DATA_CTRL.CAPTURE <= '0';
       Ctrl.LTCDS(2).RESET.RESET_ALL <= '0';
       Ctrl.LTCDS(2).RESET.TX_PLL_AND_DATAPATH <= '0';
       Ctrl.LTCDS(2).RESET.TX_DATAPATH <= '0';
@@ -533,11 +793,20 @@ begin  -- architecture behavioral
       Ctrl.LTCDS(2).RESET.RX_DATAPATH <= '0';
       Ctrl.LTCDS(2).RESET.USERCLK_TX <= '0';
       Ctrl.LTCDS(2).RESET.USERCLK_RX <= '0';
+      Ctrl.LTCDS(2).RESET.DRP <= '0';
+      Ctrl.LTCDS(2).DEBUG.EYESCAN_RESET <= '0';
+      Ctrl.LTCDS(2).DEBUG.RX.BUF_RESET <= '0';
+      Ctrl.LTCDS(2).DEBUG.RX.DFE_LPM_RESET <= '0';
+      Ctrl.LTCDS(2).DEBUG.RX.PCS_RESET <= '0';
+      Ctrl.LTCDS(2).DEBUG.RX.PMA_RESET <= '0';
+      Ctrl.LTCDS(2).DEBUG.TX.PCS_RESET <= '0';
+      Ctrl.LTCDS(2).DEBUG.TX.PMA_RESET <= '0';
+      Ctrl.LTCDS(2).DATA_CTRL.CAPTURE <= '0';
       
 
       
       if localWrEn = '1' then
-        case to_integer(unsigned(localAddress(9 downto 0))) is
+        case to_integer(unsigned(localAddress(12 downto 0))) is
         when 8 => --0x8
           reg_data( 8)( 0)                         <=  localWrData( 0);                --
         when 9 => --0x9
@@ -605,7 +874,7 @@ begin  -- architecture behavioral
           reg_data(81)(31 downto  0)               <=  localWrData(31 downto  0);      --
         when 82 => --0x52
           reg_data(82)(15 downto  0)               <=  localWrData(15 downto  0);      --
-        when 512 => --0x200
+        when 1024 => --0x400
           Ctrl.LTCDS(1).RESET.RESET_ALL            <=  localWrData( 0);               
           Ctrl.LTCDS(1).RESET.TX_PLL_AND_DATAPATH  <=  localWrData( 4);               
           Ctrl.LTCDS(1).RESET.TX_DATAPATH          <=  localWrData( 5);               
@@ -613,12 +882,52 @@ begin  -- architecture behavioral
           Ctrl.LTCDS(1).RESET.RX_DATAPATH          <=  localWrData( 7);               
           Ctrl.LTCDS(1).RESET.USERCLK_TX           <=  localWrData( 8);               
           Ctrl.LTCDS(1).RESET.USERCLK_RX           <=  localWrData( 9);               
-        when 528 => --0x210
-          reg_data(528)(15 downto  0)              <=  localWrData(15 downto  0);      --
-          reg_data(528)(31 downto 16)              <=  localWrData(31 downto 16);      --
-        when 529 => --0x211
-          reg_data(529)( 7 downto  0)              <=  localWrData( 7 downto  0);      --
-        when 544 => --0x220
+          Ctrl.LTCDS(1).RESET.DRP                  <=  localWrData(10);               
+        when 1056 => --0x420
+          Ctrl.LTCDS(1).DEBUG.EYESCAN_RESET        <=  localWrData(22);               
+          reg_data(1056)(23)                       <=  localWrData(23);                --DEBUG eyescan trigger
+        when 1057 => --0x421
+          reg_data(1057)(15 downto  0)             <=  localWrData(15 downto  0);      --bit 2 is DRP uber reset
+        when 1058 => --0x422
+          Ctrl.LTCDS(1).DEBUG.RX.BUF_RESET         <=  localWrData(12);               
+          Ctrl.LTCDS(1).DEBUG.RX.DFE_LPM_RESET     <=  localWrData(17);               
+          Ctrl.LTCDS(1).DEBUG.RX.PCS_RESET         <=  localWrData(23);               
+          Ctrl.LTCDS(1).DEBUG.RX.PMA_RESET         <=  localWrData(24);               
+          reg_data(1058)(13)                       <=  localWrData(13);                --DEBUG rx CDR hold
+          reg_data(1058)(18)                       <=  localWrData(18);                --DEBUG rx LPM ENABLE
+          reg_data(1058)(25)                       <=  localWrData(25);                --DEBUG rx PRBS counter reset
+          reg_data(1058)(29 downto 26)             <=  localWrData(29 downto 26);      --DEBUG rx PRBS select
+        when 1059 => --0x423
+          reg_data(1059)( 2 downto  0)             <=  localWrData( 2 downto  0);      --DEBUG rx rate
+        when 1060 => --0x424
+          Ctrl.LTCDS(1).DEBUG.TX.PCS_RESET         <=  localWrData(15);               
+          Ctrl.LTCDS(1).DEBUG.TX.PMA_RESET         <=  localWrData(16);               
+          reg_data(1060)( 7)                       <=  localWrData( 7);                --DEBUG tx inhibit
+          reg_data(1060)(17)                       <=  localWrData(17);                --DEBUG tx polarity
+          reg_data(1060)(22 downto 18)             <=  localWrData(22 downto 18);      --DEBUG post cursor
+          reg_data(1060)(23)                       <=  localWrData(23);                --DEBUG force PRBS error
+          reg_data(1060)(31 downto 27)             <=  localWrData(31 downto 27);      --DEBUG pre cursor
+        when 1061 => --0x425
+          reg_data(1061)( 3 downto  0)             <=  localWrData( 3 downto  0);      --DEBUG PRBS select
+          reg_data(1061)( 8 downto  4)             <=  localWrData( 8 downto  4);      --DEBUG tx diff control
+        when 1072 => --0x430
+          reg_data(1072)(15 downto  0)             <=  localWrData(15 downto  0);      --
+          reg_data(1072)(31 downto 16)             <=  localWrData(31 downto 16);      --
+        when 1073 => --0x431
+          reg_data(1073)( 7 downto  0)             <=  localWrData( 7 downto  0);      --
+        when 1104 => --0x450
+          Ctrl.LTCDS(1).DATA_CTRL.CAPTURE          <=  localWrData( 0);               
+        when 1106 => --0x452
+          reg_data(1106)( 3 downto  0)             <=  localWrData( 3 downto  0);      --
+        when 1110 => --0x456
+          reg_data(1110)(31 downto  0)             <=  localWrData(31 downto  0);      --
+        when 1111 => --0x457
+          reg_data(1111)( 3 downto  0)             <=  localWrData( 3 downto  0);      --
+        when 1123 => --0x463
+          reg_data(1123)( 2 downto  0)             <=  localWrData( 2 downto  0);      --
+          reg_data(1123)( 6 downto  4)             <=  localWrData( 6 downto  4);      --
+          reg_data(1123)(10 downto  8)             <=  localWrData(10 downto  8);      --
+        when 3072 => --0xc00
           Ctrl.LTCDS(2).RESET.RESET_ALL            <=  localWrData( 0);               
           Ctrl.LTCDS(2).RESET.TX_PLL_AND_DATAPATH  <=  localWrData( 4);               
           Ctrl.LTCDS(2).RESET.TX_DATAPATH          <=  localWrData( 5);               
@@ -626,11 +935,51 @@ begin  -- architecture behavioral
           Ctrl.LTCDS(2).RESET.RX_DATAPATH          <=  localWrData( 7);               
           Ctrl.LTCDS(2).RESET.USERCLK_TX           <=  localWrData( 8);               
           Ctrl.LTCDS(2).RESET.USERCLK_RX           <=  localWrData( 9);               
-        when 560 => --0x230
-          reg_data(560)(15 downto  0)              <=  localWrData(15 downto  0);      --
-          reg_data(560)(31 downto 16)              <=  localWrData(31 downto 16);      --
-        when 561 => --0x231
-          reg_data(561)( 7 downto  0)              <=  localWrData( 7 downto  0);      --
+          Ctrl.LTCDS(2).RESET.DRP                  <=  localWrData(10);               
+        when 3104 => --0xc20
+          Ctrl.LTCDS(2).DEBUG.EYESCAN_RESET        <=  localWrData(22);               
+          reg_data(3104)(23)                       <=  localWrData(23);                --DEBUG eyescan trigger
+        when 3105 => --0xc21
+          reg_data(3105)(15 downto  0)             <=  localWrData(15 downto  0);      --bit 2 is DRP uber reset
+        when 3106 => --0xc22
+          Ctrl.LTCDS(2).DEBUG.RX.BUF_RESET         <=  localWrData(12);               
+          Ctrl.LTCDS(2).DEBUG.RX.DFE_LPM_RESET     <=  localWrData(17);               
+          Ctrl.LTCDS(2).DEBUG.RX.PCS_RESET         <=  localWrData(23);               
+          Ctrl.LTCDS(2).DEBUG.RX.PMA_RESET         <=  localWrData(24);               
+          reg_data(3106)(13)                       <=  localWrData(13);                --DEBUG rx CDR hold
+          reg_data(3106)(18)                       <=  localWrData(18);                --DEBUG rx LPM ENABLE
+          reg_data(3106)(25)                       <=  localWrData(25);                --DEBUG rx PRBS counter reset
+          reg_data(3106)(29 downto 26)             <=  localWrData(29 downto 26);      --DEBUG rx PRBS select
+        when 3107 => --0xc23
+          reg_data(3107)( 2 downto  0)             <=  localWrData( 2 downto  0);      --DEBUG rx rate
+        when 3108 => --0xc24
+          Ctrl.LTCDS(2).DEBUG.TX.PCS_RESET         <=  localWrData(15);               
+          Ctrl.LTCDS(2).DEBUG.TX.PMA_RESET         <=  localWrData(16);               
+          reg_data(3108)( 7)                       <=  localWrData( 7);                --DEBUG tx inhibit
+          reg_data(3108)(17)                       <=  localWrData(17);                --DEBUG tx polarity
+          reg_data(3108)(22 downto 18)             <=  localWrData(22 downto 18);      --DEBUG post cursor
+          reg_data(3108)(23)                       <=  localWrData(23);                --DEBUG force PRBS error
+          reg_data(3108)(31 downto 27)             <=  localWrData(31 downto 27);      --DEBUG pre cursor
+        when 3109 => --0xc25
+          reg_data(3109)( 3 downto  0)             <=  localWrData( 3 downto  0);      --DEBUG PRBS select
+          reg_data(3109)( 8 downto  4)             <=  localWrData( 8 downto  4);      --DEBUG tx diff control
+        when 3120 => --0xc30
+          reg_data(3120)(15 downto  0)             <=  localWrData(15 downto  0);      --
+          reg_data(3120)(31 downto 16)             <=  localWrData(31 downto 16);      --
+        when 3121 => --0xc31
+          reg_data(3121)( 7 downto  0)             <=  localWrData( 7 downto  0);      --
+        when 3152 => --0xc50
+          Ctrl.LTCDS(2).DATA_CTRL.CAPTURE          <=  localWrData( 0);               
+        when 3154 => --0xc52
+          reg_data(3154)( 3 downto  0)             <=  localWrData( 3 downto  0);      --
+        when 3158 => --0xc56
+          reg_data(3158)(31 downto  0)             <=  localWrData(31 downto  0);      --
+        when 3159 => --0xc57
+          reg_data(3159)( 3 downto  0)             <=  localWrData( 3 downto  0);      --
+        when 3171 => --0xc63
+          reg_data(3171)( 2 downto  0)             <=  localWrData( 2 downto  0);      --
+          reg_data(3171)( 6 downto  4)             <=  localWrData( 6 downto  4);      --
+          reg_data(3171)(10 downto  8)             <=  localWrData(10 downto  8);      --
 
           when others => null;
         end case;
@@ -639,4 +988,76 @@ begin  -- architecture behavioral
   end process reg_writes;
 
 
+
+  
+  -------------------------------------------------------------------------------
+  -- BRAM decoding
+  -------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------
+
+  BRAM_reads: for iBRAM in 0 to BRAM_COUNT-1 generate
+    BRAM_read: process (clk_axi,reset_axi_n) is
+    begin  -- process BRAM_reads
+      if reset_axi_n = '0' then
+--        latchBRAM(iBRAM) <= '0';
+        BRAM_MOSI(iBRAM).enable  <= '0';
+      elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
+        BRAM_MOSI(iBRAM).address <= localAddress;
+--        latchBRAM(iBRAM) <= '0';
+        BRAM_MOSI(iBRAM).enable  <= '0';
+        if localAddress(12 downto BRAM_range(iBRAM)) = BRAM_addr(iBRAM)(12 downto BRAM_range(iBRAM)) then
+--          latchBRAM(iBRAM) <= localRdReq;
+--          BRAM_MOSI(iBRAM).enable  <= '1';
+          BRAM_MOSI(iBRAM).enable  <= localRdReq;
+        end if;
+      end if;
+    end process BRAM_read;
+  end generate BRAM_reads;
+
+
+
+  BRAM_asyncs: for iBRAM in 0 to BRAM_COUNT-1 generate
+    BRAM_MOSI(iBRAM).clk     <= clk_axi;
+    BRAM_MOSI(iBRAM).wr_data <= localWrData;
+  end generate BRAM_asyncs;
+  
+  Ctrl.LTCDS(1).DRP.clk       <=  BRAM_MOSI(0).clk;
+  Ctrl.LTCDS(1).DRP.enable    <=  BRAM_MOSI(0).enable;
+  Ctrl.LTCDS(1).DRP.wr_enable <=  BRAM_MOSI(0).wr_enable;
+  Ctrl.LTCDS(1).DRP.address   <=  BRAM_MOSI(0).address(10-1 downto 0);
+  Ctrl.LTCDS(1).DRP.wr_data   <=  BRAM_MOSI(0).wr_data(16-1 downto 0);
+
+  Ctrl.LTCDS(2).DRP.clk       <=  BRAM_MOSI(1).clk;
+  Ctrl.LTCDS(2).DRP.enable    <=  BRAM_MOSI(1).enable;
+  Ctrl.LTCDS(2).DRP.wr_enable <=  BRAM_MOSI(1).wr_enable;
+  Ctrl.LTCDS(2).DRP.address   <=  BRAM_MOSI(1).address(10-1 downto 0);
+  Ctrl.LTCDS(2).DRP.wr_data   <=  BRAM_MOSI(1).wr_data(16-1 downto 0);
+
+
+  BRAM_MISO(0).rd_data(16-1 downto 0) <= Mon.LTCDS(1).DRP.rd_data;
+  BRAM_MISO(0).rd_data(31 downto 16) <= (others => '0');
+  BRAM_MISO(0).rd_data_valid <= Mon.LTCDS(1).DRP.rd_data_valid;
+
+  BRAM_MISO(1).rd_data(16-1 downto 0) <= Mon.LTCDS(2).DRP.rd_data;
+  BRAM_MISO(1).rd_data(31 downto 16) <= (others => '0');
+  BRAM_MISO(1).rd_data_valid <= Mon.LTCDS(2).DRP.rd_data_valid;
+
+    
+
+  BRAM_writes: for iBRAM in 0 to BRAM_COUNT-1 generate
+    BRAM_write: process (clk_axi,reset_axi_n) is    
+    begin  -- process BRAM_reads
+      if reset_axi_n = '0' then
+        BRAM_MOSI(iBRAM).wr_enable   <= '0';
+      elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
+        BRAM_MOSI(iBRAM).wr_enable   <= '0';
+        if localAddress(12 downto BRAM_range(iBRAM)) = BRAM_addr(iBRAM)(12 downto BRAM_range(iBRAM)) then
+          BRAM_MOSI(iBRAM).wr_enable   <= localWrEn;
+        end if;
+      end if;
+    end process BRAM_write;
+  end generate BRAM_writes;
+
+
+  
 end architecture behavioral;

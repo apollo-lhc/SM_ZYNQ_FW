@@ -10,9 +10,18 @@ use work.types.all;
 use work.BRAMPortPkg.all;
 use work.MEM_TEST_Ctrl.all;
 
+<<<<<<< HEAD
 entity MEM_TEST_map is
   generic (
     READ_TIMEOUT     : integer := 2048
+=======
+
+
+entity MEM_TEST_map is
+  generic (
+    READ_TIMEOUT     : integer := 2048;
+    ALLOCATED_MEMORY_RANGE : integer
+>>>>>>> feature/scripts-submodule2
     );
   port (
     clk_axi          : in  std_logic;
@@ -57,6 +66,16 @@ begin  -- architecture behavioral
   -- AXI 
   -------------------------------------------------------------------------------
   -------------------------------------------------------------------------------
+<<<<<<< HEAD
+=======
+  assert ((4*1280) < ALLOCATED_MEMORY_RANGE)
+    report "MEM_TEST: Regmap addressing range " & integer'image(4*1280) & " is outside of AXI mapped range " & integer'image(ALLOCATED_MEMORY_RANGE)
+  severity ERROR;
+  assert ((4*1280) >= ALLOCATED_MEMORY_RANGE)
+    report "MEM_TEST: Regmap addressing range " & integer'image(4*1280) & " is inside of AXI mapped range " & integer'image(ALLOCATED_MEMORY_RANGE)
+  severity NOTE;
+
+>>>>>>> feature/scripts-submodule2
   AXIRegBridge : entity work.axiLiteRegBlocking
     generic map (
       READ_TIMEOUT => READ_TIMEOUT

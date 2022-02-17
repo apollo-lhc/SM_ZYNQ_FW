@@ -1,10 +1,10 @@
 // Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2020.2 (lin64) Build 3064766 Wed Nov 18 09:12:47 MST 2020
-// Date        : Tue Jul  6 11:43:45 2021
+// Date        : Mon Jan 31 10:47:28 2022
 // Host        : tesla.bu.edu running 64-bit CentOS Linux release 7.9.2009 (Core)
 // Command     : write_verilog -force -mode funcsim
-//               /work/dan/Apollo/SM_ZYNQ_FW/configs/rev2a_xczu7ev/cores/LOCAL_TCDS2/LOCAL_TCDS2_sim_netlist.v
+//               /work/dan/Apollo/FW/SM_ZYNQ_FW/configs/rev2a_xczu7ev/cores/LOCAL_TCDS2/LOCAL_TCDS2_sim_netlist.v
 // Design      : LOCAL_TCDS2
 // Purpose     : This verilog netlist is a functional simulation representation of the design and should not be modified
 //               or synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -38,23 +38,55 @@ module LOCAL_TCDS2
     gtwiz_reset_qpll0reset_out,
     gtwiz_userdata_tx_in,
     gtwiz_userdata_rx_out,
+    drpaddr_in,
+    drpclk_in,
+    drpdi_in,
+    drpen_in,
+    drpwe_in,
+    eyescanreset_in,
+    eyescantrigger_in,
     gthrxn_in,
     gthrxp_in,
+    pcsrsvdin_in,
     qpll0clk_in,
     qpll0refclk_in,
     qpll1clk_in,
     qpll1refclk_in,
     rx8b10ben_in,
+    rxbufreset_in,
+    rxcdrhold_in,
     rxcommadeten_in,
+    rxdfelpmreset_in,
+    rxlpmen_in,
     rxmcommaalignen_in,
     rxpcommaalignen_in,
+    rxpcsreset_in,
+    rxpmareset_in,
+    rxprbscntreset_in,
+    rxprbssel_in,
+    rxrate_in,
     tx8b10ben_in,
     txctrl0_in,
     txctrl1_in,
     txctrl2_in,
+    txdiffctrl_in,
+    txinhibit_in,
+    txpcsreset_in,
+    txpmareset_in,
+    txpolarity_in,
+    txpostcursor_in,
+    txprbsforceerr_in,
+    txprbssel_in,
+    txprecursor_in,
+    cplllock_out,
+    dmonitorout_out,
+    drpdo_out,
+    drprdy_out,
+    eyescandataerror_out,
     gthtxn_out,
     gthtxp_out,
     gtpowergood_out,
+    rxbufstatus_out,
     rxbyteisaligned_out,
     rxbyterealign_out,
     rxcommadet_out,
@@ -63,6 +95,9 @@ module LOCAL_TCDS2
     rxctrl2_out,
     rxctrl3_out,
     rxpmaresetdone_out,
+    rxprbserr_out,
+    rxsyncdone_out,
+    txbufstatus_out,
     txpmaresetdone_out);
   input [0:0]gtwiz_userclk_tx_reset_in;
   output [0:0]gtwiz_userclk_tx_srcclk_out;
@@ -87,23 +122,55 @@ module LOCAL_TCDS2
   output [0:0]gtwiz_reset_qpll0reset_out;
   input [31:0]gtwiz_userdata_tx_in;
   output [31:0]gtwiz_userdata_rx_out;
+  input [9:0]drpaddr_in;
+  input [0:0]drpclk_in;
+  input [15:0]drpdi_in;
+  input [0:0]drpen_in;
+  input [0:0]drpwe_in;
+  input [0:0]eyescanreset_in;
+  input [0:0]eyescantrigger_in;
   input [0:0]gthrxn_in;
   input [0:0]gthrxp_in;
+  input [15:0]pcsrsvdin_in;
   input [0:0]qpll0clk_in;
   input [0:0]qpll0refclk_in;
   input [0:0]qpll1clk_in;
   input [0:0]qpll1refclk_in;
   input [0:0]rx8b10ben_in;
+  input [0:0]rxbufreset_in;
+  input [0:0]rxcdrhold_in;
   input [0:0]rxcommadeten_in;
+  input [0:0]rxdfelpmreset_in;
+  input [0:0]rxlpmen_in;
   input [0:0]rxmcommaalignen_in;
   input [0:0]rxpcommaalignen_in;
+  input [0:0]rxpcsreset_in;
+  input [0:0]rxpmareset_in;
+  input [0:0]rxprbscntreset_in;
+  input [3:0]rxprbssel_in;
+  input [2:0]rxrate_in;
   input [0:0]tx8b10ben_in;
   input [15:0]txctrl0_in;
   input [15:0]txctrl1_in;
   input [7:0]txctrl2_in;
+  input [4:0]txdiffctrl_in;
+  input [0:0]txinhibit_in;
+  input [0:0]txpcsreset_in;
+  input [0:0]txpmareset_in;
+  input [0:0]txpolarity_in;
+  input [4:0]txpostcursor_in;
+  input [0:0]txprbsforceerr_in;
+  input [3:0]txprbssel_in;
+  input [4:0]txprecursor_in;
+  output [0:0]cplllock_out;
+  output [15:0]dmonitorout_out;
+  output [15:0]drpdo_out;
+  output [0:0]drprdy_out;
+  output [0:0]eyescandataerror_out;
   output [0:0]gthtxn_out;
   output [0:0]gthtxp_out;
   output [0:0]gtpowergood_out;
+  output [2:0]rxbufstatus_out;
   output [0:0]rxbyteisaligned_out;
   output [0:0]rxbyterealign_out;
   output [0:0]rxcommadet_out;
@@ -112,8 +179,23 @@ module LOCAL_TCDS2
   output [7:0]rxctrl2_out;
   output [7:0]rxctrl3_out;
   output [0:0]rxpmaresetdone_out;
+  output [0:0]rxprbserr_out;
+  output [0:0]rxsyncdone_out;
+  output [1:0]txbufstatus_out;
   output [0:0]txpmaresetdone_out;
 
+  wire [0:0]cplllock_out;
+  wire [15:0]dmonitorout_out;
+  wire [9:0]drpaddr_in;
+  wire [0:0]drpclk_in;
+  wire [15:0]drpdi_in;
+  wire [15:0]drpdo_out;
+  wire [0:0]drpen_in;
+  wire [0:0]drprdy_out;
+  wire [0:0]drpwe_in;
+  wire [0:0]eyescandataerror_out;
+  wire [0:0]eyescanreset_in;
+  wire [0:0]eyescantrigger_in;
   wire [0:0]gthrxn_in;
   wire [0:0]gthrxp_in;
   wire [0:0]gthtxn_out;
@@ -142,42 +224,60 @@ module LOCAL_TCDS2
   wire [0:0]gtwiz_userclk_tx_usrclk_out;
   wire [31:0]gtwiz_userdata_rx_out;
   wire [31:0]gtwiz_userdata_tx_in;
+  wire [15:0]pcsrsvdin_in;
   wire [0:0]qpll0clk_in;
   wire [0:0]qpll0refclk_in;
   wire [0:0]qpll1clk_in;
   wire [0:0]qpll1refclk_in;
   wire [0:0]rx8b10ben_in;
+  wire [0:0]rxbufreset_in;
+  wire [2:0]rxbufstatus_out;
   wire [0:0]rxbyteisaligned_out;
   wire [0:0]rxbyterealign_out;
+  wire [0:0]rxcdrhold_in;
   wire [0:0]rxcommadet_out;
   wire [0:0]rxcommadeten_in;
   wire [15:0]rxctrl0_out;
   wire [15:0]rxctrl1_out;
   wire [7:0]rxctrl2_out;
   wire [7:0]rxctrl3_out;
+  wire [0:0]rxdfelpmreset_in;
+  wire [0:0]rxlpmen_in;
   wire [0:0]rxmcommaalignen_in;
   wire [0:0]rxpcommaalignen_in;
+  wire [0:0]rxpcsreset_in;
+  wire [0:0]rxpmareset_in;
   wire [0:0]rxpmaresetdone_out;
+  wire [0:0]rxprbscntreset_in;
+  wire [0:0]rxprbserr_out;
+  wire [3:0]rxprbssel_in;
+  wire [2:0]rxrate_in;
+  wire [0:0]rxsyncdone_out;
   wire [0:0]tx8b10ben_in;
+  wire [1:0]txbufstatus_out;
   wire [15:0]txctrl0_in;
   wire [15:0]txctrl1_in;
   wire [7:0]txctrl2_in;
+  wire [4:0]txdiffctrl_in;
+  wire [0:0]txinhibit_in;
+  wire [0:0]txpcsreset_in;
+  wire [0:0]txpmareset_in;
   wire [0:0]txpmaresetdone_out;
+  wire [0:0]txpolarity_in;
+  wire [4:0]txpostcursor_in;
+  wire [0:0]txprbsforceerr_in;
+  wire [3:0]txprbssel_in;
+  wire [4:0]txprecursor_in;
   wire [0:0]NLW_inst_bufgtce_out_UNCONNECTED;
   wire [2:0]NLW_inst_bufgtcemask_out_UNCONNECTED;
   wire [8:0]NLW_inst_bufgtdiv_out_UNCONNECTED;
   wire [0:0]NLW_inst_bufgtreset_out_UNCONNECTED;
   wire [2:0]NLW_inst_bufgtrstmask_out_UNCONNECTED;
   wire [0:0]NLW_inst_cpllfbclklost_out_UNCONNECTED;
-  wire [0:0]NLW_inst_cplllock_out_UNCONNECTED;
   wire [0:0]NLW_inst_cpllrefclklost_out_UNCONNECTED;
-  wire [15:0]NLW_inst_dmonitorout_out_UNCONNECTED;
   wire [0:0]NLW_inst_dmonitoroutclk_out_UNCONNECTED;
   wire [15:0]NLW_inst_drpdo_common_out_UNCONNECTED;
-  wire [15:0]NLW_inst_drpdo_out_UNCONNECTED;
   wire [0:0]NLW_inst_drprdy_common_out_UNCONNECTED;
-  wire [0:0]NLW_inst_drprdy_out_UNCONNECTED;
-  wire [0:0]NLW_inst_eyescandataerror_out_UNCONNECTED;
   wire [0:0]NLW_inst_gtrefclkmonitor_out_UNCONNECTED;
   wire [0:0]NLW_inst_gtwiz_buffbypass_rx_done_out_UNCONNECTED;
   wire [0:0]NLW_inst_gtwiz_buffbypass_rx_error_out_UNCONNECTED;
@@ -215,7 +315,6 @@ module LOCAL_TCDS2
   wire [0:0]NLW_inst_refclkoutmonitor0_out_UNCONNECTED;
   wire [0:0]NLW_inst_refclkoutmonitor1_out_UNCONNECTED;
   wire [0:0]NLW_inst_resetexception_out_UNCONNECTED;
-  wire [2:0]NLW_inst_rxbufstatus_out_UNCONNECTED;
   wire [0:0]NLW_inst_rxcdrlock_out_UNCONNECTED;
   wire [0:0]NLW_inst_rxcdrphdone_out_UNCONNECTED;
   wire [0:0]NLW_inst_rxchanbondseq_out_UNCONNECTED;
@@ -247,7 +346,6 @@ module LOCAL_TCDS2
   wire [0:0]NLW_inst_rxoutclkpcs_out_UNCONNECTED;
   wire [0:0]NLW_inst_rxphaligndone_out_UNCONNECTED;
   wire [0:0]NLW_inst_rxphalignerr_out_UNCONNECTED;
-  wire [0:0]NLW_inst_rxprbserr_out_UNCONNECTED;
   wire [0:0]NLW_inst_rxprbslocked_out_UNCONNECTED;
   wire [0:0]NLW_inst_rxprgdivresetdone_out_UNCONNECTED;
   wire [0:0]NLW_inst_rxqpisenn_out_UNCONNECTED;
@@ -265,7 +363,6 @@ module LOCAL_TCDS2
   wire [0:0]NLW_inst_rxslippmardy_out_UNCONNECTED;
   wire [1:0]NLW_inst_rxstartofseq_out_UNCONNECTED;
   wire [2:0]NLW_inst_rxstatus_out_UNCONNECTED;
-  wire [0:0]NLW_inst_rxsyncdone_out_UNCONNECTED;
   wire [0:0]NLW_inst_rxsyncout_out_UNCONNECTED;
   wire [0:0]NLW_inst_rxvalid_out_UNCONNECTED;
   wire [3:0]NLW_inst_sdm0finalout_out_UNCONNECTED;
@@ -274,7 +371,6 @@ module LOCAL_TCDS2
   wire [14:0]NLW_inst_sdm1testdata_out_UNCONNECTED;
   wire [9:0]NLW_inst_tcongpo_out_UNCONNECTED;
   wire [0:0]NLW_inst_tconrsvdout0_out_UNCONNECTED;
-  wire [1:0]NLW_inst_txbufstatus_out_UNCONNECTED;
   wire [0:0]NLW_inst_txcomfinish_out_UNCONNECTED;
   wire [0:0]NLW_inst_txdccdone_out_UNCONNECTED;
   wire [0:0]NLW_inst_txdlysresetdone_out_UNCONNECTED;
@@ -409,7 +505,7 @@ module LOCAL_TCDS2
         .clkrsvd1_in(1'b0),
         .cpllfbclklost_out(NLW_inst_cpllfbclklost_out_UNCONNECTED[0]),
         .cpllfreqlock_in(1'b0),
-        .cplllock_out(NLW_inst_cplllock_out_UNCONNECTED[0]),
+        .cplllock_out(cplllock_out),
         .cplllockdetclk_in(1'b0),
         .cplllocken_in(1'b0),
         .cpllpd_in(1'b1),
@@ -418,23 +514,23 @@ module LOCAL_TCDS2
         .cpllreset_in(1'b1),
         .dmonfiforeset_in(1'b0),
         .dmonitorclk_in(1'b0),
-        .dmonitorout_out(NLW_inst_dmonitorout_out_UNCONNECTED[15:0]),
+        .dmonitorout_out(dmonitorout_out),
         .dmonitoroutclk_out(NLW_inst_dmonitoroutclk_out_UNCONNECTED[0]),
         .drpaddr_common_in({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
-        .drpaddr_in({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
+        .drpaddr_in(drpaddr_in),
         .drpclk_common_in(1'b0),
-        .drpclk_in(1'b0),
+        .drpclk_in(drpclk_in),
         .drpdi_common_in({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
-        .drpdi_in({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
+        .drpdi_in(drpdi_in),
         .drpdo_common_out(NLW_inst_drpdo_common_out_UNCONNECTED[15:0]),
-        .drpdo_out(NLW_inst_drpdo_out_UNCONNECTED[15:0]),
+        .drpdo_out(drpdo_out),
         .drpen_common_in(1'b0),
-        .drpen_in(1'b0),
+        .drpen_in(drpen_in),
         .drprdy_common_out(NLW_inst_drprdy_common_out_UNCONNECTED[0]),
-        .drprdy_out(NLW_inst_drprdy_out_UNCONNECTED[0]),
+        .drprdy_out(drprdy_out),
         .drprst_in(1'b0),
         .drpwe_common_in(1'b0),
-        .drpwe_in(1'b0),
+        .drpwe_in(drpwe_in),
         .elpcaldvorwren_in(1'b0),
         .elpcalpaorwren_in(1'b0),
         .evoddphicaldone_in(1'b0),
@@ -443,10 +539,10 @@ module LOCAL_TCDS2
         .evoddphidwren_in(1'b0),
         .evoddphixrden_in(1'b0),
         .evoddphixwren_in(1'b0),
-        .eyescandataerror_out(NLW_inst_eyescandataerror_out_UNCONNECTED[0]),
+        .eyescandataerror_out(eyescandataerror_out),
         .eyescanmode_in(1'b0),
-        .eyescanreset_in(1'b0),
-        .eyescantrigger_in(1'b0),
+        .eyescanreset_in(eyescanreset_in),
+        .eyescantrigger_in(eyescantrigger_in),
         .freqos_in(1'b0),
         .gtgrefclk0_in(1'b0),
         .gtgrefclk1_in(1'b0),
@@ -551,7 +647,7 @@ module LOCAL_TCDS2
         .pcieuserratedone_in(1'b0),
         .pcieuserratestart_out(NLW_inst_pcieuserratestart_out_UNCONNECTED[0]),
         .pcsrsvdin2_in(1'b0),
-        .pcsrsvdin_in({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
+        .pcsrsvdin_in(pcsrsvdin_in),
         .pcsrsvdout_out(NLW_inst_pcsrsvdout_out_UNCONNECTED[15:0]),
         .phystatus_out(NLW_inst_phystatus_out_UNCONNECTED[0]),
         .pinrsrvdas_out(NLW_inst_pinrsrvdas_out_UNCONNECTED[15:0]),
@@ -607,12 +703,12 @@ module LOCAL_TCDS2
         .rstclkentx_in(1'b0),
         .rx8b10ben_in(rx8b10ben_in),
         .rxafecfoken_in(1'b1),
-        .rxbufreset_in(1'b0),
-        .rxbufstatus_out(NLW_inst_rxbufstatus_out_UNCONNECTED[2:0]),
+        .rxbufreset_in(rxbufreset_in),
+        .rxbufstatus_out(rxbufstatus_out),
         .rxbyteisaligned_out(rxbyteisaligned_out),
         .rxbyterealign_out(rxbyterealign_out),
         .rxcdrfreqreset_in(1'b0),
-        .rxcdrhold_in(1'b0),
+        .rxcdrhold_in(rxcdrhold_in),
         .rxcdrlock_out(NLW_inst_rxcdrlock_out_UNCONNECTED[0]),
         .rxcdrovrden_in(1'b0),
         .rxcdrphdone_out(NLW_inst_rxcdrphdone_out_UNCONNECTED[0]),
@@ -656,7 +752,7 @@ module LOCAL_TCDS2
         .rxdfekhovrden_in(1'b0),
         .rxdfelfhold_in(1'b0),
         .rxdfelfovrden_in(1'b0),
-        .rxdfelpmreset_in(1'b0),
+        .rxdfelpmreset_in(rxdfelpmreset_in),
         .rxdfetap10hold_in(1'b0),
         .rxdfetap10ovrden_in(1'b0),
         .rxdfetap11hold_in(1'b0),
@@ -706,7 +802,7 @@ module LOCAL_TCDS2
         .rxlfpstresetdet_out(NLW_inst_rxlfpstresetdet_out_UNCONNECTED[0]),
         .rxlfpsu2lpexitdet_out(NLW_inst_rxlfpsu2lpexitdet_out_UNCONNECTED[0]),
         .rxlfpsu3wakedet_out(NLW_inst_rxlfpsu3wakedet_out_UNCONNECTED[0]),
-        .rxlpmen_in(1'b0),
+        .rxlpmen_in(rxlpmen_in),
         .rxlpmgchold_in(1'b0),
         .rxlpmgcovrden_in(1'b0),
         .rxlpmhfhold_in(1'b0),
@@ -737,7 +833,7 @@ module LOCAL_TCDS2
         .rxoutclkpcs_out(NLW_inst_rxoutclkpcs_out_UNCONNECTED[0]),
         .rxoutclksel_in({1'b0,1'b1,1'b0}),
         .rxpcommaalignen_in(rxpcommaalignen_in),
-        .rxpcsreset_in(1'b0),
+        .rxpcsreset_in(rxpcsreset_in),
         .rxpd_in({1'b0,1'b0}),
         .rxphalign_in(1'b0),
         .rxphaligndone_out(NLW_inst_rxphaligndone_out_UNCONNECTED[0]),
@@ -747,19 +843,19 @@ module LOCAL_TCDS2
         .rxphdlyreset_in(1'b0),
         .rxphovrden_in(1'b0),
         .rxpllclksel_in({1'b1,1'b1}),
-        .rxpmareset_in(1'b0),
+        .rxpmareset_in(rxpmareset_in),
         .rxpmaresetdone_out(rxpmaresetdone_out),
         .rxpolarity_in(1'b0),
-        .rxprbscntreset_in(1'b0),
-        .rxprbserr_out(NLW_inst_rxprbserr_out_UNCONNECTED[0]),
+        .rxprbscntreset_in(rxprbscntreset_in),
+        .rxprbserr_out(rxprbserr_out),
         .rxprbslocked_out(NLW_inst_rxprbslocked_out_UNCONNECTED[0]),
-        .rxprbssel_in({1'b0,1'b0,1'b0,1'b0}),
+        .rxprbssel_in(rxprbssel_in),
         .rxprgdivresetdone_out(NLW_inst_rxprgdivresetdone_out_UNCONNECTED[0]),
         .rxprogdivreset_in(1'b0),
         .rxqpien_in(1'b0),
         .rxqpisenn_out(NLW_inst_rxqpisenn_out_UNCONNECTED[0]),
         .rxqpisenp_out(NLW_inst_rxqpisenp_out_UNCONNECTED[0]),
-        .rxrate_in({1'b0,1'b0,1'b0}),
+        .rxrate_in(rxrate_in),
         .rxratedone_out(NLW_inst_rxratedone_out_UNCONNECTED[0]),
         .rxratemode_in(1'b0),
         .rxrecclk0_sel_out(NLW_inst_rxrecclk0_sel_out_UNCONNECTED[0]),
@@ -778,7 +874,7 @@ module LOCAL_TCDS2
         .rxstartofseq_out(NLW_inst_rxstartofseq_out_UNCONNECTED[1:0]),
         .rxstatus_out(NLW_inst_rxstatus_out_UNCONNECTED[2:0]),
         .rxsyncallin_in(1'b0),
-        .rxsyncdone_out(NLW_inst_rxsyncdone_out_UNCONNECTED[0]),
+        .rxsyncdone_out(rxsyncdone_out),
         .rxsyncin_in(1'b0),
         .rxsyncmode_in(1'b0),
         .rxsyncout_out(NLW_inst_rxsyncout_out_UNCONNECTED[0]),
@@ -811,7 +907,7 @@ module LOCAL_TCDS2
         .tx8b10bbypass_in({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
         .tx8b10ben_in(tx8b10ben_in),
         .txbufdiffctrl_in(1'b0),
-        .txbufstatus_out(NLW_inst_txbufstatus_out_UNCONNECTED[1:0]),
+        .txbufstatus_out(txbufstatus_out),
         .txcomfinish_out(NLW_inst_txcomfinish_out_UNCONNECTED[0]),
         .txcominit_in(1'b0),
         .txcomsas_in(1'b0),
@@ -826,7 +922,7 @@ module LOCAL_TCDS2
         .txdccreset_in(1'b0),
         .txdeemph_in({1'b0,1'b0}),
         .txdetectrx_in(1'b0),
-        .txdiffctrl_in({1'b1,1'b1,1'b0,1'b0,1'b0}),
+        .txdiffctrl_in(txdiffctrl_in),
         .txdiffpd_in(1'b0),
         .txdlybypass_in(1'b1),
         .txdlyen_in(1'b0),
@@ -838,7 +934,7 @@ module LOCAL_TCDS2
         .txelecidle_in(1'b0),
         .txelforcestart_in(1'b0),
         .txheader_in({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
-        .txinhibit_in(1'b0),
+        .txinhibit_in(txinhibit_in),
         .txlatclk_in(1'b0),
         .txlfpstreset_in(1'b0),
         .txlfpsu2lpexit_in(1'b0),
@@ -852,7 +948,7 @@ module LOCAL_TCDS2
         .txoutclkfabric_out(NLW_inst_txoutclkfabric_out_UNCONNECTED[0]),
         .txoutclkpcs_out(NLW_inst_txoutclkpcs_out_UNCONNECTED[0]),
         .txoutclksel_in({1'b0,1'b1,1'b0}),
-        .txpcsreset_in(1'b0),
+        .txpcsreset_in(txpcsreset_in),
         .txpd_in({1'b0,1'b0}),
         .txpdelecidlemode_in(1'b0),
         .txphalign_in(1'b0),
@@ -871,14 +967,14 @@ module LOCAL_TCDS2
         .txpippmstepsize_in({1'b0,1'b0,1'b0,1'b0,1'b0}),
         .txpisopd_in(1'b0),
         .txpllclksel_in({1'b1,1'b1}),
-        .txpmareset_in(1'b0),
+        .txpmareset_in(txpmareset_in),
         .txpmaresetdone_out(txpmaresetdone_out),
-        .txpolarity_in(1'b0),
-        .txpostcursor_in({1'b0,1'b0,1'b0,1'b0,1'b0}),
+        .txpolarity_in(txpolarity_in),
+        .txpostcursor_in(txpostcursor_in),
         .txpostcursorinv_in(1'b0),
-        .txprbsforceerr_in(1'b0),
-        .txprbssel_in({1'b0,1'b0,1'b0,1'b0}),
-        .txprecursor_in({1'b0,1'b0,1'b0,1'b0,1'b0}),
+        .txprbsforceerr_in(txprbsforceerr_in),
+        .txprbssel_in(txprbssel_in),
+        .txprecursor_in(txprecursor_in),
         .txprecursorinv_in(1'b0),
         .txprgdivresetdone_out(NLW_inst_txprgdivresetdone_out_UNCONNECTED[0]),
         .txprogdivreset_in(1'b0),
@@ -929,7 +1025,10 @@ endmodule
 
 (* ORIG_REF_NAME = "LOCAL_TCDS2_gthe4_channel_wrapper" *) 
 module LOCAL_TCDS2LOCAL_TCDS2_gthe4_channel_wrapper
-   (gthtxn_out,
+   (cplllock_out,
+    drprdy_out,
+    eyescandataerror_out,
+    gthtxn_out,
     gthtxp_out,
     \gen_gtwizard_gthe4.gtpowergood_int ,
     rxbyteisaligned_out,
@@ -939,16 +1038,27 @@ module LOCAL_TCDS2LOCAL_TCDS2_gthe4_channel_wrapper
     gtwiz_userclk_rx_srcclk_out,
     rxoutclkpcs_out,
     rxpmaresetdone_out,
+    rxprbserr_out,
     rxresetdone_out,
+    rxsyncdone_out,
     gtwiz_userclk_tx_srcclk_out,
     txpmaresetdone_out,
     txresetdone_out,
     gtwiz_userdata_rx_out,
+    dmonitorout_out,
+    drpdo_out,
     rxctrl0_out,
     rxctrl1_out,
+    txbufstatus_out,
+    rxbufstatus_out,
     rxctrl2_out,
     rxctrl3_out,
-    gthrxn_in_0_sp_1,
+    drpclk_in_0_sp_1,
+    drpclk_in,
+    drpen_in,
+    drpwe_in,
+    eyescanreset_in,
+    eyescantrigger_in,
     gthrxn_in,
     gthrxp_in,
     \gen_gtwizard_gthe4.gtrxreset_ch_int ,
@@ -958,21 +1068,42 @@ module LOCAL_TCDS2LOCAL_TCDS2_gthe4_channel_wrapper
     qpll1clk_in,
     qpll1refclk_in,
     rx8b10ben_in,
+    rxbufreset_in,
+    rxcdrhold_in,
     rxcommadeten_in,
+    rxdfelpmreset_in,
+    rxlpmen_in,
     rxmcommaalignen_in,
     rxpcommaalignen_in,
+    rxpcsreset_in,
+    \gen_gtwizard_gthe4.rxpmareset_ch_int ,
+    rxprbscntreset_in,
     \gen_gtwizard_gthe4.rxprogdivreset_int ,
-    RXRATE,
+    RXPD,
     \gen_gtwizard_gthe4.rxuserrdy_int ,
     gtwiz_userclk_rx_usrclk2_out,
     tx8b10ben_in,
+    txinhibit_in,
+    txpcsreset_in,
+    txpmareset_in,
+    txpolarity_in,
+    txprbsforceerr_in,
     \gen_gtwizard_gthe4.txprogdivreset_int ,
     \gen_gtwizard_gthe4.txuserrdy_int ,
     gtwiz_userclk_tx_usrclk2_out,
     gtwiz_userdata_tx_in,
+    drpdi_in,
+    pcsrsvdin_in,
     txctrl0_in,
     txctrl1_in,
+    RXRATE,
+    rxprbssel_in,
+    txprbssel_in,
+    txdiffctrl_in,
+    txpostcursor_in,
+    txprecursor_in,
     txctrl2_in,
+    drpaddr_in,
     lopt,
     lopt_1,
     lopt_2,
@@ -981,6 +1112,9 @@ module LOCAL_TCDS2LOCAL_TCDS2_gthe4_channel_wrapper
     lopt_5,
     lopt_6,
     lopt_7);
+  output [0:0]cplllock_out;
+  output [0:0]drprdy_out;
+  output [0:0]eyescandataerror_out;
   output [0:0]gthtxn_out;
   output [0:0]gthtxp_out;
   output \gen_gtwizard_gthe4.gtpowergood_int ;
@@ -991,16 +1125,27 @@ module LOCAL_TCDS2LOCAL_TCDS2_gthe4_channel_wrapper
   output [0:0]gtwiz_userclk_rx_srcclk_out;
   output [0:0]rxoutclkpcs_out;
   output [0:0]rxpmaresetdone_out;
+  output [0:0]rxprbserr_out;
   output [0:0]rxresetdone_out;
+  output [0:0]rxsyncdone_out;
   output [0:0]gtwiz_userclk_tx_srcclk_out;
   output [0:0]txpmaresetdone_out;
   output [0:0]txresetdone_out;
   output [31:0]gtwiz_userdata_rx_out;
+  output [15:0]dmonitorout_out;
+  output [15:0]drpdo_out;
   output [15:0]rxctrl0_out;
   output [15:0]rxctrl1_out;
+  output [1:0]txbufstatus_out;
+  output [2:0]rxbufstatus_out;
   output [7:0]rxctrl2_out;
   output [7:0]rxctrl3_out;
-  output gthrxn_in_0_sp_1;
+  output drpclk_in_0_sp_1;
+  input [0:0]drpclk_in;
+  input [0:0]drpen_in;
+  input [0:0]drpwe_in;
+  input [0:0]eyescanreset_in;
+  input [0:0]eyescantrigger_in;
   input [0:0]gthrxn_in;
   input [0:0]gthrxp_in;
   input \gen_gtwizard_gthe4.gtrxreset_ch_int ;
@@ -1010,21 +1155,42 @@ module LOCAL_TCDS2LOCAL_TCDS2_gthe4_channel_wrapper
   input [0:0]qpll1clk_in;
   input [0:0]qpll1refclk_in;
   input [0:0]rx8b10ben_in;
+  input [0:0]rxbufreset_in;
+  input [0:0]rxcdrhold_in;
   input [0:0]rxcommadeten_in;
+  input [0:0]rxdfelpmreset_in;
+  input [0:0]rxlpmen_in;
   input [0:0]rxmcommaalignen_in;
   input [0:0]rxpcommaalignen_in;
+  input [0:0]rxpcsreset_in;
+  input \gen_gtwizard_gthe4.rxpmareset_ch_int ;
+  input [0:0]rxprbscntreset_in;
   input \gen_gtwizard_gthe4.rxprogdivreset_int ;
-  input [0:0]RXRATE;
+  input [0:0]RXPD;
   input \gen_gtwizard_gthe4.rxuserrdy_int ;
   input [0:0]gtwiz_userclk_rx_usrclk2_out;
   input [0:0]tx8b10ben_in;
+  input [0:0]txinhibit_in;
+  input [0:0]txpcsreset_in;
+  input [0:0]txpmareset_in;
+  input [0:0]txpolarity_in;
+  input [0:0]txprbsforceerr_in;
   input \gen_gtwizard_gthe4.txprogdivreset_int ;
   input \gen_gtwizard_gthe4.txuserrdy_int ;
   input [0:0]gtwiz_userclk_tx_usrclk2_out;
   input [31:0]gtwiz_userdata_tx_in;
+  input [15:0]drpdi_in;
+  input [15:0]pcsrsvdin_in;
   input [15:0]txctrl0_in;
   input [15:0]txctrl1_in;
+  input [2:0]RXRATE;
+  input [3:0]rxprbssel_in;
+  input [3:0]txprbssel_in;
+  input [4:0]txdiffctrl_in;
+  input [4:0]txpostcursor_in;
+  input [4:0]txprecursor_in;
   input [7:0]txctrl2_in;
+  input [9:0]drpaddr_in;
   input lopt;
   input lopt_1;
   output lopt_2;
@@ -1034,16 +1200,30 @@ module LOCAL_TCDS2LOCAL_TCDS2_gthe4_channel_wrapper
   output lopt_6;
   output lopt_7;
 
-  wire [0:0]RXRATE;
+  wire [0:0]RXPD;
+  wire [2:0]RXRATE;
+  wire [0:0]cplllock_out;
+  wire [15:0]dmonitorout_out;
+  wire [9:0]drpaddr_in;
+  wire [0:0]drpclk_in;
+  wire drpclk_in_0_sn_1;
+  wire [15:0]drpdi_in;
+  wire [15:0]drpdo_out;
+  wire [0:0]drpen_in;
+  wire [0:0]drprdy_out;
+  wire [0:0]drpwe_in;
+  wire [0:0]eyescandataerror_out;
+  wire [0:0]eyescanreset_in;
+  wire [0:0]eyescantrigger_in;
   wire \gen_gtwizard_gthe4.gtpowergood_int ;
   wire \gen_gtwizard_gthe4.gtrxreset_ch_int ;
   wire \gen_gtwizard_gthe4.gttxreset_int ;
+  wire \gen_gtwizard_gthe4.rxpmareset_ch_int ;
   wire \gen_gtwizard_gthe4.rxprogdivreset_int ;
   wire \gen_gtwizard_gthe4.rxuserrdy_int ;
   wire \gen_gtwizard_gthe4.txprogdivreset_int ;
   wire \gen_gtwizard_gthe4.txuserrdy_int ;
   wire [0:0]gthrxn_in;
-  wire gthrxn_in_0_sn_1;
   wire [0:0]gthrxp_in;
   wire [0:0]gthtxn_out;
   wire [0:0]gthtxp_out;
@@ -1061,13 +1241,17 @@ module LOCAL_TCDS2LOCAL_TCDS2_gthe4_channel_wrapper
   wire lopt_5;
   wire lopt_6;
   wire lopt_7;
+  wire [15:0]pcsrsvdin_in;
   wire [0:0]qpll0clk_in;
   wire [0:0]qpll0refclk_in;
   wire [0:0]qpll1clk_in;
   wire [0:0]qpll1refclk_in;
   wire [0:0]rx8b10ben_in;
+  wire [0:0]rxbufreset_in;
+  wire [2:0]rxbufstatus_out;
   wire [0:0]rxbyteisaligned_out;
   wire [0:0]rxbyterealign_out;
+  wire [0:0]rxcdrhold_in;
   wire [0:0]rxcdrlock_out;
   wire [0:0]rxcommadet_out;
   wire [0:0]rxcommadeten_in;
@@ -1075,30 +1259,61 @@ module LOCAL_TCDS2LOCAL_TCDS2_gthe4_channel_wrapper
   wire [15:0]rxctrl1_out;
   wire [7:0]rxctrl2_out;
   wire [7:0]rxctrl3_out;
+  wire [0:0]rxdfelpmreset_in;
+  wire [0:0]rxlpmen_in;
   wire [0:0]rxmcommaalignen_in;
   wire [0:0]rxoutclkpcs_out;
   wire [0:0]rxpcommaalignen_in;
+  wire [0:0]rxpcsreset_in;
   wire [0:0]rxpmaresetdone_out;
+  wire [0:0]rxprbscntreset_in;
+  wire [0:0]rxprbserr_out;
+  wire [3:0]rxprbssel_in;
   wire [0:0]rxresetdone_out;
+  wire [0:0]rxsyncdone_out;
   wire [0:0]tx8b10ben_in;
+  wire [1:0]txbufstatus_out;
   wire [15:0]txctrl0_in;
   wire [15:0]txctrl1_in;
   wire [7:0]txctrl2_in;
+  wire [4:0]txdiffctrl_in;
+  wire [0:0]txinhibit_in;
+  wire [0:0]txpcsreset_in;
+  wire [0:0]txpmareset_in;
   wire [0:0]txpmaresetdone_out;
+  wire [0:0]txpolarity_in;
+  wire [4:0]txpostcursor_in;
+  wire [0:0]txprbsforceerr_in;
+  wire [3:0]txprbssel_in;
+  wire [4:0]txprecursor_in;
   wire [0:0]txresetdone_out;
 
-  assign gthrxn_in_0_sp_1 = gthrxn_in_0_sn_1;
+  assign drpclk_in_0_sp_1 = drpclk_in_0_sn_1;
   LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel channel_inst
-       (.RXRATE(RXRATE),
+       (.RXPD(RXPD),
+        .RXRATE(RXRATE),
+        .cplllock_out(cplllock_out),
+        .dmonitorout_out(dmonitorout_out),
+        .drpaddr_in(drpaddr_in),
+        .drpclk_in(drpclk_in),
+        .drpclk_in_0_sp_1(drpclk_in_0_sn_1),
+        .drpdi_in(drpdi_in),
+        .drpdo_out(drpdo_out),
+        .drpen_in(drpen_in),
+        .drprdy_out(drprdy_out),
+        .drpwe_in(drpwe_in),
+        .eyescandataerror_out(eyescandataerror_out),
+        .eyescanreset_in(eyescanreset_in),
+        .eyescantrigger_in(eyescantrigger_in),
         .\gen_gtwizard_gthe4.gtpowergood_int (\gen_gtwizard_gthe4.gtpowergood_int ),
         .\gen_gtwizard_gthe4.gtrxreset_ch_int (\gen_gtwizard_gthe4.gtrxreset_ch_int ),
         .\gen_gtwizard_gthe4.gttxreset_int (\gen_gtwizard_gthe4.gttxreset_int ),
+        .\gen_gtwizard_gthe4.rxpmareset_ch_int (\gen_gtwizard_gthe4.rxpmareset_ch_int ),
         .\gen_gtwizard_gthe4.rxprogdivreset_int (\gen_gtwizard_gthe4.rxprogdivreset_int ),
         .\gen_gtwizard_gthe4.rxuserrdy_int (\gen_gtwizard_gthe4.rxuserrdy_int ),
         .\gen_gtwizard_gthe4.txprogdivreset_int (\gen_gtwizard_gthe4.txprogdivreset_int ),
         .\gen_gtwizard_gthe4.txuserrdy_int (\gen_gtwizard_gthe4.txuserrdy_int ),
         .gthrxn_in(gthrxn_in),
-        .gthrxn_in_0_sp_1(gthrxn_in_0_sn_1),
         .gthrxp_in(gthrxp_in),
         .gthtxn_out(gthtxn_out),
         .gthtxp_out(gthtxp_out),
@@ -1116,13 +1331,17 @@ module LOCAL_TCDS2LOCAL_TCDS2_gthe4_channel_wrapper
         .lopt_5(lopt_5),
         .lopt_6(lopt_6),
         .lopt_7(lopt_7),
+        .pcsrsvdin_in(pcsrsvdin_in),
         .qpll0clk_in(qpll0clk_in),
         .qpll0refclk_in(qpll0refclk_in),
         .qpll1clk_in(qpll1clk_in),
         .qpll1refclk_in(qpll1refclk_in),
         .rx8b10ben_in(rx8b10ben_in),
+        .rxbufreset_in(rxbufreset_in),
+        .rxbufstatus_out(rxbufstatus_out),
         .rxbyteisaligned_out(rxbyteisaligned_out),
         .rxbyterealign_out(rxbyterealign_out),
+        .rxcdrhold_in(rxcdrhold_in),
         .rxcdrlock_out(rxcdrlock_out),
         .rxcommadet_out(rxcommadet_out),
         .rxcommadeten_in(rxcommadeten_in),
@@ -1130,44 +1349,76 @@ module LOCAL_TCDS2LOCAL_TCDS2_gthe4_channel_wrapper
         .rxctrl1_out(rxctrl1_out),
         .rxctrl2_out(rxctrl2_out),
         .rxctrl3_out(rxctrl3_out),
+        .rxdfelpmreset_in(rxdfelpmreset_in),
+        .rxlpmen_in(rxlpmen_in),
         .rxmcommaalignen_in(rxmcommaalignen_in),
         .rxoutclkpcs_out(rxoutclkpcs_out),
         .rxpcommaalignen_in(rxpcommaalignen_in),
+        .rxpcsreset_in(rxpcsreset_in),
         .rxpmaresetdone_out(rxpmaresetdone_out),
+        .rxprbscntreset_in(rxprbscntreset_in),
+        .rxprbserr_out(rxprbserr_out),
+        .rxprbssel_in(rxprbssel_in),
         .rxresetdone_out(rxresetdone_out),
+        .rxsyncdone_out(rxsyncdone_out),
         .tx8b10ben_in(tx8b10ben_in),
+        .txbufstatus_out(txbufstatus_out),
         .txctrl0_in(txctrl0_in),
         .txctrl1_in(txctrl1_in),
         .txctrl2_in(txctrl2_in),
+        .txdiffctrl_in(txdiffctrl_in),
+        .txinhibit_in(txinhibit_in),
+        .txpcsreset_in(txpcsreset_in),
+        .txpmareset_in(txpmareset_in),
         .txpmaresetdone_out(txpmaresetdone_out),
+        .txpolarity_in(txpolarity_in),
+        .txpostcursor_in(txpostcursor_in),
+        .txprbsforceerr_in(txprbsforceerr_in),
+        .txprbssel_in(txprbssel_in),
+        .txprecursor_in(txprecursor_in),
         .txresetdone_out(txresetdone_out));
 endmodule
 
 (* ORIG_REF_NAME = "LOCAL_TCDS2_gtwizard_gthe4" *) 
 module LOCAL_TCDS2LOCAL_TCDS2_gtwizard_gthe4
-   (gthtxn_out,
+   (gtpowergood_out,
+    cplllock_out,
+    drprdy_out,
+    eyescandataerror_out,
+    gthtxn_out,
     gthtxp_out,
     rxbyteisaligned_out,
     rxbyterealign_out,
     rxcommadet_out,
     gtwiz_userclk_rx_srcclk_out,
     rxpmaresetdone_out,
+    rxprbserr_out,
+    rxsyncdone_out,
     gtwiz_userclk_tx_srcclk_out,
     txpmaresetdone_out,
     gtwiz_userdata_rx_out,
+    dmonitorout_out,
+    drpdo_out,
     rxctrl0_out,
     rxctrl1_out,
+    txbufstatus_out,
+    rxbufstatus_out,
     rxctrl2_out,
     rxctrl3_out,
     gtwiz_userclk_rx_usrclk2_out,
     gtwiz_userclk_tx_usrclk2_out,
-    gtpowergood_out,
     gtwiz_userclk_tx_active_out,
     gtwiz_userclk_rx_active_out,
     gtwiz_reset_tx_done_out,
     gtwiz_reset_rx_cdr_stable_out,
     gtwiz_reset_rx_done_out,
     gtwiz_reset_qpll0reset_out,
+    rxrate_in,
+    drpclk_in,
+    drpen_in,
+    drpwe_in,
+    eyescanreset_in,
+    eyescantrigger_in,
     gthrxn_in,
     gthrxp_in,
     qpll0clk_in,
@@ -1175,23 +1426,47 @@ module LOCAL_TCDS2LOCAL_TCDS2_gtwizard_gthe4
     qpll1clk_in,
     qpll1refclk_in,
     rx8b10ben_in,
+    rxbufreset_in,
+    rxcdrhold_in,
     rxcommadeten_in,
+    rxdfelpmreset_in,
+    rxlpmen_in,
     rxmcommaalignen_in,
     rxpcommaalignen_in,
+    rxpcsreset_in,
+    rxprbscntreset_in,
     tx8b10ben_in,
+    txinhibit_in,
+    txpcsreset_in,
+    txpmareset_in,
+    txpolarity_in,
+    txprbsforceerr_in,
     gtwiz_userdata_tx_in,
+    drpdi_in,
+    pcsrsvdin_in,
     txctrl0_in,
     txctrl1_in,
+    rxprbssel_in,
+    txprbssel_in,
+    txdiffctrl_in,
+    txpostcursor_in,
+    txprecursor_in,
     txctrl2_in,
+    drpaddr_in,
     gtwiz_userclk_tx_reset_in,
     gtwiz_userclk_rx_reset_in,
     gtwiz_reset_qpll0lock_in,
     gtwiz_reset_clk_freerun_in,
     gtwiz_reset_all_in,
     gtwiz_reset_tx_datapath_in,
+    rxpmareset_in,
     gtwiz_reset_tx_pll_and_datapath_in,
     gtwiz_reset_rx_datapath_in,
     gtwiz_reset_rx_pll_and_datapath_in);
+  output [0:0]gtpowergood_out;
+  output [0:0]cplllock_out;
+  output [0:0]drprdy_out;
+  output [0:0]eyescandataerror_out;
   output [0:0]gthtxn_out;
   output [0:0]gthtxp_out;
   output [0:0]rxbyteisaligned_out;
@@ -1199,22 +1474,33 @@ module LOCAL_TCDS2LOCAL_TCDS2_gtwizard_gthe4
   output [0:0]rxcommadet_out;
   output [0:0]gtwiz_userclk_rx_srcclk_out;
   output [0:0]rxpmaresetdone_out;
+  output [0:0]rxprbserr_out;
+  output [0:0]rxsyncdone_out;
   output [0:0]gtwiz_userclk_tx_srcclk_out;
   output [0:0]txpmaresetdone_out;
   output [31:0]gtwiz_userdata_rx_out;
+  output [15:0]dmonitorout_out;
+  output [15:0]drpdo_out;
   output [15:0]rxctrl0_out;
   output [15:0]rxctrl1_out;
+  output [1:0]txbufstatus_out;
+  output [2:0]rxbufstatus_out;
   output [7:0]rxctrl2_out;
   output [7:0]rxctrl3_out;
   output [0:0]gtwiz_userclk_rx_usrclk2_out;
   output [0:0]gtwiz_userclk_tx_usrclk2_out;
-  output [0:0]gtpowergood_out;
   output [0:0]gtwiz_userclk_tx_active_out;
   output [0:0]gtwiz_userclk_rx_active_out;
   output [0:0]gtwiz_reset_tx_done_out;
   output [0:0]gtwiz_reset_rx_cdr_stable_out;
   output [0:0]gtwiz_reset_rx_done_out;
   output [0:0]gtwiz_reset_qpll0reset_out;
+  input [2:0]rxrate_in;
+  input [0:0]drpclk_in;
+  input [0:0]drpen_in;
+  input [0:0]drpwe_in;
+  input [0:0]eyescanreset_in;
+  input [0:0]eyescantrigger_in;
   input [0:0]gthrxn_in;
   input [0:0]gthrxp_in;
   input [0:0]qpll0clk_in;
@@ -1222,35 +1508,70 @@ module LOCAL_TCDS2LOCAL_TCDS2_gtwizard_gthe4
   input [0:0]qpll1clk_in;
   input [0:0]qpll1refclk_in;
   input [0:0]rx8b10ben_in;
+  input [0:0]rxbufreset_in;
+  input [0:0]rxcdrhold_in;
   input [0:0]rxcommadeten_in;
+  input [0:0]rxdfelpmreset_in;
+  input [0:0]rxlpmen_in;
   input [0:0]rxmcommaalignen_in;
   input [0:0]rxpcommaalignen_in;
+  input [0:0]rxpcsreset_in;
+  input [0:0]rxprbscntreset_in;
   input [0:0]tx8b10ben_in;
+  input [0:0]txinhibit_in;
+  input [0:0]txpcsreset_in;
+  input [0:0]txpmareset_in;
+  input [0:0]txpolarity_in;
+  input [0:0]txprbsforceerr_in;
   input [31:0]gtwiz_userdata_tx_in;
+  input [15:0]drpdi_in;
+  input [15:0]pcsrsvdin_in;
   input [15:0]txctrl0_in;
   input [15:0]txctrl1_in;
+  input [3:0]rxprbssel_in;
+  input [3:0]txprbssel_in;
+  input [4:0]txdiffctrl_in;
+  input [4:0]txpostcursor_in;
+  input [4:0]txprecursor_in;
   input [7:0]txctrl2_in;
+  input [9:0]drpaddr_in;
   input [0:0]gtwiz_userclk_tx_reset_in;
   input [0:0]gtwiz_userclk_rx_reset_in;
   input [0:0]gtwiz_reset_qpll0lock_in;
   input [0:0]gtwiz_reset_clk_freerun_in;
   input [0:0]gtwiz_reset_all_in;
   input [0:0]gtwiz_reset_tx_datapath_in;
+  input [0:0]rxpmareset_in;
   input [0:0]gtwiz_reset_tx_pll_and_datapath_in;
   input [0:0]gtwiz_reset_rx_datapath_in;
   input [0:0]gtwiz_reset_rx_pll_and_datapath_in;
 
-  wire \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_10 ;
-  wire \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_13 ;
-  wire \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_5 ;
+  wire [0:0]cplllock_out;
+  wire [15:0]dmonitorout_out;
+  wire [9:0]drpaddr_in;
+  wire [0:0]drpclk_in;
+  wire [15:0]drpdi_in;
+  wire [15:0]drpdo_out;
+  wire [0:0]drpen_in;
+  wire [0:0]drprdy_out;
+  wire [0:0]drpwe_in;
+  wire [0:0]eyescandataerror_out;
+  wire [0:0]eyescanreset_in;
+  wire [0:0]eyescantrigger_in;
+  wire \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_11 ;
+  wire \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_136 ;
+  wire \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_14 ;
+  wire \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_18 ;
   wire \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_8 ;
-  wire \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_94 ;
+  wire \gen_gtwizard_gthe4.gen_pwrgood_delay_inst[0].delay_powergood_inst_n_3 ;
   wire \gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.rxresetdone_sync ;
   wire \gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.txresetdone_sync ;
   wire \gen_gtwizard_gthe4.gtpowergood_int ;
   wire \gen_gtwizard_gthe4.gtrxreset_ch_int ;
   wire \gen_gtwizard_gthe4.gttxreset_int ;
+  wire \gen_gtwizard_gthe4.rxpmareset_ch_int ;
   wire \gen_gtwizard_gthe4.rxprogdivreset_int ;
+  wire [2:1]\gen_gtwizard_gthe4.rxrate_ch_int ;
   wire \gen_gtwizard_gthe4.rxratemode_ch_int ;
   wire \gen_gtwizard_gthe4.rxuserrdy_int ;
   wire \gen_gtwizard_gthe4.txprogdivreset_int ;
@@ -1287,39 +1608,76 @@ module LOCAL_TCDS2LOCAL_TCDS2_gtwizard_gthe4
   wire lopt_3;
   wire lopt_4;
   wire lopt_5;
+  wire [15:0]pcsrsvdin_in;
   wire [0:0]qpll0clk_in;
   wire [0:0]qpll0refclk_in;
   wire [0:0]qpll1clk_in;
   wire [0:0]qpll1refclk_in;
   wire [0:0]rx8b10ben_in;
+  wire [0:0]rxbufreset_in;
+  wire [2:0]rxbufstatus_out;
   wire [0:0]rxbyteisaligned_out;
   wire [0:0]rxbyterealign_out;
+  wire [0:0]rxcdrhold_in;
   wire [0:0]rxcommadet_out;
   wire [0:0]rxcommadeten_in;
   wire [15:0]rxctrl0_out;
   wire [15:0]rxctrl1_out;
   wire [7:0]rxctrl2_out;
   wire [7:0]rxctrl3_out;
+  wire [0:0]rxdfelpmreset_in;
+  wire [0:0]rxlpmen_in;
   wire [0:0]rxmcommaalignen_in;
   wire [0:0]rxpcommaalignen_in;
+  wire [0:0]rxpcsreset_in;
+  wire [0:0]rxpmareset_in;
   wire [0:0]rxpmaresetdone_out;
+  wire [0:0]rxprbscntreset_in;
+  wire [0:0]rxprbserr_out;
+  wire [3:0]rxprbssel_in;
+  wire [2:0]rxrate_in;
+  wire [0:0]rxsyncdone_out;
   wire [0:0]tx8b10ben_in;
+  wire [1:0]txbufstatus_out;
   wire [15:0]txctrl0_in;
   wire [15:0]txctrl1_in;
   wire [7:0]txctrl2_in;
+  wire [4:0]txdiffctrl_in;
+  wire [0:0]txinhibit_in;
+  wire [0:0]txpcsreset_in;
+  wire [0:0]txpmareset_in;
   wire [0:0]txpmaresetdone_out;
+  wire [0:0]txpolarity_in;
+  wire [4:0]txpostcursor_in;
+  wire [0:0]txprbsforceerr_in;
+  wire [3:0]txprbssel_in;
+  wire [4:0]txprecursor_in;
 
   LOCAL_TCDS2LOCAL_TCDS2_gthe4_channel_wrapper \gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst 
-       (.RXRATE(\gen_gtwizard_gthe4.rxratemode_ch_int ),
+       (.RXPD(\gen_gtwizard_gthe4.rxratemode_ch_int ),
+        .RXRATE({\gen_gtwizard_gthe4.rxrate_ch_int ,\gen_gtwizard_gthe4.gen_pwrgood_delay_inst[0].delay_powergood_inst_n_3 }),
+        .cplllock_out(cplllock_out),
+        .dmonitorout_out(dmonitorout_out),
+        .drpaddr_in(drpaddr_in),
+        .drpclk_in(drpclk_in),
+        .drpclk_in_0_sp_1(\gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_136 ),
+        .drpdi_in(drpdi_in),
+        .drpdo_out(drpdo_out),
+        .drpen_in(drpen_in),
+        .drprdy_out(drprdy_out),
+        .drpwe_in(drpwe_in),
+        .eyescandataerror_out(eyescandataerror_out),
+        .eyescanreset_in(eyescanreset_in),
+        .eyescantrigger_in(eyescantrigger_in),
         .\gen_gtwizard_gthe4.gtpowergood_int (\gen_gtwizard_gthe4.gtpowergood_int ),
         .\gen_gtwizard_gthe4.gtrxreset_ch_int (\gen_gtwizard_gthe4.gtrxreset_ch_int ),
         .\gen_gtwizard_gthe4.gttxreset_int (\gen_gtwizard_gthe4.gttxreset_int ),
+        .\gen_gtwizard_gthe4.rxpmareset_ch_int (\gen_gtwizard_gthe4.rxpmareset_ch_int ),
         .\gen_gtwizard_gthe4.rxprogdivreset_int (\gen_gtwizard_gthe4.rxprogdivreset_int ),
         .\gen_gtwizard_gthe4.rxuserrdy_int (\gen_gtwizard_gthe4.rxuserrdy_int ),
         .\gen_gtwizard_gthe4.txprogdivreset_int (\gen_gtwizard_gthe4.txprogdivreset_int ),
         .\gen_gtwizard_gthe4.txuserrdy_int (\gen_gtwizard_gthe4.txuserrdy_int ),
         .gthrxn_in(gthrxn_in),
-        .gthrxn_in_0_sp_1(\gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_94 ),
         .gthrxp_in(gthrxp_in),
         .gthtxn_out(gthtxn_out),
         .gthtxp_out(gthtxp_out),
@@ -1337,44 +1695,69 @@ module LOCAL_TCDS2LOCAL_TCDS2_gtwizard_gthe4
         .lopt_5(gtwiz_userclk_tx_reset_in),
         .lopt_6(lopt_4),
         .lopt_7(lopt_5),
+        .pcsrsvdin_in(pcsrsvdin_in),
         .qpll0clk_in(qpll0clk_in),
         .qpll0refclk_in(qpll0refclk_in),
         .qpll1clk_in(qpll1clk_in),
         .qpll1refclk_in(qpll1refclk_in),
         .rx8b10ben_in(rx8b10ben_in),
+        .rxbufreset_in(rxbufreset_in),
+        .rxbufstatus_out(rxbufstatus_out),
         .rxbyteisaligned_out(rxbyteisaligned_out),
         .rxbyterealign_out(rxbyterealign_out),
-        .rxcdrlock_out(\gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_5 ),
+        .rxcdrhold_in(rxcdrhold_in),
+        .rxcdrlock_out(\gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_8 ),
         .rxcommadet_out(rxcommadet_out),
         .rxcommadeten_in(rxcommadeten_in),
         .rxctrl0_out(rxctrl0_out),
         .rxctrl1_out(rxctrl1_out),
         .rxctrl2_out(rxctrl2_out),
         .rxctrl3_out(rxctrl3_out),
+        .rxdfelpmreset_in(rxdfelpmreset_in),
+        .rxlpmen_in(rxlpmen_in),
         .rxmcommaalignen_in(rxmcommaalignen_in),
-        .rxoutclkpcs_out(\gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_8 ),
+        .rxoutclkpcs_out(\gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_11 ),
         .rxpcommaalignen_in(rxpcommaalignen_in),
+        .rxpcsreset_in(rxpcsreset_in),
         .rxpmaresetdone_out(rxpmaresetdone_out),
-        .rxresetdone_out(\gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_10 ),
+        .rxprbscntreset_in(rxprbscntreset_in),
+        .rxprbserr_out(rxprbserr_out),
+        .rxprbssel_in(rxprbssel_in),
+        .rxresetdone_out(\gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_14 ),
+        .rxsyncdone_out(rxsyncdone_out),
         .tx8b10ben_in(tx8b10ben_in),
+        .txbufstatus_out(txbufstatus_out),
         .txctrl0_in(txctrl0_in),
         .txctrl1_in(txctrl1_in),
         .txctrl2_in(txctrl2_in),
+        .txdiffctrl_in(txdiffctrl_in),
+        .txinhibit_in(txinhibit_in),
+        .txpcsreset_in(txpcsreset_in),
+        .txpmareset_in(txpmareset_in),
         .txpmaresetdone_out(txpmaresetdone_out),
-        .txresetdone_out(\gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_13 ));
+        .txpolarity_in(txpolarity_in),
+        .txpostcursor_in(txpostcursor_in),
+        .txprbsforceerr_in(txprbsforceerr_in),
+        .txprbssel_in(txprbssel_in),
+        .txprecursor_in(txprecursor_in),
+        .txresetdone_out(\gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_18 ));
   LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_delay_powergood \gen_gtwizard_gthe4.gen_pwrgood_delay_inst[0].delay_powergood_inst 
-       (.RXRATE(\gen_gtwizard_gthe4.rxratemode_ch_int ),
-        .\gen_powergood_delay.intclk_rrst_n_r_reg[4]_0 (\gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_94 ),
+       (.RXPD(\gen_gtwizard_gthe4.rxratemode_ch_int ),
+        .RXRATE({\gen_gtwizard_gthe4.rxrate_ch_int ,\gen_gtwizard_gthe4.gen_pwrgood_delay_inst[0].delay_powergood_inst_n_3 }),
+        .\gen_gtwizard_gthe4.rxpmareset_ch_int (\gen_gtwizard_gthe4.rxpmareset_ch_int ),
+        .\gen_powergood_delay.intclk_rrst_n_r_reg[4]_0 (\gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_136 ),
         .out(gtpowergood_out),
-        .rxoutclkpcs_out(\gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_8 ));
+        .rxoutclkpcs_out(\gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_11 ),
+        .rxpmareset_in(rxpmareset_in),
+        .rxrate_in(rxrate_in));
   LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_bit_synchronizer \gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.gen_ch_xrd[0].bit_synchronizer_rxresetdone_inst 
        (.\gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.rxresetdone_sync (\gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.rxresetdone_sync ),
         .gtwiz_reset_clk_freerun_in(gtwiz_reset_clk_freerun_in),
-        .rxresetdone_out(\gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_10 ));
+        .rxresetdone_out(\gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_14 ));
   LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_bit_synchronizer_0 \gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.gen_ch_xrd[0].bit_synchronizer_txresetdone_inst 
        (.\gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.txresetdone_sync (\gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.txresetdone_sync ),
         .gtwiz_reset_clk_freerun_in(gtwiz_reset_clk_freerun_in),
-        .txresetdone_out(\gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_13 ));
+        .txresetdone_out(\gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_18 ));
   LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gtwiz_reset \gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.gtwiz_reset_inst 
        (.\gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.rxresetdone_sync (\gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.rxresetdone_sync ),
         .\gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.txresetdone_sync (\gen_gtwizard_gthe4.gen_reset_controller_internal.gen_single_instance.txresetdone_sync ),
@@ -1401,7 +1784,7 @@ module LOCAL_TCDS2LOCAL_TCDS2_gtwizard_gthe4
         .gtwiz_userclk_rx_usrclk2_out(gtwiz_userclk_rx_usrclk2_out),
         .gtwiz_userclk_tx_active_out(gtwiz_userclk_tx_active_out),
         .gtwiz_userclk_tx_usrclk2_out(gtwiz_userclk_tx_usrclk2_out),
-        .rxcdrlock_out(\gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_5 ));
+        .rxcdrlock_out(\gen_gtwizard_gthe4.gen_channel_container[3].gen_enabled_channel.gthe4_channel_wrapper_inst_n_8 ));
   LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gtwiz_userclk_rx \gen_gtwizard_gthe4.gen_rx_user_clocking_internal.gen_single_instance.gtwiz_userclk_rx_inst 
        (.gtwiz_userclk_rx_active_out(gtwiz_userclk_rx_active_out),
         .gtwiz_userclk_rx_reset_in(gtwiz_userclk_rx_reset_in),
@@ -2522,6 +2905,18 @@ module LOCAL_TCDS2LOCAL_TCDS2_gtwizard_top
   output [0:0]txsyncout_out;
 
   wire \<const0> ;
+  wire [0:0]cplllock_out;
+  wire [15:0]dmonitorout_out;
+  wire [9:0]drpaddr_in;
+  wire [0:0]drpclk_in;
+  wire [15:0]drpdi_in;
+  wire [15:0]drpdo_out;
+  wire [0:0]drpen_in;
+  wire [0:0]drprdy_out;
+  wire [0:0]drpwe_in;
+  wire [0:0]eyescandataerror_out;
+  wire [0:0]eyescanreset_in;
+  wire [0:0]eyescantrigger_in;
   wire [0:0]gthrxn_in;
   wire [0:0]gthrxp_in;
   wire [0:0]gthtxn_out;
@@ -2548,27 +2943,50 @@ module LOCAL_TCDS2LOCAL_TCDS2_gtwizard_top
   wire [0:0]gtwiz_userclk_tx_usrclk2_out;
   wire [31:0]gtwiz_userdata_rx_out;
   wire [31:0]gtwiz_userdata_tx_in;
+  wire [15:0]pcsrsvdin_in;
   wire [0:0]qpll0clk_in;
   wire [0:0]qpll0refclk_in;
   wire [0:0]qpll1clk_in;
   wire [0:0]qpll1refclk_in;
   wire [0:0]rx8b10ben_in;
+  wire [0:0]rxbufreset_in;
+  wire [2:0]rxbufstatus_out;
   wire [0:0]rxbyteisaligned_out;
   wire [0:0]rxbyterealign_out;
+  wire [0:0]rxcdrhold_in;
   wire [0:0]rxcommadet_out;
   wire [0:0]rxcommadeten_in;
   wire [15:0]rxctrl0_out;
   wire [15:0]rxctrl1_out;
   wire [7:0]rxctrl2_out;
   wire [7:0]rxctrl3_out;
+  wire [0:0]rxdfelpmreset_in;
+  wire [0:0]rxlpmen_in;
   wire [0:0]rxmcommaalignen_in;
   wire [0:0]rxpcommaalignen_in;
+  wire [0:0]rxpcsreset_in;
+  wire [0:0]rxpmareset_in;
   wire [0:0]rxpmaresetdone_out;
+  wire [0:0]rxprbscntreset_in;
+  wire [0:0]rxprbserr_out;
+  wire [3:0]rxprbssel_in;
+  wire [2:0]rxrate_in;
+  wire [0:0]rxsyncdone_out;
   wire [0:0]tx8b10ben_in;
+  wire [1:0]txbufstatus_out;
   wire [15:0]txctrl0_in;
   wire [15:0]txctrl1_in;
   wire [7:0]txctrl2_in;
+  wire [4:0]txdiffctrl_in;
+  wire [0:0]txinhibit_in;
+  wire [0:0]txpcsreset_in;
+  wire [0:0]txpmareset_in;
   wire [0:0]txpmaresetdone_out;
+  wire [0:0]txpolarity_in;
+  wire [4:0]txpostcursor_in;
+  wire [0:0]txprbsforceerr_in;
+  wire [3:0]txprbssel_in;
+  wire [4:0]txprecursor_in;
 
   assign bufgtce_out[0] = \<const0> ;
   assign bufgtcemask_out[2] = \<const0> ;
@@ -2588,24 +3006,7 @@ module LOCAL_TCDS2LOCAL_TCDS2_gtwizard_top
   assign bufgtrstmask_out[1] = \<const0> ;
   assign bufgtrstmask_out[0] = \<const0> ;
   assign cpllfbclklost_out[0] = \<const0> ;
-  assign cplllock_out[0] = \<const0> ;
   assign cpllrefclklost_out[0] = \<const0> ;
-  assign dmonitorout_out[15] = \<const0> ;
-  assign dmonitorout_out[14] = \<const0> ;
-  assign dmonitorout_out[13] = \<const0> ;
-  assign dmonitorout_out[12] = \<const0> ;
-  assign dmonitorout_out[11] = \<const0> ;
-  assign dmonitorout_out[10] = \<const0> ;
-  assign dmonitorout_out[9] = \<const0> ;
-  assign dmonitorout_out[8] = \<const0> ;
-  assign dmonitorout_out[7] = \<const0> ;
-  assign dmonitorout_out[6] = \<const0> ;
-  assign dmonitorout_out[5] = \<const0> ;
-  assign dmonitorout_out[4] = \<const0> ;
-  assign dmonitorout_out[3] = \<const0> ;
-  assign dmonitorout_out[2] = \<const0> ;
-  assign dmonitorout_out[1] = \<const0> ;
-  assign dmonitorout_out[0] = \<const0> ;
   assign dmonitoroutclk_out[0] = \<const0> ;
   assign drpdo_common_out[15] = \<const0> ;
   assign drpdo_common_out[14] = \<const0> ;
@@ -2623,25 +3024,7 @@ module LOCAL_TCDS2LOCAL_TCDS2_gtwizard_top
   assign drpdo_common_out[2] = \<const0> ;
   assign drpdo_common_out[1] = \<const0> ;
   assign drpdo_common_out[0] = \<const0> ;
-  assign drpdo_out[15] = \<const0> ;
-  assign drpdo_out[14] = \<const0> ;
-  assign drpdo_out[13] = \<const0> ;
-  assign drpdo_out[12] = \<const0> ;
-  assign drpdo_out[11] = \<const0> ;
-  assign drpdo_out[10] = \<const0> ;
-  assign drpdo_out[9] = \<const0> ;
-  assign drpdo_out[8] = \<const0> ;
-  assign drpdo_out[7] = \<const0> ;
-  assign drpdo_out[6] = \<const0> ;
-  assign drpdo_out[5] = \<const0> ;
-  assign drpdo_out[4] = \<const0> ;
-  assign drpdo_out[3] = \<const0> ;
-  assign drpdo_out[2] = \<const0> ;
-  assign drpdo_out[1] = \<const0> ;
-  assign drpdo_out[0] = \<const0> ;
   assign drprdy_common_out[0] = \<const0> ;
-  assign drprdy_out[0] = \<const0> ;
-  assign eyescandataerror_out[0] = \<const0> ;
   assign gtrefclkmonitor_out[0] = \<const0> ;
   assign gtwiz_buffbypass_rx_done_out[0] = \<const0> ;
   assign gtwiz_buffbypass_rx_error_out[0] = \<const0> ;
@@ -2741,9 +3124,6 @@ module LOCAL_TCDS2LOCAL_TCDS2_gtwizard_top
   assign refclkoutmonitor0_out[0] = \<const0> ;
   assign refclkoutmonitor1_out[0] = \<const0> ;
   assign resetexception_out[0] = \<const0> ;
-  assign rxbufstatus_out[2] = \<const0> ;
-  assign rxbufstatus_out[1] = \<const0> ;
-  assign rxbufstatus_out[0] = \<const0> ;
   assign rxcdrlock_out[0] = \<const0> ;
   assign rxcdrphdone_out[0] = \<const0> ;
   assign rxchanbondseq_out[0] = \<const0> ;
@@ -2928,7 +3308,6 @@ module LOCAL_TCDS2LOCAL_TCDS2_gtwizard_top
   assign rxoutclkpcs_out[0] = \<const0> ;
   assign rxphaligndone_out[0] = \<const0> ;
   assign rxphalignerr_out[0] = \<const0> ;
-  assign rxprbserr_out[0] = \<const0> ;
   assign rxprbslocked_out[0] = \<const0> ;
   assign rxprgdivresetdone_out[0] = \<const0> ;
   assign rxqpisenn_out[0] = \<const0> ;
@@ -2951,7 +3330,6 @@ module LOCAL_TCDS2LOCAL_TCDS2_gtwizard_top
   assign rxstatus_out[2] = \<const0> ;
   assign rxstatus_out[1] = \<const0> ;
   assign rxstatus_out[0] = \<const0> ;
-  assign rxsyncdone_out[0] = \<const0> ;
   assign rxsyncout_out[0] = \<const0> ;
   assign rxvalid_out[0] = \<const0> ;
   assign sdm0finalout_out[3] = \<const0> ;
@@ -3003,8 +3381,6 @@ module LOCAL_TCDS2LOCAL_TCDS2_gtwizard_top
   assign tcongpo_out[1] = \<const0> ;
   assign tcongpo_out[0] = \<const0> ;
   assign tconrsvdout0_out[0] = \<const0> ;
-  assign txbufstatus_out[1] = \<const0> ;
-  assign txbufstatus_out[0] = \<const0> ;
   assign txcomfinish_out[0] = \<const0> ;
   assign txdccdone_out[0] = \<const0> ;
   assign txdlysresetdone_out[0] = \<const0> ;
@@ -3030,7 +3406,19 @@ module LOCAL_TCDS2LOCAL_TCDS2_gtwizard_top
   GND GND
        (.G(\<const0> ));
   LOCAL_TCDS2LOCAL_TCDS2_gtwizard_gthe4 \gen_gtwizard_gthe4_top.LOCAL_TCDS2_gtwizard_gthe4_inst 
-       (.gthrxn_in(gthrxn_in),
+       (.cplllock_out(cplllock_out),
+        .dmonitorout_out(dmonitorout_out),
+        .drpaddr_in(drpaddr_in),
+        .drpclk_in(drpclk_in),
+        .drpdi_in(drpdi_in),
+        .drpdo_out(drpdo_out),
+        .drpen_in(drpen_in),
+        .drprdy_out(drprdy_out),
+        .drpwe_in(drpwe_in),
+        .eyescandataerror_out(eyescandataerror_out),
+        .eyescanreset_in(eyescanreset_in),
+        .eyescantrigger_in(eyescantrigger_in),
+        .gthrxn_in(gthrxn_in),
         .gthrxp_in(gthrxp_in),
         .gthtxn_out(gthtxn_out),
         .gthtxp_out(gthtxp_out),
@@ -3056,27 +3444,50 @@ module LOCAL_TCDS2LOCAL_TCDS2_gtwizard_top
         .gtwiz_userclk_tx_usrclk2_out(gtwiz_userclk_tx_usrclk2_out),
         .gtwiz_userdata_rx_out(gtwiz_userdata_rx_out),
         .gtwiz_userdata_tx_in(gtwiz_userdata_tx_in),
+        .pcsrsvdin_in(pcsrsvdin_in),
         .qpll0clk_in(qpll0clk_in),
         .qpll0refclk_in(qpll0refclk_in),
         .qpll1clk_in(qpll1clk_in),
         .qpll1refclk_in(qpll1refclk_in),
         .rx8b10ben_in(rx8b10ben_in),
+        .rxbufreset_in(rxbufreset_in),
+        .rxbufstatus_out(rxbufstatus_out),
         .rxbyteisaligned_out(rxbyteisaligned_out),
         .rxbyterealign_out(rxbyterealign_out),
+        .rxcdrhold_in(rxcdrhold_in),
         .rxcommadet_out(rxcommadet_out),
         .rxcommadeten_in(rxcommadeten_in),
         .rxctrl0_out(rxctrl0_out),
         .rxctrl1_out(rxctrl1_out),
         .rxctrl2_out(rxctrl2_out),
         .rxctrl3_out(rxctrl3_out),
+        .rxdfelpmreset_in(rxdfelpmreset_in),
+        .rxlpmen_in(rxlpmen_in),
         .rxmcommaalignen_in(rxmcommaalignen_in),
         .rxpcommaalignen_in(rxpcommaalignen_in),
+        .rxpcsreset_in(rxpcsreset_in),
+        .rxpmareset_in(rxpmareset_in),
         .rxpmaresetdone_out(rxpmaresetdone_out),
+        .rxprbscntreset_in(rxprbscntreset_in),
+        .rxprbserr_out(rxprbserr_out),
+        .rxprbssel_in(rxprbssel_in),
+        .rxrate_in(rxrate_in),
+        .rxsyncdone_out(rxsyncdone_out),
         .tx8b10ben_in(tx8b10ben_in),
+        .txbufstatus_out(txbufstatus_out),
         .txctrl0_in(txctrl0_in),
         .txctrl1_in(txctrl1_in),
         .txctrl2_in(txctrl2_in),
-        .txpmaresetdone_out(txpmaresetdone_out));
+        .txdiffctrl_in(txdiffctrl_in),
+        .txinhibit_in(txinhibit_in),
+        .txpcsreset_in(txpcsreset_in),
+        .txpmareset_in(txpmareset_in),
+        .txpmaresetdone_out(txpmaresetdone_out),
+        .txpolarity_in(txpolarity_in),
+        .txpostcursor_in(txpostcursor_in),
+        .txprbsforceerr_in(txprbsforceerr_in),
+        .txprbssel_in(txprbssel_in),
+        .txprecursor_in(txprecursor_in));
 endmodule
 
 (* ORIG_REF_NAME = "gtwizard_ultrascale_v1_7_9_bit_synchronizer" *) 
@@ -4406,7 +4817,10 @@ endmodule
 
 (* ORIG_REF_NAME = "gtwizard_ultrascale_v1_7_9_gthe4_channel" *) 
 module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
-   (gthtxn_out,
+   (cplllock_out,
+    drprdy_out,
+    eyescandataerror_out,
+    gthtxn_out,
     gthtxp_out,
     \gen_gtwizard_gthe4.gtpowergood_int ,
     rxbyteisaligned_out,
@@ -4416,16 +4830,27 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
     gtwiz_userclk_rx_srcclk_out,
     rxoutclkpcs_out,
     rxpmaresetdone_out,
+    rxprbserr_out,
     rxresetdone_out,
+    rxsyncdone_out,
     gtwiz_userclk_tx_srcclk_out,
     txpmaresetdone_out,
     txresetdone_out,
     gtwiz_userdata_rx_out,
+    dmonitorout_out,
+    drpdo_out,
     rxctrl0_out,
     rxctrl1_out,
+    txbufstatus_out,
+    rxbufstatus_out,
     rxctrl2_out,
     rxctrl3_out,
-    gthrxn_in_0_sp_1,
+    drpclk_in_0_sp_1,
+    drpclk_in,
+    drpen_in,
+    drpwe_in,
+    eyescanreset_in,
+    eyescantrigger_in,
     gthrxn_in,
     gthrxp_in,
     \gen_gtwizard_gthe4.gtrxreset_ch_int ,
@@ -4435,21 +4860,42 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
     qpll1clk_in,
     qpll1refclk_in,
     rx8b10ben_in,
+    rxbufreset_in,
+    rxcdrhold_in,
     rxcommadeten_in,
+    rxdfelpmreset_in,
+    rxlpmen_in,
     rxmcommaalignen_in,
     rxpcommaalignen_in,
+    rxpcsreset_in,
+    \gen_gtwizard_gthe4.rxpmareset_ch_int ,
+    rxprbscntreset_in,
     \gen_gtwizard_gthe4.rxprogdivreset_int ,
-    RXRATE,
+    RXPD,
     \gen_gtwizard_gthe4.rxuserrdy_int ,
     gtwiz_userclk_rx_usrclk2_out,
     tx8b10ben_in,
+    txinhibit_in,
+    txpcsreset_in,
+    txpmareset_in,
+    txpolarity_in,
+    txprbsforceerr_in,
     \gen_gtwizard_gthe4.txprogdivreset_int ,
     \gen_gtwizard_gthe4.txuserrdy_int ,
     gtwiz_userclk_tx_usrclk2_out,
     gtwiz_userdata_tx_in,
+    drpdi_in,
+    pcsrsvdin_in,
     txctrl0_in,
     txctrl1_in,
+    RXRATE,
+    rxprbssel_in,
+    txprbssel_in,
+    txdiffctrl_in,
+    txpostcursor_in,
+    txprecursor_in,
     txctrl2_in,
+    drpaddr_in,
     lopt,
     lopt_1,
     lopt_2,
@@ -4458,6 +4904,9 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
     lopt_5,
     lopt_6,
     lopt_7);
+  output [0:0]cplllock_out;
+  output [0:0]drprdy_out;
+  output [0:0]eyescandataerror_out;
   output [0:0]gthtxn_out;
   output [0:0]gthtxp_out;
   output \gen_gtwizard_gthe4.gtpowergood_int ;
@@ -4468,16 +4917,27 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
   output [0:0]gtwiz_userclk_rx_srcclk_out;
   output [0:0]rxoutclkpcs_out;
   output [0:0]rxpmaresetdone_out;
+  output [0:0]rxprbserr_out;
   output [0:0]rxresetdone_out;
+  output [0:0]rxsyncdone_out;
   output [0:0]gtwiz_userclk_tx_srcclk_out;
   output [0:0]txpmaresetdone_out;
   output [0:0]txresetdone_out;
   output [31:0]gtwiz_userdata_rx_out;
+  output [15:0]dmonitorout_out;
+  output [15:0]drpdo_out;
   output [15:0]rxctrl0_out;
   output [15:0]rxctrl1_out;
+  output [1:0]txbufstatus_out;
+  output [2:0]rxbufstatus_out;
   output [7:0]rxctrl2_out;
   output [7:0]rxctrl3_out;
-  output gthrxn_in_0_sp_1;
+  output drpclk_in_0_sp_1;
+  input [0:0]drpclk_in;
+  input [0:0]drpen_in;
+  input [0:0]drpwe_in;
+  input [0:0]eyescanreset_in;
+  input [0:0]eyescantrigger_in;
   input [0:0]gthrxn_in;
   input [0:0]gthrxp_in;
   input \gen_gtwizard_gthe4.gtrxreset_ch_int ;
@@ -4487,21 +4947,42 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
   input [0:0]qpll1clk_in;
   input [0:0]qpll1refclk_in;
   input [0:0]rx8b10ben_in;
+  input [0:0]rxbufreset_in;
+  input [0:0]rxcdrhold_in;
   input [0:0]rxcommadeten_in;
+  input [0:0]rxdfelpmreset_in;
+  input [0:0]rxlpmen_in;
   input [0:0]rxmcommaalignen_in;
   input [0:0]rxpcommaalignen_in;
+  input [0:0]rxpcsreset_in;
+  input \gen_gtwizard_gthe4.rxpmareset_ch_int ;
+  input [0:0]rxprbscntreset_in;
   input \gen_gtwizard_gthe4.rxprogdivreset_int ;
-  input [0:0]RXRATE;
+  input [0:0]RXPD;
   input \gen_gtwizard_gthe4.rxuserrdy_int ;
   input [0:0]gtwiz_userclk_rx_usrclk2_out;
   input [0:0]tx8b10ben_in;
+  input [0:0]txinhibit_in;
+  input [0:0]txpcsreset_in;
+  input [0:0]txpmareset_in;
+  input [0:0]txpolarity_in;
+  input [0:0]txprbsforceerr_in;
   input \gen_gtwizard_gthe4.txprogdivreset_int ;
   input \gen_gtwizard_gthe4.txuserrdy_int ;
   input [0:0]gtwiz_userclk_tx_usrclk2_out;
   input [31:0]gtwiz_userdata_tx_in;
+  input [15:0]drpdi_in;
+  input [15:0]pcsrsvdin_in;
   input [15:0]txctrl0_in;
   input [15:0]txctrl1_in;
+  input [2:0]RXRATE;
+  input [3:0]rxprbssel_in;
+  input [3:0]txprbssel_in;
+  input [4:0]txdiffctrl_in;
+  input [4:0]txpostcursor_in;
+  input [4:0]txprecursor_in;
   input [7:0]txctrl2_in;
+  input [9:0]drpaddr_in;
   input lopt;
   input lopt_1;
   output lopt_2;
@@ -4511,10 +4992,25 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
   output lopt_6;
   output lopt_7;
 
-  wire [0:0]RXRATE;
+  wire [0:0]RXPD;
+  wire [2:0]RXRATE;
+  wire [0:0]cplllock_out;
+  wire [15:0]dmonitorout_out;
+  wire [9:0]drpaddr_in;
+  wire [0:0]drpclk_in;
+  wire drpclk_in_0_sn_1;
+  wire [15:0]drpdi_in;
+  wire [15:0]drpdo_out;
+  wire [0:0]drpen_in;
+  wire [0:0]drprdy_out;
+  wire [0:0]drpwe_in;
+  wire [0:0]eyescandataerror_out;
+  wire [0:0]eyescanreset_in;
+  wire [0:0]eyescantrigger_in;
   wire \gen_gtwizard_gthe4.gtpowergood_int ;
   wire \gen_gtwizard_gthe4.gtrxreset_ch_int ;
   wire \gen_gtwizard_gthe4.gttxreset_int ;
+  wire \gen_gtwizard_gthe4.rxpmareset_ch_int ;
   wire \gen_gtwizard_gthe4.rxprogdivreset_int ;
   wire \gen_gtwizard_gthe4.rxuserrdy_int ;
   wire \gen_gtwizard_gthe4.txprogdivreset_int ;
@@ -4607,38 +5103,6 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_19 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_2 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_20 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_207 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_208 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_209 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_210 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_211 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_212 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_213 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_214 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_215 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_216 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_217 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_218 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_219 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_220 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_221 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_222 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_223 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_224 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_225 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_226 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_227 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_228 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_229 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_230 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_231 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_232 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_233 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_234 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_235 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_236 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_237 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_238 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_239 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_24 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_240 ;
@@ -4677,7 +5141,6 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_270 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_28 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_29 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_3 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_303 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_304 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_305 ;
@@ -4691,8 +5154,6 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_312 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_313 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_314 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_315 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_316 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_317 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_318 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_319 ;
@@ -4700,9 +5161,6 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_320 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_321 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_322 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_323 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_324 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_325 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_326 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_327 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_328 ;
@@ -4755,7 +5213,6 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_43 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_45 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_46 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_48 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_49 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_5 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_50 ;
@@ -4767,8 +5224,6 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_57 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_58 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_59 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_6 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_60 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_61 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_62 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_63 ;
@@ -4777,7 +5232,6 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_67 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_68 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_69 ;
-  wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_7 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_70 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_72 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_73 ;
@@ -4807,7 +5261,6 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_98 ;
   wire \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_99 ;
   wire [0:0]gthrxn_in;
-  wire gthrxn_in_0_sn_1;
   wire [0:0]gthrxp_in;
   wire [0:0]gthtxn_out;
   wire [0:0]gthtxp_out;
@@ -4821,13 +5274,17 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
   wire lopt_1;
   wire \^lopt_2 ;
   wire \^lopt_3 ;
+  wire [15:0]pcsrsvdin_in;
   wire [0:0]qpll0clk_in;
   wire [0:0]qpll0refclk_in;
   wire [0:0]qpll1clk_in;
   wire [0:0]qpll1refclk_in;
   wire [0:0]rx8b10ben_in;
+  wire [0:0]rxbufreset_in;
+  wire [2:0]rxbufstatus_out;
   wire [0:0]rxbyteisaligned_out;
   wire [0:0]rxbyterealign_out;
+  wire [0:0]rxcdrhold_in;
   wire [0:0]rxcdrlock_out;
   wire [0:0]rxcommadet_out;
   wire [0:0]rxcommadeten_in;
@@ -4835,16 +5292,33 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
   wire [15:0]rxctrl1_out;
   wire [7:0]rxctrl2_out;
   wire [7:0]rxctrl3_out;
+  wire [0:0]rxdfelpmreset_in;
+  wire [0:0]rxlpmen_in;
   wire [0:0]rxmcommaalignen_in;
   wire [0:0]rxoutclkpcs_out;
   wire [0:0]rxpcommaalignen_in;
+  wire [0:0]rxpcsreset_in;
   wire [0:0]rxpmaresetdone_out;
+  wire [0:0]rxprbscntreset_in;
+  wire [0:0]rxprbserr_out;
+  wire [3:0]rxprbssel_in;
   wire [0:0]rxresetdone_out;
+  wire [0:0]rxsyncdone_out;
   wire [0:0]tx8b10ben_in;
+  wire [1:0]txbufstatus_out;
   wire [15:0]txctrl0_in;
   wire [15:0]txctrl1_in;
   wire [7:0]txctrl2_in;
+  wire [4:0]txdiffctrl_in;
+  wire [0:0]txinhibit_in;
+  wire [0:0]txpcsreset_in;
+  wire [0:0]txpmareset_in;
   wire [0:0]txpmaresetdone_out;
+  wire [0:0]txpolarity_in;
+  wire [4:0]txpostcursor_in;
+  wire [0:0]txprbsforceerr_in;
+  wire [3:0]txprbssel_in;
+  wire [4:0]txprecursor_in;
   wire [0:0]txresetdone_out;
   wire xlnx_opt_;
   wire xlnx_opt__1;
@@ -4853,7 +5327,7 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
 
   assign \^lopt_2  = lopt_4;
   assign \^lopt_3  = lopt_5;
-  assign gthrxn_in_0_sp_1 = gthrxn_in_0_sn_1;
+  assign drpclk_in_0_sp_1 = drpclk_in_0_sn_1;
   assign lopt_2 = xlnx_opt_;
   assign lopt_3 = xlnx_opt__1;
   assign lopt_6 = xlnx_opt__2;
@@ -4876,7 +5350,7 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
     .INIT(2'h1)) 
     \gen_powergood_delay.intclk_rrst_n_r[4]_i_2 
        (.I0(\gen_gtwizard_gthe4.gtpowergood_int ),
-        .O(gthrxn_in_0_sn_1));
+        .O(drpclk_in_0_sn_1));
   (* BOX_TYPE = "PRIMITIVE" *) 
   GTHE4_CHANNEL #(
     .ACJTAG_DEBUG_MODE(1'b0),
@@ -5397,7 +5871,7 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
         .CLKRSVD1(1'b0),
         .CPLLFBCLKLOST(\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_2 ),
         .CPLLFREQLOCK(1'b0),
-        .CPLLLOCK(\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_3 ),
+        .CPLLLOCK(cplllock_out),
         .CPLLLOCKDETCLK(1'b0),
         .CPLLLOCKEN(1'b0),
         .CPLLPD(1'b1),
@@ -5406,19 +5880,19 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
         .CPLLRESET(1'b1),
         .DMONFIFORESET(1'b0),
         .DMONITORCLK(1'b0),
-        .DMONITOROUT({\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_207 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_208 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_209 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_210 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_211 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_212 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_213 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_214 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_215 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_216 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_217 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_218 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_219 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_220 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_221 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_222 }),
+        .DMONITOROUT(dmonitorout_out),
         .DMONITOROUTCLK(\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_5 ),
-        .DRPADDR({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
-        .DRPCLK(1'b0),
-        .DRPDI({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
-        .DRPDO({\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_223 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_224 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_225 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_226 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_227 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_228 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_229 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_230 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_231 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_232 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_233 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_234 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_235 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_236 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_237 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_238 }),
-        .DRPEN(1'b0),
-        .DRPRDY(\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_6 ),
+        .DRPADDR(drpaddr_in),
+        .DRPCLK(drpclk_in),
+        .DRPDI(drpdi_in),
+        .DRPDO(drpdo_out),
+        .DRPEN(drpen_in),
+        .DRPRDY(drprdy_out),
         .DRPRST(1'b0),
-        .DRPWE(1'b0),
-        .EYESCANDATAERROR(\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_7 ),
-        .EYESCANRESET(1'b0),
-        .EYESCANTRIGGER(1'b0),
+        .DRPWE(drpwe_in),
+        .EYESCANDATAERROR(eyescandataerror_out),
+        .EYESCANRESET(eyescanreset_in),
+        .EYESCANTRIGGER(eyescantrigger_in),
         .FREQOS(1'b0),
         .GTGREFCLK(1'b0),
         .GTHRXN(gthrxn_in),
@@ -5452,7 +5926,7 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
         .PCIEUSERPHYSTATUSRST(\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_16 ),
         .PCIEUSERRATEDONE(1'b0),
         .PCIEUSERRATESTART(\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_17 ),
-        .PCSRSVDIN({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
+        .PCSRSVDIN(pcsrsvdin_in),
         .PCSRSVDOUT({\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_239 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_240 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_241 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_242 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_243 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_244 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_245 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_246 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_247 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_248 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_249 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_250 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_251 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_252 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_253 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_254 }),
         .PHYSTATUS(\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_18 ),
         .PINRSRVDAS({\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_255 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_256 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_257 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_258 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_259 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_260 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_261 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_262 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_263 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_264 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_265 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_266 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_267 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_268 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_269 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_270 }),
@@ -5467,12 +5941,12 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
         .RESETOVRD(1'b0),
         .RX8B10BEN(rx8b10ben_in),
         .RXAFECFOKEN(1'b1),
-        .RXBUFRESET(1'b0),
-        .RXBUFSTATUS({\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_323 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_324 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_325 }),
+        .RXBUFRESET(rxbufreset_in),
+        .RXBUFSTATUS(rxbufstatus_out),
         .RXBYTEISALIGNED(rxbyteisaligned_out),
         .RXBYTEREALIGN(rxbyterealign_out),
         .RXCDRFREQRESET(1'b0),
-        .RXCDRHOLD(1'b0),
+        .RXCDRHOLD(rxcdrhold_in),
         .RXCDRLOCK(rxcdrlock_out),
         .RXCDROVRDEN(1'b0),
         .RXCDRPHDONE(\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_24 ),
@@ -5514,7 +5988,7 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
         .RXDFEKHOVRDEN(1'b0),
         .RXDFELFHOLD(1'b0),
         .RXDFELFOVRDEN(1'b0),
-        .RXDFELPMRESET(1'b0),
+        .RXDFELPMRESET(rxdfelpmreset_in),
         .RXDFETAP10HOLD(1'b0),
         .RXDFETAP10OVRDEN(1'b0),
         .RXDFETAP11HOLD(1'b0),
@@ -5563,7 +6037,7 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
         .RXLFPSTRESETDET(\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_35 ),
         .RXLFPSU2LPEXITDET(\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_36 ),
         .RXLFPSU3WAKEDET(\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_37 ),
-        .RXLPMEN(1'b0),
+        .RXLPMEN(rxlpmen_in),
         .RXLPMGCHOLD(1'b0),
         .RXLPMGCOVRDEN(1'b0),
         .RXLPMHFHOLD(1'b0),
@@ -5588,8 +6062,8 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
         .RXOUTCLKPCS(rxoutclkpcs_out),
         .RXOUTCLKSEL({1'b0,1'b1,1'b0}),
         .RXPCOMMAALIGNEN(rxpcommaalignen_in),
-        .RXPCSRESET(1'b0),
-        .RXPD({RXRATE,RXRATE}),
+        .RXPCSRESET(rxpcsreset_in),
+        .RXPD({RXPD,RXPD}),
         .RXPHALIGN(1'b0),
         .RXPHALIGNDONE(\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_45 ),
         .RXPHALIGNEN(1'b0),
@@ -5598,21 +6072,21 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
         .RXPHDLYRESET(1'b0),
         .RXPHOVRDEN(1'b0),
         .RXPLLCLKSEL({1'b1,1'b1}),
-        .RXPMARESET(1'b0),
+        .RXPMARESET(\gen_gtwizard_gthe4.rxpmareset_ch_int ),
         .RXPMARESETDONE(rxpmaresetdone_out),
         .RXPOLARITY(1'b0),
-        .RXPRBSCNTRESET(1'b0),
-        .RXPRBSERR(\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_48 ),
+        .RXPRBSCNTRESET(rxprbscntreset_in),
+        .RXPRBSERR(rxprbserr_out),
         .RXPRBSLOCKED(\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_49 ),
-        .RXPRBSSEL({1'b0,1'b0,1'b0,1'b0}),
+        .RXPRBSSEL(rxprbssel_in),
         .RXPRGDIVRESETDONE(\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_50 ),
         .RXPROGDIVRESET(\gen_gtwizard_gthe4.rxprogdivreset_int ),
         .RXQPIEN(1'b0),
         .RXQPISENN(\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_51 ),
         .RXQPISENP(\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_52 ),
-        .RXRATE({1'b0,1'b0,RXRATE}),
+        .RXRATE(RXRATE),
         .RXRATEDONE(\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_53 ),
-        .RXRATEMODE(RXRATE),
+        .RXRATEMODE(RXPD),
         .RXRECCLKOUT(\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_54 ),
         .RXRESETDONE(rxresetdone_out),
         .RXSLIDE(1'b0),
@@ -5625,7 +6099,7 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
         .RXSTARTOFSEQ({\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_313 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_314 }),
         .RXSTATUS({\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_326 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_327 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_328 }),
         .RXSYNCALLIN(1'b0),
-        .RXSYNCDONE(\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_60 ),
+        .RXSYNCDONE(rxsyncdone_out),
         .RXSYNCIN(1'b0),
         .RXSYNCMODE(1'b0),
         .RXSYNCOUT(\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_61 ),
@@ -5639,7 +6113,7 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
         .TSTIN({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
         .TX8B10BBYPASS({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
         .TX8B10BEN(tx8b10ben_in),
-        .TXBUFSTATUS({\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_315 ,\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_316 }),
+        .TXBUFSTATUS(txbufstatus_out),
         .TXCOMFINISH(\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_63 ),
         .TXCOMINIT(1'b0),
         .TXCOMSAS(1'b0),
@@ -5654,7 +6128,7 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
         .TXDCCRESET(1'b0),
         .TXDEEMPH({1'b0,1'b0}),
         .TXDETECTRX(1'b0),
-        .TXDIFFCTRL({1'b1,1'b1,1'b0,1'b0,1'b0}),
+        .TXDIFFCTRL(txdiffctrl_in),
         .TXDLYBYPASS(1'b1),
         .TXDLYEN(1'b0),
         .TXDLYHOLD(1'b0),
@@ -5664,7 +6138,7 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
         .TXDLYUPDOWN(1'b0),
         .TXELECIDLE(1'b0),
         .TXHEADER({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
-        .TXINHIBIT(1'b0),
+        .TXINHIBIT(txinhibit_in),
         .TXLATCLK(1'b0),
         .TXLFPSTRESET(1'b0),
         .TXLFPSU2LPEXIT(1'b0),
@@ -5678,7 +6152,7 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
         .TXOUTCLKFABRIC(\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_67 ),
         .TXOUTCLKPCS(\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_68 ),
         .TXOUTCLKSEL({1'b0,1'b1,1'b0}),
-        .TXPCSRESET(1'b0),
+        .TXPCSRESET(txpcsreset_in),
         .TXPD({1'b0,1'b0}),
         .TXPDELECIDLEMODE(1'b0),
         .TXPHALIGN(1'b0),
@@ -5697,13 +6171,13 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_channel
         .TXPIPPMSTEPSIZE({1'b0,1'b0,1'b0,1'b0,1'b0}),
         .TXPISOPD(1'b0),
         .TXPLLCLKSEL({1'b1,1'b1}),
-        .TXPMARESET(1'b0),
+        .TXPMARESET(txpmareset_in),
         .TXPMARESETDONE(txpmaresetdone_out),
-        .TXPOLARITY(1'b0),
-        .TXPOSTCURSOR({1'b0,1'b0,1'b0,1'b0,1'b0}),
-        .TXPRBSFORCEERR(1'b0),
-        .TXPRBSSEL({1'b0,1'b0,1'b0,1'b0}),
-        .TXPRECURSOR({1'b0,1'b0,1'b0,1'b0,1'b0}),
+        .TXPOLARITY(txpolarity_in),
+        .TXPOSTCURSOR(txpostcursor_in),
+        .TXPRBSFORCEERR(txprbsforceerr_in),
+        .TXPRBSSEL(txprbssel_in),
+        .TXPRECURSOR(txprecursor_in),
         .TXPRGDIVRESETDONE(\gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_n_72 ),
         .TXPROGDIVRESET(\gen_gtwizard_gthe4.txprogdivreset_int ),
         .TXQPIBIASEN(1'b0),
@@ -5731,14 +6205,24 @@ endmodule
 module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_delay_powergood
    (out,
     RXRATE,
+    RXPD,
+    \gen_gtwizard_gthe4.rxpmareset_ch_int ,
     rxoutclkpcs_out,
-    \gen_powergood_delay.intclk_rrst_n_r_reg[4]_0 );
+    \gen_powergood_delay.intclk_rrst_n_r_reg[4]_0 ,
+    rxrate_in,
+    rxpmareset_in);
   output out;
-  output [0:0]RXRATE;
+  output [2:0]RXRATE;
+  output [0:0]RXPD;
+  output \gen_gtwizard_gthe4.rxpmareset_ch_int ;
   input [0:0]rxoutclkpcs_out;
   input \gen_powergood_delay.intclk_rrst_n_r_reg[4]_0 ;
+  input [2:0]rxrate_in;
+  input [0:0]rxpmareset_in;
 
-  wire [0:0]RXRATE;
+  wire [0:0]RXPD;
+  wire [2:0]RXRATE;
+  wire \gen_gtwizard_gthe4.rxpmareset_ch_int ;
   (* RTL_KEEP = "true" *) (* async_reg = "true" *) (* shreg_extract = "no" *) wire \gen_powergood_delay.int_pwr_on_fsm ;
   wire \gen_powergood_delay.int_pwr_on_fsm_i_1_n_0 ;
   (* async_reg = "true" *) (* shreg_extract = "no" *) wire [4:0]\gen_powergood_delay.intclk_rrst_n_r ;
@@ -5749,6 +6233,8 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_delay_powergood
   wire \gen_powergood_delay.wait_cnt[0]_i_1_n_0 ;
   wire \gen_powergood_delay.wait_cnt[8]_i_1_n_0 ;
   wire [0:0]rxoutclkpcs_out;
+  wire [0:0]rxpmareset_in;
+  wire [2:0]rxrate_in;
 
   assign out = \gen_powergood_delay.pwr_on_fsm ;
   LUT2 #(
@@ -5931,11 +6417,35 @@ module LOCAL_TCDS2gtwizard_ultrascale_v1_7_9_gthe4_delay_powergood
         .D(\gen_powergood_delay.wait_cnt [7]),
         .Q(\gen_powergood_delay.wait_cnt [8]),
         .R(\gen_powergood_delay.wait_cnt[8]_i_1_n_0 ));
-  LUT1 #(
-    .INIT(2'h1)) 
+  LUT2 #(
+    .INIT(4'h8)) 
     \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_i_2 
        (.I0(\gen_powergood_delay.pwr_on_fsm ),
-        .O(RXRATE));
+        .I1(rxpmareset_in),
+        .O(\gen_gtwizard_gthe4.rxpmareset_ch_int ));
+  LUT1 #(
+    .INIT(2'h1)) 
+    \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_i_3 
+       (.I0(\gen_powergood_delay.pwr_on_fsm ),
+        .O(RXPD));
+  LUT2 #(
+    .INIT(4'h8)) 
+    \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_i_4 
+       (.I0(\gen_powergood_delay.pwr_on_fsm ),
+        .I1(rxrate_in[2]),
+        .O(RXRATE[2]));
+  LUT2 #(
+    .INIT(4'h8)) 
+    \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_i_5 
+       (.I0(\gen_powergood_delay.pwr_on_fsm ),
+        .I1(rxrate_in[1]),
+        .O(RXRATE[1]));
+  LUT2 #(
+    .INIT(4'hB)) 
+    \gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST_i_6 
+       (.I0(rxrate_in[0]),
+        .I1(\gen_powergood_delay.pwr_on_fsm ),
+        .O(RXRATE[0]));
 endmodule
 
 (* ORIG_REF_NAME = "gtwizard_ultrascale_v1_7_9_gtwiz_reset" *) 

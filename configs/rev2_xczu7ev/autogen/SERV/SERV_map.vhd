@@ -10,9 +10,12 @@ use work.types.all;
 
 use work.SERV_Ctrl.all;
 
+
+
 entity SERV_map is
   generic (
-    READ_TIMEOUT     : integer := 2048
+    READ_TIMEOUT     : integer := 2048;
+    ALLOCATED_MEMORY_RANGE : integer
     );
   port (
     clk_axi          : in  std_logic;
@@ -47,6 +50,13 @@ begin  -- architecture behavioral
   -- AXI 
   -------------------------------------------------------------------------------
   -------------------------------------------------------------------------------
+  assert ((4*81) < ALLOCATED_MEMORY_RANGE)
+    report "SERV: Regmap addressing range " & integer'image(4*81) & " is outside of AXI mapped range " & integer'image(ALLOCATED_MEMORY_RANGE)
+  severity ERROR;
+  assert ((4*81) >= ALLOCATED_MEMORY_RANGE)
+    report "SERV: Regmap addressing range " & integer'image(4*81) & " is inside of AXI mapped range " & integer'image(ALLOCATED_MEMORY_RANGE)
+  severity NOTE;
+
   AXIRegBridge : entity work.axiLiteRegBlocking
     generic map (
       READ_TIMEOUT => READ_TIMEOUT

@@ -133,6 +133,8 @@ set vhdl_files "\
      src/TCDS/top_secret/board_and_fw_id/firmware/hdl/board_and_fw_id_pkg.vhd \
      ${autogen_path}/TCDS_2/TCDS_2_map.vhd \
      ${autogen_path}/TCDS_2/TCDS_2_PKG.vhd \
+     src/TCDS/TCDS_BP.vhd \
+     src/TCDS/TCDS_localCPLL.vhd \
      src/TCDS/TCDS.vhd \
      ${autogen_path}/LDAQ/LDAQ_map.vhd \
      ${autogen_path}/LDAQ/LDAQ_PKG.vhd \
@@ -146,8 +148,7 @@ set xdc_files "\
      "
 
 set xci_files "\
-              src/TCDS/tclink/firmware/source/transceiver/ip_mgt_timing/gthe3_slave_timing_10g.xcix \
+              src/TCDS/tclink/firmware/source/transceiver/ip_mgt_timing/gthe4_slave_timing_10g.xcix \
               configs/rev2a_xczu7ev/cores/LDAQ_MGBT.tcl \
-              configs/rev2a_xczu7ev/cores/LOCAL_TCDS2.tcl \
               "
 

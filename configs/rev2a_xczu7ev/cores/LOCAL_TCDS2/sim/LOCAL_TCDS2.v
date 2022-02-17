@@ -1,4 +1,4 @@
-// (c) Copyright 1995-2021 Xilinx, Inc. All rights reserved.
+// (c) Copyright 1995-2022 Xilinx, Inc. All rights reserved.
 // 
 // This file contains confidential and proprietary information
 // of Xilinx, Inc. and is protected under U.S. and
@@ -77,23 +77,55 @@ module LOCAL_TCDS2 (
   gtwiz_reset_qpll0reset_out,
   gtwiz_userdata_tx_in,
   gtwiz_userdata_rx_out,
+  drpaddr_in,
+  drpclk_in,
+  drpdi_in,
+  drpen_in,
+  drpwe_in,
+  eyescanreset_in,
+  eyescantrigger_in,
   gthrxn_in,
   gthrxp_in,
+  pcsrsvdin_in,
   qpll0clk_in,
   qpll0refclk_in,
   qpll1clk_in,
   qpll1refclk_in,
   rx8b10ben_in,
+  rxbufreset_in,
+  rxcdrhold_in,
   rxcommadeten_in,
+  rxdfelpmreset_in,
+  rxlpmen_in,
   rxmcommaalignen_in,
   rxpcommaalignen_in,
+  rxpcsreset_in,
+  rxpmareset_in,
+  rxprbscntreset_in,
+  rxprbssel_in,
+  rxrate_in,
   tx8b10ben_in,
   txctrl0_in,
   txctrl1_in,
   txctrl2_in,
+  txdiffctrl_in,
+  txinhibit_in,
+  txpcsreset_in,
+  txpmareset_in,
+  txpolarity_in,
+  txpostcursor_in,
+  txprbsforceerr_in,
+  txprbssel_in,
+  txprecursor_in,
+  cplllock_out,
+  dmonitorout_out,
+  drpdo_out,
+  drprdy_out,
+  eyescandataerror_out,
   gthtxn_out,
   gthtxp_out,
   gtpowergood_out,
+  rxbufstatus_out,
   rxbyteisaligned_out,
   rxbyterealign_out,
   rxcommadet_out,
@@ -102,6 +134,9 @@ module LOCAL_TCDS2 (
   rxctrl2_out,
   rxctrl3_out,
   rxpmaresetdone_out,
+  rxprbserr_out,
+  rxsyncdone_out,
+  txbufstatus_out,
   txpmaresetdone_out
 );
 
@@ -128,23 +163,55 @@ output wire [0 : 0] gtwiz_reset_rx_done_out;
 output wire [0 : 0] gtwiz_reset_qpll0reset_out;
 input wire [31 : 0] gtwiz_userdata_tx_in;
 output wire [31 : 0] gtwiz_userdata_rx_out;
+input wire [9 : 0] drpaddr_in;
+input wire [0 : 0] drpclk_in;
+input wire [15 : 0] drpdi_in;
+input wire [0 : 0] drpen_in;
+input wire [0 : 0] drpwe_in;
+input wire [0 : 0] eyescanreset_in;
+input wire [0 : 0] eyescantrigger_in;
 input wire [0 : 0] gthrxn_in;
 input wire [0 : 0] gthrxp_in;
+input wire [15 : 0] pcsrsvdin_in;
 input wire [0 : 0] qpll0clk_in;
 input wire [0 : 0] qpll0refclk_in;
 input wire [0 : 0] qpll1clk_in;
 input wire [0 : 0] qpll1refclk_in;
 input wire [0 : 0] rx8b10ben_in;
+input wire [0 : 0] rxbufreset_in;
+input wire [0 : 0] rxcdrhold_in;
 input wire [0 : 0] rxcommadeten_in;
+input wire [0 : 0] rxdfelpmreset_in;
+input wire [0 : 0] rxlpmen_in;
 input wire [0 : 0] rxmcommaalignen_in;
 input wire [0 : 0] rxpcommaalignen_in;
+input wire [0 : 0] rxpcsreset_in;
+input wire [0 : 0] rxpmareset_in;
+input wire [0 : 0] rxprbscntreset_in;
+input wire [3 : 0] rxprbssel_in;
+input wire [2 : 0] rxrate_in;
 input wire [0 : 0] tx8b10ben_in;
 input wire [15 : 0] txctrl0_in;
 input wire [15 : 0] txctrl1_in;
 input wire [7 : 0] txctrl2_in;
+input wire [4 : 0] txdiffctrl_in;
+input wire [0 : 0] txinhibit_in;
+input wire [0 : 0] txpcsreset_in;
+input wire [0 : 0] txpmareset_in;
+input wire [0 : 0] txpolarity_in;
+input wire [4 : 0] txpostcursor_in;
+input wire [0 : 0] txprbsforceerr_in;
+input wire [3 : 0] txprbssel_in;
+input wire [4 : 0] txprecursor_in;
+output wire [0 : 0] cplllock_out;
+output wire [15 : 0] dmonitorout_out;
+output wire [15 : 0] drpdo_out;
+output wire [0 : 0] drprdy_out;
+output wire [0 : 0] eyescandataerror_out;
 output wire [0 : 0] gthtxn_out;
 output wire [0 : 0] gthtxp_out;
 output wire [0 : 0] gtpowergood_out;
+output wire [2 : 0] rxbufstatus_out;
 output wire [0 : 0] rxbyteisaligned_out;
 output wire [0 : 0] rxbyterealign_out;
 output wire [0 : 0] rxcommadet_out;
@@ -153,6 +220,9 @@ output wire [15 : 0] rxctrl1_out;
 output wire [7 : 0] rxctrl2_out;
 output wire [7 : 0] rxctrl3_out;
 output wire [0 : 0] rxpmaresetdone_out;
+output wire [0 : 0] rxprbserr_out;
+output wire [0 : 0] rxsyncdone_out;
+output wire [1 : 0] txbufstatus_out;
 output wire [0 : 0] txpmaresetdone_out;
 
   LOCAL_TCDS2_gtwizard_top #(
@@ -421,12 +491,12 @@ output wire [0 : 0] txpmaresetdone_out;
     .cpllreset_in(1'H1),
     .dmonfiforeset_in(1'H0),
     .dmonitorclk_in(1'H0),
-    .drpaddr_in(10'H000),
-    .drpclk_in(1'H0),
-    .drpdi_in(16'H0000),
-    .drpen_in(1'H0),
+    .drpaddr_in(drpaddr_in),
+    .drpclk_in(drpclk_in),
+    .drpdi_in(drpdi_in),
+    .drpen_in(drpen_in),
     .drprst_in(1'H0),
-    .drpwe_in(1'H0),
+    .drpwe_in(drpwe_in),
     .elpcaldvorwren_in(1'B0),
     .elpcalpaorwren_in(1'B0),
     .evoddphicaldone_in(1'B0),
@@ -436,8 +506,8 @@ output wire [0 : 0] txpmaresetdone_out;
     .evoddphixrden_in(1'B0),
     .evoddphixwren_in(1'B0),
     .eyescanmode_in(1'B0),
-    .eyescanreset_in(1'H0),
-    .eyescantrigger_in(1'H0),
+    .eyescanreset_in(eyescanreset_in),
+    .eyescantrigger_in(eyescantrigger_in),
     .freqos_in(1'H0),
     .gtgrefclk_in(1'H0),
     .gthrxn_in(gthrxn_in),
@@ -465,7 +535,7 @@ output wire [0 : 0] txpmaresetdone_out;
     .pcierstidle_in(1'H0),
     .pciersttxsyncstart_in(1'H0),
     .pcieuserratedone_in(1'H0),
-    .pcsrsvdin_in(16'H0000),
+    .pcsrsvdin_in(pcsrsvdin_in),
     .pcsrsvdin2_in(1'B0),
     .pmarsvdin_in(1'B0),
     .qpll0clk_in(qpll0clk_in),
@@ -478,9 +548,9 @@ output wire [0 : 0] txpmaresetdone_out;
     .rstclkentx_in(1'B0),
     .rx8b10ben_in(rx8b10ben_in),
     .rxafecfoken_in(1'H1),
-    .rxbufreset_in(1'H0),
+    .rxbufreset_in(rxbufreset_in),
     .rxcdrfreqreset_in(1'H0),
-    .rxcdrhold_in(1'H0),
+    .rxcdrhold_in(rxcdrhold_in),
     .rxcdrovrden_in(1'H0),
     .rxcdrreset_in(1'H0),
     .rxcdrresetrsv_in(1'B0),
@@ -505,7 +575,7 @@ output wire [0 : 0] txpmaresetdone_out;
     .rxdfekhovrden_in(1'H0),
     .rxdfelfhold_in(1'H0),
     .rxdfelfovrden_in(1'H0),
-    .rxdfelpmreset_in(1'H0),
+    .rxdfelpmreset_in(rxdfelpmreset_in),
     .rxdfetap10hold_in(1'H0),
     .rxdfetap10ovrden_in(1'H0),
     .rxdfetap11hold_in(1'H0),
@@ -548,7 +618,7 @@ output wire [0 : 0] txpmaresetdone_out;
     .rxeqtraining_in(1'H0),
     .rxgearboxslip_in(1'H0),
     .rxlatclk_in(1'H0),
-    .rxlpmen_in(1'H0),
+    .rxlpmen_in(rxlpmen_in),
     .rxlpmgchold_in(1'H0),
     .rxlpmgcovrden_in(1'H0),
     .rxlpmhfhold_in(1'H0),
@@ -571,7 +641,7 @@ output wire [0 : 0] txpmaresetdone_out;
     .rxosovrden_in(1'H0),
     .rxoutclksel_in(3'H2),
     .rxpcommaalignen_in(rxpcommaalignen_in),
-    .rxpcsreset_in(1'H0),
+    .rxpcsreset_in(rxpcsreset_in),
     .rxpd_in(2'H0),
     .rxphalign_in(1'H0),
     .rxphalignen_in(1'H0),
@@ -579,13 +649,13 @@ output wire [0 : 0] txpmaresetdone_out;
     .rxphdlyreset_in(1'H0),
     .rxphovrden_in(1'H0),
     .rxpllclksel_in(2'H3),
-    .rxpmareset_in(1'H0),
+    .rxpmareset_in(rxpmareset_in),
     .rxpolarity_in(1'H0),
-    .rxprbscntreset_in(1'H0),
-    .rxprbssel_in(4'H0),
+    .rxprbscntreset_in(rxprbscntreset_in),
+    .rxprbssel_in(rxprbssel_in),
     .rxprogdivreset_in(1'H0),
     .rxqpien_in(1'H0),
-    .rxrate_in(3'H0),
+    .rxrate_in(rxrate_in),
     .rxratemode_in(1'H0),
     .rxslide_in(1'H0),
     .rxslipoutclk_in(1'H0),
@@ -615,7 +685,7 @@ output wire [0 : 0] txpmaresetdone_out;
     .txdccreset_in(1'H0),
     .txdeemph_in(2'H0),
     .txdetectrx_in(1'H0),
-    .txdiffctrl_in(5'H18),
+    .txdiffctrl_in(txdiffctrl_in),
     .txdiffpd_in(1'B0),
     .txdlybypass_in(1'H1),
     .txdlyen_in(1'H0),
@@ -626,7 +696,7 @@ output wire [0 : 0] txpmaresetdone_out;
     .txelecidle_in(1'H0),
     .txelforcestart_in(1'B0),
     .txheader_in(6'H00),
-    .txinhibit_in(1'H0),
+    .txinhibit_in(txinhibit_in),
     .txlatclk_in(1'H0),
     .txlfpstreset_in(1'H0),
     .txlfpsu2lpexit_in(1'H0),
@@ -637,7 +707,7 @@ output wire [0 : 0] txpmaresetdone_out;
     .txmuxdcdorwren_in(1'H0),
     .txoneszeros_in(1'H0),
     .txoutclksel_in(3'H2),
-    .txpcsreset_in(1'H0),
+    .txpcsreset_in(txpcsreset_in),
     .txpd_in(2'H0),
     .txpdelecidlemode_in(1'H0),
     .txphalign_in(1'H0),
@@ -654,13 +724,13 @@ output wire [0 : 0] txpmaresetdone_out;
     .txpippmstepsize_in(5'H00),
     .txpisopd_in(1'H0),
     .txpllclksel_in(2'H3),
-    .txpmareset_in(1'H0),
-    .txpolarity_in(1'H0),
-    .txpostcursor_in(5'H00),
+    .txpmareset_in(txpmareset_in),
+    .txpolarity_in(txpolarity_in),
+    .txpostcursor_in(txpostcursor_in),
     .txpostcursorinv_in(1'B0),
-    .txprbsforceerr_in(1'H0),
-    .txprbssel_in(4'H0),
-    .txprecursor_in(5'H00),
+    .txprbsforceerr_in(txprbsforceerr_in),
+    .txprbssel_in(txprbssel_in),
+    .txprecursor_in(txprecursor_in),
     .txprecursorinv_in(1'B0),
     .txprogdivreset_in(1'H0),
     .txqpibiasen_in(1'H0),
@@ -683,13 +753,13 @@ output wire [0 : 0] txpmaresetdone_out;
     .bufgtreset_out(),
     .bufgtrstmask_out(),
     .cpllfbclklost_out(),
-    .cplllock_out(),
+    .cplllock_out(cplllock_out),
     .cpllrefclklost_out(),
-    .dmonitorout_out(),
+    .dmonitorout_out(dmonitorout_out),
     .dmonitoroutclk_out(),
-    .drpdo_out(),
-    .drprdy_out(),
-    .eyescandataerror_out(),
+    .drpdo_out(drpdo_out),
+    .drprdy_out(drprdy_out),
+    .eyescandataerror_out(eyescandataerror_out),
     .gthtxn_out(gthtxn_out),
     .gthtxp_out(gthtxp_out),
     .gtpowergood_out(gtpowergood_out),
@@ -709,7 +779,7 @@ output wire [0 : 0] txpmaresetdone_out;
     .pinrsrvdas_out(),
     .powerpresent_out(),
     .resetexception_out(),
-    .rxbufstatus_out(),
+    .rxbufstatus_out(rxbufstatus_out),
     .rxbyteisaligned_out(rxbyteisaligned_out),
     .rxbyterealign_out(rxbyterealign_out),
     .rxcdrlock_out(),
@@ -749,7 +819,7 @@ output wire [0 : 0] txpmaresetdone_out;
     .rxphaligndone_out(),
     .rxphalignerr_out(),
     .rxpmaresetdone_out(rxpmaresetdone_out),
-    .rxprbserr_out(),
+    .rxprbserr_out(rxprbserr_out),
     .rxprbslocked_out(),
     .rxprgdivresetdone_out(),
     .rxqpisenn_out(),
@@ -763,10 +833,10 @@ output wire [0 : 0] txpmaresetdone_out;
     .rxslippmardy_out(),
     .rxstartofseq_out(),
     .rxstatus_out(),
-    .rxsyncdone_out(),
+    .rxsyncdone_out(rxsyncdone_out),
     .rxsyncout_out(),
     .rxvalid_out(),
-    .txbufstatus_out(),
+    .txbufstatus_out(txbufstatus_out),
     .txcomfinish_out(),
     .txdccdone_out(),
     .txdlysresetdone_out(),

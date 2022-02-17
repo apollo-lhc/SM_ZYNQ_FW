@@ -53,9 +53,6 @@ set vhdl_files "\
      ${autogen_path}/PLXVC/PLXVC_PKG.vhd \
      src/plXVC/plXVC_intf.vhd \
      src/plXVC/virtualJTAG.vhd \
-     src/MEM_TEST/Mem_test.vhd \
-     ${autogen_path}/MEM_TEST/MEM_TEST_map.vhd \
-     ${autogen_path}/MEM_TEST/MEM_TEST_PKG.vhd \
      "
 
 set xdc_files "\

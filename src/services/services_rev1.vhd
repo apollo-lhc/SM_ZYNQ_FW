@@ -9,7 +9,9 @@ use work.CM_package.all;
 use work.SERV_Ctrl.all;
 
 entity services is
-  
+  generic (
+    ALLOCATED_MEMORY_RANGE : integer
+    );
   port (
     clk_axi            : in  std_logic;
     reset_axi_n        : in  std_logic;
@@ -143,6 +145,9 @@ begin  -- architecture behavioral
 
   
   SERV_interface_1: entity work.SERV_map
+    generic map (
+      ALLOCATED_MEMORY_RANGE => ALLOCATED_MEMORY_RANGE
+      )              
     port map (
       clk_axi         => clk_axi,
       reset_axi_n     => reset_axi_n,

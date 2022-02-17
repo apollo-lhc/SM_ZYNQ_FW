@@ -8,7 +8,7 @@ Format=u"/>
   <node id="PHY_HARD_ERROR_COUNT"     address="0x5" permission="r"  description="Counter for PHY_HARD_ERROR"               parameters="Table=C2C;Column=_2_3;Row=PHY_HARD_ERR_COUNT;Status=1;Show=nz;Format=u"/>
   <node id="PHY_SOFT_ERROR_COUNT"     address="0x6" permission="r"  description="Counter for PHY_SOFT_ERROR"               parameters="Table=C2C;Column=_2_3;Row=PHY_SOFT_ERR_COUNT;Status=1;Show=nz;Format=u"/>
   <node id="PHYLANE_STATE"            address="0x7" permission="r"  description="Current state of phy_lane_control module" parameters="Table=C2C;Column=_2_3;Row=PHYLANE_STATE;Status=1;Format=t_0_INIT_1_resetWAIT_2_initWAIT_4_RUNNING" mask="0x7"/>
-  <node id="RESET_COUNTERS"           address="0x8" permission="w" description="Reset counters in Monitor" mask="0x1"/>
+  <node id="RESET_COUNTERS"           address="0x8" permission="w" description="Reset counters in Monitor" mask="0x1" parameters="Unblock=C2C"/>
   <node id="ERROR_WAITS_SINCE_LOCKED" address="0x9" permission="r"  description="Count for phylane in error state"         parameters="Table=C2C;Column=_2_3;Row=PHY_ERROR_WINDOWS;Status=1;Show=nz;Format=u"/>
   <node id="USER_CLK_FREQ"            address="0xA" permission="r"  description="Frequency of the user C2C clk"            parameters="Table=C2C;Column=_2_3;Row=C2C_FREQ;Status=2;Show=nz;Format=m_1_1_1000000_1_0_1"/>
   <node id="XCVR_RESETS"              address="0xB" permission="r"  description="Count for phylane in error state"         parameters="Table=C2C;Column=_2_3;Row=PHY_RESETS;Status=1;Show=nz;Format=u"/>

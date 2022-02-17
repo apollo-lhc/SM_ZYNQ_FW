@@ -22,7 +22,8 @@ entity CM_intf is
                                                              -- CM1 
     COUNTER_COUNT    : integer := 5;               --Count for counters in loop
     CLKFREQ          : integer := 50000000;       --clk frequency in Hz
-    ERROR_WAIT_TIME  : integer := 50000000);      --Wait time for error checking states
+    ERROR_WAIT_TIME  : integer := 50000000;       --Wait time for error checking states
+    ALLOCATED_MEMORY_RANGE : integer);            
   port (
     clk_axi           : in  std_logic;
     reset_axi_n       : in  std_logic;
@@ -107,7 +108,8 @@ architecture behavioral of CM_intf is
 
   type DRP_MOSI_array_t is array (1 to 4) of CM_CM_C2C_DRP_MOSI_t;
   signal DRP_MOSI : DRP_MOSI_array_t;
-  
+
+  signal clk_TCDS_o : std_logic;
 begin
   --reset
   reset <= not reset_axi_n;
@@ -141,7 +143,9 @@ begin
   --For AXI
   CM_interface_1: entity work.CM_map
     generic map(
-      READ_TIMEOUT    => 2047)
+      READ_TIMEOUT    => 2047,
+      ALLOCATED_MEMORY_RANGE =>         ALLOCATED_MEMORY_RANGE      
+      )
     port map (
       clk_axi         => clk_axi,
       reset_axi_n     => reset_axi_n,

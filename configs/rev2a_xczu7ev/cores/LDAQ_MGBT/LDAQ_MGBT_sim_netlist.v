@@ -1,10 +1,10 @@
 // Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2020.2 (lin64) Build 3064766 Wed Nov 18 09:12:47 MST 2020
-// Date        : Tue Jul  6 11:42:58 2021
+// Date        : Thu Jan 20 20:16:50 2022
 // Host        : tesla.bu.edu running 64-bit CentOS Linux release 7.9.2009 (Core)
 // Command     : write_verilog -force -mode funcsim
-//               /work/dan/Apollo/SM_ZYNQ_FW/configs/rev2a_xczu7ev/cores/LDAQ_MGBT/LDAQ_MGBT_sim_netlist.v
+//               /work/dan/Apollo/FW/SM_ZYNQ_FW/configs/rev2a_xczu7ev/cores/LDAQ_MGBT/LDAQ_MGBT_sim_netlist.v
 // Design      : LDAQ_MGBT
 // Purpose     : This verilog netlist is a functional simulation representation of the design and should not be modified
 //               or synthesized. This netlist cannot be used for SDF annotated simulation.

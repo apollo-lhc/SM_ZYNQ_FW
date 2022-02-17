@@ -29,8 +29,8 @@ set_property CONFIG.PSU__CRL_APB__LPD_SWITCH_CTRL__FREQMHZ {500}    [get_bd_cell
 set_property CONFIG.PSU__CRL_APB__ADMA_REF_CTRL__FREQMHZ {500}      [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU__FPGA_PL1_ENABLE {1}                        [get_bd_cells ${ZYNQ_NAME}]
 #set_property CONFIG.PSU__CRL_APB__PL1_REF_CTRL__FREQMHZ {80}        [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU__CRL_APB__PL1_REF_CTRL__FREQMHZ {71.427856}        [get_bd_cells ${ZYNQ_NAME}]
-#set_property CONFIG.PSU__CRL_APB__PL1_REF_CTRL__FREQMHZ {50}        [get_bd_cells ${ZYNQ_NAME}]
+#set_property CONFIG.PSU__CRL_APB__PL1_REF_CTRL__FREQMHZ {71.427856}        [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__CRL_APB__PL1_REF_CTRL__FREQMHZ {50}        [get_bd_cells ${ZYNQ_NAME}]
 
 
 ###############################
