@@ -21,7 +21,9 @@ use UNISIM.VCOMPONENTS.ALL;
 
 entity TCDS is
   generic (
-    AXI_CLK_FREQ : integer);
+    AXI_CLK_FREQ : integer;
+    ALLOCATED_MEMORY_RANGE : integer
+    );
   port (
     -- AXI interface
     clk_axi          : in  std_logic;
@@ -122,6 +124,9 @@ begin
   -------------------------------------------------------------------------------
   -------------------------------------------------------------------------------
   TCDS_2_map_1: entity work.TCDS_2_map
+    generic map(
+      ALLOCATED_MEMORY_RANGE => ALLOCATED_MEMORY_RANGE
+      )
     port map (
       clk_axi         => clk_axi,
       reset_axi_n     => reset_axi_n,

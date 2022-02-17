@@ -2,16 +2,19 @@
 --Modifications might be lost.
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.std_logic_misc.all;
 use ieee.numeric_std.all;
 use work.AXIRegWidthPkg.all;
 use work.AXIRegPkg.all;
 use work.types.all;
+
 use work.SERV_Ctrl.all;
 
 
 
 entity SERV_map is
   generic (
+    READ_TIMEOUT     : integer := 2048;
     ALLOCATED_MEMORY_RANGE : integer
     );
   port (
@@ -21,8 +24,10 @@ entity SERV_map is
     slave_readMISO   : out AXIReadMISO  := DefaultAXIReadMISO;
     slave_writeMOSI  : in  AXIWriteMOSI;
     slave_writeMISO  : out AXIWriteMISO := DefaultAXIWriteMISO;
+    
     Mon              : in  SERV_Mon_t;
     Ctrl             : out SERV_Ctrl_t
+        
     );
 end entity SERV_map;
 architecture behavioral of SERV_map is
@@ -33,8 +38,10 @@ architecture behavioral of SERV_map is
   signal localWrEn          : std_logic;
   signal localRdReq         : std_logic;
   signal localRdAck         : std_logic;
+  signal regRdAck           : std_logic;
 
-
+  
+  
   signal reg_data :  slv32_array_t(integer range 0 to 81);
   constant Default_reg_data : slv32_array_t(integer range 0 to 81) := (others => x"00000000");
 begin  -- architecture behavioral
@@ -50,7 +57,10 @@ begin  -- architecture behavioral
     report "SERV: Regmap addressing range " & integer'image(4*81) & " is inside of AXI mapped range " & integer'image(ALLOCATED_MEMORY_RANGE)
   severity NOTE;
 
-  AXIRegBridge : entity work.axiLiteReg
+  AXIRegBridge : entity work.axiLiteRegBlocking
+    generic map (
+      READ_TIMEOUT => READ_TIMEOUT
+      )
     port map (
       clk_axi     => clk_axi,
       reset_axi_n => reset_axi_n,
@@ -65,22 +75,38 @@ begin  -- architecture behavioral
       read_req    => localRdReq,
       read_ack    => localRdAck);
 
-  latch_reads: process (clk_axi) is
+  -------------------------------------------------------------------------------
+  -- Record read decoding
+  -------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------
+
+  latch_reads: process (clk_axi,reset_axi_n) is
   begin  -- process latch_reads
-    if clk_axi'event and clk_axi = '1' then  -- rising clock edge
-      if localRdReq = '1' then
-        localRdData_latch <= localRdData;        
+    if reset_axi_n = '0' then
+      localRdAck <= '0';
+    elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
+      localRdAck <= '0';
+      
+      if regRdAck = '1' then
+        localRdData_latch <= localRdData;
+        localRdAck <= '1';
+      
       end if;
     end if;
   end process latch_reads;
-  reads: process (localRdReq,localAddress,reg_data) is
-  begin  -- process reads
-    localRdAck  <= '0';
-    localRdData <= x"00000000";
-    if localRdReq = '1' then
-      localRdAck  <= '1';
-      case to_integer(unsigned(localAddress(6 downto 0))) is
 
+  
+  reads: process (clk_axi,reset_axi_n) is
+  begin  -- process latch_reads
+    if reset_axi_n = '0' then
+      regRdAck <= '0';
+    elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
+      regRdAck  <= '0';
+      localRdData <= x"00000000";
+      if localRdReq = '1' then
+        regRdAck  <= '1';
+        case to_integer(unsigned(localAddress(6 downto 0))) is
+          
         when 0 => --0x0
           localRdData( 0)            <=  reg_data( 0)( 0);                --Enable Si5344 outputs
           localRdData( 1)            <=  reg_data( 0)( 1);                --Power on Si5344
@@ -92,28 +118,22 @@ begin  -- architecture behavioral
           localRdData( 0)            <=  reg_data( 4)( 0);                --TTC source select (0:TCDS,1:TTC_FAKE
           localRdData( 4)            <=  Mon.TCDS.REFCLK_LOCKED;          --TCDS refclk locked
         when 5 => --0x5
-          localRdData( 0)            <=  reg_data( 5)( 0);                --Enable Si5344 outputs
-          localRdData( 1)            <=  reg_data( 5)( 1);                --Power on Si5344
-          localRdData( 4)            <=  Mon.TCDS.SI5344.INT;             --Si5344 i2c interrupt
-          localRdData( 5)            <=  Mon.TCDS.SI5344.LOL;             --Si5344 Loss of lock
-          localRdData( 6)            <=  Mon.TCDS.SI5344.LOS;             --Si5344 Loss of signal
-        when 6 => --0x6
           localRdData( 0)            <=  Mon.CLOCKING.LHC_LOS_BP;         --Backplane LHC clk LOS
           localRdData( 1)            <=  Mon.CLOCKING.LHC_LOS_OSC;        --Local Si LHC clk LOS
-          localRdData( 4)            <=  reg_data( 6)( 4);                --LHC clk source select
-          localRdData( 5)            <=  reg_data( 6)( 5);                --Enable FPGA IBUFDS
+          localRdData( 4)            <=  reg_data( 5)( 4);                --LHC clk source select
+          localRdData( 5)            <=  reg_data( 5)( 5);                --Enable FPGA IBUFDS
           localRdData( 8)            <=  Mon.CLOCKING.HQ_LOS_BP;          --Backplane HQ clk LOS
           localRdData( 9)            <=  Mon.CLOCKING.HQ_LOS_OSC;         --Local Si HQ clk LOS
-          localRdData(12)            <=  reg_data( 6)(12);                --HQ clk source select
-          localRdData(13)            <=  reg_data( 6)(13);                --Enable FPGA IBUFDS
-          localRdData(21)            <=  reg_data( 6)(21);                --Enable FPGA IBUFDS
-        when 7 => --0x7
+          localRdData(12)            <=  reg_data( 5)(12);                --HQ clk source select
+          localRdData(13)            <=  reg_data( 5)(13);                --Enable FPGA IBUFDS
+          localRdData(21)            <=  reg_data( 5)(21);                --Enable FPGA IBUFDS
+        when 6 => --0x6
           localRdData(31 downto  0)  <=  Mon.CLOCKING.LHC_CLK_FREQ;       --Measured Freq of clock
-        when 8 => --0x8
+        when 7 => --0x7
           localRdData(31 downto  0)  <=  Mon.CLOCKING.HQ_CLK_FREQ;        --Measured Freq of clock
-        when 9 => --0x9
+        when 8 => --0x8
           localRdData(31 downto  0)  <=  Mon.CLOCKING.TTC_CLK_FREQ;       --Measured Freq of clock
-        when 10 => --0xa
+        when 9 => --0x9
           localRdData(31 downto  0)  <=  Mon.CLOCKING.AXI_CLK_FREQ;       --Measured Freq of clock
         when 16 => --0x10
           localRdData( 0)            <=  reg_data(16)( 0);                --reset FP LEDs
@@ -137,27 +157,30 @@ begin  -- architecture behavioral
           localRdData(31 downto  0)  <=  Mon.MISC.ETH1_CLK_FREQ;          --Measured Freq of clock
 
 
-        when others =>
-          localRdData <= x"00000000";
-      end case;
+          when others =>
+            regRdAck <= '0';
+            localRdData <= x"00000000";
+        end case;
+      end if;
     end if;
   end process reads;
 
 
-
+  -------------------------------------------------------------------------------
+  -- Record write decoding
+  -------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------
 
   -- Register mapping to ctrl structures
   Ctrl.SI5344.OE                 <=  reg_data( 0)( 0);               
   Ctrl.SI5344.EN                 <=  reg_data( 0)( 1);               
   Ctrl.SI5344.FPGA_PLL_RESET     <=  reg_data( 0)( 2);               
   Ctrl.TCDS.TTC_SOURCE           <=  reg_data( 4)( 0);               
-  Ctrl.TCDS.SI5344.OE            <=  reg_data( 5)( 0);               
-  Ctrl.TCDS.SI5344.EN            <=  reg_data( 5)( 1);               
-  Ctrl.CLOCKING.LHC_SEL          <=  reg_data( 6)( 4);               
-  Ctrl.CLOCKING.LHC_CLK_IBUF_EN  <=  reg_data( 6)( 5);               
-  Ctrl.CLOCKING.HQ_SEL           <=  reg_data( 6)(12);               
-  Ctrl.CLOCKING.HQ_CLK_IBUF_EN   <=  reg_data( 6)(13);               
-  Ctrl.CLOCKING.TTC_CLK_IBUF_EN  <=  reg_data( 6)(21);               
+  Ctrl.CLOCKING.LHC_SEL          <=  reg_data( 5)( 4);               
+  Ctrl.CLOCKING.LHC_CLK_IBUF_EN  <=  reg_data( 5)( 5);               
+  Ctrl.CLOCKING.HQ_SEL           <=  reg_data( 5)(12);               
+  Ctrl.CLOCKING.HQ_CLK_IBUF_EN   <=  reg_data( 5)(13);               
+  Ctrl.CLOCKING.TTC_CLK_IBUF_EN  <=  reg_data( 5)(21);               
   Ctrl.FP_LEDS.RESET             <=  reg_data(16)( 0);               
   Ctrl.FP_LEDS.PAGE0_FORCE       <=  reg_data(16)( 1);               
   Ctrl.FP_LEDS.PAGE0_MODE        <=  reg_data(16)( 4 downto  2);     
@@ -176,13 +199,11 @@ begin  -- architecture behavioral
       reg_data( 0)( 1)  <= DEFAULT_SERV_CTRL_t.SI5344.EN;
       reg_data( 0)( 2)  <= DEFAULT_SERV_CTRL_t.SI5344.FPGA_PLL_RESET;
       reg_data( 4)( 0)  <= DEFAULT_SERV_CTRL_t.TCDS.TTC_SOURCE;
-      reg_data( 5)( 0)  <= DEFAULT_SERV_CTRL_t.TCDS.SI5344.OE;
-      reg_data( 5)( 1)  <= DEFAULT_SERV_CTRL_t.TCDS.SI5344.EN;
-      reg_data( 6)( 4)  <= DEFAULT_SERV_CTRL_t.CLOCKING.LHC_SEL;
-      reg_data( 6)( 5)  <= DEFAULT_SERV_CTRL_t.CLOCKING.LHC_CLK_IBUF_EN;
-      reg_data( 6)(12)  <= DEFAULT_SERV_CTRL_t.CLOCKING.HQ_SEL;
-      reg_data( 6)(13)  <= DEFAULT_SERV_CTRL_t.CLOCKING.HQ_CLK_IBUF_EN;
-      reg_data( 6)(21)  <= DEFAULT_SERV_CTRL_t.CLOCKING.TTC_CLK_IBUF_EN;
+      reg_data( 5)( 4)  <= DEFAULT_SERV_CTRL_t.CLOCKING.LHC_SEL;
+      reg_data( 5)( 5)  <= DEFAULT_SERV_CTRL_t.CLOCKING.LHC_CLK_IBUF_EN;
+      reg_data( 5)(12)  <= DEFAULT_SERV_CTRL_t.CLOCKING.HQ_SEL;
+      reg_data( 5)(13)  <= DEFAULT_SERV_CTRL_t.CLOCKING.HQ_CLK_IBUF_EN;
+      reg_data( 5)(21)  <= DEFAULT_SERV_CTRL_t.CLOCKING.TTC_CLK_IBUF_EN;
       reg_data(16)( 0)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.RESET;
       reg_data(16)( 1)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.PAGE0_FORCE;
       reg_data(16)( 4 downto  2)  <= DEFAULT_SERV_CTRL_t.FP_LEDS.PAGE0_MODE;
@@ -206,14 +227,11 @@ begin  -- architecture behavioral
         when 4 => --0x4
           reg_data( 4)( 0)            <=  localWrData( 0);                --TTC source select (0:TCDS,1:TTC_FAKE
         when 5 => --0x5
-          reg_data( 5)( 0)            <=  localWrData( 0);                --Enable Si5344 outputs
-          reg_data( 5)( 1)            <=  localWrData( 1);                --Power on Si5344
-        when 6 => --0x6
-          reg_data( 6)( 4)            <=  localWrData( 4);                --LHC clk source select
-          reg_data( 6)( 5)            <=  localWrData( 5);                --Enable FPGA IBUFDS
-          reg_data( 6)(12)            <=  localWrData(12);                --HQ clk source select
-          reg_data( 6)(13)            <=  localWrData(13);                --Enable FPGA IBUFDS
-          reg_data( 6)(21)            <=  localWrData(21);                --Enable FPGA IBUFDS
+          reg_data( 5)( 4)            <=  localWrData( 4);                --LHC clk source select
+          reg_data( 5)( 5)            <=  localWrData( 5);                --Enable FPGA IBUFDS
+          reg_data( 5)(12)            <=  localWrData(12);                --HQ clk source select
+          reg_data( 5)(13)            <=  localWrData(13);                --Enable FPGA IBUFDS
+          reg_data( 5)(21)            <=  localWrData(21);                --Enable FPGA IBUFDS
         when 16 => --0x10
           reg_data(16)( 0)            <=  localWrData( 0);                --reset FP LEDs
           reg_data(16)( 1)            <=  localWrData( 1);                --override FP LED page 0
@@ -234,4 +252,10 @@ begin  -- architecture behavioral
   end process reg_writes;
 
 
+
+
+
+
+
+  
 end architecture behavioral;

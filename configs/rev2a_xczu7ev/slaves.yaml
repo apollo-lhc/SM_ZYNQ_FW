@@ -292,7 +292,7 @@ AXI_SLAVES:
       - "address_table/modules/top_secret/tcds2_link_csr_master_status.xml"
       - "address_table/modules/LTCDS.xml"
       - "address_table/modules/MGT_USP_Status.xml"
-    UHAL_BASE: 0x30000000
+    UHAL_BASE: 0x31000000
     HDL: 
       map_template: "axi_generic/template_map_withbram.vhd"
   
@@ -305,7 +305,7 @@ AXI_SLAVES:
         range: "4K"
     XML:
       - "address_table/modules/LDAQ.xml"
-    UHAL_BASE: 0x40000000
+    UHAL_BASE: 0x32000000
     HDL: 
       map_template: "axi_generic/template_map.vhd"
 

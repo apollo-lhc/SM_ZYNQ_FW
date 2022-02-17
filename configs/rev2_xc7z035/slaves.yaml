@@ -120,6 +120,7 @@ AXI_SLAVES:
     TCL_CALL:
       command: "AXI_IP_I2C"
       axi_control: "${::AXI_MASTER_CTRL}"
+      irq_port: "${::IRQ0_INTR_CTRL}"
 
   SERV:
     TCL_CALL:
