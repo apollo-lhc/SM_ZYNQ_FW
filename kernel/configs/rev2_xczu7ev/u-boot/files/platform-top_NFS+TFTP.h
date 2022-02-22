@@ -1,11 +1,11 @@
 #include <configs/xilinx_zynqmp.h>
 
-#define pushfoo _Pragma("push_macro(\"CONFIG_EXTRA_ENV_SETTINGS\")")
-#define popfoo _Pragma("pop_macro(\"CONFIG_EXTRA_ENV_SETTINGS\")")
+#define pushCEES _Pragma("push_macro(\"CONFIG_EXTRA_ENV_SETTINGS\")")
+#define popCEES _Pragma("pop_macro(\"CONFIG_EXTRA_ENV_SETTINGS\")")
 
-pushfoo
+pushCEES
 #undef CONFIG_EXTRA_ENV_SETTINGS
-#define CONFIG_EXTRA_ENV_SETTINGS popfoo CONFIG_EXTRA_ENV_SETTINGS \
+#define CONFIG_EXTRA_ENV_SETTINGS popCEES CONFIG_EXTRA_ENV_SETTINGS \
 	"bootargs=console=ttyPS0,115200 earlycon clk_ignore_unused rootwait root=/dev/nfs rw ip=dhcp nfsroot=192.168.30.2:/export/CentOS,nfsvers=3,tcp\0" \
 	"autoload=no\0" \
 	"netstart=0x04000000\0" \
