@@ -1,13 +1,7 @@
 #include <configs/xilinx_zynqmp.h>
 
-#define pushfoo _Pragma("push_macro(\"CONFIG_EXTRA_ENV_SETTINGS\")") //for convenience
+#define pushfoo _Pragma("push_macro(\"CONFIG_EXTRA_ENV_SETTINGS\")")
 #define popfoo _Pragma("pop_macro(\"CONFIG_EXTRA_ENV_SETTINGS\")")
-
-// #define CONFIG_SERVERIP 192.168.30.2
-
-// #define STRING2(x) #x
-// #define STRING(x) STRING2(x)
-// #pragma message(STRING(CONFIG_EXTRA_ENV_SETTINGS))
 
 pushfoo
 #undef CONFIG_EXTRA_ENV_SETTINGS
@@ -19,4 +13,3 @@ pushfoo
 	"netboot=dhcp && setenv serverip 192.168.30.2 && tftpboot ${netstart} ${kernel_img} && bootm ${netstart}\0" \
 	"bootcmd=run netboot\0" \
 ""
-// #pragma message(CONFIG_EXTRA_ENV_SETTINGS)
