@@ -10,6 +10,7 @@ use work.SERV_Ctrl.all;
 
 entity services is
   generic (
+    CLK_FREQ            : integer;
     ALLOCATED_MEMORY_RANGE : integer
     );
   port (
@@ -118,7 +119,7 @@ begin  -- architecture behavioral
   end process LED0_Mode_sel;
   LED_Patterns_1: entity work.LED_Patterns
     generic map (
-      CLKFREQ => 50000000)
+      CLKFREQ => CLK_FREQ)
     port map (
       clk   => clk_axi,
       reset => '0',
@@ -127,7 +128,7 @@ begin  -- architecture behavioral
       LEDs  => FP_regs(0));  
   FrontPanel_UI_1: entity work.FrontPanel_UI
     generic map (
-      CLKFREQ      => 50000000,
+      CLKFREQ      => CLK_FREQ,
       REG_COUNT    => FP_REG_COUNT,
       LEDORDER      => FP_LED_ORDER)
     port map (
