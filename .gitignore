@@ -34,8 +34,12 @@ bd/*/*
 bit
 kernel/hw
 kernel/*
+!kernel/output/BOOT.BIN
+!kernel/output/boot.scr
+!kernel/output/image.ub
 !kernel/*.dtsi_post_chunk
 !kernel/*.dtsi_chunk
+!kernel/scripts
 kernel/zynq_os
 !kernel/configs
 /os/Kintex_slaves.yaml

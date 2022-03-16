@@ -1,17 +1,20 @@
 #add path so build can be more generic
 include ../build-scripts/mk/helpers.mk
+OUTPUT_MARKUP= 2>&1 | tee -a make_log.txt ${CCZE_CMD}
 
 #################################################################################
 # VIVADO stuff
 #################################################################################
-BUILD_VIVADO_VERSION?=2020.2
-BUILD_VIVADO_PETALINUX="/work/Xilinx/PetaLinux/"$(BUILD_VIVADO_VERSION)"/tool/settings.sh"
+BUILD_PETALINUX_VERSION?=2020.2
+BUILD_PETALINUX_ROOT?="/opt/Xilinx/petalinux/"
+#BUILD_VIVADO_PETALINUX="/work/Xilinx/PetaLinux/"$(BUILD_VIVADO_VERSION)"/tool/settings.sh"
 #BUILD_VIVADO_PETALINUX="/work/Xilinx/petalinux/"$(BUILD_VIVADO_VERSION)"/settings.sh"
+SOURCE_PETALINUX_ENV=${BUILD_PETALINUX_ROOT}$(BUILD_PETALINUX_VERSION)"/settings.sh"
 
-ifeq ($(BUILD_VIVADO_VERSION),2018.2)
+ifeq ($(BUILD_PETALINUX_VERSION),2018.2)
 	PETALINUX_OLD_CONFIG_OPTION=--oldconfig
 else 
-ifeq ($(BUILD_VIVADO_VERSION),2018.3)
+ifeq ($(BUILD_PETALINUX_VERSION),2018.3)
 	PETALINUX_OLD_CONFIG_OPTION=--oldconfig
 else
 	PETALINUX_OLD_CONFIG_OPTION=--silentconfig
@@ -119,6 +122,8 @@ define copy_configs =
 	#copy files for zynq fsbl
 	@mkdir -p $(FSBL_BASE)/files/git/lib/sw_apps/zynq_fsbl/src/
 	@cp    ../$(CONFIGS_BASE)/$$@/autogen/AXI_slave_addrs.h $(FSBL_BASE)/files/git/lib/sw_apps/zynq_fsbl/src/
+	#build the SI files needed
+	@$(CONFIGS_BASE)/$$@/fsbl/build_mods.sh $(OUTPUT_MARKUP) || :
 	@echo "layer config (if needed)"
 	@cp ./configs/$$@/configs/layer.conf $(ZYNQ_OS_PROJECT_PATH)/project-spec/meta-user/conf/ || :
 	@echo "End of mods"
@@ -133,22 +138,22 @@ endef
 define build_project =
 	@echo "Config the project with info from the HW"
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
-	source $(BUILD_VIVADO_PETALINUX) && \
+	source $(SOURCE_PETALINUX_ENV) && \
 	pwd && \
 	petalinux-config --get-hw-description ../hw/ $(PETALINUX_OLD_CONFIG_OPTION) $(OUTPUT_MARKUP)
 	@echo "Apply all mods"
 	$(copy_configs) 
 	@echo "Reset the project build"
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
-	source $(BUILD_VIVADO_PETALINUX) && \
+	source $(SOURCE_PETALINUX_ENV) && \
 	petalinux-build -x mrproper $(OUTPUT_MARKUP)
 	@echo "Build the project"
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
-	source $(BUILD_VIVADO_PETALINUX) && \
+	source $(SOURCE_PETALINUX_ENV) && \
 	petalinux-build $(OUTPUT_MARKUP)
 	@echo "Packaging images"
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
-	source $(BUILD_VIVADO_PETALINUX) && \
+	source $(SOURCE_PETALINUX_ENV) && \
 	petalinux-build -x package $(OUTPUT_MARKUP)
 endef
 
@@ -160,13 +165,13 @@ define build_7s =
 	@echo "clean out old things"
 	$(setup_path)
 	@echo "Create petalinux project"
-	source $(BUILD_VIVADO_PETALINUX) && \
+	source $(SOURCE_PETALINUX_ENV) && \
 	petalinux-create --type project --name $(ZYNQ_OS) --template zynq --force $(OUTPUT_MARKUP)
 	@echo "build"
 	$(build_project)
 	@echo "package"
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
-	source $(BUILD_VIVADO_PETALINUX) && \
+	source $(SOURCE_PETALINUX_ENV) && \
 	petalinux-package --boot --format BIN --fsbl images/linux/zynq_fsbl.elf --fpga ../$$<  --uboot --force $(OUTPUT_MARKUP)
 	@echo "Build ended:"
 	@date
@@ -176,13 +181,13 @@ define build_USp =
 	@echo "clean out old things"
 	$(setup_path)
 	@echo "Create petalinux project"
-	source $(BUILD_VIVADO_PETALINUX) && \
+	source $(SOURCE_PETALINUX_ENV) && \
 	petalinux-create --type project --name $(ZYNQ_OS) --template zynqMP --force $(OUTPUT_MARKUP)
 	@echo "build"
 	$(build_project)
 	@echo "package"
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
-	source $(BUILD_VIVADO_PETALINUX) && \
+	source $(SOURCE_PETALINUX_ENV) && \
 	petalinux-package --boot --format BIN --fsbl images/linux/zynqmp_fsbl.elf --fpga ../$$<  --uboot images/linux/u-boot.elf --pmufw images/linux/pmufw.elf --atf images/linux/bl31.elf  --force $(OUTPUT_MARKUP)
 	@echo "Build ended:"
 	@date
@@ -203,10 +208,14 @@ get_built_dts : ${ZYNQ_OS_PROJECT_PATH}/images/linux/system.dtb
 
 reconfig_kernel:
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
-	source $(BUILD_VIVADO_PETALINUX) && \
+	source $(SOURCE_PETALINUX_ENV) && \
 	petalinux-config -c kernel
 
 reconfig:
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
-	source $(BUILD_VIVADO_PETALINUX) && \
+	source $(SOURCE_PETALINUX_ENV) && \
 	petalinux-config
+
+docker_% :
+	docker pull centos:centos7
+	time docker run -it -v ${PWD}/../:/app:Z -v /opt:/opt:Z,ro centos:centos7 /app/kernel/scripts/build_container.sh $*
