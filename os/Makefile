@@ -16,7 +16,7 @@ rev1_% : CONFIG_DIR=${CONFIG_BASE_DIR}/rev1
 rev2_% : CONFIG_DIR=${CONFIG_BASE_DIR}/rev2
 rev2a_% : CONFIG_DIR=${CONFIG_BASE_DIR}/rev2a
 
-INSTALL_BASE_PATH=${PWD}/image/
+INSTALL_BASE_PATH?=${PWD}/image/
 #INSTALL_PATH=${INSTALL_BASE_PATH}
 rev1_xc7z035.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev1_xc7z035/
 rev1_xc7z045.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev1_xc7z035/
@@ -24,6 +24,7 @@ rev2_xc7z035.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev2_xc7z035/
 rev2_xc7z045.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev2_xc7z045/
 rev2_xczu7ev.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev2_xczu7ev/
 rev2a_xczu7ev.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev2a_xczu7ev/
+rev2a_xc7z035.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev2a_xc7z035/
 
 SCRIPTS_PATH=${PWD}/scripts
 
@@ -111,6 +112,14 @@ include mk/overlay-tools.mk
 	sudo rm -rf ${TMP_PATH}/*
 	cd ${INSTALL_PATH} && \
 		sudo tar --numeric-owner -p -zcf ../$@ ./
+
+
+#################################################################################
+#docker builds 
+#################################################################################
+docker_% :
+	docker pull centos:centos7
+	time docker run -it -v ${PWD}:/app:Z centos:centos7 /app/scripts/docker_build.sh $*
 
 
 #################################################################################

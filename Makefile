@@ -149,7 +149,8 @@ interactive :
 	vivado -mode tcl
 
 $(BIT_BASE)%.bit	: $(SLAVE_DTSI_PATH)/config_%.yaml $(ADDRESS_TABLE_CREATION_PATH)/config_%.yaml 
-	@ln -s $(ADDRESS_TABLE_CREATION_PATH)/config_$*.yaml $(ADDRESS_TABLE_CREATION_PATH)/config.yaml
+#	@ln -s $(ADDRESS_TABLE_CREATION_PATH)/config_$*.yaml $(ADDRESS_TABLE_CREATION_PATH)/config.yaml
+	@ln -s config_$*.yaml $(ADDRESS_TABLE_CREATION_PATH)/config.yaml
 	source $(BUILD_VIVADO_SHELL) &&\
 	mkdir -p ${MAKE_PATH}/kernel/hw &&\
 	mkdir -p ${MAKE_PATH}/proj &&\
