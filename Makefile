@@ -21,15 +21,6 @@ SETUP_BUILD_TCL=${BUILD_SCRIPTS_PATH}/SetupAndBuild.tcl
 HW_TCL=${BUILD_SCRIPTS_PATH}/Run_hw.tcl
 
 
-
-#################################################################################
-# Source files
-#################################################################################
-PL_PATH=${MAKE_PATH}/src
-BD_PATH=${MAKE_PATH}/bd
-CORES_PATH=${MAKE_PATH}/cores
-#ADDRESS_TABLE = ${MAKE_PATH}/os/address_table/address_apollo.xml
-
 ################################################################################
 # Configs
 #################################################################################
@@ -45,31 +36,25 @@ endef
 #################################################################################
 # Short build names
 #################################################################################
-
 BIT_BASE=${MAKE_PATH}/bit/top_
 
+#################################################################################
+# Paths
+#################################################################################
+SLAVE_DEF_FILE_BASE=${MAKE_PATH}/${CONFIGS_BASE_PATH}
+OS_BUILD_PATH=${MAKE_PATH}/os/
+KERNEL_BUILD_PATH=${MAKE_PATH}/kernel/
+ADDRESS_TABLE_CREATION_PATH=${KERNEL_BUILD_PATH}
 
 #################################################################################
 # preBuild 
 #################################################################################
-SLAVE_DEF_FILE_BASE=${MAKE_PATH}/${CONFIGS_BASE_PATH}
-ADDSLAVE_TCL_PATH=${MAKE_PATH}/src/ZynqPS/
-OS_BUILD_PATH=${MAKE_PATH}/os/
-ADDRESS_TABLE_CREATION_PATH=${OS_BUILD_PATH}
-SLAVE_DTSI_PATH=${MAKE_PATH}/kernel/
-MAP_TEMPLATE_FILE=${MAKE_PATH}/regmap_helper/templates/axi_generic/template_map.vhd
 
+MAP_TEMPLATE_FILE=${MAKE_PATH}/regmap_helper/templates/axi_generic/template_map.vhd
 ifneq ("$(wildcard ${BUILD_SCRIPTS_PATH}/mk/preBuild.mk)","")
   include ${BUILD_SCRIPTS_PATH}/mk/preBuild.mk
 endif
 
-#################################################################################
-# pull_cm
-# fetch the CM files for building OS/Kernel
-#################################################################################
-ifneq ("$(wildcard ${BUILD_SCRIPTS_PATH}/mk/pull_CM.mk)","")
-  include ${BUILD_SCRIPTS_PATH}/mk/pull_CM.mk
-endif
 
 #################################################################################
 # address tables
@@ -88,9 +73,6 @@ endif
 #################################################################################
 # Clean
 #################################################################################
-clean_os:
-	@rm -f ${OS_BUILD_PATH}/*.yaml
-	@rm -rf ${OS_BUILD_PATH}/address_table*
 clean_ip:
 	@echo "Cleaning up ip dcps"
 	@find ${MAKE_PATH}/cores -type f | { grep -v xci || true; } | awk '{print "rm " $$1}' | bash
@@ -107,7 +89,7 @@ clean_ip_%:
 clean_autogen:
 	rm -rf configs/*/autogen/*
 
-clean: clean_os clean_ip clean_bit clean_kernel
+clean: clean_ip clean_bit clean_kernel clean_address_tables
 	@rm -rf ${MAKE_PATH}/proj/*
 	@echo "Cleaning up"
 
@@ -148,8 +130,7 @@ interactive :
 	cd proj &&\
 	vivado -mode tcl
 
-$(BIT_BASE)%.bit	: $(SLAVE_DTSI_PATH)/config_%.yaml $(ADDRESS_TABLE_CREATION_PATH)/config_%.yaml 
-#	@ln -s $(ADDRESS_TABLE_CREATION_PATH)/config_$*.yaml $(ADDRESS_TABLE_CREATION_PATH)/config.yaml
+$(BIT_BASE)%.bit	: $(ADDRESS_TABLE_CREATION_PATH)/config_%.yaml 
 	@ln -s config_$*.yaml $(ADDRESS_TABLE_CREATION_PATH)/config.yaml
 	source $(BUILD_VIVADO_SHELL) &&\
 	mkdir -p ${MAKE_PATH}/kernel/hw &&\
@@ -165,7 +146,6 @@ full_%: clean clean_bd clean_kernel clean_bit clean_remote clean_CM clean_prebui
 	cd kernel && $(MAKE) -f Makefile clean && cd ${MAKE_PATH}
 	$(MAKE) init
 	$(MAKE) ${BUILD_NAME}
-	$(MAKE) ${ADDRESS_TABLE}
 	cd kernel && $(MAKE) {BUILD_NAME} && cd ${MAKE_PATH}
 	cd os     && $(MAKE) {BUILD_NAME}.tar.gz && cd ${MAKE_PATH}
 

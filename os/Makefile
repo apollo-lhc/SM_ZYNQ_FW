@@ -46,8 +46,6 @@ all: rev1_xc7z035.tar.gz rev2_xc7z035.tar.gz rev2_xczu7ev.tar.gz
 shell:
 	sudo chroot ${INSTALL_PATH} /${QEMU_PATH}/${QEMU}  /bin/bash
 
-dist_clean: clean
-	rm -rf address_table
 clean:
 	rm -f *.yaml
 	sudo rm -rf ${INSTALL_BASE_PATH}

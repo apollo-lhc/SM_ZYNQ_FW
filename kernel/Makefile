@@ -189,6 +189,9 @@ define build_USp =
 	@cd $(ZYNQ_OS_PROJECT_PATH) &&\
 	source $(SOURCE_PETALINUX_ENV) && \
 	petalinux-package --boot --format BIN --fsbl images/linux/zynqmp_fsbl.elf --fpga ../$$<  --uboot images/linux/u-boot.elf --pmufw images/linux/pmufw.elf --atf images/linux/bl31.elf  --force $(OUTPUT_MARKUP)
+#	build a tarball of the firmware files and the address table files
+#	for -C, remember that the have state, so ../ infront of address talbes because of the output dir change
+	tar -h -zcf $$@.tar.gz -C output BOOT.BIN boot.scr image.ub -C ../address_tables/ address_table
 	@echo "Build ended:"
 	@date
 endef
