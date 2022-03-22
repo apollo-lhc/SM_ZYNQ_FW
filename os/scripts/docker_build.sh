@@ -1,9 +1,18 @@
 #!/bin/bash
 
+# exit when any command fails
+set -e
+
+
 if [ $# -gt 0 ]; then
     #install the crap we need
-    yum install make wget sudo  python-augeas dnf python3-pip git -y
+    yum update -y
+    yum install selinux-policy-targeted -y
+    yum install container-selinux -y
+    yum install coreutils make wget sudo python-augeas dnf python3-pip git -y
 
+
+    
     #create a directory to build in
     mkdir /tmp/build
     #copy the needed files to it

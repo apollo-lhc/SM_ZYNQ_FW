@@ -78,7 +78,7 @@ include mk/overlay-tools.mk
 	# Add rev specific mods
 	@echo ${CONFIG_DIR}
 	sudo cp -r ${CONFIG_DIR}/file_system/* ${INSTALL_PATH}
-	sudo chmod o+x ${ETC_PATH}/rc.d/rc.local
+	sudo chmod o+x ${ETC_PATH}/rc.local
 	#Remove ipv6 from lighttpd
 	sudo sed -i -e "s/server.use-ipv6 = \"enable\"/server.use-ipv6 = \"disable\"/g" ${ETC_PATH}/lighttpd/lighttpd.conf 
 	#this service breaks things

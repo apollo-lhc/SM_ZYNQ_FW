@@ -33,3 +33,14 @@ total 24
 To copy the image to a ApolloSM, do the following in the ./image folder
 #sudo rsync -P -r -l -p -o -g -W -c --numeric-ids ./ root@host:/
 sudo rsync -P -r -l -p -o -g -W -c --numeric-ids --exclude 'dev/null' ./ root@host:/
+
+
+
+Building:
+
+On an selinux machine (centos/redhad) just do make docker_BUILD
+
+On non-selinux machines you must build direactly and install
+
+debian:
+  augeas-tools python3-augeas

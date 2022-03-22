@@ -19,7 +19,7 @@ qemu_bins=dirname
 etc=dirname
 
 def run_dnf(rootfs,inst,what):
-    cmd=[ "dnf", "-y", "--skip-broken" ,"--nodocs", "-c",dnf_conf, "--releasever=7", "--forcearch="+arch, "--repo=centos-base,centos-updates,centos-extras,"+epel,"--verbose", "--installroot="+rootfs, inst ] + what
+    cmd=[ "dnf", "--rpmverbosity=debug", "-y", "--skip-broken" ,"--nodocs", "-c",dnf_conf, "--releasever=7", "--forcearch="+arch, "--repo=centos-base,centos-updates,centos-extras,"+epel,"--verbose", "--installroot="+rootfs, inst ] + what
     print(cmd)
     try:
         process=subprocess.Popen(cmd,stdout=subprocess.PIPE,shell=False)
