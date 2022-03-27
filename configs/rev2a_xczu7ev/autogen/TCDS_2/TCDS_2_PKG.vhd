@@ -412,6 +412,7 @@ package TCDS_2_CTRL is
     USERCLK_TX                 :std_logic;   
     USERCLK_RX                 :std_logic;   
     DRP                        :std_logic;   
+    CPLL                       :std_logic;   
   end record TCDS_2_LTCDS_RESET_CTRL_t;
 
 
@@ -423,7 +424,8 @@ package TCDS_2_CTRL is
                                                                              RX_DATAPATH => '0',
                                                                              USERCLK_TX => '0',
                                                                              USERCLK_RX => '0',
-                                                                             DRP => '0'
+                                                                             DRP => '0',
+                                                                             CPLL => '0'
                                                                             );
   type TCDS_2_LTCDS_STATUS_MON_t is record
     PHY_RESET                  :std_logic;     -- Aurora phy in reset

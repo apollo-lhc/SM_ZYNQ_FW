@@ -229,7 +229,8 @@ begin
       loopback_in                           => Ctrl(iCM).LOOPBACK,
       drprst_in(0)                          => Ctrl(iCM).RESET.DRP,
       txoutclksel_in                        => Ctrl(iCM).TX_OUTCLK_SEL,
-      rxoutclksel_in                        => Ctrl(iCM).RX_OUTCLK_SEL);--Mon(iCM).DEBUG.tx.pma_reset_done);
+      rxoutclksel_in                        => Ctrl(iCM).RX_OUTCLK_SEL,
+      cpllreset_in(0)                       => Ctrl(iCM).RESET.CPLL);--Mon(iCM).DEBUG.tx.pma_reset_done);
     
 
     clk_tx_out(iCM-1) <= clk_tx_int(iCM-1);
