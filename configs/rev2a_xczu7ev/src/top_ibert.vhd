@@ -59,8 +59,8 @@ entity top is
     CLK_TTC_P         : in  std_logic;
     CLK_TTC_N         : in  std_logic;
 
-    CLK_REC_OUT_P     : out std_logic;
-    CLK_REC_OUT_N     : out std_logic;
+--    CLK_REC_OUT_P     : out std_logic;
+--    CLK_REC_OUT_N     : out std_logic;
     
 --    TTC_P             : in  std_logic;
 --    TTC_N             : in  std_logic;
@@ -189,11 +189,11 @@ entity top is
     -----------------------------------------------------------------------------------------
 
 
-    REFCLK_CMS_P            : in std_logic_vector(1 downto 0);
-    REFCLK_CMS_N            : in std_logic_vector(1 downto 0);
+--    REFCLK_CMS_P            : in std_logic_vector(1 downto 0);
+--    REFCLK_CMS_N            : in std_logic_vector(1 downto 0);
 
-    REFCLK_REC_P            : in std_logic;
-    REFCLK_REC_N            : in std_logic;
+--    REFCLK_REC_P            : in std_logic;
+--    REFCLK_REC_N            : in std_logic;
     
     TCDS_TTC_P              : in  std_logic;
     TCDS_TTC_N              : in  std_logic;
@@ -219,10 +219,10 @@ entity top is
     REFCLK_C2C2_N          : in    std_logic;
 
 
-    LDAQ_RX_P              : in    std_logic;
-    LDAQ_RX_N              : in    std_logic;
-    LDAQ_TX_P              : out   std_logic;
-    LDAQ_TX_N              : out   std_logic;
+--    LDAQ_RX_P              : in    std_logic;
+--    LDAQ_RX_N              : in    std_logic;
+--    LDAQ_TX_P              : out   std_logic;
+--    LDAQ_TX_N              : out   std_logic;
     -------------------------------------------------------------------------------------------
     -- IPMC Interface
     -------------------------------------------------------------------------------------------
@@ -230,7 +230,12 @@ entity top is
     IPMC_SDA               : inout std_logic;
     IPMC_SCL               : in    std_logic;
 --    IPMC_IN                : in    std_logic_vector(3 downto 0);
-    IPMC_OUT               : out   std_logic_vector(1 downto 0)
+    IPMC_OUT               : out   std_logic_vector(1 downto 0);
+
+    gth_refclk0p_i :  in  std_logic_vector(0 downto 0); 
+    gth_refclk0n_i :  in  std_logic_vector(0 downto 0); 
+    gth_refclk1p_i :  in  std_logic_vector(0 downto 0); 
+    gth_refclk1n_i :  in  std_logic_vector(0 downto 0)
 
     
     );    
@@ -387,6 +392,22 @@ architecture structure of top is
   signal reset_c2c : std_logic;
 
 
+
+  component example_ibert_ultrascale_gth_0 is
+    port(
+      gth_txn_o      :  out std_logic_vector(4-1 downto 0);	
+      gth_txp_o      :  out std_logic_vector(4-1 downto 0);	
+      gth_rxn_i      :  in  std_logic_vector(4-1 downto 0);    	
+      gth_rxp_i      :  in  std_logic_vector(4-1 downto 0);   	
+      gth_sysclk_i   :  in  std_logic;                         	
+      gth_refclk0p_i :  in  std_logic_vector(4-1 downto 0);
+      gth_refclk0n_i :  in  std_logic_vector(4-1 downto 0);
+      gth_refclk1p_i :  in  std_logic_vector(4-1 downto 0);
+      gth_refclk1n_i :  in  std_logic_vector(4-1 downto 0)
+      );
+  end component;
+  signal gth_txn_o : std_logic_vector(4-1 downto 0);
+  signal gth_txp_o : std_logic_vector(4-1 downto 0);
   
 
   
@@ -423,7 +444,7 @@ begin  -- architecture structure
 
   zynq_bd_wrapper_1: entity work.zynq_bd_wrapper
     port map (
-      clk_125              => clk_125Mhz,
+--      clk_125              => clk_125Mhz,
       AXI_RST_N(0)         => axi_reset_n,
       AXI_CLK              => AXI_clk,
       CM_PB_UART_rxd                     => C2C_pB_UART_tx,
@@ -562,45 +583,45 @@ begin  -- architecture structure
       PLXVC_wstrb                => AXI_BUS_WMOSI(6).data_write_strobe,
       PLXVC_wvalid               => AXI_BUS_WMOSI(6).data_valid,
 
-      TCDS_2_araddr                => AXI_BUS_RMOSI(7).address,
-      TCDS_2_arprot                => AXI_BUS_RMOSI(7).protection_type,
-      TCDS_2_arready               => AXI_BUS_RMISO(7).ready_for_address,
-      TCDS_2_arvalid               => AXI_BUS_RMOSI(7).address_valid,
-      TCDS_2_awaddr                => AXI_BUS_WMOSI(7).address,
-      TCDS_2_awprot                => AXI_BUS_WMOSI(7).protection_type,
-      TCDS_2_awready               => AXI_BUS_WMISO(7).ready_for_address,
-      TCDS_2_awvalid               => AXI_BUS_WMOSI(7).address_valid,
-      TCDS_2_bready                => AXI_BUS_WMOSI(7).ready_for_response,
-      TCDS_2_bresp                 => AXI_BUS_WMISO(7).response,
-      TCDS_2_bvalid                => AXI_BUS_WMISO(7).response_valid,
-      TCDS_2_rdata                 => AXI_BUS_RMISO(7).data,
-      TCDS_2_rready                => AXI_BUS_RMOSI(7).ready_for_data,
-      TCDS_2_rresp                 => AXI_BUS_RMISO(7).response,
-      TCDS_2_rvalid                => AXI_BUS_RMISO(7).data_valid,
-      TCDS_2_wdata                 => AXI_BUS_WMOSI(7).data,
-      TCDS_2_wready                => AXI_BUS_WMISO(7).ready_for_data,
-      TCDS_2_wstrb                 => AXI_BUS_WMOSI(7).data_write_strobe,
-      TCDS_2_wvalid                => AXI_BUS_WMOSI(7).data_valid,
-
-      LDAQ_araddr                  => AXI_BUS_RMOSI(8).address,
-      LDAQ_arprot                  => AXI_BUS_RMOSI(8).protection_type,
-      LDAQ_arready                 => AXI_BUS_RMISO(8).ready_for_address,
-      LDAQ_arvalid                 => AXI_BUS_RMOSI(8).address_valid,
-      LDAQ_awaddr                  => AXI_BUS_WMOSI(8).address,
-      LDAQ_awprot                  => AXI_BUS_WMOSI(8).protection_type,
-      LDAQ_awready                 => AXI_BUS_WMISO(8).ready_for_address,
-      LDAQ_awvalid                 => AXI_BUS_WMOSI(8).address_valid,
-      LDAQ_bready                  => AXI_BUS_WMOSI(8).ready_for_response,
-      LDAQ_bresp                   => AXI_BUS_WMISO(8).response,
-      LDAQ_bvalid                  => AXI_BUS_WMISO(8).response_valid,
-      LDAQ_rdata                   => AXI_BUS_RMISO(8).data,
-      LDAQ_rready                  => AXI_BUS_RMOSI(8).ready_for_data,
-      LDAQ_rresp                   => AXI_BUS_RMISO(8).response,
-      LDAQ_rvalid                  => AXI_BUS_RMISO(8).data_valid,
-      LDAQ_wdata                   => AXI_BUS_WMOSI(8).data,
-      LDAQ_wready                  => AXI_BUS_WMISO(8).ready_for_data,
-      LDAQ_wstrb                   => AXI_BUS_WMOSI(8).data_write_strobe,
-      LDAQ_wvalid                  => AXI_BUS_WMOSI(8).data_valid,
+--      TCDS_2_araddr                => AXI_BUS_RMOSI(7).address,
+--      TCDS_2_arprot                => AXI_BUS_RMOSI(7).protection_type,
+--      TCDS_2_arready               => AXI_BUS_RMISO(7).ready_for_address,
+--      TCDS_2_arvalid               => AXI_BUS_RMOSI(7).address_valid,
+--      TCDS_2_awaddr                => AXI_BUS_WMOSI(7).address,
+--      TCDS_2_awprot                => AXI_BUS_WMOSI(7).protection_type,
+--      TCDS_2_awready               => AXI_BUS_WMISO(7).ready_for_address,
+--      TCDS_2_awvalid               => AXI_BUS_WMOSI(7).address_valid,
+--      TCDS_2_bready                => AXI_BUS_WMOSI(7).ready_for_response,
+--      TCDS_2_bresp                 => AXI_BUS_WMISO(7).response,
+--      TCDS_2_bvalid                => AXI_BUS_WMISO(7).response_valid,
+--      TCDS_2_rdata                 => AXI_BUS_RMISO(7).data,
+--      TCDS_2_rready                => AXI_BUS_RMOSI(7).ready_for_data,
+--      TCDS_2_rresp                 => AXI_BUS_RMISO(7).response,
+--      TCDS_2_rvalid                => AXI_BUS_RMISO(7).data_valid,
+--      TCDS_2_wdata                 => AXI_BUS_WMOSI(7).data,
+--      TCDS_2_wready                => AXI_BUS_WMISO(7).ready_for_data,
+--      TCDS_2_wstrb                 => AXI_BUS_WMOSI(7).data_write_strobe,
+--      TCDS_2_wvalid                => AXI_BUS_WMOSI(7).data_valid,
+--
+--      LDAQ_araddr                  => AXI_BUS_RMOSI(8).address,
+--      LDAQ_arprot                  => AXI_BUS_RMOSI(8).protection_type,
+--      LDAQ_arready                 => AXI_BUS_RMISO(8).ready_for_address,
+--      LDAQ_arvalid                 => AXI_BUS_RMOSI(8).address_valid,
+--      LDAQ_awaddr                  => AXI_BUS_WMOSI(8).address,
+--      LDAQ_awprot                  => AXI_BUS_WMOSI(8).protection_type,
+--      LDAQ_awready                 => AXI_BUS_WMISO(8).ready_for_address,
+--      LDAQ_awvalid                 => AXI_BUS_WMOSI(8).address_valid,
+--      LDAQ_bready                  => AXI_BUS_WMOSI(8).ready_for_response,
+--      LDAQ_bresp                   => AXI_BUS_WMISO(8).response,
+--      LDAQ_bvalid                  => AXI_BUS_WMISO(8).response_valid,
+--      LDAQ_rdata                   => AXI_BUS_RMISO(8).data,
+--      LDAQ_rready                  => AXI_BUS_RMOSI(8).ready_for_data,
+--      LDAQ_rresp                   => AXI_BUS_RMISO(8).response,
+--      LDAQ_rvalid                  => AXI_BUS_RMISO(8).data_valid,
+--      LDAQ_wdata                   => AXI_BUS_WMOSI(8).data,
+--      LDAQ_wready                  => AXI_BUS_WMISO(8).ready_for_data,
+--      LDAQ_wstrb                   => AXI_BUS_WMOSI(8).data_write_strobe,
+--      LDAQ_wvalid                  => AXI_BUS_WMOSI(8).data_valid,
 
       init_clk                  =>  AXI_C2C_aurora_init_clk,
       C2C1_phy_Rx_rxn           =>  AXI_C2C_CM1_Rx_N(0 to 0),
@@ -798,64 +819,64 @@ begin  -- architecture structure
 
 
 
-      C2C2b_phy_Rx_rxn =>  AXI_C2C_CM2_Rx_N(1 to 1),
-      C2C2b_phy_Rx_rxp =>  AXI_C2C_CM2_Rx_P(1 to 1),
-      C2C2b_phy_Tx_txn =>  AXI_C2C_CM2_Tx_N(1 to 1),
-      C2C2b_phy_Tx_txp =>  AXI_C2C_CM2_Tx_P(1 to 1),
-      C2C2b_phy_power_down   => AXI_C2C_powerdown(4),
-      C2C2b_aurora_do_cc                 => CM_C2C_Mon.Link(4).status.do_cc,
-      C2C2b_aurora_pma_init_in           => CM_C2C_Ctrl.Link(4).status.initialize,
-      C2C2b_axi_c2c_config_error_out     => CM_C2C_Mon.Link(4).status.config_error,
-      C2C2b_axi_c2c_link_error_out       => CM_C2C_Mon.Link(4).status.link_error,
-      C2C2b_axi_c2c_link_status_out      => CM_C2C_Mon.Link(4).status.link_good,
-      C2C2b_axi_c2c_multi_bit_error_out  => CM_C2C_Mon.Link(4).status.mb_error,
-      C2C2b_phy_gt_pll_lock              => CM_C2C_Mon.Link(4).status.phy_gt_pll_lock,
-      C2C2b_phy_hard_err                 => CM_C2C_Mon.Link(4).status.phy_hard_err,
-      C2C2b_phy_lane_up(0)               => CM_C2C_Mon.Link(4).status.phy_lane_up(0),
-      C2C2b_phy_link_reset_out           => CM_C2C_Mon.Link(4).status.phy_reset,
-      C2C2b_phy_soft_err                 => CM_C2C_Mon.Link(4).status.phy_soft_err,
-
-      C2C2b_PHY_DEBUG_cplllock(0)        => CM_C2C_Mon.Link(4).debug.cpll_lock,
-      C2C2b_PHY_DEBUG_dmonitorout        => CM_C2C_Mon.Link(4).debug.dmonitor,
-      C2C2b_PHY_DEBUG_eyescandataerror(0)=> CM_C2C_Mon.Link(4).debug.eyescan_data_error,
-      C2C2b_PHY_DEBUG_eyescanreset(0)    => CM_C2C_Ctrl.Link(4).debug.eyescan_reset,
-      C2C2b_PHY_DEBUG_eyescantrigger(0)  => CM_C2C_Ctrl.Link(4).debug.eyescan_trigger,
-      C2C2b_PHY_DEBUG_pcsrsvdin          => CM_C2C_Ctrl.Link(4).debug.PCS_RSV_DIN,
-      C2C2b_PHY_DEBUG_qplllock(0)        => CM_C2C_Mon.Link(4).debug.QPLL_LOCK,
-      
-      C2C2b_PHY_DEBUG_rxbufreset(0)      => CM_C2C_Ctrl.Link(4).debug.rx.buf_reset,
-      C2C2b_PHY_DEBUG_rxbufstatus        => CM_C2C_Mon.Link(4).debug.rx.buf_status,
-      C2C2b_PHY_DEBUG_rxcdrhold(0)       => CM_C2C_Ctrl.Link(4).debug.rx.cdr_hold,
-      C2C2b_PHY_DEBUG_rxpmaresetdone(0)  => CM_C2C_Mon.Link(4).debug.rx.pma_reset_done,
-      C2C2b_PHY_DEBUG_rxdfelpmreset(0)   => CM_C2C_Ctrl.Link(4).debug.rx.dfe_lpm_reset,
-      C2C2b_PHY_DEBUG_rxlpmen(0)         => CM_C2C_Ctrl.Link(4).debug.rx.lpm_en,
-      C2C2b_PHY_DEBUG_rxpcsreset(0)      => CM_C2C_Ctrl.Link(4).debug.rx.pcs_reset,    
-      C2C2b_PHY_DEBUG_rxpmareset(0)      => CM_C2C_Ctrl.Link(4).debug.rx.pma_reset,    
-      C2C2b_PHY_DEBUG_rxprbscntreset(0)  => CM_C2C_Ctrl.Link(4).debug.rx.prbs_cnt_rst,
-      C2C2b_PHY_DEBUG_rxprbserr(0)       => CM_C2C_Mon.Link(4).debug.rx.prbs_err,
-      C2C2b_PHY_DEBUG_rxprbssel          => CM_C2C_Ctrl.Link(4).debug.rx.prbs_sel,
-      C2C2b_PHY_DEBUG_rxresetdone(0)     => CM_C2C_Mon.Link(4).debug.rx.reset_done,
-      C2C2b_PHY_DEBUG_rxrate             => CM_C2C_Ctrl.Link(4).debug.rx.rate,
-
-      C2C2b_PHY_DEBUG_txbufstatus        => CM_C2C_Mon.Link(4).debug.tx.buf_status,
-      C2C2b_PHY_DEBUG_txdiffctrl         => CM_C2C_Ctrl.Link(4).debug.tx.diff_ctrl,      
-      C2C2b_PHY_DEBUG_txinhibit(0)       => CM_C2C_Ctrl.Link(4).debug.tx.inhibit,       
-  
-      C2C2b_PHY_DEBUG_txpcsreset(0)      => CM_C2C_Ctrl.Link(4).debug.tx.pcs_reset,      
-      C2C2b_PHY_DEBUG_txpmareset(0)      => CM_C2C_Ctrl.Link(4).debug.tx.pma_reset,      
-      C2C2b_PHY_DEBUG_txpolarity(0)      => CM_C2C_Ctrl.Link(4).debug.tx.polarity,      
-      C2C2b_PHY_DEBUG_txpostcursor       => CM_C2C_Ctrl.Link(4).debug.tx.post_cursor,    
-      C2C2b_PHY_DEBUG_txprbsforceerr(0)  => CM_C2C_Ctrl.Link(4).debug.tx.prbs_force_err,  
-      C2C2b_PHY_DEBUG_txprbssel          => CM_C2C_Ctrl.Link(4).debug.tx.prbs_sel,       
-      C2C2b_PHY_DEBUG_txprecursor        => CM_C2C_Ctrl.Link(4).debug.tx.pre_cursor,     
-      C2C2b_PHY_DEBUG_txresetdone(0)     => CM_C2C_Mon.Link(4).debug.tx.reset_done,
-
-      C2C2b_PHY_DRP_daddr                => CM_C2C_Ctrl.Link(4).drp.address,
-      C2C2b_PHY_DRP_den                  => CM_C2C_Ctrl.Link(4).drp.enable,
-      C2C2b_PHY_DRP_di                   => CM_C2C_Ctrl.Link(4).drp.wr_data,
-      C2C2b_PHY_DRP_do                   => CM_C2C_Mon.Link(4).drp.rd_data,
-      C2C2b_PHY_DRP_drdy                 => CM_C2C_Mon.Link(4).drp.rd_data_valid,
-      C2C2b_PHY_DRP_dwe                  => CM_C2C_Ctrl.Link(4).drp.wr_enable,
+--      C2C2b_phy_Rx_rxn =>  AXI_C2C_CM2_Rx_N(1 to 1),
+--      C2C2b_phy_Rx_rxp =>  AXI_C2C_CM2_Rx_P(1 to 1),
+--      C2C2b_phy_Tx_txn =>  AXI_C2C_CM2_Tx_N(1 to 1),
+--      C2C2b_phy_Tx_txp =>  AXI_C2C_CM2_Tx_P(1 to 1),
+--      C2C2b_phy_power_down   => AXI_C2C_powerdown(4),
+--      C2C2b_aurora_do_cc                 => CM_C2C_Mon.Link(4).status.do_cc,
+--      C2C2b_aurora_pma_init_in           => CM_C2C_Ctrl.Link(4).status.initialize,
+--      C2C2b_axi_c2c_config_error_out     => CM_C2C_Mon.Link(4).status.config_error,
+--      C2C2b_axi_c2c_link_error_out       => CM_C2C_Mon.Link(4).status.link_error,
+--      C2C2b_axi_c2c_link_status_out      => CM_C2C_Mon.Link(4).status.link_good,
+--      C2C2b_axi_c2c_multi_bit_error_out  => CM_C2C_Mon.Link(4).status.mb_error,
+--      C2C2b_phy_gt_pll_lock              => CM_C2C_Mon.Link(4).status.phy_gt_pll_lock,
+--      C2C2b_phy_hard_err                 => CM_C2C_Mon.Link(4).status.phy_hard_err,
+--      C2C2b_phy_lane_up(0)               => CM_C2C_Mon.Link(4).status.phy_lane_up(0),
+--      C2C2b_phy_link_reset_out           => CM_C2C_Mon.Link(4).status.phy_reset,
+--      C2C2b_phy_soft_err                 => CM_C2C_Mon.Link(4).status.phy_soft_err,
+--
+--      C2C2b_PHY_DEBUG_cplllock(0)        => CM_C2C_Mon.Link(4).debug.cpll_lock,
+--      C2C2b_PHY_DEBUG_dmonitorout        => CM_C2C_Mon.Link(4).debug.dmonitor,
+--      C2C2b_PHY_DEBUG_eyescandataerror(0)=> CM_C2C_Mon.Link(4).debug.eyescan_data_error,
+--      C2C2b_PHY_DEBUG_eyescanreset(0)    => CM_C2C_Ctrl.Link(4).debug.eyescan_reset,
+--      C2C2b_PHY_DEBUG_eyescantrigger(0)  => CM_C2C_Ctrl.Link(4).debug.eyescan_trigger,
+--      C2C2b_PHY_DEBUG_pcsrsvdin          => CM_C2C_Ctrl.Link(4).debug.PCS_RSV_DIN,
+--      C2C2b_PHY_DEBUG_qplllock(0)        => CM_C2C_Mon.Link(4).debug.QPLL_LOCK,
+--      
+--      C2C2b_PHY_DEBUG_rxbufreset(0)      => CM_C2C_Ctrl.Link(4).debug.rx.buf_reset,
+--      C2C2b_PHY_DEBUG_rxbufstatus        => CM_C2C_Mon.Link(4).debug.rx.buf_status,
+--      C2C2b_PHY_DEBUG_rxcdrhold(0)       => CM_C2C_Ctrl.Link(4).debug.rx.cdr_hold,
+--      C2C2b_PHY_DEBUG_rxpmaresetdone(0)  => CM_C2C_Mon.Link(4).debug.rx.pma_reset_done,
+--      C2C2b_PHY_DEBUG_rxdfelpmreset(0)   => CM_C2C_Ctrl.Link(4).debug.rx.dfe_lpm_reset,
+--      C2C2b_PHY_DEBUG_rxlpmen(0)         => CM_C2C_Ctrl.Link(4).debug.rx.lpm_en,
+--      C2C2b_PHY_DEBUG_rxpcsreset(0)      => CM_C2C_Ctrl.Link(4).debug.rx.pcs_reset,    
+--      C2C2b_PHY_DEBUG_rxpmareset(0)      => CM_C2C_Ctrl.Link(4).debug.rx.pma_reset,    
+--      C2C2b_PHY_DEBUG_rxprbscntreset(0)  => CM_C2C_Ctrl.Link(4).debug.rx.prbs_cnt_rst,
+--      C2C2b_PHY_DEBUG_rxprbserr(0)       => CM_C2C_Mon.Link(4).debug.rx.prbs_err,
+--      C2C2b_PHY_DEBUG_rxprbssel          => CM_C2C_Ctrl.Link(4).debug.rx.prbs_sel,
+--      C2C2b_PHY_DEBUG_rxresetdone(0)     => CM_C2C_Mon.Link(4).debug.rx.reset_done,
+--      C2C2b_PHY_DEBUG_rxrate             => CM_C2C_Ctrl.Link(4).debug.rx.rate,
+--
+--      C2C2b_PHY_DEBUG_txbufstatus        => CM_C2C_Mon.Link(4).debug.tx.buf_status,
+--      C2C2b_PHY_DEBUG_txdiffctrl         => CM_C2C_Ctrl.Link(4).debug.tx.diff_ctrl,      
+--      C2C2b_PHY_DEBUG_txinhibit(0)       => CM_C2C_Ctrl.Link(4).debug.tx.inhibit,       
+--  
+--      C2C2b_PHY_DEBUG_txpcsreset(0)      => CM_C2C_Ctrl.Link(4).debug.tx.pcs_reset,      
+--      C2C2b_PHY_DEBUG_txpmareset(0)      => CM_C2C_Ctrl.Link(4).debug.tx.pma_reset,      
+--      C2C2b_PHY_DEBUG_txpolarity(0)      => CM_C2C_Ctrl.Link(4).debug.tx.polarity,      
+--      C2C2b_PHY_DEBUG_txpostcursor       => CM_C2C_Ctrl.Link(4).debug.tx.post_cursor,    
+--      C2C2b_PHY_DEBUG_txprbsforceerr(0)  => CM_C2C_Ctrl.Link(4).debug.tx.prbs_force_err,  
+--      C2C2b_PHY_DEBUG_txprbssel          => CM_C2C_Ctrl.Link(4).debug.tx.prbs_sel,       
+--      C2C2b_PHY_DEBUG_txprecursor        => CM_C2C_Ctrl.Link(4).debug.tx.pre_cursor,     
+--      C2C2b_PHY_DEBUG_txresetdone(0)     => CM_C2C_Mon.Link(4).debug.tx.reset_done,
+--
+--      C2C2b_PHY_DRP_daddr                => CM_C2C_Ctrl.Link(4).drp.address,
+--      C2C2b_PHY_DRP_den                  => CM_C2C_Ctrl.Link(4).drp.enable,
+--      C2C2b_PHY_DRP_di                   => CM_C2C_Ctrl.Link(4).drp.wr_data,
+--      C2C2b_PHY_DRP_do                   => CM_C2C_Mon.Link(4).drp.rd_data,
+--      C2C2b_PHY_DRP_drdy                 => CM_C2C_Mon.Link(4).drp.rd_data_valid,
+--      C2C2b_PHY_DRP_dwe                  => CM_C2C_Ctrl.Link(4).drp.wr_enable,
 
 
 
@@ -1204,56 +1225,35 @@ begin  -- architecture structure
       reset_A_async => axi_reset,
       event_b       => '1',
       rate          => Clocking_Mon.AXI_CLK_FREQ);
-   
-  TCDS_1: entity work.TCDS
-    generic map (
-      ALLOCATED_MEMORY_RANGE => to_integer(AXI_RANGE_TCDS_2),
-      AXI_CLK_FREQ => 125000000)
-    port map (
-      clk_axi           => clk_125Mhz,
-      reset_axi_n       => pl_reset_n,
-      slave_readMOSI    => AXI_BUS_RMOSI(7),
-      slave_readMISO    => AXI_BUS_RMISO(7),
-      slave_writeMOSI   => AXI_BUS_WMOSI(7),
-      slave_writeMISO   => AXI_BUS_WMISO(7),
-      clk_sys_125mhz    => clk_125mhz,
-      mgt_tx_p_o        => TCDS_TTS_P,
-      mgt_tx_n_o        => TCDS_TTS_N,
-      mgt_rx_p_i        => TCDS_TTC_P,
-      mgt_rx_n_i        => TCDS_TTC_N,
-      clk_TCDS_REC_in_p  => REFCLK_REC_P,
-      clk_TCDS_REC_in_n  => REFCLK_REC_N,
-      clk_TCDS_320_in_p  => REFCLK_CMS_P(0),
-      clk_TCDS_320_in_n  => REFCLK_CMS_N(0),      
-      clk_TCDS_REC_out_p => CLK_REC_OUT_P,
-      clk_TCDS_REC_out_n => CLK_REC_OUT_N,
-      clk_TCDS           => open,
-      LTTC_P(0)          => CM1_TCDS_TTC_P,
-      LTTC_P(1)          => CM2_TCDS_TTC_P,
-      LTTC_N(0)          => CM1_TCDS_TTC_N,
-      LTTC_N(1)          => CM2_TCDS_TTC_N,
-      LTTS_P(0)          => CM1_TCDS_TTS_P,
-      LTTS_P(1)          => CM2_TCDS_TTS_P,
-      LTTS_N(0)          => CM1_TCDS_TTS_N,
-      LTTS_N(1)          => CM2_TCDS_TTS_N
-      );
 
-  LDAQ_1: entity work.LDAQ
-    generic map (
-      ALLOCATED_MEMORY_RANGE => to_integer(AXI_RANGE_LDAQ)
-      )
-    port map (
-      clk_axi         => axi_clk,         
-      reset_axi_n     => pl_reset_n,      
-      slave_readMOSI  => AXI_BUS_RMOSI(8),
-      slave_readMISO  => AXI_BUS_RMISO(8),
-      slave_writeMOSI => AXI_BUS_WMOSI(8),
-      slave_writeMISO => AXI_BUS_WMISO(8),
-      LDAQ_CLK_P      => refclk_cms_p(1),
-      LDAQ_CLK_N      => refclk_cms_n(1),
-      LDAQ_RX_P       => LDAQ_RX_P,
-      LDAQ_RX_N       => LDAQ_RX_N,
-      LDAQ_TX_P       => LDAQ_TX_P,
-      LDAQ_TX_N       => LDAQ_TX_N);
+  CM2_TCDS_TTC_N          <= gth_txn_o(3);
+  AXI_C2C_CM2_TX_N(1)     <= gth_txn_o(2);
+  TCDS_TTS_N              <= gth_txn_o(1);
+  CM1_TCDS_TTC_N          <= gth_txn_o(0);
+  
+  CM1_TCDS_TTC_P          <= gth_txp_o(0);  
+  TCDS_TTS_P              <= gth_txp_o(1);  
+  AXI_C2C_CM2_TX_P(1)     <= gth_txp_o(2);  
+  CM2_TCDS_TTC_P          <= gth_txp_o(3);  
+
+  iBert_TCDS : entity work.example_ibert_ultrascale_gth_0
+    port map(      
+      gth_txn_o       => gth_txn_o,	
+      gth_txp_o       => gth_txp_o,
+      gth_rxn_i(0)      => CM1_TCDS_TTS_N,
+      gth_rxn_i(1)      => TCDS_TTC_N,
+      gth_rxn_i(2)      => AXI_C2C_CM2_RX_N(1),
+      gth_rxn_i(3)      => CM2_TCDS_TTS_N,
+      gth_rxp_i(0)      => CM1_TCDS_TTS_P,
+      gth_rxp_i(1)      => TCDS_TTC_P,
+      gth_rxp_i(2)      => AXI_C2C_CM2_RX_P(1),
+      gth_rxp_i(3)      => CM2_TCDS_TTS_P,
+      gth_sysclk_i      => clk_200Mhz,
+      gth_refclk0p_i => gth_refclk0p_i,
+      gth_refclk0n_i => gth_refclk0n_i,
+      gth_refclk1p_i => gth_refclk1p_i,
+      gth_refclk1n_i => gth_refclk1n_i
+      );
+  
 
 end architecture structure;
