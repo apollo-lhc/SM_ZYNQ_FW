@@ -221,4 +221,4 @@ reconfig:
 
 docker_% :
 	docker pull centos:centos7
-	time docker run -it -v ${PWD}/../:/app:Z -v /opt:/opt:Z,ro centos:centos7 /app/kernel/scripts/build_container.sh $*
+	time docker run -it -v ${PWD}/../:/app:Z -v /work/Xilinx/petalinux:/work/Xilinx/petalinux:Z,ro centos:centos7 /app/kernel/scripts/build_container.sh $* ${BUILD_PETALINUX_VERSION} ${BUILD_PETALINUX_ROOT}

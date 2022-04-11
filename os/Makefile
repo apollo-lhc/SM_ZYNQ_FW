@@ -117,7 +117,7 @@ include mk/overlay-tools.mk
 #################################################################################
 docker_% :
 	docker pull centos:centos7
-	time docker run -it -v ${PWD}:/app:Z centos:centos7 /app/scripts/docker_build.sh $*
+	time docker run --privileged -it -v ${PWD}:/app:Z centos:centos7 /app/scripts/docker_build.sh $*
 
 
 #################################################################################
