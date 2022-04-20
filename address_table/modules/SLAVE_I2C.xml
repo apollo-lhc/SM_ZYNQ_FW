@@ -9,9 +9,9 @@
 	  <node id="SHUTDOWN"      permission="rw" mask="0x00000020" description="1 when petalinux shuts down"/>
 	</node>
 	<node id="INFO" address="0x1">
-	  <node id="SN"            permission="r"  mask="0x000000FF" description="Service module serial number" parameters="Table=IPMC;Row=_5;Column=ID;Status=1"/>
-	  <node id="SLOT"          permission="r"  mask="0x0000FF00" description="Shelf physical slot IPMB addr"  parameters="Table=IPMC;Row=_5;Column=Addr;Status=1"/>
-	  <node id="RN"         permission="r"  mask="0xFF000000" description="Revision Number"  parameters="Table=IPMC;Row=_5;Column=ID;Status=1"/>
+	  <node id="SN"            permission="r"  mask="0x000000FF" description="Service module serial number" parameters="Table=IPMC;Row=__5;Column=ID;Status=1"/>
+	  <node id="SLOT"          permission="r"  mask="0x0000FF00" description="Shelf physical slot IPMB addr"  parameters="Table=IPMC;Row=__5;Column=Addr;Status=1"/>
+	  <node id="RN"         permission="r"  mask="0xFF000000" description="Revision Number"  parameters="Table=IPMC;Row=__5;Column=ID;Status=1"/>
 	</node>	
 	<node id="ETH0_MAC" address="0x5">
 	  <node id="BYTE_0" address="0x0"        permission="r" mask="0x000000FF" description="eth0 mac adder byte 1"/>
@@ -31,8 +31,8 @@
 	</node>
     </node>      
     <node id="CM" address="0x09">
-      <node id="DONE_KINTEX" address="0x0"        permission="rw" mask="0x00000001" description="KINTEX_PGRM_DONE" parameters="Table=STATUS;Row=CM_FPGA;Column=_4;Format=u;Status=1"/>
-      <node id="DONE_VIRTEX" address="0x0"        permission="rw" mask="0x00000010" description="KINTEX_PGRM_DONE" parameters="Table=STATUS;Row=CM_FPGA;Column=_4;Format=u;Status=1"/>
+      <node id="DONE_KINTEX" address="0x0"        permission="rw" mask="0x00000001" description="KINTEX_PGRM_DONE" parameters="Table=STATUS;Row=CM_FPGA;Column=__4;Format=u;Status=1"/>
+      <node id="DONE_VIRTEX" address="0x0"        permission="rw" mask="0x00000010" description="KINTEX_PGRM_DONE" parameters="Table=STATUS;Row=CM_FPGA;Column=__4;Format=u;Status=1"/>
     </node>
     <!-- <node id="3"  address="0x3" permission="rw"/> -->
     <!-- <node id="4"  address="0x4" permission="rw"/> -->
@@ -46,9 +46,9 @@
   </node>
   <node id="S2" address ="0x10">
     <node id="VAL"  address="0x0" permission="rw">
-      <node id="TEMP"     mask="0x000000FF" permission="r" parameters="Table=STATUS;Row=CM_MCU;Column=_4;Format=u;Status=1;Show=nz"/>
-      <node id="TEMP_MAX" mask="0x0000FF00" permission="r" parameters="Table=STATUS;Row=CM_MCU;Column=_4;Format=u;Status=1;Show=nz"/>
-      <node id="TEMP_MIN" mask="0x00FF0000" permission="r" parameters="Table=STATUS;Row=CM_MCU;Column=_4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP"     mask="0x000000FF" permission="r" parameters="Table=STATUS;Row=CM_MCU;Column=__4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP_MAX" mask="0x0000FF00" permission="r" parameters="Table=STATUS;Row=CM_MCU;Column=__4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP_MIN" mask="0x00FF0000" permission="r" parameters="Table=STATUS;Row=CM_MCU;Column=__4;Format=u;Status=1;Show=nz"/>
     </node>
     <!-- <node id="1"  address="0x1" permission="rw"/> -->
     <!-- <node id="2"  address="0x2" permission="rw"/> -->
@@ -68,9 +68,9 @@
   </node>
   <node id="S3" address ="0x20">
     <node id="VAL"  address="0x0" permission="rw">
-      <node id="TEMP"     mask="0x000000FF" permission="r" parameters="Table=STATUS;Row=CM_FF;Column=_4;Format=u;Status=1;Show=nz"/>
-      <node id="TEMP_MAX" mask="0x0000FF00" permission="r" parameters="Table=STATUS;Row=CM_FF;Column=_4;Format=u;Status=1;Show=nz"/>
-      <node id="TEMP_MIN" mask="0x00FF0000" permission="r" parameters="Table=STATUS;Row=CM_FF;Column=_4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP"     mask="0x000000FF" permission="r" parameters="Table=STATUS;Row=CM_FF;Column=__4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP_MAX" mask="0x0000FF00" permission="r" parameters="Table=STATUS;Row=CM_FF;Column=__4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP_MIN" mask="0x00FF0000" permission="r" parameters="Table=STATUS;Row=CM_FF;Column=__4;Format=u;Status=1;Show=nz"/>
     </node>
     <!-- <node id="1"  address="0x1" permission="rw"/> -->
     <!-- <node id="2"  address="0x2" permission="rw"/> -->
@@ -90,9 +90,9 @@
   </node>
   <node id="S4" address ="0x30">
     <node id="VAL"  address="0x0" permission="rw">
-      <node id="TEMP"     mask="0x000000FF" permission="r" parameters="Table=STATUS;Row=CM_FPGA;Column=_4;Format=u;Status=1;Show=nz"/>
-      <node id="TEMP_MAX" mask="0x0000FF00" permission="r" parameters="Table=STATUS;Row=CM_FPGA;Column=_4;Format=u;Status=1;Show=nz"/>
-      <node id="TEMP_MIN" mask="0x00FF0000" permission="r" parameters="Table=STATUS;Row=CM_FPGA;Column=_4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP"     mask="0x000000FF" permission="r" parameters="Table=STATUS;Row=CM_FPGA;Column=__4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP_MAX" mask="0x0000FF00" permission="r" parameters="Table=STATUS;Row=CM_FPGA;Column=__4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP_MIN" mask="0x00FF0000" permission="r" parameters="Table=STATUS;Row=CM_FPGA;Column=__4;Format=u;Status=1;Show=nz"/>
     </node>      
     <!-- <node id="1"  address="0x1" permission="rw"/> -->
     <!-- <node id="2"  address="0x2" permission="rw"/> -->
@@ -112,9 +112,9 @@
   </node>
   <node id="S5" address ="0x40">
     <node id="VAL"  address="0x0" permission="rw">
-      <node id="TEMP"     mask="0x000000FF" permission="r" parameters="Table=STATUS;Row=CM_REG;Column=_4;Format=u;Status=1;Show=nz"/>
-      <node id="TEMP_MAX" mask="0x0000FF00" permission="r" parameters="Table=STATUS;Row=CM_REG;Column=_4;Format=u;Status=1;Show=nz"/>
-      <node id="TEMP_MIN" mask="0x00FF0000" permission="r" parameters="Table=STATUS;Row=CM_REG;Column=_4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP"     mask="0x000000FF" permission="r" parameters="Table=STATUS;Row=CM_REG;Column=__4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP_MAX" mask="0x0000FF00" permission="r" parameters="Table=STATUS;Row=CM_REG;Column=__4;Format=u;Status=1;Show=nz"/>
+      <node id="TEMP_MIN" mask="0x00FF0000" permission="r" parameters="Table=STATUS;Row=CM_REG;Column=__4;Format=u;Status=1;Show=nz"/>
     </node>      
     <!-- <node id="1"  address="0x1" permission="rw"/> -->
     <!-- <node id="2"  address="0x2" permission="rw"/> -->

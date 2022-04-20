@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <!-- Control and status for a 'master' TCLink channel. -->
-<node id="TCSDS2_LINK_CSR_MASTER" fwinfo="endpoint; width=6">
+<node id="TCSDS2_LINK_CSR_MASTER" fwinfo=" width=6">
 
   <node id="CONTROL"
         module="file://tcds2_link_csr_master_control.xml"

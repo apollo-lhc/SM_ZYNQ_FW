@@ -2,7 +2,7 @@
 
 <!-- Corresponds to version 0 of the TTS2 protocol. -->
 
-<node id="TCDS2_TTS2_SPY" fwinfo="endpoint; width=3">
+<node id="TCDS2_TTS2_SPY" fwinfo=" width=3">
 
   <!-- The actual TTS values. -->
   <node id="VALUE_0"  address="0X00000000" mask="0X000000FF" permission="r" />
