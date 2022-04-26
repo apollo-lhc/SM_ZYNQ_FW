@@ -4,7 +4,7 @@ use ieee.numeric_std.all;
 
 use work.types.all;
 
-use work.TCDS_2_Ctrl.all;
+use work.TCDS_Ctrl.all;
 
 library UNISIM;
 use UNISIM.VCOMPONENTS.ALL;
@@ -31,8 +31,8 @@ entity TCDS_local is
     ttc_data     : in  std_logic_vector(31 downto 0);
     tts_data     : out std_logic_vector(31 downto 0);
                  
-    Ctrl         : in  TCDS_2_LTCDS_CTRL_t_ARRAY;
-    Mon          : out TCDS_2_LTCDS_MON_t_ARRAY
+    Ctrl         : in  TCDS_LTCDS_CTRL_t_ARRAY;
+    Mon          : out TCDS_LTCDS_MON_t_ARRAY
     );
 end entity TCDS_local;
 

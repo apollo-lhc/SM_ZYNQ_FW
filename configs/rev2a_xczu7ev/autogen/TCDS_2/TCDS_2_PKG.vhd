@@ -5,128 +5,128 @@ use IEEE.std_logic_1164.all;
 
 
 package TCDS_2_CTRL is
-  type TCDS_2_TCDS_2_HW_CFG_MON_t is record
+  type TCDS_2_DTH_HW_CFG_MON_t is record
     HAS_SPY_REGISTERS          :std_logic;   
     HAS_LINK_TEST_MODE         :std_logic;   
-  end record TCDS_2_TCDS_2_HW_CFG_MON_t;
+  end record TCDS_2_DTH_HW_CFG_MON_t;
 
 
-  type TCDS_2_TCDS_2_LINK_TEST_CONTROL_CTRL_t is record
+  type TCDS_2_DTH_LINK_TEST_CONTROL_CTRL_t is record
     LINK_TEST_MODE             :std_logic;   
     PRBS_GEN_RESET             :std_logic;   
     PRBS_CHK_RESET             :std_logic;   
-  end record TCDS_2_TCDS_2_LINK_TEST_CONTROL_CTRL_t;
+  end record TCDS_2_DTH_LINK_TEST_CONTROL_CTRL_t;
 
 
-  constant DEFAULT_TCDS_2_TCDS_2_LINK_TEST_CONTROL_CTRL_t : TCDS_2_TCDS_2_LINK_TEST_CONTROL_CTRL_t := (
-                                                                                                       LINK_TEST_MODE => '0',
-                                                                                                       PRBS_GEN_RESET => '0',
-                                                                                                       PRBS_CHK_RESET => '0'
-                                                                                                      );
-  type TCDS_2_TCDS_2_LINK_TEST_STATUS_MON_t is record
+  constant DEFAULT_TCDS_2_DTH_LINK_TEST_CONTROL_CTRL_t : TCDS_2_DTH_LINK_TEST_CONTROL_CTRL_t := (
+                                                                                                 LINK_TEST_MODE => '0',
+                                                                                                 PRBS_GEN_RESET => '0',
+                                                                                                 PRBS_CHK_RESET => '0'
+                                                                                                );
+  type TCDS_2_DTH_LINK_TEST_STATUS_MON_t is record
     PRBS_CHK_ERROR             :std_logic;   
     PRBS_CHK_LOCKED            :std_logic;   
     PRBS_CHK_UNLOCK_COUNTER    :std_logic_vector(31 downto 0);
     PRBS_GEN_O_HINT            :std_logic_vector( 7 downto 0);
     PRBS_CHK_I_HINT            :std_logic_vector( 7 downto 0);
     PRBS_CHK_O_HINT            :std_logic_vector( 7 downto 0);
-  end record TCDS_2_TCDS_2_LINK_TEST_STATUS_MON_t;
+  end record TCDS_2_DTH_LINK_TEST_STATUS_MON_t;
 
 
-  type TCDS_2_TCDS_2_LINK_TEST_MON_t is record
-    STATUS                     :TCDS_2_TCDS_2_LINK_TEST_STATUS_MON_t;
-  end record TCDS_2_TCDS_2_LINK_TEST_MON_t;
+  type TCDS_2_DTH_LINK_TEST_MON_t is record
+    STATUS                     :TCDS_2_DTH_LINK_TEST_STATUS_MON_t;
+  end record TCDS_2_DTH_LINK_TEST_MON_t;
 
 
-  type TCDS_2_TCDS_2_LINK_TEST_CTRL_t is record
-    CONTROL                    :TCDS_2_TCDS_2_LINK_TEST_CONTROL_CTRL_t;
-  end record TCDS_2_TCDS_2_LINK_TEST_CTRL_t;
+  type TCDS_2_DTH_LINK_TEST_CTRL_t is record
+    CONTROL                    :TCDS_2_DTH_LINK_TEST_CONTROL_CTRL_t;
+  end record TCDS_2_DTH_LINK_TEST_CTRL_t;
 
 
-  constant DEFAULT_TCDS_2_TCDS_2_LINK_TEST_CTRL_t : TCDS_2_TCDS_2_LINK_TEST_CTRL_t := (
-                                                                                       CONTROL => DEFAULT_TCDS_2_TCDS_2_LINK_TEST_CONTROL_CTRL_t
-                                                                                      );
-  type TCDS_2_TCDS_2_CSR_CONTROL_TCLINK_PHASE_OFFSET_CTRL_t is record
+  constant DEFAULT_TCDS_2_DTH_LINK_TEST_CTRL_t : TCDS_2_DTH_LINK_TEST_CTRL_t := (
+                                                                                 CONTROL => DEFAULT_TCDS_2_DTH_LINK_TEST_CONTROL_CTRL_t
+                                                                                );
+  type TCDS_2_DTH_CSR_CONTROL_TCLINK_PHASE_OFFSET_CTRL_t is record
     LO                         :std_logic_vector(31 downto 0);  -- Lower 32 bits of status.tclink_phase_offset.
     HI                         :std_logic_vector(15 downto 0);  -- Upper 16 bits of status.tclink_phase_offset.
-  end record TCDS_2_TCDS_2_CSR_CONTROL_TCLINK_PHASE_OFFSET_CTRL_t;
+  end record TCDS_2_DTH_CSR_CONTROL_TCLINK_PHASE_OFFSET_CTRL_t;
 
 
-  constant DEFAULT_TCDS_2_TCDS_2_CSR_CONTROL_TCLINK_PHASE_OFFSET_CTRL_t : TCDS_2_TCDS_2_CSR_CONTROL_TCLINK_PHASE_OFFSET_CTRL_t := (
-                                                                                                                                   LO => (others => '0'),
-                                                                                                                                   HI => (others => '0')
-                                                                                                                                  );
-  type TCDS_2_TCDS_2_CSR_CONTROL_MGT_RXEQ_PARAMS_LPM_CTRL_t is record
+  constant DEFAULT_TCDS_2_DTH_CSR_CONTROL_TCLINK_PHASE_OFFSET_CTRL_t : TCDS_2_DTH_CSR_CONTROL_TCLINK_PHASE_OFFSET_CTRL_t := (
+                                                                                                                             LO => (others => '0'),
+                                                                                                                             HI => (others => '0')
+                                                                                                                            );
+  type TCDS_2_DTH_CSR_CONTROL_MGT_RXEQ_PARAMS_LPM_CTRL_t is record
     RXLPMGCOVRDEN              :std_logic;   
     RXLPMHFOVRDEN              :std_logic;   
     RXLPMLFKLOVRDEN            :std_logic;   
     RXLPMOSOVRDEN              :std_logic;   
-  end record TCDS_2_TCDS_2_CSR_CONTROL_MGT_RXEQ_PARAMS_LPM_CTRL_t;
+  end record TCDS_2_DTH_CSR_CONTROL_MGT_RXEQ_PARAMS_LPM_CTRL_t;
 
 
-  constant DEFAULT_TCDS_2_TCDS_2_CSR_CONTROL_MGT_RXEQ_PARAMS_LPM_CTRL_t : TCDS_2_TCDS_2_CSR_CONTROL_MGT_RXEQ_PARAMS_LPM_CTRL_t := (
-                                                                                                                                   RXLPMGCOVRDEN => '0',
-                                                                                                                                   RXLPMHFOVRDEN => '0',
-                                                                                                                                   RXLPMLFKLOVRDEN => '0',
-                                                                                                                                   RXLPMOSOVRDEN => '0'
-                                                                                                                                  );
-  type TCDS_2_TCDS_2_CSR_CONTROL_MGT_RXEQ_PARAMS_DFE_CTRL_t is record
+  constant DEFAULT_TCDS_2_DTH_CSR_CONTROL_MGT_RXEQ_PARAMS_LPM_CTRL_t : TCDS_2_DTH_CSR_CONTROL_MGT_RXEQ_PARAMS_LPM_CTRL_t := (
+                                                                                                                             RXLPMGCOVRDEN => '0',
+                                                                                                                             RXLPMHFOVRDEN => '0',
+                                                                                                                             RXLPMLFKLOVRDEN => '0',
+                                                                                                                             RXLPMOSOVRDEN => '0'
+                                                                                                                            );
+  type TCDS_2_DTH_CSR_CONTROL_MGT_RXEQ_PARAMS_DFE_CTRL_t is record
     RXOSOVRDEN                 :std_logic;   
     RXDFEAGCOVRDEN             :std_logic;   
     RXDFELFOVRDEN              :std_logic;   
     RXDFEUTOVRDEN              :std_logic;   
     RXDFEVPOVRDEN              :std_logic;   
-  end record TCDS_2_TCDS_2_CSR_CONTROL_MGT_RXEQ_PARAMS_DFE_CTRL_t;
+  end record TCDS_2_DTH_CSR_CONTROL_MGT_RXEQ_PARAMS_DFE_CTRL_t;
 
 
-  constant DEFAULT_TCDS_2_TCDS_2_CSR_CONTROL_MGT_RXEQ_PARAMS_DFE_CTRL_t : TCDS_2_TCDS_2_CSR_CONTROL_MGT_RXEQ_PARAMS_DFE_CTRL_t := (
-                                                                                                                                   RXOSOVRDEN => '0',
-                                                                                                                                   RXDFEAGCOVRDEN => '0',
-                                                                                                                                   RXDFELFOVRDEN => '0',
-                                                                                                                                   RXDFEUTOVRDEN => '0',
-                                                                                                                                   RXDFEVPOVRDEN => '0'
-                                                                                                                                  );
-  type TCDS_2_TCDS_2_CSR_CONTROL_MGT_RXEQ_PARAMS_CTRL_t is record
-    LPM                        :TCDS_2_TCDS_2_CSR_CONTROL_MGT_RXEQ_PARAMS_LPM_CTRL_t;
-    DFE                        :TCDS_2_TCDS_2_CSR_CONTROL_MGT_RXEQ_PARAMS_DFE_CTRL_t;
-  end record TCDS_2_TCDS_2_CSR_CONTROL_MGT_RXEQ_PARAMS_CTRL_t;
+  constant DEFAULT_TCDS_2_DTH_CSR_CONTROL_MGT_RXEQ_PARAMS_DFE_CTRL_t : TCDS_2_DTH_CSR_CONTROL_MGT_RXEQ_PARAMS_DFE_CTRL_t := (
+                                                                                                                             RXOSOVRDEN => '0',
+                                                                                                                             RXDFEAGCOVRDEN => '0',
+                                                                                                                             RXDFELFOVRDEN => '0',
+                                                                                                                             RXDFEUTOVRDEN => '0',
+                                                                                                                             RXDFEVPOVRDEN => '0'
+                                                                                                                            );
+  type TCDS_2_DTH_CSR_CONTROL_MGT_RXEQ_PARAMS_CTRL_t is record
+    LPM                        :TCDS_2_DTH_CSR_CONTROL_MGT_RXEQ_PARAMS_LPM_CTRL_t;
+    DFE                        :TCDS_2_DTH_CSR_CONTROL_MGT_RXEQ_PARAMS_DFE_CTRL_t;
+  end record TCDS_2_DTH_CSR_CONTROL_MGT_RXEQ_PARAMS_CTRL_t;
 
 
-  constant DEFAULT_TCDS_2_TCDS_2_CSR_CONTROL_MGT_RXEQ_PARAMS_CTRL_t : TCDS_2_TCDS_2_CSR_CONTROL_MGT_RXEQ_PARAMS_CTRL_t := (
-                                                                                                                           LPM => DEFAULT_TCDS_2_TCDS_2_CSR_CONTROL_MGT_RXEQ_PARAMS_LPM_CTRL_t,
-                                                                                                                           DFE => DEFAULT_TCDS_2_TCDS_2_CSR_CONTROL_MGT_RXEQ_PARAMS_DFE_CTRL_t
-                                                                                                                          );
-  type TCDS_2_TCDS_2_CSR_CONTROL_TCLINK_PARAM_MODULO_CARRIER_PERIOD_CTRL_t is record
+  constant DEFAULT_TCDS_2_DTH_CSR_CONTROL_MGT_RXEQ_PARAMS_CTRL_t : TCDS_2_DTH_CSR_CONTROL_MGT_RXEQ_PARAMS_CTRL_t := (
+                                                                                                                     LPM => DEFAULT_TCDS_2_DTH_CSR_CONTROL_MGT_RXEQ_PARAMS_LPM_CTRL_t,
+                                                                                                                     DFE => DEFAULT_TCDS_2_DTH_CSR_CONTROL_MGT_RXEQ_PARAMS_DFE_CTRL_t
+                                                                                                                    );
+  type TCDS_2_DTH_CSR_CONTROL_TCLINK_PARAM_MODULO_CARRIER_PERIOD_CTRL_t is record
     LO                         :std_logic_vector(31 downto 0);
     HI                         :std_logic_vector(15 downto 0);
-  end record TCDS_2_TCDS_2_CSR_CONTROL_TCLINK_PARAM_MODULO_CARRIER_PERIOD_CTRL_t;
+  end record TCDS_2_DTH_CSR_CONTROL_TCLINK_PARAM_MODULO_CARRIER_PERIOD_CTRL_t;
 
 
-  constant DEFAULT_TCDS_2_TCDS_2_CSR_CONTROL_TCLINK_PARAM_MODULO_CARRIER_PERIOD_CTRL_t : TCDS_2_TCDS_2_CSR_CONTROL_TCLINK_PARAM_MODULO_CARRIER_PERIOD_CTRL_t := (
-                                                                                                                                                                 LO => (others => '0'),
-                                                                                                                                                                 HI => (others => '0')
-                                                                                                                                                                );
-  type TCDS_2_TCDS_2_CSR_CONTROL_TCLINK_PARAM_MASTER_RX_UI_PERIOD_CTRL_t is record
+  constant DEFAULT_TCDS_2_DTH_CSR_CONTROL_TCLINK_PARAM_MODULO_CARRIER_PERIOD_CTRL_t : TCDS_2_DTH_CSR_CONTROL_TCLINK_PARAM_MODULO_CARRIER_PERIOD_CTRL_t := (
+                                                                                                                                                           LO => (others => '0'),
+                                                                                                                                                           HI => (others => '0')
+                                                                                                                                                          );
+  type TCDS_2_DTH_CSR_CONTROL_TCLINK_PARAM_MASTER_RX_UI_PERIOD_CTRL_t is record
     LO                         :std_logic_vector(31 downto 0);
     HI                         :std_logic_vector(15 downto 0);
-  end record TCDS_2_TCDS_2_CSR_CONTROL_TCLINK_PARAM_MASTER_RX_UI_PERIOD_CTRL_t;
+  end record TCDS_2_DTH_CSR_CONTROL_TCLINK_PARAM_MASTER_RX_UI_PERIOD_CTRL_t;
 
 
-  constant DEFAULT_TCDS_2_TCDS_2_CSR_CONTROL_TCLINK_PARAM_MASTER_RX_UI_PERIOD_CTRL_t : TCDS_2_TCDS_2_CSR_CONTROL_TCLINK_PARAM_MASTER_RX_UI_PERIOD_CTRL_t := (
-                                                                                                                                                             LO => (others => '0'),
-                                                                                                                                                             HI => (others => '0')
-                                                                                                                                                            );
-  type TCDS_2_TCDS_2_CSR_CONTROL_TCLINK_PARAM_ADCO_CTRL_t is record
+  constant DEFAULT_TCDS_2_DTH_CSR_CONTROL_TCLINK_PARAM_MASTER_RX_UI_PERIOD_CTRL_t : TCDS_2_DTH_CSR_CONTROL_TCLINK_PARAM_MASTER_RX_UI_PERIOD_CTRL_t := (
+                                                                                                                                                       LO => (others => '0'),
+                                                                                                                                                       HI => (others => '0')
+                                                                                                                                                      );
+  type TCDS_2_DTH_CSR_CONTROL_TCLINK_PARAM_ADCO_CTRL_t is record
     LO                         :std_logic_vector(31 downto 0);
     HI                         :std_logic_vector(15 downto 0);
-  end record TCDS_2_TCDS_2_CSR_CONTROL_TCLINK_PARAM_ADCO_CTRL_t;
+  end record TCDS_2_DTH_CSR_CONTROL_TCLINK_PARAM_ADCO_CTRL_t;
 
 
-  constant DEFAULT_TCDS_2_TCDS_2_CSR_CONTROL_TCLINK_PARAM_ADCO_CTRL_t : TCDS_2_TCDS_2_CSR_CONTROL_TCLINK_PARAM_ADCO_CTRL_t := (
-                                                                                                                               LO => (others => '0'),
-                                                                                                                               HI => (others => '0')
-                                                                                                                              );
-  type TCDS_2_TCDS_2_CSR_CONTROL_CTRL_t is record
+  constant DEFAULT_TCDS_2_DTH_CSR_CONTROL_TCLINK_PARAM_ADCO_CTRL_t : TCDS_2_DTH_CSR_CONTROL_TCLINK_PARAM_ADCO_CTRL_t := (
+                                                                                                                         LO => (others => '0'),
+                                                                                                                         HI => (others => '0')
+                                                                                                                        );
+  type TCDS_2_DTH_CSR_CONTROL_CTRL_t is record
     RESET_ALL                  :std_logic;   
     MGT_RESET_ALL              :std_logic;     -- Direct full (i.e., both TX and RX) reset of the MGT. Only enabled when the TCLink channel controller is disabled (i.e., control.tclink_channel_ctrl_enable is low).
     MGT_RESET_TX_PLL_AND_DATAPATH  :std_logic;     -- Direct TX reset of the MGT. Only enabled when the TCLink channel controller is disabled.
@@ -137,70 +137,70 @@ package TCDS_2_CTRL is
     TCLINK_CHANNEL_CTRL_ENABLE     :std_logic;     -- Enables/disables the TCLink channel controller.
     TCLINK_CHANNEL_CTRL_GENTLE     :std_logic;     -- When high: tells the TCLink channel controller to use the 'gentle' instead of the 'full' reset procedure. The 'gentle' procedure does not reset the MGT QUAD PLLs, whereas the 'full' procedure does.
     TCLINK_CLOSE_LOOP              :std_logic;     -- When high: activates the TCLink phase stabilisation.
-    TCLINK_PHASE_OFFSET            :TCDS_2_TCDS_2_CSR_CONTROL_TCLINK_PHASE_OFFSET_CTRL_t;
-    PHASE_CDC40_TX_CALIB           :std_logic_vector( 9 downto 0);                       
-    PHASE_CDC40_TX_FORCE           :std_logic;                                           
-    PHASE_CDC40_RX_CALIB           :std_logic_vector( 2 downto 0);                       
-    PHASE_CDC40_RX_FORCE           :std_logic;                                           
-    PHASE_PI_TX_CALIB              :std_logic_vector( 6 downto 0);                       
-    PHASE_PI_TX_FORCE              :std_logic;                                           
-    MGT_RX_DFE_VS_LPM              :std_logic;                                             -- Choice of MGT mode: 1: LPM, 0: DFE.
-    MGT_RX_DFE_VS_LPM_RESET        :std_logic;                                             -- Reset to be strobed after changing MGT RXmode (LPM/DFE).
-    MGT_RXEQ_PARAMS                :TCDS_2_TCDS_2_CSR_CONTROL_MGT_RXEQ_PARAMS_CTRL_t;    
-    FEC_MONITOR_RESET              :std_logic;                                             -- Reset of the lpGBT FEC monitoring.
-    TCLINK_PARAM_METASTABILITY_DEGLITCH  :std_logic_vector(15 downto 0);                       
-    TCLINK_PARAM_PHASE_DETECTOR_NAVG     :std_logic_vector(11 downto 0);                       
-    TCLINK_PARAM_MODULO_CARRIER_PERIOD   :TCDS_2_TCDS_2_CSR_CONTROL_TCLINK_PARAM_MODULO_CARRIER_PERIOD_CTRL_t;
-    TCLINK_PARAM_MASTER_RX_UI_PERIOD     :TCDS_2_TCDS_2_CSR_CONTROL_TCLINK_PARAM_MASTER_RX_UI_PERIOD_CTRL_t;  
-    TCLINK_PARAM_AIE                     :std_logic_vector( 3 downto 0);                                      
-    TCLINK_PARAM_AIE_ENABLE              :std_logic;                                                          
-    TCLINK_PARAM_APE                     :std_logic_vector( 3 downto 0);                                      
-    TCLINK_PARAM_SIGMA_DELTA_CLK_DIV     :std_logic_vector(15 downto 0);                                      
-    TCLINK_PARAM_ENABLE_MIRROR           :std_logic;                                                          
-    TCLINK_PARAM_ADCO                    :TCDS_2_TCDS_2_CSR_CONTROL_TCLINK_PARAM_ADCO_CTRL_t;                 
-  end record TCDS_2_TCDS_2_CSR_CONTROL_CTRL_t;
+    TCLINK_PHASE_OFFSET            :TCDS_2_DTH_CSR_CONTROL_TCLINK_PHASE_OFFSET_CTRL_t;
+    PHASE_CDC40_TX_CALIB           :std_logic_vector( 9 downto 0);                    
+    PHASE_CDC40_TX_FORCE           :std_logic;                                        
+    PHASE_CDC40_RX_CALIB           :std_logic_vector( 2 downto 0);                    
+    PHASE_CDC40_RX_FORCE           :std_logic;                                        
+    PHASE_PI_TX_CALIB              :std_logic_vector( 6 downto 0);                    
+    PHASE_PI_TX_FORCE              :std_logic;                                        
+    MGT_RX_DFE_VS_LPM              :std_logic;                                          -- Choice of MGT mode: 1: LPM, 0: DFE.
+    MGT_RX_DFE_VS_LPM_RESET        :std_logic;                                          -- Reset to be strobed after changing MGT RXmode (LPM/DFE).
+    MGT_RXEQ_PARAMS                :TCDS_2_DTH_CSR_CONTROL_MGT_RXEQ_PARAMS_CTRL_t;    
+    FEC_MONITOR_RESET              :std_logic;                                          -- Reset of the lpGBT FEC monitoring.
+    TCLINK_PARAM_METASTABILITY_DEGLITCH  :std_logic_vector(15 downto 0);                    
+    TCLINK_PARAM_PHASE_DETECTOR_NAVG     :std_logic_vector(11 downto 0);                    
+    TCLINK_PARAM_MODULO_CARRIER_PERIOD   :TCDS_2_DTH_CSR_CONTROL_TCLINK_PARAM_MODULO_CARRIER_PERIOD_CTRL_t;
+    TCLINK_PARAM_MASTER_RX_UI_PERIOD     :TCDS_2_DTH_CSR_CONTROL_TCLINK_PARAM_MASTER_RX_UI_PERIOD_CTRL_t;  
+    TCLINK_PARAM_AIE                     :std_logic_vector( 3 downto 0);                                   
+    TCLINK_PARAM_AIE_ENABLE              :std_logic;                                                       
+    TCLINK_PARAM_APE                     :std_logic_vector( 3 downto 0);                                   
+    TCLINK_PARAM_SIGMA_DELTA_CLK_DIV     :std_logic_vector(15 downto 0);                                   
+    TCLINK_PARAM_ENABLE_MIRROR           :std_logic;                                                       
+    TCLINK_PARAM_ADCO                    :TCDS_2_DTH_CSR_CONTROL_TCLINK_PARAM_ADCO_CTRL_t;                 
+  end record TCDS_2_DTH_CSR_CONTROL_CTRL_t;
 
 
-  constant DEFAULT_TCDS_2_TCDS_2_CSR_CONTROL_CTRL_t : TCDS_2_TCDS_2_CSR_CONTROL_CTRL_t := (
-                                                                                           RESET_ALL => '0',
-                                                                                           MGT_RESET_ALL => '0',
-                                                                                           MGT_RESET_TX_PLL_AND_DATAPATH => '0',
-                                                                                           MGT_RESET_TX_DATAPATH => '0',
-                                                                                           MGT_RESET_RX_PLL_AND_DATAPATH => '0',
-                                                                                           MGT_RESET_RX_DATAPATH => '0',
-                                                                                           TCLINK_CHANNEL_CTRL_RESET => '0',
-                                                                                           TCLINK_CHANNEL_CTRL_ENABLE => '0',
-                                                                                           TCLINK_CHANNEL_CTRL_GENTLE => '0',
-                                                                                           TCLINK_CLOSE_LOOP => '0',
-                                                                                           TCLINK_PHASE_OFFSET => DEFAULT_TCDS_2_TCDS_2_CSR_CONTROL_TCLINK_PHASE_OFFSET_CTRL_t,
-                                                                                           PHASE_CDC40_TX_CALIB => (others => '0'),
-                                                                                           PHASE_CDC40_TX_FORCE => '0',
-                                                                                           PHASE_CDC40_RX_CALIB => (others => '0'),
-                                                                                           PHASE_CDC40_RX_FORCE => '0',
-                                                                                           PHASE_PI_TX_CALIB => (others => '0'),
-                                                                                           PHASE_PI_TX_FORCE => '0',
-                                                                                           MGT_RX_DFE_VS_LPM => '0',
-                                                                                           MGT_RX_DFE_VS_LPM_RESET => '0',
-                                                                                           MGT_RXEQ_PARAMS => DEFAULT_TCDS_2_TCDS_2_CSR_CONTROL_MGT_RXEQ_PARAMS_CTRL_t,
-                                                                                           FEC_MONITOR_RESET => '0',
-                                                                                           TCLINK_PARAM_METASTABILITY_DEGLITCH => (others => '0'),
-                                                                                           TCLINK_PARAM_PHASE_DETECTOR_NAVG => (others => '0'),
-                                                                                           TCLINK_PARAM_MODULO_CARRIER_PERIOD => DEFAULT_TCDS_2_TCDS_2_CSR_CONTROL_TCLINK_PARAM_MODULO_CARRIER_PERIOD_CTRL_t,
-                                                                                           TCLINK_PARAM_MASTER_RX_UI_PERIOD => DEFAULT_TCDS_2_TCDS_2_CSR_CONTROL_TCLINK_PARAM_MASTER_RX_UI_PERIOD_CTRL_t,
-                                                                                           TCLINK_PARAM_AIE => (others => '0'),
-                                                                                           TCLINK_PARAM_AIE_ENABLE => '0',
-                                                                                           TCLINK_PARAM_APE => (others => '0'),
-                                                                                           TCLINK_PARAM_SIGMA_DELTA_CLK_DIV => (others => '0'),
-                                                                                           TCLINK_PARAM_ENABLE_MIRROR => '0',
-                                                                                           TCLINK_PARAM_ADCO => DEFAULT_TCDS_2_TCDS_2_CSR_CONTROL_TCLINK_PARAM_ADCO_CTRL_t
-                                                                                          );
-  type TCDS_2_TCDS_2_CSR_STATUS_TCLINK_PHASE_ERROR_MON_t is record
+  constant DEFAULT_TCDS_2_DTH_CSR_CONTROL_CTRL_t : TCDS_2_DTH_CSR_CONTROL_CTRL_t := (
+                                                                                     RESET_ALL => '0',
+                                                                                     MGT_RESET_ALL => '0',
+                                                                                     MGT_RESET_TX_PLL_AND_DATAPATH => '0',
+                                                                                     MGT_RESET_TX_DATAPATH => '0',
+                                                                                     MGT_RESET_RX_PLL_AND_DATAPATH => '0',
+                                                                                     MGT_RESET_RX_DATAPATH => '0',
+                                                                                     TCLINK_CHANNEL_CTRL_RESET => '0',
+                                                                                     TCLINK_CHANNEL_CTRL_ENABLE => '0',
+                                                                                     TCLINK_CHANNEL_CTRL_GENTLE => '0',
+                                                                                     TCLINK_CLOSE_LOOP => '0',
+                                                                                     TCLINK_PHASE_OFFSET => DEFAULT_TCDS_2_DTH_CSR_CONTROL_TCLINK_PHASE_OFFSET_CTRL_t,
+                                                                                     PHASE_CDC40_TX_CALIB => (others => '0'),
+                                                                                     PHASE_CDC40_TX_FORCE => '0',
+                                                                                     PHASE_CDC40_RX_CALIB => (others => '0'),
+                                                                                     PHASE_CDC40_RX_FORCE => '0',
+                                                                                     PHASE_PI_TX_CALIB => (others => '0'),
+                                                                                     PHASE_PI_TX_FORCE => '0',
+                                                                                     MGT_RX_DFE_VS_LPM => '0',
+                                                                                     MGT_RX_DFE_VS_LPM_RESET => '0',
+                                                                                     MGT_RXEQ_PARAMS => DEFAULT_TCDS_2_DTH_CSR_CONTROL_MGT_RXEQ_PARAMS_CTRL_t,
+                                                                                     FEC_MONITOR_RESET => '0',
+                                                                                     TCLINK_PARAM_METASTABILITY_DEGLITCH => (others => '0'),
+                                                                                     TCLINK_PARAM_PHASE_DETECTOR_NAVG => (others => '0'),
+                                                                                     TCLINK_PARAM_MODULO_CARRIER_PERIOD => DEFAULT_TCDS_2_DTH_CSR_CONTROL_TCLINK_PARAM_MODULO_CARRIER_PERIOD_CTRL_t,
+                                                                                     TCLINK_PARAM_MASTER_RX_UI_PERIOD => DEFAULT_TCDS_2_DTH_CSR_CONTROL_TCLINK_PARAM_MASTER_RX_UI_PERIOD_CTRL_t,
+                                                                                     TCLINK_PARAM_AIE => (others => '0'),
+                                                                                     TCLINK_PARAM_AIE_ENABLE => '0',
+                                                                                     TCLINK_PARAM_APE => (others => '0'),
+                                                                                     TCLINK_PARAM_SIGMA_DELTA_CLK_DIV => (others => '0'),
+                                                                                     TCLINK_PARAM_ENABLE_MIRROR => '0',
+                                                                                     TCLINK_PARAM_ADCO => DEFAULT_TCDS_2_DTH_CSR_CONTROL_TCLINK_PARAM_ADCO_CTRL_t
+                                                                                    );
+  type TCDS_2_DTH_CSR_STATUS_TCLINK_PHASE_ERROR_MON_t is record
     LO                         :std_logic_vector(31 downto 0);
     HI                         :std_logic_vector(15 downto 0);
-  end record TCDS_2_TCDS_2_CSR_STATUS_TCLINK_PHASE_ERROR_MON_t;
+  end record TCDS_2_DTH_CSR_STATUS_TCLINK_PHASE_ERROR_MON_t;
 
 
-  type TCDS_2_TCDS_2_CSR_STATUS_MON_t is record
+  type TCDS_2_DTH_CSR_STATUS_MON_t is record
     IS_LINK_OPTICAL            :std_logic;   
     IS_LINK_SPEED_10G          :std_logic;   
     IS_LEADER                  :std_logic;   
@@ -231,24 +231,24 @@ package TCDS_2_CTRL is
     TCLINK_LOOP_CLOSED         :std_logic;                      -- High if the TCLink control loop is closed (i.e. configured as closed and not internally opened due to issues).
     TCLINK_OPERATION_ERROR     :std_logic;                      -- High if the TCLink encountered a DCO error during operation.
     TCLINK_PHASE_MEASURED      :std_logic_vector(31 downto 0);  -- Phase value measured by the TCLink. Signed two's complement number. Conversion to ps: DDMTD_UNIT / navg * value.
-    TCLINK_PHASE_ERROR         :TCDS_2_TCDS_2_CSR_STATUS_TCLINK_PHASE_ERROR_MON_t;
-  end record TCDS_2_TCDS_2_CSR_STATUS_MON_t;
+    TCLINK_PHASE_ERROR         :TCDS_2_DTH_CSR_STATUS_TCLINK_PHASE_ERROR_MON_t;
+  end record TCDS_2_DTH_CSR_STATUS_MON_t;
 
 
-  type TCDS_2_TCDS_2_CSR_MON_t is record
-    STATUS                     :TCDS_2_TCDS_2_CSR_STATUS_MON_t;
-  end record TCDS_2_TCDS_2_CSR_MON_t;
+  type TCDS_2_DTH_CSR_MON_t is record
+    STATUS                     :TCDS_2_DTH_CSR_STATUS_MON_t;
+  end record TCDS_2_DTH_CSR_MON_t;
 
 
-  type TCDS_2_TCDS_2_CSR_CTRL_t is record
-    CONTROL                    :TCDS_2_TCDS_2_CSR_CONTROL_CTRL_t;
-  end record TCDS_2_TCDS_2_CSR_CTRL_t;
+  type TCDS_2_DTH_CSR_CTRL_t is record
+    CONTROL                    :TCDS_2_DTH_CSR_CONTROL_CTRL_t;
+  end record TCDS_2_DTH_CSR_CTRL_t;
 
 
-  constant DEFAULT_TCDS_2_TCDS_2_CSR_CTRL_t : TCDS_2_TCDS_2_CSR_CTRL_t := (
-                                                                           CONTROL => DEFAULT_TCDS_2_TCDS_2_CSR_CONTROL_CTRL_t
-                                                                          );
-  type TCDS_2_TCDS_2_SPY_FRAME_TX_MON_t is record
+  constant DEFAULT_TCDS_2_DTH_CSR_CTRL_t : TCDS_2_DTH_CSR_CTRL_t := (
+                                                                     CONTROL => DEFAULT_TCDS_2_DTH_CSR_CONTROL_CTRL_t
+                                                                    );
+  type TCDS_2_DTH_SPY_FRAME_TX_MON_t is record
     WORD0                      :std_logic_vector(31 downto 0);
     WORD1                      :std_logic_vector(31 downto 0);
     WORD2                      :std_logic_vector(31 downto 0);
@@ -257,10 +257,10 @@ package TCDS_2_CTRL is
     WORD5                      :std_logic_vector(31 downto 0);
     WORD6                      :std_logic_vector(31 downto 0);
     WORD7                      :std_logic_vector( 9 downto 0);
-  end record TCDS_2_TCDS_2_SPY_FRAME_TX_MON_t;
+  end record TCDS_2_DTH_SPY_FRAME_TX_MON_t;
 
 
-  type TCDS_2_TCDS_2_SPY_FRAME_RX_MON_t is record
+  type TCDS_2_DTH_SPY_FRAME_RX_MON_t is record
     WORD0                      :std_logic_vector(31 downto 0);
     WORD1                      :std_logic_vector(31 downto 0);
     WORD2                      :std_logic_vector(31 downto 0);
@@ -269,10 +269,10 @@ package TCDS_2_CTRL is
     WORD5                      :std_logic_vector(31 downto 0);
     WORD6                      :std_logic_vector(31 downto 0);
     WORD7                      :std_logic_vector( 9 downto 0);
-  end record TCDS_2_TCDS_2_SPY_FRAME_RX_MON_t;
+  end record TCDS_2_DTH_SPY_FRAME_RX_MON_t;
 
 
-  type TCDS_2_TCDS_2_SPY_TTC2_CHANNEL0_L1A_INFO_MON_t is record
+  type TCDS_2_DTH_SPY_TTC2_CHANNEL0_L1A_INFO_MON_t is record
     PHYSICS                    :std_logic;   
     CALIBRATION                :std_logic;   
     RANDOM                     :std_logic;   
@@ -290,25 +290,25 @@ package TCDS_2_CTRL is
     RESERVED_14                :std_logic;   
     RESERVED_15                :std_logic;   
     PHYSICS_SUBTYPE            :std_logic_vector( 7 downto 0);
-  end record TCDS_2_TCDS_2_SPY_TTC2_CHANNEL0_L1A_INFO_MON_t;
+  end record TCDS_2_DTH_SPY_TTC2_CHANNEL0_L1A_INFO_MON_t;
 
 
-  type TCDS_2_TCDS_2_SPY_TTC2_CHANNEL0_TIMING_AND_SYNC_INFO_MON_t is record
+  type TCDS_2_DTH_SPY_TTC2_CHANNEL0_TIMING_AND_SYNC_INFO_MON_t is record
     LO                         :std_logic_vector(31 downto 0);
     HI                         :std_logic_vector(16 downto 0);
-  end record TCDS_2_TCDS_2_SPY_TTC2_CHANNEL0_TIMING_AND_SYNC_INFO_MON_t;
+  end record TCDS_2_DTH_SPY_TTC2_CHANNEL0_TIMING_AND_SYNC_INFO_MON_t;
 
 
-  type TCDS_2_TCDS_2_SPY_TTC2_CHANNEL0_MON_t is record
-    L1A_INFO                   :TCDS_2_TCDS_2_SPY_TTC2_CHANNEL0_L1A_INFO_MON_t;
-    BRIL_TRIGGER_INFO          :std_logic_vector(15 downto 0);                 
-    TIMING_AND_SYNC_INFO       :TCDS_2_TCDS_2_SPY_TTC2_CHANNEL0_TIMING_AND_SYNC_INFO_MON_t;
-    STATUS_INFO                :std_logic_vector( 4 downto 0);                             
-    RESERVED                   :std_logic_vector(17 downto 0);                             
-  end record TCDS_2_TCDS_2_SPY_TTC2_CHANNEL0_MON_t;
+  type TCDS_2_DTH_SPY_TTC2_CHANNEL0_MON_t is record
+    L1A_INFO                   :TCDS_2_DTH_SPY_TTC2_CHANNEL0_L1A_INFO_MON_t;
+    BRIL_TRIGGER_INFO          :std_logic_vector(15 downto 0);              
+    TIMING_AND_SYNC_INFO       :TCDS_2_DTH_SPY_TTC2_CHANNEL0_TIMING_AND_SYNC_INFO_MON_t;
+    STATUS_INFO                :std_logic_vector( 4 downto 0);                          
+    RESERVED                   :std_logic_vector(17 downto 0);                          
+  end record TCDS_2_DTH_SPY_TTC2_CHANNEL0_MON_t;
 
 
-  type TCDS_2_TCDS_2_SPY_TTC2_CHANNEL1_L1A_INFO_MON_t is record
+  type TCDS_2_DTH_SPY_TTC2_CHANNEL1_L1A_INFO_MON_t is record
     PHYSICS                    :std_logic;   
     CALIBRATION                :std_logic;   
     RANDOM                     :std_logic;   
@@ -326,83 +326,57 @@ package TCDS_2_CTRL is
     RESERVED_14                :std_logic;   
     RESERVED_15                :std_logic;   
     PHYSICS_SUBTYPE            :std_logic_vector( 7 downto 0);
-  end record TCDS_2_TCDS_2_SPY_TTC2_CHANNEL1_L1A_INFO_MON_t;
+  end record TCDS_2_DTH_SPY_TTC2_CHANNEL1_L1A_INFO_MON_t;
 
 
-  type TCDS_2_TCDS_2_SPY_TTC2_CHANNEL1_TIMING_AND_SYNC_INFO_MON_t is record
+  type TCDS_2_DTH_SPY_TTC2_CHANNEL1_TIMING_AND_SYNC_INFO_MON_t is record
     LO                         :std_logic_vector(31 downto 0);
     HI                         :std_logic_vector(16 downto 0);
-  end record TCDS_2_TCDS_2_SPY_TTC2_CHANNEL1_TIMING_AND_SYNC_INFO_MON_t;
+  end record TCDS_2_DTH_SPY_TTC2_CHANNEL1_TIMING_AND_SYNC_INFO_MON_t;
 
 
-  type TCDS_2_TCDS_2_SPY_TTC2_CHANNEL1_MON_t is record
-    L1A_INFO                   :TCDS_2_TCDS_2_SPY_TTC2_CHANNEL1_L1A_INFO_MON_t;
-    BRIL_TRIGGER_INFO          :std_logic_vector(15 downto 0);                 
-    TIMING_AND_SYNC_INFO       :TCDS_2_TCDS_2_SPY_TTC2_CHANNEL1_TIMING_AND_SYNC_INFO_MON_t;
-    STATUS_INFO                :std_logic_vector( 4 downto 0);                             
-    RESERVED                   :std_logic_vector(17 downto 0);                             
-  end record TCDS_2_TCDS_2_SPY_TTC2_CHANNEL1_MON_t;
+  type TCDS_2_DTH_SPY_TTC2_CHANNEL1_MON_t is record
+    L1A_INFO                   :TCDS_2_DTH_SPY_TTC2_CHANNEL1_L1A_INFO_MON_t;
+    BRIL_TRIGGER_INFO          :std_logic_vector(15 downto 0);              
+    TIMING_AND_SYNC_INFO       :TCDS_2_DTH_SPY_TTC2_CHANNEL1_TIMING_AND_SYNC_INFO_MON_t;
+    STATUS_INFO                :std_logic_vector( 4 downto 0);                          
+    RESERVED                   :std_logic_vector(17 downto 0);                          
+  end record TCDS_2_DTH_SPY_TTC2_CHANNEL1_MON_t;
 
 
-  type TCDS_2_TCDS_2_SPY_TTS2_CHANNEL0_MON_t is record
+  type TCDS_2_DTH_SPY_TTS2_CHANNEL0_MON_t is record
     VALUE_0                    :std_logic_vector( 7 downto 0);
-    VALUE_1                    :std_logic_vector( 7 downto 0);
-    VALUE_2                    :std_logic_vector( 7 downto 0);
-    VALUE_3                    :std_logic_vector( 7 downto 0);
-    VALUE_4                    :std_logic_vector( 7 downto 0);
-    VALUE_5                    :std_logic_vector( 7 downto 0);
-    VALUE_6                    :std_logic_vector( 7 downto 0);
-    VALUE_7                    :std_logic_vector( 7 downto 0);
-    VALUE_8                    :std_logic_vector( 7 downto 0);
-    VALUE_9                    :std_logic_vector( 7 downto 0);
-    VALUE_10                   :std_logic_vector( 7 downto 0);
-    VALUE_11                   :std_logic_vector( 7 downto 0);
-    VALUE_12                   :std_logic_vector( 7 downto 0);
-    VALUE_13                   :std_logic_vector( 7 downto 0);
-  end record TCDS_2_TCDS_2_SPY_TTS2_CHANNEL0_MON_t;
+  end record TCDS_2_DTH_SPY_TTS2_CHANNEL0_MON_t;
 
 
-  type TCDS_2_TCDS_2_SPY_TTS2_CHANNEL1_MON_t is record
+  type TCDS_2_DTH_SPY_TTS2_CHANNEL1_MON_t is record
     VALUE_0                    :std_logic_vector( 7 downto 0);
-    VALUE_1                    :std_logic_vector( 7 downto 0);
-    VALUE_2                    :std_logic_vector( 7 downto 0);
-    VALUE_3                    :std_logic_vector( 7 downto 0);
-    VALUE_4                    :std_logic_vector( 7 downto 0);
-    VALUE_5                    :std_logic_vector( 7 downto 0);
-    VALUE_6                    :std_logic_vector( 7 downto 0);
-    VALUE_7                    :std_logic_vector( 7 downto 0);
-    VALUE_8                    :std_logic_vector( 7 downto 0);
-    VALUE_9                    :std_logic_vector( 7 downto 0);
-    VALUE_10                   :std_logic_vector( 7 downto 0);
-    VALUE_11                   :std_logic_vector( 7 downto 0);
-    VALUE_12                   :std_logic_vector( 7 downto 0);
-    VALUE_13                   :std_logic_vector( 7 downto 0);
-  end record TCDS_2_TCDS_2_SPY_TTS2_CHANNEL1_MON_t;
+  end record TCDS_2_DTH_SPY_TTS2_CHANNEL1_MON_t;
 
 
-  type TCDS_2_TCDS_2_MON_t is record
-    HW_CFG                     :TCDS_2_TCDS_2_HW_CFG_MON_t;
-    LINK_TEST                  :TCDS_2_TCDS_2_LINK_TEST_MON_t;
-    CSR                        :TCDS_2_TCDS_2_CSR_MON_t;      
-    SPY_FRAME_TX               :TCDS_2_TCDS_2_SPY_FRAME_TX_MON_t;
-    SPY_FRAME_RX               :TCDS_2_TCDS_2_SPY_FRAME_RX_MON_t;
-    SPY_TTC2_CHANNEL0          :TCDS_2_TCDS_2_SPY_TTC2_CHANNEL0_MON_t;
-    SPY_TTC2_CHANNEL1          :TCDS_2_TCDS_2_SPY_TTC2_CHANNEL1_MON_t;
-    SPY_TTS2_CHANNEL0          :TCDS_2_TCDS_2_SPY_TTS2_CHANNEL0_MON_t;
-    SPY_TTS2_CHANNEL1          :TCDS_2_TCDS_2_SPY_TTS2_CHANNEL1_MON_t;
-  end record TCDS_2_TCDS_2_MON_t;
+  type TCDS_2_DTH_MON_t is record
+    HW_CFG                     :TCDS_2_DTH_HW_CFG_MON_t;
+    LINK_TEST                  :TCDS_2_DTH_LINK_TEST_MON_t;
+    CSR                        :TCDS_2_DTH_CSR_MON_t;      
+    SPY_FRAME_TX               :TCDS_2_DTH_SPY_FRAME_TX_MON_t;
+    SPY_FRAME_RX               :TCDS_2_DTH_SPY_FRAME_RX_MON_t;
+    SPY_TTC2_CHANNEL0          :TCDS_2_DTH_SPY_TTC2_CHANNEL0_MON_t;
+    SPY_TTC2_CHANNEL1          :TCDS_2_DTH_SPY_TTC2_CHANNEL1_MON_t;
+    SPY_TTS2_CHANNEL0          :TCDS_2_DTH_SPY_TTS2_CHANNEL0_MON_t;
+    SPY_TTS2_CHANNEL1          :TCDS_2_DTH_SPY_TTS2_CHANNEL1_MON_t;
+  end record TCDS_2_DTH_MON_t;
 
 
-  type TCDS_2_TCDS_2_CTRL_t is record
-    LINK_TEST                  :TCDS_2_TCDS_2_LINK_TEST_CTRL_t;
-    CSR                        :TCDS_2_TCDS_2_CSR_CTRL_t;      
-  end record TCDS_2_TCDS_2_CTRL_t;
+  type TCDS_2_DTH_CTRL_t is record
+    LINK_TEST                  :TCDS_2_DTH_LINK_TEST_CTRL_t;
+    CSR                        :TCDS_2_DTH_CSR_CTRL_t;      
+  end record TCDS_2_DTH_CTRL_t;
 
 
-  constant DEFAULT_TCDS_2_TCDS_2_CTRL_t : TCDS_2_TCDS_2_CTRL_t := (
-                                                                   LINK_TEST => DEFAULT_TCDS_2_TCDS_2_LINK_TEST_CTRL_t,
-                                                                   CSR => DEFAULT_TCDS_2_TCDS_2_CSR_CTRL_t
-                                                                  );
+  constant DEFAULT_TCDS_2_DTH_CTRL_t : TCDS_2_DTH_CTRL_t := (
+                                                             LINK_TEST => DEFAULT_TCDS_2_DTH_LINK_TEST_CTRL_t,
+                                                             CSR => DEFAULT_TCDS_2_DTH_CSR_CTRL_t
+                                                            );
   type TCDS_2_LTCDS_RESET_CTRL_t is record
     RESET_ALL                  :std_logic;   
     TX_PLL_AND_DATAPATH        :std_logic;   
@@ -617,22 +591,22 @@ package TCDS_2_CTRL is
                                                                  DRP => Default_TCDS_2_LTCDS_DRP_MOSI_t
                                                                 );
   type TCDS_2_MON_t is record
-    TCDS_2                     :TCDS_2_TCDS_2_MON_t;
-    TCDS2_FREQ                 :std_logic_vector(31 downto 0);
-    TCDS2_TX_PCS_FREQ          :std_logic_vector(31 downto 0);
-    TCDS2_RX_PCS_FREQ          :std_logic_vector(31 downto 0);
+    DTH                        :TCDS_2_DTH_MON_t;
+    TCDS_FREQ                  :std_logic_vector(31 downto 0);
+    TCDS_TX_PCS_FREQ           :std_logic_vector(31 downto 0);
+    TCDS_RX_PCS_FREQ           :std_logic_vector(31 downto 0);
     LTCDS                      :TCDS_2_LTCDS_MON_t_ARRAY;     
   end record TCDS_2_MON_t;
 
 
   type TCDS_2_CTRL_t is record
-    TCDS_2                     :TCDS_2_TCDS_2_CTRL_t;
+    DTH                        :TCDS_2_DTH_CTRL_t;
     LTCDS                      :TCDS_2_LTCDS_CTRL_t_ARRAY;
   end record TCDS_2_CTRL_t;
 
 
   constant DEFAULT_TCDS_2_CTRL_t : TCDS_2_CTRL_t := (
-                                                     TCDS_2 => DEFAULT_TCDS_2_TCDS_2_CTRL_t,
+                                                     DTH => DEFAULT_TCDS_2_DTH_CTRL_t,
                                                      LTCDS => (others => DEFAULT_TCDS_2_LTCDS_CTRL_t )
                                                     );
 

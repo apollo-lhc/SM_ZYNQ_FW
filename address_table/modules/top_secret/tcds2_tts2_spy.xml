@@ -6,19 +6,19 @@
 
   <!-- The actual TTS values. -->
   <node id="VALUE_0"  address="0X00000000" mask="0X000000FF" permission="r" />
-  <NODE id="VALUE_1"  address="0X00000001" mask="0X000000FF" permission="r" />
-  <NODE id="VALUE_2"  address="0X00000002" mask="0X000000FF" permission="r" />
-  <NODE id="VALUE_3"  address="0X00000003" mask="0X000000FF" permission="r" />
-  <NODE id="VALUE_4"  address="0X00000004" mask="0X000000FF" permission="r" />
-  <NODE id="VALUE_5"  address="0X00000005" mask="0X000000FF" permission="r" />
-  <NODE id="VALUE_6"  address="0X00000006" mask="0X000000FF" permission="r" />
-  <NODE id="VALUE_7"  address="0X00000007" mask="0X000000FF" permission="r" />
-  <NODE id="VALUE_8"  address="0X00000008" mask="0X000000FF" permission="r" />
-  <NODE id="VALUE_9"  address="0X00000009" mask="0X000000FF" permission="r" />
-  <NODE id="VALUE_10" address="0X0000000A" mask="0X000000FF" permission="r" />
-  <NODE id="VALUE_11" address="0X0000000B" mask="0X000000FF" permission="r" />
-  <NODE id="VALUE_12" address="0X0000000C" mask="0X000000FF" permission="r" />
-  <NODE id="VALUE_13" address="0x0000000d" mask="0x000000ff" permission="r" />
+  <node id="VALUE_1"  address="0X00000001" mask="0X000000FF" permission="r" />
+  <node id="VALUE_2"  address="0X00000002" mask="0X000000FF" permission="r" />
+  <node id="VALUE_3"  address="0X00000003" mask="0X000000FF" permission="r" />
+  <node id="VALUE_4"  address="0X00000004" mask="0X000000FF" permission="r" />
+  <node id="VALUE_5"  address="0X00000005" mask="0X000000FF" permission="r" />
+  <node id="VALUE_6"  address="0X00000006" mask="0X000000FF" permission="r" />
+  <node id="VALUE_7"  address="0X00000007" mask="0X000000FF" permission="r" />
+  <node id="VALUE_8"  address="0X00000008" mask="0X000000FF" permission="r" />
+  <node id="VALUE_9"  address="0X00000009" mask="0X000000FF" permission="r" />
+  <node id="VALUE_10" address="0X0000000A" mask="0X000000FF" permission="r" />
+  <node id="VALUE_11" address="0X0000000B" mask="0X000000FF" permission="r" />
+  <node id="VALUE_12" address="0X0000000C" mask="0X000000FF" permission="r" />
+  <node id="VALUE_13" address="0x0000000d" mask="0x000000ff" permission="r" />
 
   <!-- <!-\- Left-overs. -\-> -->
   <!-- <node id="reserved0" address="0x00000001" mask="0xffffffff" permission="r" /> -->

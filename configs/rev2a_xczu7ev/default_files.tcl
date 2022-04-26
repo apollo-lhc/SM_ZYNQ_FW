@@ -131,8 +131,8 @@ set vhdl_files "\
      src/TCDS/top_secret/tcds2_link/firmware/hdl/tcds2_link_csr_pkg.vhd \
      src/TCDS/top_secret/constants/firmware/hdl/constants_tcds2.vhd \
      src/TCDS/top_secret/board_and_fw_id/firmware/hdl/board_and_fw_id_pkg.vhd \
-     ${autogen_path}/TCDS_2/TCDS_2_map.vhd \
-     ${autogen_path}/TCDS_2/TCDS_2_PKG.vhd \
+     ${autogen_path}/TCDS/TCDS_map.vhd \
+     ${autogen_path}/TCDS/TCDS_PKG.vhd \
      src/TCDS/TCDS_BP.vhd \
      src/TCDS/TCDS_localCPLL.vhd \
      src/TCDS/TCDS.vhd \
