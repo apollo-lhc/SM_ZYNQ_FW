@@ -85,6 +85,7 @@ read_vhdl "${apollo_root_path}/configs/${build_name}/autogen/AXI_slave_pkg.vhd"
 #  Finish up
 #========================================
 set_property CONFIG.STRATEGY {1} [get_bd_cells ${AXI_C2C_INTERCONNECT_NAME}]
+set_property CONFIG.STRATEGY {1} [get_bd_cells ${AXI_INTERCONNECT_NAME}]
 validate_bd_design
 
 write_bd_layout -force -format pdf -orientation portrait ${apollo_root_path}/doc/zynq_bd.pdf

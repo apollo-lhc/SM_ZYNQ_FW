@@ -103,7 +103,7 @@ clean_everything: clean clean_prebuild
 open_project : 
 	source $(BUILD_VIVADO_SHELL) &&\
 	cd ${MAKE_PATH}/proj &&\
-	vivado top.xpr
+	vivado -source ../build-scripts/OpenProject.tcl top.xpr
 open_synth : 
 	source $(BUILD_VIVADO_SHELL) &&\
 	cd ${MAKE_PATH}/proj &&\
@@ -130,7 +130,7 @@ interactive :
 	cd proj &&\
 	vivado -mode tcl
 
-$(BIT_BASE)%.bit	: $(ADDRESS_TABLE_CREATION_PATH)config_%.yaml 
+$(BIT_BASE)%.bit	: $(ADDRESS_TABLE_CREATION_PATH)config_%.yaml
 	@ln -s config_$*.yaml $(ADDRESS_TABLE_CREATION_PATH)config.yaml
 	source $(BUILD_VIVADO_SHELL) &&\
 	mkdir -p ${MAKE_PATH}/kernel/hw &&\

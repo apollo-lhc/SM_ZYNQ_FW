@@ -1,19 +1,19 @@
 AXI_CONTROL_SETS:
   AXI_MASTER_CTRL:
-      axi_interconnect: "${::AXI_INTERCONNECT_NAME}"
-      axi_clk: "${::AXI_MASTER_CLK}"
-      axi_rstn: "${::AXI_PRIMARY_SLAVE_RSTN}"
-      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
+    axi_interconnect: "${::AXI_INTERCONNECT_NAME}"
+    axi_clk: "${::AXI_MASTER_CLK}"
+    axi_rstn: "${::AXI_PRIMARY_SLAVE_RSTN}"
+    axi_freq: "${::AXI_MASTER_CLK_FREQ}"
   AXI_C2C_CTRL:
-      axi_interconnect: "${::AXI_C2C_INTERCONNECT_NAME}"
-      axi_clk: "${::AXI_MASTER_CLK}"
-      axi_rstn: "${::AXI_C2C_SLAVE_RSTN}"
-      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
+    axi_interconnect: "${::AXI_C2C_INTERCONNECT_NAME}"
+    axi_clk: "${::AXI_MASTER_CLK}"
+    axi_rstn: "${::AXI_C2C_SLAVE_RSTN}"
+    axi_freq: "${::AXI_MASTER_CLK_FREQ}"
   AXI_LOCAL_CTRL:
-      axi_interconnect: "AXI_LOCAL_CTRL"
-      axi_clk: "${::AXI_MASTER_CLK}"
-      axi_rstn: "${::AXI_PRIMARY_SLAVE_RSTN}"
-      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
+    axi_interconnect: "AXI_LOCAL_CTRL"
+    axi_clk: "${::AXI_MASTER_CLK}"
+    axi_rstn: "${::AXI_PRIMARY_SLAVE_RSTN}"
+    axi_freq: "${::AXI_MASTER_CLK_FREQ}"
 
 
 AXI_SLAVES:
@@ -158,10 +158,6 @@ AXI_SLAVES:
               - "address_table/modules/SLAVE_I2C.xml"
             UHAL_BASE: 0x05000000
 
-
-
-
-
   SI:
     TCL_CALL:
       command: "AXI_IP_I2C"
@@ -270,11 +266,11 @@ AXI_SLAVES:
       core_clk: "${::AXI_MASTER_CLK}"
       core_rstn: "${::AXI_PRIMARY_MASTER_RSTN}"
       mon_axi:
-       - "${::ZYNQ_NAME}/M_AXI_HPM0_FPD"
-       - "${::ZYNQ_NAME}/M_AXI_HPM1_FPD"
+        - "${::ZYNQ_NAME}/M_AXI_HPM0_FPD"
+        - "${::ZYNQ_NAME}/M_AXI_HPM1_FPD"
       mon_axi_clk:
-       - ${::AXI_MASTER_CLK}
-       - ${::AXI_MASTER_CLK}
+        - ${::AXI_MASTER_CLK}
+        - ${::AXI_MASTER_CLK}
       mon_axi_rstn: "${::AXI_PRIMARY_MASTER_RSTN} ${::AXI_C2C_MASTER_RSTN}"
 
     XML:
@@ -295,10 +291,6 @@ AXI_SLAVES:
     XML:
       - "address_table/modules/INT_AXI_FW.xml"
     UHAL_BASE: 0x20000000
-  IRQ_CTRL:
-    XML:
-      - "address_table/modules/INTERRUPT_CONTROLLER.xml"
-    UHAL_BASE: 0x16000000
 
   TCDS:
     TCL_CALL:
@@ -341,22 +333,31 @@ AXI_SLAVES:
 
   ZYNQ_DMA:
     TCL_CALL:
-      command: "set_property -dict [list CONFIG.PSU__USE__S_AXI_GP3 {1} CONFIG.PSU__SAXIGP3__DATA_WIDTH {32} CONFIG.PSU__USE__S_AXI_GP4 {1} CONFIG.PSU__SAXIGP4__DATA_WIDTH {32}] [get_bd_cells ZynqMPSoC];#"
+      command: "set_property -dict [list CONFIG.PSU__USE__S_AXI_GP3 {1} CONFIG.PSU__SAXIGP3__DATA_WIDTH {32}] [get_bd_cells ZynqMPSoC];#"
     SUB_SLAVES:
+      ZYNQ_MASTER_SLAVE:
+        TCL_CALL:
+          command: "AXI_CONNECT ZynqMPSoC ${::AXI_INTERCONNECT_NAME} ${::AXI_MASTER_CLK} ${::AXI_PRIMARY_SLAVE_RSTN} ${::AXI_MASTER_CLK_FREQ} ;#"
       MASTER_CDMA:
         TCL_CALL:
           command: "AXI_IP_CDMA"
           axi_control: "${::AXI_MASTER_CTRL}"
           irq_port: "${::IRQ0_INTR_CTRL}"
-          zynq_axi: "ZynqMPSoC/S_AXI_HP1_FPD"
-          zynq_clk: "ZynqMPSoC/saxihp1_fpd_aclk"
-      C2C_CDMA:
-        TCL_CALL:
-          command: "AXI_IP_CDMA"
-          axi_control: "${::AXI_C2C_CTRL}"
-          irq_port: "${::IRQ0_INTR_CTRL}"
-          zynq_axi: "ZynqMPSoC/S_AXI_HP2_FPD"
-          zynq_clk: "ZynqMPSoC/saxihp2_fpd_aclk"
+          zynq_axi: "${::AXI_INTERCONNECT_NAME}"
+          zynq_clk: "${::AXI_MASTER_CLK}"
+        SUB_SLAVES:
+          MASTER_CDMA_DEBUG:
+            TCL_CALL:
+              command: "AXI_IP_SYSTEM_ILA"
+              axi_clk: "${::AXI_MASTER_CLK}"
+              axi_rstn: "${::AXI_PRIMARY_SLAVE_RSTN}"
+              slots:
+                slot0:
+                  axi_bus: "ZynqMPSoC/S_AXI_HP1_FPD"
+                slot1:
+                  axi_bus: "MASTER_CDMA/M_AXI"
+                slot2:
+                  axi_bus: "PL_MEM/S_AXI"
 
 CORES:
   onboardclk:
