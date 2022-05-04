@@ -32,6 +32,14 @@ package SM_INFO_CTRL is
   end record SM_INFO_FPGA_MON_t;
 
 
+  type SM_INFO_DNA_MON_t is record
+    VALID                      :std_logic;   
+    WORD_0                     :std_logic_vector(31 downto 0);
+    WORD_1                     :std_logic_vector(31 downto 0);
+    WORD_2                     :std_logic_vector(31 downto 0);
+  end record SM_INFO_DNA_MON_t;
+
+
   type SM_INFO_MON_t is record
     GIT_VALID                  :std_logic;   
     GIT_HASH_1                 :std_logic_vector(31 downto 0);
@@ -42,6 +50,7 @@ package SM_INFO_CTRL is
     BUILD_DATE                 :SM_INFO_BUILD_DATE_MON_t;     
     BUILD_TIME                 :SM_INFO_BUILD_TIME_MON_t;     
     FPGA                       :SM_INFO_FPGA_MON_t;           
+    DNA                        :SM_INFO_DNA_MON_t;            
   end record SM_INFO_MON_t;
 
 

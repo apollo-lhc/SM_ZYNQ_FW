@@ -40,19 +40,19 @@ architecture behavioral of SM_INFO_map is
 
   
   
-  signal reg_data :  slv32_array_t(integer range 0 to 26);
-  constant Default_reg_data : slv32_array_t(integer range 0 to 26) := (others => x"00000000");
+  signal reg_data :  slv32_array_t(integer range 0 to 35);
+  constant Default_reg_data : slv32_array_t(integer range 0 to 35) := (others => x"00000000");
 begin  -- architecture behavioral
 
   -------------------------------------------------------------------------------
   -- AXI 
   -------------------------------------------------------------------------------
   -------------------------------------------------------------------------------
-  assert ((4*26) < ALLOCATED_MEMORY_RANGE)
-    report "SM_INFO: Regmap addressing range " & integer'image(4*26) & " is outside of AXI mapped range " & integer'image(ALLOCATED_MEMORY_RANGE)
+  assert ((4*35) < ALLOCATED_MEMORY_RANGE)
+    report "SM_INFO: Regmap addressing range " & integer'image(4*35) & " is outside of AXI mapped range " & integer'image(ALLOCATED_MEMORY_RANGE)
   severity ERROR;
-  assert ((4*26) >= ALLOCATED_MEMORY_RANGE)
-    report "SM_INFO: Regmap addressing range " & integer'image(4*26) & " is inside of AXI mapped range " & integer'image(ALLOCATED_MEMORY_RANGE)
+  assert ((4*35) >= ALLOCATED_MEMORY_RANGE)
+    report "SM_INFO: Regmap addressing range " & integer'image(4*35) & " is inside of AXI mapped range " & integer'image(ALLOCATED_MEMORY_RANGE)
   severity NOTE;
 
   AXIRegBridge : entity work.axiLiteRegBlocking
@@ -103,7 +103,7 @@ begin  -- architecture behavioral
       localRdData <= x"00000000";
       if localRdReq = '1' then
         regRdAck  <= '1';
-        case to_integer(unsigned(localAddress(4 downto 0))) is
+        case to_integer(unsigned(localAddress(5 downto 0))) is
           
         when 0 => --0x0
           localRdData( 1)            <=  Mon.GIT_VALID;             --
@@ -143,6 +143,14 @@ begin  -- architecture behavioral
           localRdData(31 downto  0)  <=  Mon.FPGA.WORD_07;          --
         when 26 => --0x1a
           localRdData(31 downto  0)  <=  Mon.FPGA.WORD_08;          --
+        when 32 => --0x20
+          localRdData( 0)            <=  Mon.DNA.VALID;             --
+        when 33 => --0x21
+          localRdData(31 downto  0)  <=  Mon.DNA.WORD_0;            --
+        when 34 => --0x22
+          localRdData(31 downto  0)  <=  Mon.DNA.WORD_1;            --
+        when 35 => --0x23
+          localRdData(31 downto  0)  <=  Mon.DNA.WORD_2;            --
 
 
           when others =>

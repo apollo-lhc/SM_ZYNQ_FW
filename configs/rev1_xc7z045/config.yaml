@@ -56,16 +56,14 @@ AXI_SLAVES:
               command: "AXI_IP_AXI_FW"
               axi_fw_bus: "/C2C2/s_axi"
               axi_control: "${::AXI_C2C_CTRL}"
-            XML:
-              - "address_table/modules/C2C2_AXI_FW.xml"
+            XML: "address_table/modules/C2C2_AXI_FW.xml"
             UHAL_BASE: 0x13000000
           C2C2_AXILITE_FW:
             TCL_CALL:
               command: "AXI_IP_AXI_FW"
               axi_fw_bus: "/C2C2/s_axi_lite"
               axi_control: "${::AXI_C2C_CTRL}"
-            XML:
-              - "address_table/modules/C2C2_AXILITE_FW.xml"
+            XML: "address_table/modules/C2C2_AXILITE_FW.xml"
             UHAL_BASE: 0x14000000
           C2C2_PHY:
             TCL_CALL:
@@ -74,24 +72,21 @@ AXI_SLAVES:
               drp_name: "C2C2_PHY"
               drp_rstn: "C2C2_PHY_AXI_LITE_RESET_INVERTER/Res"
               init_clk: "${::INIT_CLK}"
-            XML:
-              - "address_table/modules/DRP_7_GTX.xml"
+            XML: "address_table/modules/DRP_7_GTX.xml"
             UHAL_BASE: 0x1B000000
       C2C1_AXI_FW:
         TCL_CALL:
           command: "AXI_IP_AXI_FW"
           axi_fw_bus: "/C2C1/s_axi"
           axi_control: "${::AXI_C2C_CTRL}"
-        XML:
-          - "address_table/modules/C2C1_AXI_FW.xml"
+        XML: "address_table/modules/C2C1_AXI_FW.xml"
         UHAL_BASE: 0x0D000000
       C2C1_AXILITE_FW:
         TCL_CALL:
           command: "AXI_IP_AXI_FW"
           axi_fw_bus: "/C2C1/s_axi_lite"
           axi_control: "${::AXI_C2C_CTRL}"
-        XML:
-          - "address_table/modules/C2C1_AXILITE_FW.xml"
+        XML: "address_table/modules/C2C1_AXILITE_FW.xml"
         UHAL_BASE: 0x0E000000
       C2C1_PHY:
         TCL_CALL:
@@ -100,8 +95,7 @@ AXI_SLAVES:
           drp_name: "C2C1_PHY"
           drp_rstn: "C2C1_PHY_AXI_LITE_RESET_INVERTER/Res"
           init_clk: "${::INIT_CLK}"
-        XML:
-          - "address_table/modules/DRP_7_GTX.xml"
+        XML: "address_table/modules/DRP_7_GTX.xml"
         UHAL_BASE: 0x19000000
 
   INT_AXI_FW:
@@ -109,8 +103,7 @@ AXI_SLAVES:
       command: "AXI_IP_AXI_FW"
       axi_fw_bus: "/${::ZYNQ_NAME}/M_AXI_GP0"
       axi_control: "${::AXI_C2C_CTRL}"
-    XML:
-      - "address_table/modules/INT_AXI_FW.xml"
+    XML: "address_table/modules/INT_AXI_FW.xml"
     UHAL_BASE: 0x20000000
 
   PLXVC:
@@ -120,9 +113,7 @@ AXI_SLAVES:
       addr:
         offset: "0x40010000"
         range: "64K"
-    XML:
-      - "address_table/modules/plXVC_rev1.xml"
-      - "address_table/modules/plXVC_single.xml"
+    XML: "address_table/modules/plXVC_rev1.xml"
     UHAL_BASE: 0x06000000
     HDL: 
       out_dir: "configs/rev1_xc7z045/autogen/plXVC"
@@ -135,8 +126,7 @@ AXI_SLAVES:
       addr:
         offset: "0x40030000"
         range: "64K"
-    XML:
-      - "address_table/modules/XVC.xml"
+    XML: "address_table/modules/XVC.xml"
     UHAL_BASE: 0x08000000
 
   SLAVE_I2C:
@@ -146,8 +136,7 @@ AXI_SLAVES:
       addr:
         offset: "0x40008000"
         range: "8K"
-    XML:
-      - "address_table/modules/SLAVE_I2C.xml"
+    XML: "address_table/modules/SLAVE_I2C.xml"
     UHAL_BASE: 0x05000000
 
   CM:
@@ -157,15 +146,7 @@ AXI_SLAVES:
       addr:
         offset: "0x4000A000"
         range: "8K"
-    XML:
-      - "address_table/modules/CM_7s.xml"
-      - "address_table/modules/CM_single_7s.xml"
-      - "address_table/modules/CM_C2C_7s.xml"
-      - "address_table/modules/CM_CTRL.xml"
-      - "address_table/modules/CM_C2C_Status.xml"
-      - "address_table/modules/CM_C2C_DEBUG_7s.xml"
-      - "address_table/modules/CM_Mon.xml"
-      - "address_table/modules/CM_C2C_CNT.xml"
+    XML: "address_table/modules/CM_7s.xml"
     UHAL_BASE: 0x03000000
     HDL: 
       out_dir: "configs/rev1_xc7z045/autogen/CM_interface"
@@ -178,8 +159,7 @@ AXI_SLAVES:
       addr:
         offset: "0x4000C000"
         range: "8K"
-    XML:
-      - "address_table/modules/FW_INFO.xml"
+    XML: "address_table/modules/FW_INFO.xml"
     UHAL_BASE: 0x0A000000
     HDL: 
       out_dir: "configs/rev1_xc7z045/autogen/SM_info"
@@ -192,8 +172,7 @@ AXI_SLAVES:
       addr:
         offset: "0x40040000"
         range: "64K"
-    XML:
-      - "address_table/modules/MONITOR.xml"
+    XML: "address_table/modules/MONITOR.xml"
     UHAL_BASE: 0x0B000000
 
   CM1_UART:
@@ -232,10 +211,7 @@ AXI_SLAVES:
       addr:
         offset: "0x40000000"
         range: "8K"
-    XML:
-      - "address_table/modules/PL_MEM.xml"
-      - "address_table/modules/PL_MEM_CM.xml"
-      - "address_table/modules/I2C_REGULATOR_MONITOR.xml"
+    XML: "address_table/modules/PL_MEM.xml"
     UHAL_BASE: 0x15000000
 
   SI:
@@ -254,8 +230,7 @@ AXI_SLAVES:
       addr:
         offset: "0x43C20000"
         range: "8K"
-    XML:
-      - "address_table/modules/SERV_rev1.xml"
+    XML: "address_table/modules/SERV_rev1.xml"
     UHAL_BASE: 0x04000000
     HDL: 
       out_dir: "configs/rev1_xc7z045/autogen/services"
@@ -276,7 +251,5 @@ AXI_SLAVES:
        - ${::AXI_MASTER_CLK}
       mon_axi_rstn: "${::AXI_MASTER_RSTN} ${::AXI_MASTER_RSTN}"
 
-    XML:
-      - "address_table/modules/AXI_MONITOR.xml"
-      - "address_table/modules/AXI_MONITOR_COUNTER.xml"
+    XML: "address_table/modules/AXI_MONITOR.xml"
     UHAL_BASE: 0x1F000000

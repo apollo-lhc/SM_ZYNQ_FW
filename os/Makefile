@@ -72,7 +72,7 @@ include mk/overlay-tools.mk
 %.tar.gz : centos-rootfs/extra_rpms.txt 
 	$(MAKE) ${INSTALL_PATH}${QEMU_PATH}/${QEMU} /${QEMU_PATH}/${QEMU}
 	cd centos-rootfs && \
-		sudo python mkrootfs.py --root=${INSTALL_PATH} --arch=${ZYNQ_ARCH} --extra=extra_rpms.txt
+		sudo python3 mkrootfs.py --root=${INSTALL_PATH} --arch=${ZYNQ_ARCH} --extra=extra_rpms.txt
 	# Add common filesystem mods
 	sudo cp -r ${CONFIG_BASE_DIR}/common/file_system/* ${INSTALL_PATH}
 	# Add rev specific mods
