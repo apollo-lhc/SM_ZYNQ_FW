@@ -26,5 +26,12 @@
     <node id="WORD_07" address="0x7" permission="r" mask="0xFFFFFFFF"/>
     <node id="WORD_08" address="0x8" permission="r" mask="0xFFFFFFFF"/>
   </node>
+  <node id="DNA" address="0x20">
+    <node id="VALID"   address="0x0" permission="r" mask="0x00000001"/>
+    <node id="WORD_0"  address="0x1" permission="r" mask="0xFFFFFFFF"/>
+    <node id="WORD_1"  address="0x2" permission="r" mask="0xFFFFFFFF"/>
+    <node id="WORD_2"  address="0x3" permission="r" mask="0xFFFFFFFF"/>
+  </node>
+
   <!-- <node id="MEMORY_SPACE" address="0x20" module="file://SM_MEM_SPACE.xml"/> -->
 </node>

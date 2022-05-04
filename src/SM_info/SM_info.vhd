@@ -32,6 +32,16 @@ end entity SM_info;
 architecture behavioral of SM_info is
   signal Mon              :  SM_INFO_Mon_t;
 
+  constant DNA_LOAD      : integer range 0 to 97       := 97;
+  constant DNA_BIT_END   : integer range 0 to DNA_LOAD := 96;
+  constant DNA_BIT_START : integer range 0 to DNA_LOAD := 1;
+  constant DNA_IDLE      : integer range 0 to DNA_LOAD := 0;
+  signal DNA_readout_counter : integer range 0 to DNA_LOAD;
+  signal shift_DNA : std_logic;
+  signal load_DNA  : std_logic;
+  signal DNA_out   : std_logic;
+  signal DNA_valid : std_logic;
+  signal DNA_value : std_logic_vector(DNA_BIT_END-1 downto 0);
 begin  -- architecture behavioral
 
   -------------------------------------------------------------------------------
@@ -96,5 +106,45 @@ begin  -- architecture behavioral
   Mon.FPGA.WORD_07(23 downto 16)    <= std_logic_vector(to_unsigned(character'pos(FPGA_TYPE(31)),8)); 
   Mon.FPGA.WORD_07(15 downto  8)    <= std_logic_vector(to_unsigned(character'pos(FPGA_TYPE(30)),8)); 
   Mon.FPGA.WORD_07( 7 downto  0)    <= std_logic_vector(to_unsigned(character'pos(FPGA_TYPE(29)),8));
-
+  
+  Mon.DNA.valid <= DNA_valid;
+  Mon.DNA.WORD_0 <= DNA_value(31 downto  0);
+  Mon.DNA.WORD_1 <= DNA_value(63 downto 32);
+  Mon.DNA.WORD_2 <= DNA_value(95 downto 64);
+  dna_readout: process (clk_axi, reset_axi_n) is
+  begin  -- process dna_readout
+    if reset_axi_n = '0' then           -- asynchronous reset (active low)
+      DNA_readout_counter <= DNA_LOAD;
+      load_DNA <= '0';
+      shift_DNA <= '0';
+    elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
+      load_DNA <= '0';
+      shift_DNA <= '0';
+      DNA_valid <= '0';
+      case DNA_readout_counter is
+        when DNA_LOAD =>
+          load_DNA <= '1' ;
+          DNA_readout_counter <= DNA_readout_counter -1;
+        when DNA_BIT_START to DNA_BIT_END =>
+          --shift in the DNA value
+          DNA_value(95 downto 0) <= DNA_value(94 downto 0) & dna_out;
+          shift_DNA <= '1';
+          DNA_readout_counter <= DNA_readout_counter -1;
+        when DNA_IDLE =>
+          DNA_valid <= '1';
+        when others => null;
+      end case;
+    end if;
+  end process dna_readout;
+  dna : DNA_PORTE2
+    generic map (
+      SIM_DNA_VALUE => X"000000000000000000000000"
+      )
+    port map (
+      DOUT => dna_out,
+      CLK => clk_axi,
+      DIN => '0',
+      READ => load_DNA,
+      SHIFT => shift_DNA);
+  
 end architecture behavioral;
