@@ -242,6 +242,8 @@ define build_7s =
 		petalinux-package --boot --format BIN \
 			--fsbl images/linux/zynq_fsbl.elf \
 			--fpga ../$$<  --uboot --force 			$(OUTPUT_MARKUP)
+	tar -h -zcf $$@.tar.gz -C output BOOT.BIN boot.scr image.ub \
+		-C ../address_tables/ address_table 			$(OUTPUT_MARKUP)
 	@echo "Build ended:"
 	@date
 endef
@@ -294,4 +296,4 @@ reconfig:
 
 docker_% :
 	docker pull centos:centos7
-	time docker run -it -v ${PWD}/../:/app:Z -v /work/Xilinx/petalinux:/work/Xilinx/petalinux:Z,ro centos:centos7 /app/kernel/scripts/build_container.sh $* ${BUILD_PETALINUX_VERSION} ${BUILD_PETALINUX_ROOT}
+	time docker run -it -v ${MAKE_PATH}/../:/app:Z -v /work/Xilinx/petalinux:/opt/Xilinx/petalinux:Z,ro centos:centos7 /app/kernel/scripts/build_container.sh $* ${BUILD_PETALINUX_VERSION} ${BUILD_PETALINUX_ROOT}
