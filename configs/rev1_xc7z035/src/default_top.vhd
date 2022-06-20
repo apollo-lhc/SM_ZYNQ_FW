@@ -6,6 +6,7 @@ use work.types.all;
 use work.AXIRegPKG.all;
 use work.CM_package.all;
 use work.SERV_CTRL.all;
+use work.Global_PKG.all; 
 use work.AXISlaveAddrPkg.all;
 
 
@@ -288,6 +289,9 @@ architecture structure of top is
   signal CLOCKING_Ctrl  : SERV_CLOCKING_CTRL_t;
   signal C2C_pB_UART_tx : std_logic;
   signal C2C_pB_UART_rx : std_logic;
+
+  signal TCDS_Mon       : SERV_TCDS_MON_t;
+  signal TCDS_Ctrl      : SERV_TCDS_CTRL_t;
 
   
   signal CM_enable_IOs   : std_logic_vector(2 downto 1);
@@ -977,7 +981,8 @@ begin  -- architecture structure
 
   SM_info_1: entity work.SM_info
     generic map (
-      ALLOCATED_MEMORY_RANGE =>  to_integer(AXI_RANGE_SM_INFO)
+      ALLOCATED_MEMORY_RANGE =>  to_integer(AXI_RANGE_SM_INFO),
+      FPGA_GENERATION => "7SERIES"
       )
     port map (
       clk_axi     => axi_clk,

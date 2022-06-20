@@ -1,9 +1,11 @@
 #!/bin/bash
 
-if [ -z $DTSI_PATH ] ; then
-    echo ERROR: DTSI_PATH not defined
-    exit 1
-fi
+#if [ -z $DTSI_PATH ] ; then
+#    echo ERROR: DTSI_PATH not defined
+#    exit 1
+#fi
+
+DTSI_PATH=$@
 
 #filename=test.dtsi
 filename=/dev/stdout

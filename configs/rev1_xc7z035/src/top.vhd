@@ -1,1 +1,1 @@
-ibert_top.vhd
+default_top.vhd

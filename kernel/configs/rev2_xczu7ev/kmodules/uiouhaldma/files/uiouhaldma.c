@@ -118,6 +118,7 @@ static int uiouhaldma_probe(struct platform_device *pdev)
 		(unsigned int __force)lp->mem_start,
 		(unsigned int __force)lp->base_addr,
 		lp->irq);
+
 	return 0;
 error3:
 	free_irq(lp->irq, lp);
@@ -143,7 +144,7 @@ static int uiouhaldma_remove(struct platform_device *pdev)
 
 #ifdef CONFIG_OF
 static struct of_device_id uiouhaldma_of_match[] = {
-	{ .compatible = "vendor,uiouhaldma", },
+	{ .compatible = "buedf,uiouhaldma", },
 	{ /* end of list */ },
 };
 MODULE_DEVICE_TABLE(of, uiouhaldma_of_match);

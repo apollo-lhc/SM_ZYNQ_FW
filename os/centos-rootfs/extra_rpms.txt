@@ -55,3 +55,6 @@ msgpack-devel
 cppzmq-devel
 dosfstools
 mmc-utils
+libxml2-devel
+libxml2-python
+libxslt-devel

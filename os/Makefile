@@ -2,8 +2,19 @@ SHELL=bash
 PWD=$(shell pwd)
 
 
-
 SECURE_PATH=${PWD}/secure
+SECURE_FILES="\
+	secure/ssh/moduli \
+	secure/ssh/ssh_config \
+	secure/ssh/sshd_config \
+	secure/ssh/ssh_host_ecdsa_key \
+	secure/ssh/ssh_host_ecdsa_key.pub \
+	secure/ssh/ssh_host_ed25519_key \
+	secure/ssh/ssh_host_ed25519_key.pub \
+	secure/ssh/ssh_host_rsa_key \
+	secure/ssh/ssh_host_rsa_key.pub"
+
+SECURE_CHECK=$(patsubst "secure",${SECURE_PATH},${SECURE_FILES})
 
 %xc7z035.tar.gz : QEMU=qemu-arm-static
 %xc7z045.tar.gz : QEMU=qemu-arm-static
@@ -71,7 +82,10 @@ include mk/CM_MCU.mk
 #include mk/mmc-utils.mk
 include mk/overlay-tools.mk
 
-%.tar.gz : centos-rootfs/extra_rpms.txt 
+#${SECURE_CHECK}:
+#	$(error Missing secure files)
+
+%.tar.gz : centos-rootfs/extra_rpms.txt
 	$(MAKE) ${INSTALL_PATH}${QEMU_PATH}/${QEMU} /${QEMU_PATH}/${QEMU} 
 	cd centos-rootfs && \
 		sudo python3 mkrootfs.py --root=${INSTALL_PATH} --arch=${ZYNQ_ARCH} --extra=extra_rpms.txt 
@@ -84,7 +98,7 @@ include mk/overlay-tools.mk
 	#Remove ipv6 from lighttpd
 	sudo sed -i -e "s/server.use-ipv6 = \"enable\"/server.use-ipv6 = \"disable\"/g" ${ETC_PATH}/lighttpd/lighttpd.conf  
 	#this service breaks things
-	sudo rm ${ETC_PATH}/systemd/system/multi-user.target.wants/auditd.service 
+#	sudo rm ${ETC_PATH}/systemd/system/multi-user.target.wants/auditd.service 
 	#Add all the password files and keys
 	sudo install -m 644 ${SECURE_PATH}/group   ${ETC_PATH}/ 
 	sudo install -m 644 ${SECURE_PATH}/passwd  ${ETC_PATH}/ 
@@ -106,7 +120,7 @@ include mk/overlay-tools.mk
 	#setup software and libraries
 	${MAKE} pip_install 
 #	${MAKE} ${OPT_PATH}/BUTool/bin ${OPT_PATH}/cactus ${OPT_PATH}/mcu_tools ${OPT_PATH}/Graphite_Monitor ${INSTALL_PATH}usr/local/bin/mmc ${OPT_PATH}/overlay-tools
-	${MAKE} ${OPT_PATH}/BUTool/bin ${OPT_PATH}/cactus ${OPT_PATH}/mcu_tools ${OPT_PATH}/Graphite_Monitor ${OPT_PATH}/overlay-tools 
+	${MAKE} ${OPT_PATH}/BUTool/bin ${OPT_PATH}/cactus ${OPT_PATH}/mcu_tools ${OPT_PATH}/Graphite_Monitor ${OPT_PATH}/uio-daemon
 	sudo cp ${SCRIPTS_PATH}/cleanup_locale.sh ${TMP_PATH} 
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/cleanup_locale.sh 
 	sudo rm -rf ${TMP_PATH}/*  
@@ -119,7 +133,7 @@ include mk/overlay-tools.mk
 #################################################################################
 docker_% :
 	docker pull centos:centos7
-	time docker run --privileged -it -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v ${PWD}:/app:Z centos:centos7 /app/scripts/docker_build.sh $*
+	time docker run --rm --privileged -it -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v ${PWD}:/app:Z -v /etc/binfmt.d:/etc/binfmt.d:Z centos:centos7 /app/scripts/docker_build.sh $*
 
 
 #################################################################################

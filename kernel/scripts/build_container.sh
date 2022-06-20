@@ -14,7 +14,7 @@ if [ $# -gt 2 ]; then
 
         
     sudo -u test make clean
-    sudo -u test BUILD_PETALINUX_VERSION=$2 BUILD_PETALINUX_ROOT=$3 make ${BUILD_NAME}
+    sudo -u test BUILD_PETALINUX_VERSION=$2 BUILD_PETALINUX_ROOT=$3 make ${BUILD_NAME} | tee  /app/kernel/docker_build.txt
 else
     echo "Missing build name.  ex. rev2a_xczu7ev"
 fi

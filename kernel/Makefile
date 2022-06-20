@@ -9,7 +9,7 @@ BUILD_PETALINUX_VERSION?=2020.2
 BUILD_PETALINUX_ROOT?="/opt/Xilinx/petalinux/"
 #BUILD_VIVADO_PETALINUX="/work/Xilinx/PetaLinux/"$(BUILD_VIVADO_VERSION)"/tool/settings.sh"
 #BUILD_VIVADO_PETALINUX="/work/Xilinx/petalinux/"$(BUILD_VIVADO_VERSION)"/settings.sh"
-SOURCE_PETALINUX_ENV=${BUILD_PETALINUX_ROOT}$(BUILD_PETALINUX_VERSION)"/settings.sh"
+SOURCE_PETALINUX_ENV=${BUILD_PETALINUX_ROOT}$(BUILD_PETALINUX_VERSION)/settings.sh
 
 ifeq ($(BUILD_PETALINUX_VERSION),2018.2)
 	PETALINUX_OLD_CONFIG_OPTION=--oldconfig
@@ -296,4 +296,4 @@ reconfig:
 
 docker_% :
 	docker pull centos:centos7
-	time docker run -it -v ${MAKE_PATH}/../:/app:Z -v /work/Xilinx/petalinux:/opt/Xilinx/petalinux:Z,ro centos:centos7 /app/kernel/scripts/build_container.sh $* ${BUILD_PETALINUX_VERSION} ${BUILD_PETALINUX_ROOT}
+	time docker run -it -v ${MAKE_PATH}/../:/app:Z -v /opt/Xilinx/petalinux:/opt/Xilinx/petalinux:Z,ro centos:centos7 /app/kernel/scripts/build_container.sh $* ${BUILD_PETALINUX_VERSION} ${BUILD_PETALINUX_ROOT}
