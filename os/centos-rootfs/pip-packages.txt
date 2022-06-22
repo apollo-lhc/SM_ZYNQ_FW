@@ -1,0 +1,6 @@
+pyserial
+pybind11
+lxml
+beautifulsoup4
+python-pidfile
+python-daemon

@@ -1,0 +1,6 @@
+{
+  "CM_FWs": [
+  ],
+  "SM_FW": "/fw/",
+  "address_table_path" : "/opt/address_tables",
+}
