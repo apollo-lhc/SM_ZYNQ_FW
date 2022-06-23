@@ -296,7 +296,8 @@ reconfig:
 
 docker :
 	docker pull centos:centos7
-	time docker run --rm -it --env="DISPLAY" --volume="${HOME}/.Xauthority:/root/.Xauthority:rw" -v ${MAKE_PATH}/../:/app:Z -v /opt/Xilinx/petalinux:/opt/Xilinx/petalinux:Z,ro centos:centos7 bash
+#	time docker run --rm -it --env="DISPLAY" --volume="${HOME}/.Xauthority:/root/.Xauthority:rw" -v ${MAKE_PATH}/../:/app:Z -v /opt/Xilinx/petalinux:/opt/Xilinx/petalinux:Z,ro centos:centos7 bash
+	time docker run --rm -it -v ${MAKE_PATH}/../:/app:Z -v /opt/Xilinx/petalinux:/opt/Xilinx/petalinux:Z,ro centos:centos7 bash
 
 docker_% :
 	docker pull centos:centos7
