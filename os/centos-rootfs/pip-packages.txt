@@ -1,6 +1,6 @@
-pyserial
+docutils
 pybind11
-lxml
-beautifulsoup4
 python-pidfile
 python-daemon
+lxml
+jinja2

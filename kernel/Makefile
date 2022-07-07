@@ -1,6 +1,6 @@
 #add path so build can be more generic
 include ../build-scripts/mk/helpers.mk
-OUTPUT_MARKUP= 2>&1 | tee -a make_log.txt ${CCZE_CMD}
+OUTPUT_MARKUP= 2>&1 | tee -a $(MAKE_PATH)/make_log.txt ${CCZE_CMD}
 
 #################################################################################
 # VIVADO stuff
@@ -45,7 +45,7 @@ BUILD_TIME=$(shell date +%s)
 
 HDF_FILE=hw/top.hdf
 ZYNQ_OS=zynq_os
-ZYNQ_OS_PROJECT_PATH=$(ZYNQ_OS)
+ZYNQ_OS_PROJECT_PATH=$(MAKE_PATH)/$(ZYNQ_OS)
 ZYNQ_OS_PROJECT=$(ZYNQ_OS_PROJECT_PATH)/config.project
 BOOT_FILES=$(ZYNQ_OS_PROJECT)/images/linux/BOOT.BIN
 
@@ -170,7 +170,7 @@ define copy_configs =
 		ZYNQ_OS_PROJECT_PATH=$(ZYNQ_OS_PROJECT_PATH) \
 		SOURCE_PETALINUX_ENV=${SOURCE_PETALINUX_ENV} \
 		KMODULE_DST_PATH=${KMODULE_DST_PATH} \
-		${KMODULE_SCRIPT}					$(OUTPUT_MARKUP)
+		${KMODULE_SCRIPT}	|| :				$(OUTPUT_MARKUP)
 
 #       FSBL mods ===============================================================
 #	Make dir, copy base files, address files, run fsbl mod script
@@ -188,8 +188,8 @@ define copy_configs =
 	@$(FSBL_MOD_SRC_PATH)/build_mods.sh || :			
 
 #	Layer config mod ========================================================
-#	@echo "layer config (if needed)"
-#	@cp ./configs/$$@/configs/layer.conf $(ZYNQ_OS_PROJECT_PATH)/project-spec/meta-user/conf/ || :
+	@echo "layer config (if needed)"
+	@cp ./configs/$$@/configs/layer.conf $(ZYNQ_OS_PROJECT_PATH)/project-spec/meta-user/conf/ || :
 
 	@echo "End of mods"
 endef

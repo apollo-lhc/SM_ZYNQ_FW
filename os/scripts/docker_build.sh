@@ -28,6 +28,7 @@ if [ $# -gt 0 ]; then
     
     
     dnf install make wget sudo augeas dnf python3-pip git gcc python3-devel -y ${DUMP_CMD}
+    dnf install libffi-devel -y                                                ${DUMP_CMD}
     pip3 install python-augeas                                                 ${DUMP_CMD}
     
     #create a directory to build in

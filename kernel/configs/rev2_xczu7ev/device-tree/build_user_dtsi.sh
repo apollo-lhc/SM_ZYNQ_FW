@@ -1,1 +1,1 @@
-build_user_dtsi.sdcard
+build_user_dtsi.emmc

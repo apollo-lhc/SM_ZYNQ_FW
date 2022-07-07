@@ -29,15 +29,18 @@ rev1_% : CONFIG_DIR=${CONFIG_BASE_DIR}/rev1
 rev2_% : CONFIG_DIR=${CONFIG_BASE_DIR}/rev2
 rev2a_% : CONFIG_DIR=${CONFIG_BASE_DIR}/rev2a
 
+
 INSTALL_BASE_PATH?=${PWD}/image/
 #INSTALL_PATH=${INSTALL_BASE_PATH}
 rev1_xc7z035.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev1_xc7z035/
-rev1_xc7z045.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev1_xc7z035/
+rev1_xc7z045.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev1_xc7z045/
 rev2_xc7z035.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev2_xc7z035/
 rev2_xc7z045.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev2_xc7z045/
 rev2_xczu7ev.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev2_xczu7ev/
 rev2a_xczu7ev.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev2a_xczu7ev/
 rev2a_xc7z035.tar.gz : INSTALL_PATH=${INSTALL_BASE_PATH}rev2a_xc7z035/
+
+
 
 SCRIPTS_PATH=${PWD}/scripts
 
@@ -98,7 +101,7 @@ include mk/overlay-tools.mk
 	#Remove ipv6 from lighttpd
 	sudo sed -i -e "s/server.use-ipv6 = \"enable\"/server.use-ipv6 = \"disable\"/g" ${ETC_PATH}/lighttpd/lighttpd.conf  
 	#this service breaks things
-#	sudo rm ${ETC_PATH}/systemd/system/multi-user.target.wants/auditd.service 
+	sudo rm -f ${ETC_PATH}/systemd/system/multi-user.target.wants/auditd.service 
 	#Add all the password files and keys
 	sudo install -m 644 ${SECURE_PATH}/group   ${ETC_PATH}/ 
 	sudo install -m 644 ${SECURE_PATH}/passwd  ${ETC_PATH}/ 
@@ -118,7 +121,7 @@ include mk/overlay-tools.mk
 	sudo chown ${ATLAS_UID}:${ATLAS_GID} ${HOME_PATH}/atlas 
 	sudo chmod u+wX ${HOME_PATH}/atlas 
 	#setup software and libraries
-	${MAKE} pip_install 
+	${MAKE} pip_install_$*
 #	${MAKE} ${OPT_PATH}/BUTool/bin ${OPT_PATH}/cactus ${OPT_PATH}/mcu_tools ${OPT_PATH}/Graphite_Monitor ${INSTALL_PATH}usr/local/bin/mmc ${OPT_PATH}/overlay-tools
 	${MAKE} ${OPT_PATH}/BUTool/bin ${OPT_PATH}/cactus ${OPT_PATH}/mcu_tools ${OPT_PATH}/Graphite_Monitor ${OPT_PATH}/uio-daemon
 	sudo cp ${SCRIPTS_PATH}/cleanup_locale.sh ${TMP_PATH} 
@@ -133,7 +136,7 @@ include mk/overlay-tools.mk
 #################################################################################
 docker_% :
 	docker pull centos:centos7
-	time docker run --rm --privileged -it -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v ${PWD}:/app:Z -v /etc/binfmt.d:/etc/binfmt.d:Z centos:centos7 /app/scripts/docker_build.sh $*
+	time docker run --rm --privileged -it -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v ${PWD}:/app:Z -v /etc/binfmt.d:/etc/binfmt.d:Z centos:centos7 /app/scripts/docker_build.sh $* | tee dump.txt
 
 
 #################################################################################

@@ -32,9 +32,9 @@
     <node id="FIXED_SEND_D"     address="0x006" mask="0xFFFFFFFF" permission="rw"/>
     <node id="FIXED_SEND_K"     address="0x007" mask="0x0000000F" permission="rw"/>   
   </node>
-  <node id="TX_CLK_FREQ"        address="0x60"  mask="0xFFFFFFFF" permission="r" parameters="Table=CLOCKING;Column=FREQ;Row=__2__3;Status=3;Show=nz;Format=m_1_1_1000000_1_0_1"/>
-  <node id="TX_CLK_OUT_FREQ"    address="0x61" mask="0xFFFFFFFF" permission="r"  parameters="Table=CLOCKING;Column=FREQ;Row=__2__3;Status=3;Show=nz;Format=m_1_1_1000000_1_0_1"/>
-  <node id="RX_CLK_OUT_FREQ"    address="0x62" mask="0xFFFFFFFF" permission="r"  parameters="Table=CLOCKING;Column=FREQ;Row=__2__3;Status=3;Show=nz;Format=m_1_1_1000000_1_0_1"/>
+  <node id="TX_CLK_FREQ"        address="0x60"  mask="0xFFFFFFFF" permission="r" parameters="Table=CLOCKING;Column=FREQ;Row=_2_3;Status=3;Show=nz;Format=m_1_1_1000000_1_0_1"/>
+  <node id="TX_CLK_OUT_FREQ"    address="0x61" mask="0xFFFFFFFF" permission="r"  parameters="Table=CLOCKING;Column=FREQ;Row=_2_3;Status=3;Show=nz;Format=m_1_1_1000000_1_0_1"/>
+  <node id="RX_CLK_OUT_FREQ"    address="0x62" mask="0xFFFFFFFF" permission="r"  parameters="Table=CLOCKING;Column=FREQ;Row=_2_3;Status=3;Show=nz;Format=m_1_1_1000000_1_0_1"/>
   <node id="LOOPBACK"           address="0x63" mask="0x7" permission="rw" parameters="default=0x0"/>
   <node id="TX_OUTCLK_SEL"      address="0x63" mask="0x70" permission="rw" parameters="default=0x2"/>
   <node id="RX_OUTCLK_SEL"      address="0x63" mask="0x700" permission="rw" parameters="default=0x2"/>

@@ -1,7 +1,7 @@
 From fa56b69267a54183eea9c1cd88e943eed67877b1 Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Fri, 14 May 2021 15:13:36 -0400
-Subject: [PATCH 01/35] code for apollo si programming
+Subject: [PATCH 01/37] code for apollo si programming
 
 ---
  lib/sw_apps/zynqmp_fsbl/src/xfsbl_hooks.c     |   2 +
@@ -243,7 +243,7 @@ index 0000000000..118b53ee7e
 From 8cc6f787ec8fa14311306ffb05c58a15d216a002 Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Fri, 14 May 2021 17:08:19 -0400
-Subject: [PATCH 02/35] SI programming in the way wrong locatoin
+Subject: [PATCH 02/37] SI programming in the way wrong locatoin
 
 ---
  lib/sw_apps/zynqmp_fsbl/src/xfsbl_hooks.c | 2 +-
@@ -276,7 +276,7 @@ index fcde6a4530..9887ace2ce 100644
 From 415d83863c7514253f6c90a79c3fc63b01751247 Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Fri, 14 May 2021 19:31:12 -0400
-Subject: [PATCH 03/35] updated printing
+Subject: [PATCH 03/37] updated printing
 
 ---
  lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c | 22 +++++++++----------
@@ -350,7 +350,7 @@ index 797c9d205a..987e213364 100644
 From a308c15062a9304563c528c8e10175b8f11ea29b Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Sat, 15 May 2021 11:47:49 -0400
-Subject: [PATCH 04/35] Added updates for 7series zynq
+Subject: [PATCH 04/37] Added updates for 7series zynq
 
 ---
  lib/sw_apps/zynq_fsbl/src/fsbl_hooks.c        |   3 +-
@@ -655,7 +655,7 @@ index 987e213364..797c9d205a 100644
 From c5b443e3614b287704fef11c68292106a1284273 Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Fri, 25 Jun 2021 15:20:49 -0400
-Subject: [PATCH 05/35] Added axi addr printing in 7s fsbl
+Subject: [PATCH 05/37] Added axi addr printing in 7s fsbl
 
 ---
  lib/sw_apps/zynq_fsbl/src/fsbl_programSI.c | 10 ++++++++++
@@ -704,7 +704,7 @@ index e819c18025..370473688f 100644
 From b1c2c202ecdb9a8773e3b0c2a8b7d583d476880f Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Fri, 25 Jun 2021 15:47:39 -0400
-Subject: [PATCH 06/35] Moved which 7s fsbl hooks we use
+Subject: [PATCH 06/37] Moved which 7s fsbl hooks we use
 
 ---
  lib/sw_apps/zynq_fsbl/src/fsbl_hooks.c | 2 +-
@@ -737,7 +737,7 @@ index d56dde7e50..6dacc5627c 100644
 From 1f4df737f96d57226b625ffbc84297dda41b1582 Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Mon, 24 Jan 2022 11:16:25 -0500
-Subject: [PATCH 07/35] Fix for SSD
+Subject: [PATCH 07/37] Fix for SSD
 
 ---
  lib/sw_apps/zynqmp_fsbl/misc/zcu102/psu_init.c | 3 ++-
@@ -764,7 +764,7 @@ index 5686bd4c6f..faee14f9c1 100644
 From 1e749eb78df0d4133e6b34d6de215aa1d139840e Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Tue, 25 Jan 2022 09:37:34 -0500
-Subject: [PATCH 08/35] another fsbl change for SSD
+Subject: [PATCH 08/37] another fsbl change for SSD
 
 ---
  .../zynqmp_fsbl/misc/zcu102/psu_init.c        | 81 ++++++++++++-------
@@ -869,7 +869,7 @@ index faee14f9c1..93da71a2cf 100644
 From a5bb83cd915601d9edc16664a28f724789a10ee6 Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Tue, 25 Jan 2022 11:29:02 -0500
-Subject: [PATCH 09/35] Another fsbl change for SSD
+Subject: [PATCH 09/37] Another fsbl change for SSD
 
 ---
  .../zynqmp_fsbl/misc/zcu102/psu_init.c        | 23 ++++++++++---------
@@ -930,7 +930,7 @@ index 93da71a2cf..c4bce28010 100644
 From bb7a38684e45f9c87f314d32256b5376d6902d2e Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Wed, 26 Jan 2022 10:14:05 -0500
-Subject: [PATCH 10/35] Commenting out serdes_illcalib for test
+Subject: [PATCH 10/37] Commenting out serdes_illcalib for test
 
 ---
  lib/sw_apps/zynqmp_fsbl/misc/zcu102/psu_init.c | 2 +-
@@ -956,7 +956,7 @@ index c4bce28010..2033126692 100644
 From 85b71fb13838ab6924b8321425a931fa8f3ef859 Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Mon, 14 Mar 2022 10:18:06 -0400
-Subject: [PATCH 11/35] Added build time interface to updated clock info
+Subject: [PATCH 11/37] Added build time interface to updated clock info
 
 ---
  lib/sw_apps/zynq_fsbl/src/fsbl_hooks.c     |  10 +-
@@ -1298,7 +1298,7 @@ index 60abc29f9e..a128ba2d30 100644
 From 4c88457faf74fa8c608c1179d66ad3af5f5e6eb6 Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Mon, 14 Mar 2022 10:23:41 -0400
-Subject: [PATCH 12/35] Missing files
+Subject: [PATCH 12/37] Missing files
 
 ---
  lib/sw_apps/zynq_fsbl/src/si_data.c | 11 +++++++++++
@@ -1355,7 +1355,7 @@ index 0000000000..f1daf79b6c
 From 72e5a43d6a86838ed8467bd5c256402583e40469 Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Mon, 14 Mar 2022 14:22:32 -0400
-Subject: [PATCH 13/35] forgot to add files for the zynqmp bootloader
+Subject: [PATCH 13/37] forgot to add files for the zynqmp bootloader
 
 ---
  lib/sw_apps/zynqmp_fsbl/src/si_data.c         |  11 +
@@ -1738,7 +1738,7 @@ index 118b53ee7e..0cad296830 100644
 From baa3697c9e95e1d09cd0d1418bd5d6ef37c65d5f Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Mon, 14 Mar 2022 15:03:02 -0400
-Subject: [PATCH 14/35] Mising include in si_data.h
+Subject: [PATCH 14/37] Mising include in si_data.h
 
 ---
  lib/sw_apps/zynq_fsbl/src/si_data.h   | 1 +
@@ -1776,7 +1776,7 @@ index f1daf79b6c..62fc18723e 100644
 From b9802981297b3e4061907c6fe4b445d6d8d977d0 Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Mon, 14 Mar 2022 16:40:59 -0400
-Subject: [PATCH 15/35] removed extra include in zynqmp
+Subject: [PATCH 15/37] removed extra include in zynqmp
 
 ---
  lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.h | 1 -
@@ -1801,7 +1801,7 @@ index 0cad296830..a3f6945d05 100644
 From 3f03a7cb5e2985cf27d38bd7d0cef2f9d354479e Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Mon, 14 Mar 2022 17:08:54 -0400
-Subject: [PATCH 16/35] bad syntax
+Subject: [PATCH 16/37] bad syntax
 
 ---
  lib/sw_apps/zynq_fsbl/src/fsbl_programSI.h    | 2 +-
@@ -1841,7 +1841,7 @@ index a3f6945d05..2d9b846476 100644
 From 84e52ad9401de14c8138c01a3ef89481ad09397c Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Mon, 14 Mar 2022 22:00:26 -0400
-Subject: [PATCH 17/35] weird errors
+Subject: [PATCH 17/37] weird errors
 
 ---
  lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c | 18 +++++++++---------
@@ -1893,7 +1893,7 @@ index 777cf5474a..bd7489b23b 100644
 From 49d8a78cd3a4f3e7b3a137e74ae06094be708acb Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Mon, 14 Mar 2022 22:28:00 -0400
-Subject: [PATCH 18/35] stupid errors
+Subject: [PATCH 18/37] stupid errors
 
 ---
  lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c | 14 +++++++-------
@@ -1931,7 +1931,7 @@ index bd7489b23b..a270cacb9f 100644
 From 364be313187626ceb4314d06e29939da0517c948 Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Mon, 14 Mar 2022 22:45:35 -0400
-Subject: [PATCH 19/35] stupid errors
+Subject: [PATCH 19/37] stupid errors
 
 ---
  lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c | 14 +++++++-------
@@ -1969,7 +1969,7 @@ index a270cacb9f..8701dad456 100644
 From 0de2f794843a64a0ad515be9ca563e8c5070a638 Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Mon, 14 Mar 2022 23:01:23 -0400
-Subject: [PATCH 20/35] stupid errors
+Subject: [PATCH 20/37] stupid errors
 
 ---
  lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c | 14 +++++++-------
@@ -2036,7 +2036,7 @@ index 2d9b846476..9c6186ea91 100644
 From eb1b34d0e2fed7093cdbd52e3a9c8ac6f8343ac5 Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Tue, 15 Mar 2022 09:27:12 -0400
-Subject: [PATCH 21/35] stupid errors
+Subject: [PATCH 21/37] stupid errors
 
 ---
  lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c | 7 +++++++
@@ -2085,7 +2085,7 @@ index 9c6186ea91..47804f6cf8 100644
 From ddb67a64d8f5f9afbced41da78858df6a774e16a Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Tue, 15 Mar 2022 09:36:49 -0400
-Subject: [PATCH 22/35] stupid errors
+Subject: [PATCH 22/37] stupid errors
 
 ---
  lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c | 2 +-
@@ -2111,7 +2111,7 @@ index b381217ca1..8526e7638e 100644
 From 48b02bd6ccff14111add4dbfd5ed6975155b0f4f Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Tue, 15 Mar 2022 09:39:29 -0400
-Subject: [PATCH 23/35] stupid errors
+Subject: [PATCH 23/37] stupid errors
 
 ---
  lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c | 25 +++++++++++++------
@@ -2160,7 +2160,7 @@ index 8526e7638e..cd1f0d2f9c 100644
 From 0a9a5179b26e5b9ac49884a8ccac41a5b1f29fb4 Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Tue, 15 Mar 2022 09:48:32 -0400
-Subject: [PATCH 24/35] stupid errors
+Subject: [PATCH 24/37] stupid errors
 
 ---
  lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c | 12 ++++++------
@@ -2195,7 +2195,7 @@ index cd1f0d2f9c..28fc9afb10 100644
 From 38b694ccd73cd6eec756b1a3ff586a063d1b066a Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Tue, 15 Mar 2022 10:00:16 -0400
-Subject: [PATCH 25/35] stupid errors
+Subject: [PATCH 25/37] stupid errors
 
 ---
  lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c | 10 +++-------
@@ -2244,7 +2244,7 @@ index 28fc9afb10..280db558e1 100644
 From debb816b13c90fca98c6a02660432191fd91aa3b Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Tue, 15 Mar 2022 10:11:55 -0400
-Subject: [PATCH 26/35] stupid mistakes
+Subject: [PATCH 26/37] stupid mistakes
 
 ---
  lib/sw_apps/zynqmp_fsbl/src/xfsbl_hooks.c | 1 -
@@ -2269,7 +2269,7 @@ index f52ea6e14e..cde17a431d 100644
 From 917701e1cc470a0f511e505c6723a10417f52939 Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Tue, 15 Mar 2022 10:25:11 -0400
-Subject: [PATCH 27/35] stupid mistakes
+Subject: [PATCH 27/37] stupid mistakes
 
 ---
  lib/sw_apps/zynqmp_fsbl/src/si_data.c | 2 +-
@@ -2295,7 +2295,7 @@ index 7a1b52dc92..d1ae239944 100644
 From 8f0fc4ebb1713d07d5a69f5363426e7374e486b8 Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Tue, 15 Mar 2022 10:37:55 -0400
-Subject: [PATCH 28/35] stupid mistakes
+Subject: [PATCH 28/37] stupid mistakes
 
 ---
  lib/sw_apps/zynqmp_fsbl/src/xfsbl_hooks.c     | 1 -
@@ -2334,7 +2334,7 @@ index 47804f6cf8..97cb26ecfd 100644
 From 7fc471c14c91cbac92b57b66fd2dc8693ce930fc Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Wed, 16 Mar 2022 16:04:10 -0400
-Subject: [PATCH 29/35] Adjusted output to help debug
+Subject: [PATCH 29/37] Adjusted output to help debug
 
 ---
  lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c | 27 ++++++++++++-------
@@ -2392,10 +2392,90 @@ index 280db558e1..2a45ac1a02 100644
 2.31.1
 
 
+From 03b2f18d88fd155ec7bc39c48640e897bd461d66 Mon Sep 17 00:00:00 2001
+From: Dan Gastler <dgastler@gmail.com>
+Date: Wed, 16 Mar 2022 17:20:55 -0400
+Subject: [PATCH 30/37] Fixed si locked check
+
+---
+ lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c b/lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c
+index 2a45ac1a02..c0fe25d2ea 100644
+--- a/lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c
++++ b/lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c
+@@ -105,7 +105,7 @@ void ProgramSI(sProgramSI config){
+   u16 tries = 20000;
+   //Waitinf for lock
+   if(config.si_locked_AXIAddr != 0){
+-    while((Xil_In32(config.si_locked_AXIAddr) & config.si_locked_MASK)){ //usually 6
++    while((Xil_In32(config.si_locked_AXIAddr) & config.si_locked_MASK) != config.si_locked_MASK){ //usually 6
+       usleep(1000);
+       tries--;
+       if(!tries){
+-- 
+2.31.1
+
+
+From 40257399d1bf7f8a8a51286636d7577051c3c7ae Mon Sep 17 00:00:00 2001
+From: Dan Gastler <dgastler@gmail.com>
+Date: Wed, 16 Mar 2022 18:22:46 -0400
+Subject: [PATCH 31/37] Fixed si locked check
+
+---
+ lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c b/lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c
+index c0fe25d2ea..168bacd0c2 100644
+--- a/lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c
++++ b/lib/sw_apps/zynqmp_fsbl/src/xfsbl_programSI.c
+@@ -50,6 +50,9 @@ void ProgramSI(sProgramSI config){
+   PRINTF(DEBUG_GENERAL,"Si enable        @ 0x%08X(0x%08X)\r\n",
+ 	 config.si_enable_AXIAddr,
+ 	 config.si_enable_MASK);
++  u32 temp = Xil_In32(config.si_enable_AXIAddr);
++  PRINTF(DEBUG_GENERAL,"Test 0x%08X\r\n",temp);
++  
+   PRINTF(DEBUG_GENERAL,"                 Val:        (0x%08X)\r\n",
+ 	 Xil_In32(config.si_enable_AXIAddr) & config.si_enable_MASK);
+   PRINTF(DEBUG_GENERAL,"Si output enable @ 0x%08X(0x%08X)\r\n",
+@@ -57,7 +60,7 @@ void ProgramSI(sProgramSI config){
+ 	 config.si_oe_MASK);
+   PRINTF(DEBUG_GENERAL,"                 Val:        (0x%08X)\r\n",
+ 	 Xil_In32(config.si_oe_AXIAddr) & config.si_oe_MASK);
+-  PRINTF(DEBUG_GENERAL,"Si lock          @ 0x%08X(0x%08X)\r\n",
++  PRINTF(DEBUG_GENERAL,"Si LOL/S         @ 0x%08X(0x%08X)\r\n",
+ 	 config.si_locked_AXIAddr,
+ 	 config.si_locked_MASK);
+   PRINTF(DEBUG_GENERAL,"                 Val:        (0x%08X)\r\n",
+@@ -105,7 +108,7 @@ void ProgramSI(sProgramSI config){
+   u16 tries = 20000;
+   //Waitinf for lock
+   if(config.si_locked_AXIAddr != 0){
+-    while((Xil_In32(config.si_locked_AXIAddr) & config.si_locked_MASK) != config.si_locked_MASK){ //usually 6
++    while( (Xil_In32(config.si_locked_AXIAddr) & config.si_locked_MASK) ){
+       usleep(1000);
+       tries--;
+       if(!tries){
+@@ -114,7 +117,7 @@ void ProgramSI(sProgramSI config){
+       }
+     }
+   }
+-  PRINTF(DEBUG_GENERAL,"Si lock          @ 0x%08X(0x%08X)\r\n",
++  PRINTF(DEBUG_GENERAL,"Si LOL/S         @ 0x%08X(0x%08X)\r\n",
+ 	 config.si_locked_AXIAddr,
+ 	 config.si_locked_MASK);
+   PRINTF(DEBUG_GENERAL,"                 Val:        (0x%08X)\r\n",
+-- 
+2.31.1
+
+
 From 8ddf83d713751826c80d10be42b1adeaf18f1b7f Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Wed, 22 Jun 2022 16:13:06 -0400
-Subject: [PATCH 30/35] ported zynqmp code back to zynq with appropriate mods
+Subject: [PATCH 32/37] ported zynqmp code back to zynq with appropriate mods
 
 ---
  lib/sw_apps/zynq_fsbl/src/fsbl_programSI.c | 61 +++++++++++++++-------
@@ -2556,7 +2636,7 @@ index f8ac057955..382a3c4e70 100644
 From 6449805844383631b372e3192d07de7ca0507dbf Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Thu, 23 Jun 2022 09:29:16 -0400
-Subject: [PATCH 31/35] Fixed include bug in zynq vs zynqmp
+Subject: [PATCH 33/37] Fixed include bug in zynq vs zynqmp
 
 ---
  lib/sw_apps/zynq_fsbl/src/si_data.h | 2 +-
@@ -2582,7 +2662,7 @@ index 62fc18723e..82dce07070 100644
 From 0133a588858a34ddfa71e51a55a718884932909d Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Thu, 23 Jun 2022 09:40:35 -0400
-Subject: [PATCH 32/35] Testing fix of 7series code
+Subject: [PATCH 34/37] Testing fix of 7series code
 
 ---
  lib/sw_apps/zynq_fsbl/src/fsbl_programSI.h | 2 +-
@@ -2608,7 +2688,7 @@ index 382a3c4e70..ef3b319760 100644
 From e9ca42c5f1d9c4ed565ac3e8ae3b53bc19353907 Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Thu, 23 Jun 2022 09:55:08 -0400
-Subject: [PATCH 33/35] Testing fix of 7series code
+Subject: [PATCH 35/37] Testing fix of 7series code
 
 ---
  lib/sw_apps/zynq_fsbl/src/fsbl_programSI.h | 2 +-
@@ -2634,7 +2714,7 @@ index ef3b319760..488037e6f8 100644
 From 176d2ddfdd3791712f843509a53d806c0c4c4d07 Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Thu, 23 Jun 2022 10:20:08 -0400
-Subject: [PATCH 34/35] Testing fix of 7series code
+Subject: [PATCH 36/37] Testing fix of 7series code
 
 ---
  lib/sw_apps/zynq_fsbl/src/si_data.c | 2 +-
@@ -2660,7 +2740,7 @@ index 7a1b52dc92..d1ae239944 100644
 From c4d78dd4077604d6391e84504174e948270afc3b Mon Sep 17 00:00:00 2001
 From: Dan Gastler <dgastler@gmail.com>
 Date: Thu, 23 Jun 2022 10:27:43 -0400
-Subject: [PATCH 35/35] Testing fix of 7series code
+Subject: [PATCH 37/37] Testing fix of 7series code
 
 ---
  lib/sw_apps/zynq_fsbl/src/fsbl_programSI.h | 2 +-

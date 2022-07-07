@@ -1,21 +1,21 @@
 <node id="SERV">
   <node id="SI5344"  address="0x00" permission="r">
-    <node id="OE" address="0x0" permission="rw" mask="0x1" description="Enable Si5344 outputs" parameters="Table=CLOCKING;Column=___1;Row=__2;Status=2;default=0x1"/>
-    <node id="EN" address="0x0" permission="rw" mask="0x2" description="Power on Si5344" parameters="Table=CLOCKING;Column=___1;Row=__2;Status=2;default=0x1"/>
+    <node id="OE" address="0x0" permission="rw" mask="0x1" description="Enable Si5344 outputs" parameters="Table=CLOCKING;Column=OE;Row=SI5344;Status=2;default=0x1"/>
+    <node id="EN" address="0x0" permission="rw" mask="0x2" description="Power on Si5344" parameters="Table=CLOCKING;Column=EN;Row=SI5344;Status=2;default=0x1"/>
     <node id="FPGA_PLL_RESET" address="0x0" permission="rw" mask="0x4"/>
     <node id="INT" address="0x0" permission="r" mask="0x10" description="Si5344 i2c interrupt"/>
-    <node id="LOL" address="0x0" permission="r" mask="0x20" description="Si5344 Loss of lock" parameters="Table=CLOCKING;Column=___1;Row=__2;Status=2;Show=nz"/>
-    <node id="LOS" address="0x0" permission="r" mask="0x40" description="Si5344 Loss of signal" parameters="Table=CLOCKING;Column=___1;Row=__2;Status=2;Show=nz"/>
+    <node id="LOL" address="0x0" permission="r" mask="0x20" description="Si5344 Loss of lock" parameters="Table=CLOCKING;Column=LOL;Row=SI5344;Status=2;Show=nz"/>
+    <node id="LOS" address="0x0" permission="r" mask="0x40" description="Si5344 Loss of signal" parameters="Table=CLOCKING;Column=LOS;Row=SI5344;Status=2;Show=nz"/>
   </node>
   <node id="TCDS" address="0x04" permission="r">
     <node id="TTC_SOURCE" address="0x0" permission="rw" mask="0x1" description="TTC source select (0:TCDS,1:TTC_FAKE" parameters="default=0x1"/>
     <node id="REFCLK_LOCKED" address="0x0" permission="r" mask="0x10" description="TCDS refclk locked"/>
     <node id="SI5344"  address="0x01" permission="r">
-      <node id="OE"  address="0x0" permission="rw" mask="0x01" description="Enable Si5344 outputs" parameters="Table=CLOCKING;Column=_4;Row=___1;Status=2;default=0x1"/>
-      <node id="EN"  address="0x0" permission="rw" mask="0x02" description="Power on Si5344" parameters="Table=CLOCKING;Column=_4;Row=___1;Status=2;default=0x1"/>
+      <node id="OE"  address="0x0" permission="rw" mask="0x01" description="Enable Si5344 outputs" parameters="Table=CLOCKING;Column=TCDS;Row=OE;Status=2;default=0x1"/>
+      <node id="EN"  address="0x0" permission="rw" mask="0x02" description="Power on Si5344" parameters="Table=CLOCKING;Column=TCDS;Row=EN;Status=2;default=0x1"/>
       <node id="INT" address="0x0" permission="r"  mask="0x10" description="Si5344 i2c interrupt"/>
-      <node id="LOL" address="0x0" permission="r"  mask="0x20" description="Si5344 Loss of lock" parameters="Table=CLOCKING;Column=_4;Row=___1;Status=2;Show=nz"/>
-      <node id="LOS" address="0x0" permission="r"  mask="0x40" description="Si5344 Loss of signal" parameters="Table=CLOCKING;Column=_4;Row=___1;Status=2;Show=nz"/>
+      <node id="LOL" address="0x0" permission="r"  mask="0x20" description="Si5344 Loss of lock" parameters="Table=CLOCKING;Column=TCDS;Row=LOL;Status=2;Show=nz"/>
+      <node id="LOS" address="0x0" permission="r"  mask="0x40" description="Si5344 Loss of signal" parameters="Table=CLOCKING;Column=TCDS;Row=LOS;Status=2;Show=nz"/>
     </node>
   </node>
   <node id="CLOCKING" address="0x06" permission="r">
