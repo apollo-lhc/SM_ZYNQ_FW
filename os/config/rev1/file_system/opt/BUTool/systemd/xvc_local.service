@@ -1,6 +1,8 @@
 [Unit]
 Description=XVC server for zynq JTAG chain 
-After=systemd-udevd.service
+After=systemd-udevd.service uio_daemon.service
+Requires=systemd-udevd.service uio_daemon.service
+
 
 [Service]
 Type=forking

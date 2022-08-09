@@ -115,9 +115,9 @@ AXI_SLAVES:
     TCL_CALL:
       command: "AXI_PL_MASTER_PORT"
       name: AXIM_PL
-      axi_clk: AXI_CLK_PL
-      axi_rstn: AXI_RSTN_PL
-      axi_freq: 50     
+      axi_clk: "${::AXI_MASTER_CLK}"
+      axi_rstn: "${::AXI_PRIMARY_SLAVE_RSTN}"
+      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
     SUB_SLAVES:
       AXI_LOCAL_CTRL:
         TCL_CALL:

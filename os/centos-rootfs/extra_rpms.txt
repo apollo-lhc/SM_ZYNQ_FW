@@ -64,3 +64,6 @@ libxslt-devel
 python3-psutil
 python3-setuptools-wheel
 python-markupsafe
+centos-release-scl
+llvm-toolset-7-clang-tools-extra
+dnf

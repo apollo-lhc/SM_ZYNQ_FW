@@ -106,9 +106,9 @@ AXI_SLAVES:
     TCL_CALL:
       command: "AXI_PL_MASTER_PORT"
       name: AXIM_PL
-      axi_clk: AXI_CLK_PL
-      axi_rstn: AXI_RSTN_PL
-      axi_freq: 50     
+      axi_clk: "${::AXI_MASTER_CLK}"
+      axi_rstn: "${::AXI_PRIMARY_SLAVE_RSTN}"
+      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
     SUB_SLAVES:
       AXI_LOCAL_CTRL:
         TCL_CALL:
@@ -116,8 +116,8 @@ AXI_SLAVES:
           axi_clk: "${::AXI_MASTER_CLK}"
           axi_rstn: "${::AXI_PRIMARY_SLAVE_RSTN}"
           parent: "AXIM_PL ${::AXI_INTERCONNECT_NAME}"
-          master_clk: "AXI_CLK_PL ${::AXI_MASTER_CLK}"
-          master_rstn: "AXI_RSTN_PL ${::AXI_PRIMARY_SLAVE_RSTN}"
+          master_clk: "${::AXI_MASTER_CLK} ${::AXI_MASTER_CLK}"
+          master_rstn: "${::AXI_PRIMARY_SLAVE_RSTN} ${::AXI_PRIMARY_SLAVE_RSTN}"
         SUB_SLAVES:      
           PL_MEM:
             TCL_CALL:
@@ -145,12 +145,21 @@ AXI_SLAVES:
                 range: "8K"
             XML: "address_table/modules/SLAVE_I2C.xml"
             UHAL_BASE: 0x05000000
+          CM_MON_AXI_FW:
+            TCL_CALL:
+              command: "AXI_IP_AXI_FW"
+              axi_fw_bus: "/AXIM_PL"
+              axi_control: "${::AXI_C2C_CTRL}"
+            XML: "address_table/modules/CM_MON_AXI_FW.xml"
+            UHAL_BASE: 0x20000000
+
     
   SI:
     TCL_CALL:
       command: "AXI_IP_I2C"
       axi_control: "${::AXI_MASTER_CTRL}"
       irq_port: "${::IRQ0_INTR_CTRL}"
+      dt_data: "compatible = \"xlnx,axi-iic-2.0\", \"xlnx,xps-iic-2.00.a\";"
 
 
   PLXVC:

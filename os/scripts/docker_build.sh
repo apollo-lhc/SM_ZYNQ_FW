@@ -10,12 +10,6 @@ if [ $# -gt 0 ]; then
     rm -f ${DUMP_FILE}
     
     #install the crap we need
-#    yum update -y
-#    yum install selinux-policy-targeted -y
-#    yum install container-selinux -y
-    #    yum install coreutils make wget sudo python-augeas dnf python3-pip git -y
-    #    yum install make wget sudo python-augeas dnf python3-pip git -y
-#    yum install container-selinux.noarch -y
     yum install selinux-policy-minimum.noarch -y                               ${DUMP_CMD}
     setenforce 0                                                               ${DUMP_CMD}
     set -e                                                                     ${DUMP_CMD}
@@ -29,6 +23,8 @@ if [ $# -gt 0 ]; then
     
     dnf install make wget sudo augeas dnf python3-pip git gcc python3-devel -y ${DUMP_CMD}
     dnf install libffi-devel -y                                                ${DUMP_CMD}
+    
+    
     pip3 install python-augeas                                                 ${DUMP_CMD}
     
     #create a directory to build in

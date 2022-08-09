@@ -48,10 +48,10 @@ begin  -- architecture behavioral
   -- AXI 
   -------------------------------------------------------------------------------
   -------------------------------------------------------------------------------
-  assert ((4*35) < ALLOCATED_MEMORY_RANGE)
+  assert ((4*35) <= ALLOCATED_MEMORY_RANGE)
     report "SM_INFO: Regmap addressing range " & integer'image(4*35) & " is outside of AXI mapped range " & integer'image(ALLOCATED_MEMORY_RANGE)
   severity ERROR;
-  assert ((4*35) >= ALLOCATED_MEMORY_RANGE)
+  assert ((4*35) > ALLOCATED_MEMORY_RANGE)
     report "SM_INFO: Regmap addressing range " & integer'image(4*35) & " is inside of AXI mapped range " & integer'image(ALLOCATED_MEMORY_RANGE)
   severity NOTE;
 

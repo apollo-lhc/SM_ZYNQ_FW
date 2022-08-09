@@ -84,6 +84,7 @@ include mk/Monitoring.mk
 include mk/CM_MCU.mk
 #include mk/mmc-utils.mk
 include mk/overlay-tools.mk
+include mk/users.mk
 
 #${SECURE_CHECK}:
 #	$(error Missing secure files)
@@ -103,37 +104,37 @@ include mk/overlay-tools.mk
 	#this service breaks things
 	sudo rm -f ${ETC_PATH}/systemd/system/multi-user.target.wants/auditd.service 
 	#Add all the password files and keys
-	sudo install -m 644 ${SECURE_PATH}/group   ${ETC_PATH}/ 
-	sudo install -m 644 ${SECURE_PATH}/passwd  ${ETC_PATH}/ 
-	sudo install -m 000 ${SECURE_PATH}/gshadow ${ETC_PATH}/ 
-	sudo install -m 000 ${SECURE_PATH}/shadow  ${ETC_PATH}/ 
+#	sudo install -m 644 ${SECURE_PATH}/group   ${ETC_PATH}/ 
+#	sudo install -m 644 ${SECURE_PATH}/passwd  ${ETC_PATH}/ 
+#	sudo install -m 000 ${SECURE_PATH}/gshadow ${ETC_PATH}/ 
+#	sudo install -m 000 ${SECURE_PATH}/shadow  ${ETC_PATH}/ 
 	sudo install -m 640 -g 997 -o 0 ${SECURE_PATH}/ssh/ssh_host_ecdsa_key       ${ETC_PATH}/ssh/ 
 	sudo install -m 644 -g 0   -o 0 ${SECURE_PATH}/ssh/ssh_host_ecdsa_key.pub   ${ETC_PATH}/ssh/ 
 	sudo install -m 640 -g 997 -o 0 ${SECURE_PATH}/ssh/ssh_host_ed25519_key     ${ETC_PATH}/ssh/ 
 	sudo install -m 644 -g 0   -o 0 ${SECURE_PATH}/ssh/ssh_host_ed25519_key.pub ${ETC_PATH}/ssh/ 
 	sudo install -m 640 -g 997 -o 0 ${SECURE_PATH}/ssh/ssh_host_rsa_key         ${ETC_PATH}/ssh/ 
 	sudo install -m 644 -g 0   -o 0 ${SECURE_PATH}/ssh/ssh_host_rsa_key.pub     ${ETC_PATH}/ssh/ 
-	#setup local user accounts
-	# setup cms account
-	sudo chown ${CMS_UID}:${CMS_GID} ${HOME_PATH}/cms 
-	sudo chmod u+wX ${HOME_PATH}/cms 
-	# setup atlas account
-	sudo chown ${ATLAS_UID}:${ATLAS_GID} ${HOME_PATH}/atlas 
-	sudo chmod u+wX ${HOME_PATH}/atlas 
 	#setup software and libraries
 	${MAKE} pip_install_$*
 #	${MAKE} ${OPT_PATH}/BUTool/bin ${OPT_PATH}/cactus ${OPT_PATH}/mcu_tools ${OPT_PATH}/Graphite_Monitor ${INSTALL_PATH}usr/local/bin/mmc ${OPT_PATH}/overlay-tools
 	${MAKE} ${OPT_PATH}/BUTool/bin ${OPT_PATH}/cactus ${OPT_PATH}/mcu_tools ${OPT_PATH}/Graphite_Monitor ${OPT_PATH}/uio-daemon
 	sudo cp ${SCRIPTS_PATH}/cleanup_locale.sh ${TMP_PATH} 
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/cleanup_locale.sh 
-	sudo rm -rf ${TMP_PATH}/*  
+	sudo rm -rf ${TMP_PATH}/*
+	#setup local user accounts
+	${MAKE} users_$*
+
 	cd ${INSTALL_PATH} && \
-		sudo tar --numeric-owner -p -zcf ../$@ ./  
+		sudo tar --numeric-owner -p -zcf ../$@ ./
 
 
 #################################################################################
 #docker builds 
 #################################################################################
+docker :
+	docker pull centos:centos7
+	docker run --rm --privileged -it -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v ${PWD}:/app:Z -v /etc/binfmt.d:/etc/binfmt.d:Z centos:centos7
+
 docker_% :
 	rm -f $*.tar.gz
 	docker pull centos:centos7

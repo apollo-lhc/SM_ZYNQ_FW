@@ -95,10 +95,10 @@ if arch == "aarch64":
 elif arch == "armv7hl":
 	epel="arm-epel"
 
-#run_dnf(rootdir,"clean",["all"])
-#run_dnf(rootdir,"update",[" "])
+run_dnf(rootdir,"clean",["all"])
+run_dnf(rootdir,"update",[" "])
 print ("Running dnf: group install")
-#run_dnf(rootdir,"groupinstall",['Minimal Install'])
+run_dnf(rootdir,"groupinstall",['Minimal Install'])
 run_dnf(rootdir,"groupinstall",['base'])
 if args['extra'] is not None:
 	print("Installing user defined packages...")

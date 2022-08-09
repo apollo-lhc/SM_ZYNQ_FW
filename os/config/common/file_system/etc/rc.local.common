@@ -13,7 +13,7 @@
 pokeUIO SLAVE_I2C 0 1
 
 #in case /fw gets deleted
-mkdir -p /fw
+#mkdir -p /fw
 #mount /dev/mmcblk0p1 /fw
 
 #/opt/overlay-tools/overlay_script.sh
