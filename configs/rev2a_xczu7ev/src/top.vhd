@@ -231,6 +231,7 @@ entity top is
     IPMC_SCL               : in    std_logic;
 --    IPMC_IN                : in    std_logic_vector(3 downto 0);
     IPMC_OUT               : out   std_logic_vector(1 downto 0)
+
     
     );    
 end entity top;
@@ -324,6 +325,7 @@ architecture structure of top is
   signal SI_EN_normal : std_logic;
   signal SI_init_reset : std_logic;
   signal SI_TCDS_OE_normal : std_logic;
+  signal SI_TCDS_OE   : std_logic;
  
   
   signal IPMC_SDA_o : std_logic;
@@ -384,6 +386,10 @@ architecture structure of top is
   
   signal reset_c2c : std_logic;
 
+
+  
+
+  
 begin  -- architecture structure
 
   --debugging start
@@ -391,13 +397,14 @@ begin  -- architecture structure
   --Zynq axi signals
   axi_reset <= not axi_reset_n;
 
-  --Other master clocks
-  pl_reset_n <= axi_reset_n ;
-  pl_clk <= axi_clk;
 
 
   SI_OUT_DIS <= not SI_OE_normal;
-  SI_ENABLE  <= SI_EN_normal;
+--  SI_ENABLE  <= SI_EN_normal;
+
+  SI_TCDS_OUT_DIS <= not SI_TCDS_OE;
+  
+  
   SI_i2c_SDA : IOBUF
     port map (
       IO => SI_sda,
@@ -427,8 +434,8 @@ begin  -- architecture structure
       SI_sda_i                  => SDA_i_phy,--SDA_i_normal,
       SI_sda_o                  => SDA_o_phy,--SDA_o_normal,
       SI_sda_t                  => SDA_t_phy,--SDA_t_normal,
-      AXI_CLK_PL                => pl_clk,
-      AXI_RSTN_PL               => pl_reset_n,
+--      AXI_CLK_PL                => pl_clk,
+--      AXI_RSTN_PL               => axi_reset_n,
       AXIM_PL_awaddr            => AXI_MSTR_WMOSI.address,
       AXIM_PL_awprot            => AXI_MSTR_WMOSI.protection_type,
       AXIM_PL_awvalid           => AXI_MSTR_WMOSI.address_valid,
@@ -552,25 +559,25 @@ begin  -- architecture structure
       PLXVC_wstrb                => AXI_BUS_WMOSI(6).data_write_strobe,
       PLXVC_wvalid               => AXI_BUS_WMOSI(6).data_valid,
 
-      TCDS_2_araddr                => AXI_BUS_RMOSI(7).address,
-      TCDS_2_arprot                => AXI_BUS_RMOSI(7).protection_type,
-      TCDS_2_arready               => AXI_BUS_RMISO(7).ready_for_address,
-      TCDS_2_arvalid               => AXI_BUS_RMOSI(7).address_valid,
-      TCDS_2_awaddr                => AXI_BUS_WMOSI(7).address,
-      TCDS_2_awprot                => AXI_BUS_WMOSI(7).protection_type,
-      TCDS_2_awready               => AXI_BUS_WMISO(7).ready_for_address,
-      TCDS_2_awvalid               => AXI_BUS_WMOSI(7).address_valid,
-      TCDS_2_bready                => AXI_BUS_WMOSI(7).ready_for_response,
-      TCDS_2_bresp                 => AXI_BUS_WMISO(7).response,
-      TCDS_2_bvalid                => AXI_BUS_WMISO(7).response_valid,
-      TCDS_2_rdata                 => AXI_BUS_RMISO(7).data,
-      TCDS_2_rready                => AXI_BUS_RMOSI(7).ready_for_data,
-      TCDS_2_rresp                 => AXI_BUS_RMISO(7).response,
-      TCDS_2_rvalid                => AXI_BUS_RMISO(7).data_valid,
-      TCDS_2_wdata                 => AXI_BUS_WMOSI(7).data,
-      TCDS_2_wready                => AXI_BUS_WMISO(7).ready_for_data,
-      TCDS_2_wstrb                 => AXI_BUS_WMOSI(7).data_write_strobe,
-      TCDS_2_wvalid                => AXI_BUS_WMOSI(7).data_valid,
+      TCDS_araddr                => AXI_BUS_RMOSI(7).address,
+      TCDS_arprot                => AXI_BUS_RMOSI(7).protection_type,
+      TCDS_arready               => AXI_BUS_RMISO(7).ready_for_address,
+      TCDS_arvalid               => AXI_BUS_RMOSI(7).address_valid,
+      TCDS_awaddr                => AXI_BUS_WMOSI(7).address,
+      TCDS_awprot                => AXI_BUS_WMOSI(7).protection_type,
+      TCDS_awready               => AXI_BUS_WMISO(7).ready_for_address,
+      TCDS_awvalid               => AXI_BUS_WMOSI(7).address_valid,
+      TCDS_bready                => AXI_BUS_WMOSI(7).ready_for_response,
+      TCDS_bresp                 => AXI_BUS_WMISO(7).response,
+      TCDS_bvalid                => AXI_BUS_WMISO(7).response_valid,
+      TCDS_rdata                 => AXI_BUS_RMISO(7).data,
+      TCDS_rready                => AXI_BUS_RMOSI(7).ready_for_data,
+      TCDS_rresp                 => AXI_BUS_RMISO(7).response,
+      TCDS_rvalid                => AXI_BUS_RMISO(7).data_valid,
+      TCDS_wdata                 => AXI_BUS_WMOSI(7).data,
+      TCDS_wready                => AXI_BUS_WMISO(7).ready_for_data,
+      TCDS_wstrb                 => AXI_BUS_WMOSI(7).data_write_strobe,
+      TCDS_wvalid                => AXI_BUS_WMOSI(7).data_valid,
 
       LDAQ_araddr                  => AXI_BUS_RMOSI(8).address,
       LDAQ_arprot                  => AXI_BUS_RMOSI(8).protection_type,
@@ -897,7 +904,7 @@ begin  -- architecture structure
       )
     port map (
       clk_axi         => axi_clk,
-      reset_axi_n     => pl_reset_n,
+      reset_axi_n     => axi_reset_n,
       readMOSI        => AXI_BUS_RMOSI(0),
       readMISO        => AXI_BUS_RMISO(0),
       writeMOSI       => AXI_BUS_WMOSI(0),
@@ -920,8 +927,8 @@ begin  -- architecture structure
       TCDS_Mon.SI5344.LOS        => not SI_TCDS_LOS_XAXB,
       TCDS_Mon.SI5344.INT        => not SI_TCDS_INT ,
       TCDS_Ctrl.TTC_SOURCE       => TTC_SRC_SEL,
-      TCDS_Ctrl.SI5344.OE        => SI_TCDS_OUT_DIS,
-      TCDS_Ctrl.SI5344.EN        => SI_TCDS_OE_normal,
+      TCDS_Ctrl.SI5344.OE        => SI_TCDS_OE,--SI_TCDS_OUT_DIS,
+      TCDS_Ctrl.SI5344.EN        => SI_TCDS_ENABLE,--SI_TCDS_OE_normal,
       Clocking_Mon    => Clocking_Mon,
       Clocking_Ctrl   => Clocking_Ctrl,
       CM1_C2C_Mon     => CM_C2C_Mon.Link(1),
@@ -937,7 +944,7 @@ begin  -- architecture structure
       )
     port map (
       clk_axi     => axi_clk,
-      reset_axi_n => pl_reset_n,
+      reset_axi_n => axi_reset_n,
       readMOSI    => AXI_BUS_RMOSI(3),
       readMISO    => AXI_BUS_RMISO(3),
       writeMOSI   => AXI_BUS_WMOSI(3),
@@ -950,7 +957,7 @@ begin  -- architecture structure
       )
     port map (
       clk_axi      => axi_clk,
-      reset_axi_n  => pl_reset_n,
+      reset_axi_n  => axi_reset_n,
       readMOSI     => AXI_BUS_RMOSI(1),
       readMISO     => AXI_BUS_RMISO(1),
       writeMOSI    => AXI_BUS_WMOSI(1),
@@ -999,7 +1006,7 @@ begin  -- architecture structure
       )
     port map (
       clk_axi              => axi_clk,
-      reset_axi_n          => pl_reset_n,
+      reset_axi_n          => axi_reset_n,
       slave_readMOSI       => AXI_BUS_RMOSI(2),
       slave_readMISO       => AXI_BUS_RMISO(2),
       slave_writeMOSI      => AXI_BUS_WMOSI(2),
@@ -1088,7 +1095,7 @@ begin  -- architecture structure
       )           
     port map (
       clk_axi         => axi_clk,
-      reset_axi_n     => pl_reset_n,
+      reset_axi_n     => axi_reset_n,
       readMOSI        => AXI_BUS_RMOSI(6),
       readMISO        => AXI_BUS_RMISO(6),
       writeMOSI       => AXI_BUS_WMOSI(6),
@@ -1194,18 +1201,14 @@ begin  -- architecture structure
       reset_A_async => axi_reset,
       event_b       => '1',
       rate          => Clocking_Mon.AXI_CLK_FREQ);
-
-
-
-
-  
+   
   TCDS_1: entity work.TCDS
     generic map (
-      ALLOCATED_MEMORY_RANGE => to_integer(AXI_RANGE_TCDS_2),
+      ALLOCATED_MEMORY_RANGE => to_integer(AXI_RANGE_TCDS),
       AXI_CLK_FREQ => 125000000)
     port map (
       clk_axi           => clk_125Mhz,
-      reset_axi_n       => pl_reset_n,
+      reset_axi_n       => axi_reset_n,
       slave_readMOSI    => AXI_BUS_RMOSI(7),
       slave_readMISO    => AXI_BUS_RMISO(7),
       slave_writeMOSI   => AXI_BUS_WMOSI(7),
@@ -1238,7 +1241,7 @@ begin  -- architecture structure
       )
     port map (
       clk_axi         => axi_clk,         
-      reset_axi_n     => pl_reset_n,      
+      reset_axi_n     => axi_reset_n,      
       slave_readMOSI  => AXI_BUS_RMOSI(8),
       slave_readMISO  => AXI_BUS_RMISO(8),
       slave_writeMOSI => AXI_BUS_WMOSI(8),

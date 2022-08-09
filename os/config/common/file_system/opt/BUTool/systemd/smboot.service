@@ -1,6 +1,8 @@
 [Unit]
 Description=Service Module boot up and shutdown daemon
-After=systemd-udevd.service
+After=systemd-udevd.service uio_daemon.service
+Requires=systemd-udevd.service uio_daemon.service
+
 
 [Service]
 Type=forking

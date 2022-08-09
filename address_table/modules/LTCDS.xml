@@ -1,13 +1,14 @@
 <node id="LTCDS">
   <node id="RESET" address="0x0">
-    <node id="RESET_ALL"           permission="w" mask="0X00000001"/>
-    <node id="TX_PLL_AND_DATAPATH" permission="w" mask="0X00000010"/>
-    <node id="TX_DATAPATH"         permission="w" mask="0X00000020"/>
-    <node id="RX_PLL_AND_DATAPATH" permission="w" mask="0X00000040"/>
-    <node id="RX_DATAPATH"         permission="w" mask="0X00000080"/>
-    <node id="USERCLK_TX"          permission="w" mask="0X00000100"/>
-    <node id="USERCLK_RX"          permission="w" mask="0x00000200"/>
-    <node id="DRP"                 permission="w" mask="0x00000400"/>
+    <node id="RESET_ALL"           permission="w"  mask="0X00000001"/>
+    <node id="TX_PLL_AND_DATAPATH" permission="w"  mask="0X00000010"/>
+    <node id="TX_DATAPATH"         permission="w"  mask="0X00000020"/>
+    <node id="RX_PLL_AND_DATAPATH" permission="w"  mask="0X00000040"/>
+    <node id="RX_DATAPATH"         permission="w"  mask="0X00000080"/>
+    <node id="USERCLK_TX"          permission="w"  mask="0X00000100"/>
+    <node id="USERCLK_RX"          permission="w"  mask="0x00000200"/>
+    <node id="DRP"                 permission="w"  mask="0x00000400"/>
+    <node id="CPLL"                address="0x1"   permission="rw" mask="0x00000001"/>
   </node>
   <node id="STATUS"                        address="0x010" module="file://MGT_USP_Status.xml"/>
   <!-- DEBUG 0x0 to 0x5 -> 0x404 to 0x409 -->

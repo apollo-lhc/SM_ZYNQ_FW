@@ -9,7 +9,7 @@ use work.tcds2_link_pkg.all;
 use work.tcds2_link_speed_pkg.all;
 use work.tcds2_streams_pkg.all;
 
-use work.TCDS_2_Ctrl.all;
+use work.TCDS_Ctrl.all;
 
 use work.tclink_lpgbt_pkg.all;
 
@@ -43,8 +43,8 @@ entity TCDS_BP is
 
     pcs_clk      : out std_logic_vector(1 downto 0);
     
-    Mon      : out TCDS_2_TCDS_2_MON_t;
-    Ctrl     : in  TCDS_2_TCDS_2_CTRL_t
+    Mon      : out TCDS_DTH_MON_t;
+    Ctrl     : in  TCDS_DTH_CTRL_t
     
     );
 end entity TCDS_BP;

@@ -1,6 +1,7 @@
 [Unit]
 Description=Status display generator
-After=systemd-udevd.service
+After=systemd-udevd.service uio_daemon.service
+Requires=systemd-udevd.service uio_daemon.service
 
 [Service]
 Type=forking

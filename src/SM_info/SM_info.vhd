@@ -17,7 +17,8 @@ use UNISIM.vcomponents.all;
 
 entity SM_info is
   generic (
-    ALLOCATED_MEMORY_RANGE : integer
+    ALLOCATED_MEMORY_RANGE : integer ;
+    FPGA_GENERATION : string := "ULTRASCALE"
     );            
   port (
     clk_axi         : in  std_logic;
@@ -32,6 +33,9 @@ end entity SM_info;
 architecture behavioral of SM_info is
   signal Mon              :  SM_INFO_Mon_t;
 
+  signal DNA_value        : std_logic_vector(95 downto 0);
+  signal DNA_valid        : std_logic;
+  
 begin  -- architecture behavioral
 
   -------------------------------------------------------------------------------
@@ -96,5 +100,20 @@ begin  -- architecture behavioral
   Mon.FPGA.WORD_07(23 downto 16)    <= std_logic_vector(to_unsigned(character'pos(FPGA_TYPE(31)),8)); 
   Mon.FPGA.WORD_07(15 downto  8)    <= std_logic_vector(to_unsigned(character'pos(FPGA_TYPE(30)),8)); 
   Mon.FPGA.WORD_07( 7 downto  0)    <= std_logic_vector(to_unsigned(character'pos(FPGA_TYPE(29)),8));
+  
+  Mon.DNA.valid  <= DNA_valid;
+  Mon.DNA.WORD_0 <= DNA_value(31 downto  0);
+  Mon.DNA.WORD_1 <= DNA_value(63 downto 32);
+  Mon.DNA.WORD_2 <= DNA_value(95 downto 64);
 
-end architecture behavioral;
+
+  XILINX_DNA_1: entity work.XILINX_DNA
+    generic map (
+      ALLOCATED_MEMORY_RANGE => ALLOCATED_MEMORY_RANGE,
+      FPGA_GENERATION        => FPGA_GENERATION)
+    port map (
+      clk     => clk_axi,
+      reset => not reset_axi_n,
+      DNA         => DNA_value,
+      DNA_valid   => DNA_valid);
+  end architecture behavioral;

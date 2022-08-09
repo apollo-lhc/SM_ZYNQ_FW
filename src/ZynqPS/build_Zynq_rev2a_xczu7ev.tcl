@@ -23,19 +23,13 @@ source ${apollo_root_path}/src/ZynqPS/xczu7ev/build_CPU_rev2.tcl
 set AXI_INTERCONNECT_NAME AXI_INTERCONNECT
 set AXI_C2C_INTERCONNECT_NAME AXI_C2C_INTERCONNECT
 
-set PL_MASTER PL
-set PL_M      AXIM_${PL_MASTER}
-set PL_M_CLK  AXI_CLK_${PL_MASTER}
-set PL_M_RSTN AXI_RSTN_${PL_MASTER}
-set PL_M_FREQ [get_property CONFIG.FREQ_HZ [get_bd_pin ${AXI_MASTER_CLK}]]
-[AXI_PL_MASTER_PORT ${PL_M} ${PL_M_CLK} ${PL_M_RSTN} ${PL_M_FREQ} AXI4LITE 32]
 
 set AXI_MASTER_CLK_FREQ [get_property CONFIG.FREQ_HZ [get_bd_pin ${AXI_MASTER_CLK}]]
 Add_Global_Constant AXI_MASTER_CLK_FREQ integer ${AXI_MASTER_CLK_FREQ}
-#create an axi FW for the main interconnect
 
+#create the main interconnect
 puts "  Primary interconnect"
-[BUILD_AXI_INTERCONNECT ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_PRIMARY_MASTER_RSTN} [list ${ZYNQ_NAME}/M_AXI_HPM0_FPD ${PL_M}] [list ${AXI_MASTER_CLK} ${PL_M_CLK}] [list ${AXI_PRIMARY_MASTER_RSTN} ${PL_M_RSTN}]]
+[BUILD_AXI_INTERCONNECT ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_PRIMARY_MASTER_RSTN} [list ${ZYNQ_NAME}/M_AXI_HPM0_FPD ] [list ${AXI_MASTER_CLK}] [list ${AXI_PRIMARY_MASTER_RSTN}]]
 
 
 #build the C2C interconnect
@@ -63,7 +57,9 @@ AXI_IP_IRQ_CTRL [dict create \
                               label = "$device_name"; \
                               linux,uio-name = "$device_name";\
                          }\
-		]
+		    ]
+
+
 puts "Adding init clk"
 set INIT_CLK init_clk
 create_bd_port -dir I -type clk ${INIT_CLK}
@@ -84,6 +80,7 @@ read_vhdl "${apollo_root_path}/configs/${build_name}/autogen/AXI_slave_pkg.vhd"
 #  Finish up
 #========================================
 set_property CONFIG.STRATEGY {1} [get_bd_cells ${AXI_C2C_INTERCONNECT_NAME}]
+set_property CONFIG.STRATEGY {1} [get_bd_cells ${AXI_INTERCONNECT_NAME}]
 validate_bd_design
 
 write_bd_layout -force -format pdf -orientation portrait ${apollo_root_path}/doc/zynq_bd.pdf
@@ -91,6 +88,6 @@ write_bd_layout -force -format pdf -orientation portrait ${apollo_root_path}/doc
 make_wrapper -files [get_files zynq_bd.bd] -top -import -force
 save_bd_design
 
-close_bd_design "zynq_bd"
+close_bd_design $bd_name
 
 Generate_Global_package

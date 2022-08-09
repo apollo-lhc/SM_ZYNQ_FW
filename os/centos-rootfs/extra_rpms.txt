@@ -6,7 +6,7 @@ dhclient
 python3-devel
 python3-click.noarch
 python3-numpy.noarch
-pyserial.noarch
+python3-pyserial
 python3-matplotlib
 glibc-headers
 glibc-devel
@@ -55,3 +55,15 @@ msgpack-devel
 cppzmq-devel
 dosfstools
 mmc-utils
+libxml2-devel
+libxml2-python
+python-lxml
+libxml2 
+libxslt 
+libxslt-devel
+python3-psutil
+python3-setuptools-wheel
+python-markupsafe
+centos-release-scl
+llvm-toolset-7-clang-tools-extra
+dnf

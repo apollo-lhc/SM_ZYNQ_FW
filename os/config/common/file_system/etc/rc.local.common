@@ -12,9 +12,10 @@
 
 pokeUIO SLAVE_I2C 0 1
 
-mkdir -p /fw
-mount /dev/mmcblk0p1 /fw
+#in case /fw gets deleted
+#mkdir -p /fw
+#mount /dev/mmcblk0p1 /fw
 
-/opt/overlay-tools/overlay_script.sh
+#/opt/overlay-tools/overlay_script.sh
 
 touch /var/lock/subsys/local

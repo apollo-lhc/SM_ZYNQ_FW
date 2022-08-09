@@ -1,7 +1,6 @@
 <node id="CNT">
   <node id="ERRORS_ALL_TIME"          address="0x0" permission="r"  description="Counter for all errors while locked"      parameters="Table=C2C;Column=_2_3;Row=PHY_ERRORS;Status=1;Show=nz;Format=u"/>
   <node id="ERRORS_SINCE_LOCKED"      address="0x1" permission="r"  description="Counter for errors since locked"          parameters="Table=C2C;Column=_2_3;Row=PHY_ERRORS_CURRENT;Status=1;Show=nz;Format=u"/>
-Format=u"/>
   <node id="CONFIG_ERROR_COUNT"       address="0x2" permission="r"  description="Counter for CONFIG_ERROR"                 parameters="Table=C2C;Column=_2_3;Row=CONFIG_ERROR_COUNT;Status=1;Show=nz;Format=u"/>
   <node id="LINK_ERROR_COUNT"         address="0x3" permission="r"  description="Counter for LINK_ERROR"                   parameters="Table=C2C;Column=_2_3;Row=LINK_ERROR_COUNT;Status=1;Show=nz;Format=u"/>
   <node id="MB_ERROR_COUNT"           address="0x4" permission="r"  description="Counter for MB_ERROR"                     parameters="Table=C2C;Column=_2_3;Row=MB_ERROR_COUNT;Status=1;Show=nz;Format=u"/>

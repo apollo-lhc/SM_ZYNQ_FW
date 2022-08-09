@@ -11,3 +11,7 @@
 	path = build-scripts
 	url = https://gitlab.com/BU-EDF/fw-bits/build-scripts.git
 	branch = develop
+[submodule "src/misc"]
+	path = src/misc
+	url = https://gitlab.com/BU-EDF/fw-bits/misc-vhdl.git
+	branch = develop

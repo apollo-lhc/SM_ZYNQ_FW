@@ -4,7 +4,7 @@ use ieee.numeric_std.all;
 
 use work.types.all;
 
-use work.TCDS_2_Ctrl.all;
+use work.TCDS_Ctrl.all;
 
 library UNISIM;
 use UNISIM.VCOMPONENTS.ALL;
@@ -31,8 +31,8 @@ entity TCDS_local is
     ttc_data     : in  std_logic_vector(31 downto 0);
     tts_data     : out std_logic_vector(31 downto 0);
                  
-    Ctrl         : in  TCDS_2_LTCDS_CTRL_t_ARRAY;
-    Mon          : out TCDS_2_LTCDS_MON_t_ARRAY
+    Ctrl         : in  TCDS_LTCDS_CTRL_t_ARRAY;
+    Mon          : out TCDS_LTCDS_MON_t_ARRAY
     );
 end entity TCDS_local;
 
@@ -229,7 +229,8 @@ begin
       loopback_in                           => Ctrl(iCM).LOOPBACK,
       drprst_in(0)                          => Ctrl(iCM).RESET.DRP,
       txoutclksel_in                        => Ctrl(iCM).TX_OUTCLK_SEL,
-      rxoutclksel_in                        => Ctrl(iCM).RX_OUTCLK_SEL);--Mon(iCM).DEBUG.tx.pma_reset_done);
+      rxoutclksel_in                        => Ctrl(iCM).RX_OUTCLK_SEL,
+      cpllreset_in(0)                       => Ctrl(iCM).RESET.CPLL);--Mon(iCM).DEBUG.tx.pma_reset_done);
     
 
     clk_tx_out(iCM-1) <= clk_tx_int(iCM-1);

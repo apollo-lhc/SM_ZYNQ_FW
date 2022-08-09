@@ -50,10 +50,10 @@ begin  -- architecture behavioral
   -- AXI 
   -------------------------------------------------------------------------------
   -------------------------------------------------------------------------------
-  assert ((4*40) < ALLOCATED_MEMORY_RANGE)
+  assert ((4*40) <= ALLOCATED_MEMORY_RANGE)
     report "PLXVC: Regmap addressing range " & integer'image(4*40) & " is outside of AXI mapped range " & integer'image(ALLOCATED_MEMORY_RANGE)
   severity ERROR;
-  assert ((4*40) >= ALLOCATED_MEMORY_RANGE)
+  assert ((4*40) > ALLOCATED_MEMORY_RANGE)
     report "PLXVC: Regmap addressing range " & integer'image(4*40) & " is inside of AXI mapped range " & integer'image(ALLOCATED_MEMORY_RANGE)
   severity NOTE;
 

@@ -12,7 +12,7 @@ use work.tcds2_link_pkg.all;
 use work.tcds2_link_speed_pkg.all;
 use work.tcds2_streams_pkg.all;
 
-use work.TCDS_2_Ctrl.all;
+use work.TCDS_Ctrl.all;
 
 use work.tclink_lpgbt_pkg.all;
 
@@ -66,8 +66,8 @@ end entity TCDS;
 
 architecture behavioral of TCDS is
 
-  signal Mon              :  TCDS_2_Mon_t;
-  signal Ctrl             :  TCDS_2_Ctrl_t;
+  signal Mon              :  TCDS_Mon_t;
+  signal Ctrl             :  TCDS_Ctrl_t;
 
   -- Control and status interfaces.
   signal ctrl_i : tcds2_interface_ctrl_t;
@@ -123,7 +123,7 @@ begin
   -- AXI slave interface
   -------------------------------------------------------------------------------
   -------------------------------------------------------------------------------
-  TCDS_2_map_1: entity work.TCDS_2_map
+  TCDS_map_1: entity work.TCDS_map
     generic map(
       ALLOCATED_MEMORY_RANGE => ALLOCATED_MEMORY_RANGE
       )
@@ -176,8 +176,8 @@ begin
       ttc_data           => ttc_data,
       tts_data           => tts_data,
       pcs_clk            => pcs_clk,
-      Mon                => Mon.TCDS_2,
-      Ctrl               => Ctrl.TCDS_2);
+      Mon                => Mon.DTH,
+      Ctrl               => Ctrl.DTH);
   clk_TCDS <= clk_TCDS_o;
   
   rate_counter_1: entity work.rate_counter
@@ -188,7 +188,7 @@ begin
       clk_B         => clk_TCDS_o,
       reset_A_async => reset,
       event_b       => '1'    ,
-      rate          => Mon.TCDS2_FREQ);
+      rate          => Mon.TCDS_FREQ);
 
   rate_counter_2: entity work.rate_counter
     generic map (
@@ -198,7 +198,7 @@ begin
       clk_B         => pcs_clk(0),
       reset_A_async => reset,
       event_b       => '1'    ,
-      rate          => Mon.TCDS2_TX_PCS_FREQ);
+      rate          => Mon.TCDS_TX_PCS_FREQ);
 
   rate_counter_3: entity work.rate_counter
     generic map (
@@ -208,7 +208,7 @@ begin
       clk_B         => pcs_clk(1),
       reset_A_async => reset,
       event_b       => '1'    ,
-      rate          => Mon.TCDS2_RX_PCS_FREQ);
+      rate          => Mon.TCDS_RX_PCS_FREQ);
 
 
   TCDS_local_1: entity work.TCDS_local

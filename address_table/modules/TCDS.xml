@@ -1,8 +1,8 @@
 <node id="TCDS">
-  <node id="TCDS_2" address="0x00000000" module="file://top_secret/ipbus_tcds2_interface_accessor.xml"/>
-  <node id="TCDS2_FREQ"                  address="0x300"  mask="0xFFFFFFFF" permission="r" parameters="Table=CLOCKING;Column=FREQ;Row=TCDS2_FREQ;Status=3;Show=nz;Format=m_1_1_1000000_1_0_1"/>
-  <node id="TCDS2_TX_PCS_FREQ"           address="0x301"  mask="0xFFFFFFFF" permission="r" parameters="Table=CLOCKING;Column=FREQ;Row=TCDS2_TX_FREQ;Status=3;Show=nz;Format=m_1_1_1000000_1_0_1"/>
-  <node id="TCDS2_RX_PCS_FREQ"           address="0x302"  mask="0xFFFFFFFF" permission="r" parameters="Table=CLOCKING;Column=FREQ;Row=TCDS2_RX_FREQ;Status=3;Show=nz;Format=m_1_1_1000000_1_0_1"/>/>
+  <node id="DTH" address="0x00000000" module="file://top_secret/ipbus_tcds2_interface_accessor.xml"/>
+  <node id="TCDS_FREQ"                  address="0x300"  mask="0xFFFFFFFF" permission="r" parameters="Table=CLOCKING;Column=FREQ;Row=TCDS2_FREQ;Status=3;Show=nz;Format=m_1_1_1000000_1_0_1"/>
+  <node id="TCDS_TX_PCS_FREQ"           address="0x301"  mask="0xFFFFFFFF" permission="r" parameters="Table=CLOCKING;Column=FREQ;Row=TCDS2_TX_FREQ;Status=3;Show=nz;Format=m_1_1_1000000_1_0_1"/>
+  <node id="TCDS_RX_PCS_FREQ"           address="0x302"  mask="0xFFFFFFFF" permission="r" parameters="Table=CLOCKING;Column=FREQ;Row=TCDS2_RX_FREQ;Status=3;Show=nz;Format=m_1_1_1000000_1_0_1"/>/>
   <node id="LTCDS_1" fwinfo="type=array" address="0x400" module="file://LTCDS.xml"/>
   <node id="LTCDS_2" fwinfo="type=array" address="0xC00" module="file://LTCDS.xml"/>
 

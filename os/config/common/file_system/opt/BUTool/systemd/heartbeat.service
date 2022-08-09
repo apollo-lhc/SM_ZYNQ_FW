@@ -1,6 +1,7 @@
 [Unit]
 Description=Service to tell the PL that the PS is still up and running.
-After=systemd-udevd.service
+After=systemd-udevd.service uio_daemon.service
+Requires=systemd-udevd.service uio_daemon.service
 
 [Service]
 Type=forking

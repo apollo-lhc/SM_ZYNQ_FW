@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<node id="TCDS2_INTERFACE_ACCESSOR" fwinfo="endpoint; width=10">
+<node id="TCDS2_INTERFACE_ACCESSOR" fwinfo=" width=10">
 
   <!-- Flags representing the implementation choices of the TCDS2
        link/interface. -->
-  <node id="HW_CFG" address="0x00000000" fwinfo="endpoint; width=3">
+  <node id="HW_CFG" address="0x00000000" fwinfo=" width=3">
     <node id="HAS_SPY_REGISTERS"  address="0x00000000" mask="0x00000001" permission="r" />
     <node id="HAS_LINK_TEST_MODE" address="0x00000000" mask="0x00000002" permission="r" />
   </node>
@@ -14,7 +14,7 @@
         module="file://tcds2_link_csr_master.xml"
         address="0x00000040" />
 
-  <node id="LINK_TEST" address="0x00000008" fwinfo="endpoint; width=3">
+  <node id="LINK_TEST" address="0x00000008" fwinfo=" width=3">
 
     <node id="CONTROL" address="0x00000000">
       <!-- Link test mode switch. -->

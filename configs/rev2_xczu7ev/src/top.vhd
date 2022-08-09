@@ -264,8 +264,8 @@ architecture structure of top is
   signal axi_reset_n : std_logic;
   signal axi_reset : std_logic;
 
-  signal pl_clk : std_logic;
-  signal pl_reset_n : std_logic;
+--  signal pl_clk : std_logic;
+--  signal pl_reset_n : std_logic;
 
   constant PL_AXI_SLAVE_COUNT : integer := 8;
   signal AXI_BUS_RMOSI :  AXIReadMOSI_array_t(0 to PL_AXI_SLAVE_COUNT-1) := (others => DefaultAXIReadMOSI);
@@ -367,10 +367,6 @@ begin  -- architecture structure
   --Zynq axi signals
   axi_reset <= not axi_reset_n;
 
-  --Other master clocks
-  pl_reset_n <= axi_reset_n ;
-  pl_clk <= axi_clk;
-
 
   SI_OUT_DIS <= not SI_OE_normal;
   SI_ENABLE  <= SI_EN_normal;
@@ -403,8 +399,6 @@ begin  -- architecture structure
       SI_sda_i                  => SDA_i_phy,
       SI_sda_o                  => SDA_o_phy,
       SI_sda_t                  => SDA_t_phy,
-      AXI_CLK_PL                => pl_clk,
-      AXI_RSTN_PL               => pl_reset_n,
 
       AXIM_PL_awaddr            => AXI_MSTR_WMOSI.address,
       AXIM_PL_awprot            => AXI_MSTR_WMOSI.protection_type,
@@ -837,7 +831,7 @@ begin  -- architecture structure
       )
     port map (
       clk_axi         => axi_clk,
-      reset_axi_n     => pl_reset_n,
+      reset_axi_n     => axi_reset_n,
       readMOSI        => AXI_BUS_RMOSI(0),
       readMISO        => AXI_BUS_RMISO(0),
       writeMOSI       => AXI_BUS_WMOSI(0),
@@ -872,7 +866,7 @@ begin  -- architecture structure
       )
     port map (
       clk_axi     => axi_clk,
-      reset_axi_n => pl_reset_n,
+      reset_axi_n => axi_reset_n,
       readMOSI    => AXI_BUS_RMOSI(3),
       readMISO    => AXI_BUS_RMISO(3),
       writeMOSI   => AXI_BUS_WMOSI(3),
@@ -885,7 +879,7 @@ begin  -- architecture structure
       )
     port map (
       clk_axi      => axi_clk,
-      reset_axi_n  => pl_reset_n,
+      reset_axi_n  => axi_reset_n,
       readMOSI     => AXI_BUS_RMOSI(1),
       readMISO     => AXI_BUS_RMISO(1),
       writeMOSI    => AXI_BUS_WMOSI(1),
@@ -938,7 +932,7 @@ begin  -- architecture structure
       )
     port map (
       clk_axi              => axi_clk,
-      reset_axi_n          => pl_reset_n,
+      reset_axi_n          => axi_reset_n,
       slave_readMOSI       => AXI_BUS_RMOSI(2),
       slave_readMISO       => AXI_BUS_RMISO(2),
       slave_writeMOSI      => AXI_BUS_WMOSI(2),
@@ -1027,7 +1021,7 @@ begin  -- architecture structure
       )           
     port map (
       clk_axi         => axi_clk,
-      reset_axi_n     => pl_reset_n,
+      reset_axi_n     => axi_reset_n,
       readMOSI        => AXI_BUS_RMOSI(6),
       readMISO        => AXI_BUS_RMISO(6),
       writeMOSI       => AXI_BUS_WMOSI(6),

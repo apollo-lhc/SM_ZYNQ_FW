@@ -1,0 +1,1 @@
+/dev/mmcblk0p1 /fw/SM vfat rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro 0 0
