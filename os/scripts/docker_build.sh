@@ -1,9 +1,12 @@
 #!/bin/bash
 
 # exit when any command fails
+SRC_PATH=/app/
+BUILD_PATH=/tmp/build/
 
-DUMP_FILE="/app/make_log.txt"
+DUMP_FILE=${BUILD_PATH}"make_log.txt"
 DUMP_CMD= | tee -a ${DUMP_FILE}
+
 
 
 if [ $# -gt 0 ]; then
@@ -28,13 +31,14 @@ if [ $# -gt 0 ]; then
     pip3 install python-augeas                                                 ${DUMP_CMD}
     
     #create a directory to build in
-    mkdir /tmp/build                                                           ${DUMP_CMD}
+    mkdir ${BUILD_PATH}                                                        ${DUMP_CMD}
     #copy the needed files to it
-    cp -r /app/* /tmp/build                                                    ${DUMP_CMD}
-    cd /tmp/build                                                              ${DUMP_CMD}
+    cp -r ${SRC_PATH}* ${BUILD_PATH}                                           ${DUMP_CMD}
+    cd ${BUILD_PATH}                                                           ${DUMP_CMD}
     #run the build
     make $1.tar.gz                                                             ${DUMP_CMD}
-    mv /tmp/build/image/$1.tar.gz /app                                         ${DUMP_CMD}
+    mv ${BUILD_PATH}/image/$1.tar.gz ${SRC_PATH}                               ${DUMP_CMD}
+    mv ${DUMP_FILE} ${SRC_PATH}/make_log_$1.txt
 else
     echo "Missing build name.  ex. rev2a_xczu7ev"
 fi

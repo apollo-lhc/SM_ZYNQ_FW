@@ -16,6 +16,9 @@ AXI_CONTROL_SETS:
     axi_freq: "${::AXI_MASTER_CLK_FREQ}"
 
 AXI_SLAVES:
+  IRQ_CTRL:
+    XML: "address_table/modules/INTERRUPT_CONTROLLER.xml"
+    UHAL_BASE: 0x16000000
   C2C1:
     TCL_CALL:
       command: "AXI_C2C_MASTER"
@@ -111,56 +114,41 @@ AXI_SLAVES:
     XML: "address_table/modules/INT_AXI_FW.xml"
     UHAL_BASE: 0x20000000
 
-  ADD_PL_MASTER:
+  AXI_LOCAL_CTRL:
     TCL_CALL:
-      command: "AXI_PL_MASTER_PORT"
-      name: AXIM_PL
+      command: "BUILD_CHILD_AXI_INTERCONNECT"
       axi_clk: "${::AXI_MASTER_CLK}"
-      axi_rstn: "${::AXI_PRIMARY_MASTER_RSTN}"
-      axi_freq: "${::AXI_MASTER_CLK_FREQ}"
-    SUB_SLAVES:
-      AXI_LOCAL_CTRL:
+      axi_rstn: "${::AXI_PRIMARY_SLAVE_RSTN}"
+      parent: "${::AXI_INTERCONNECT_NAME}"
+      master_clk: "${::AXI_MASTER_CLK}"
+      master_rstn: "${::AXI_PRIMARY_SLAVE_RSTN}"
+    SUB_SLAVES:      
+      PL_MEM:
         TCL_CALL:
-          command: "BUILD_CHILD_AXI_INTERCONNECT"
-          axi_clk: "${::AXI_MASTER_CLK}"
-          axi_rstn: "${::AXI_PRIMARY_SLAVE_RSTN}"
-          parent: "AXIM_PL ${::AXI_INTERCONNECT_NAME}"
-          master_clk: "${::AXI_MASTER_CLK} ${::AXI_MASTER_CLK}"
-          master_rstn: "${::AXI_PRIMARY_SLAVE_RSTN} ${::AXI_PRIMARY_SLAVE_RSTN}"
-        SUB_SLAVES:      
-          PL_MEM:
-            TCL_CALL:
-              command: "AXI_IP_BRAM"
-              axi_control: "${::AXI_LOCAL_CTRL}"
-              addr:
-                offset: -1
-                range: "8K"
-            XML: "address_table/modules/PL_MEM.xml"
-            UHAL_BASE: 0x15000000
-          SERV:
-            TCL_CALL:
-              command: "AXI_PL_DEV_CONNECT"
-              axi_control: "${::AXI_LOCAL_CTRL}"
-            XML: "address_table/modules/SERV_rev1.xml"
-            UHAL_BASE: 0x04000000
-            HDL:
-              map_template: "axi_generic/template_map.vhd"
-          SLAVE_I2C:
-            TCL_CALL:
-              command: "AXI_PL_DEV_CONNECT"
-              axi_control: "${::AXI_LOCAL_CTRL}"
-              addr:
-                offset: -1
-                range: "8K"
-            XML: "address_table/modules/SLAVE_I2C.xml"
-            UHAL_BASE: 0x05000000
-          CM_MON_AXI_FW:
-            TCL_CALL:
-              command: "AXI_IP_AXI_FW"
-              axi_fw_bus: "/AXIM_PL"
-              axi_control: "${::AXI_C2C_CTRL}"
-            XML: "address_table/modules/CM_MON_AXI_FW.xml"
-            UHAL_BASE: 0x20000000
+          command: "AXI_IP_BRAM"
+          axi_control: "${::AXI_LOCAL_CTRL}"
+          addr:
+            offset: -1
+            range: "8K"
+        XML: "address_table/modules/PL_MEM.xml"
+        UHAL_BASE: 0x15000000
+      SERV:
+        TCL_CALL:
+          command: "AXI_PL_DEV_CONNECT"
+          axi_control: "${::AXI_LOCAL_CTRL}"
+        XML: "address_table/modules/SERV_rev1.xml"
+        UHAL_BASE: 0x04000000
+        HDL:
+          map_template: "axi_generic/template_map.vhd"
+      SLAVE_I2C:
+        TCL_CALL:
+          command: "AXI_PL_DEV_CONNECT"
+          axi_control: "${::AXI_LOCAL_CTRL}"
+          addr:
+            offset: -1
+            range: "8K"
+        XML: "address_table/modules/SLAVE_I2C.xml"
+        UHAL_BASE: 0x05000000
 
 
   PLXVC:
@@ -174,16 +162,6 @@ AXI_SLAVES:
     UHAL_BASE: 0x06000000
     HDL: 
       map_template: "axi_generic/template_map.vhd"
-
-  XVC_LOCAL:
-    TCL_CALL:
-      command: "AXI_IP_LOCAL_XVC"
-      axi_control: "${::AXI_MASTER_CTRL}"
-      addr:
-        offset: -1
-        range: "4K"
-    XML: "address_table/modules/XVC.xml"
-    UHAL_BASE: 0x08000000
 
 
   CM:
