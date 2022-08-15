@@ -1,4 +1,4 @@
-SM_FW: "/fw/SM/",
+SM_FW: "/fw/SM/"
 address_table_path: "/opt/address_tables"
 CM_FWs:
   - /fw/CM/*/

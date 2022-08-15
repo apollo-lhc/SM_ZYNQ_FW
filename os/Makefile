@@ -138,7 +138,7 @@ docker :
 docker_% :
 	rm -f $*.tar.gz
 	docker pull centos:centos7
-	time docker run --rm --privileged -it -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v ${PWD}:/app:Z -v /etc/binfmt.d:/etc/binfmt.d:Z centos:centos7 /app/scripts/docker_build.sh $* | tee dump.txt
+	time docker run --rm --name os_build_$* --privileged -it -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v ${PWD}:/app:Z -v /etc/binfmt.d:/etc/binfmt.d:Z centos:centos7 /app/scripts/docker_build.sh $*
 
 
 #################################################################################
