@@ -20,8 +20,10 @@ do
     if [ $username != "root" ]
     then
 	useradd -m $username
+	chown -R $username:$username /home/$username 
     fi
     usermod -p $password_hash $username
     usermod -a -G dialout $username
-
+    
+    
 done < "$user_info_file"

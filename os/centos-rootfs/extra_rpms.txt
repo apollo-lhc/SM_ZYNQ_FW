@@ -67,3 +67,5 @@ python-markupsafe
 centos-release-scl
 llvm-toolset-7-clang-tools-extra
 dnf
+docker
+iptables
