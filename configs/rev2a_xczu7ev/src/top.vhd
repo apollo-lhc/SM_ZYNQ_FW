@@ -59,8 +59,8 @@ entity top is
     CLK_TTC_P         : in  std_logic;
     CLK_TTC_N         : in  std_logic;
 
-    CLK_REC_OUT_P     : out std_logic;
-    CLK_REC_OUT_N     : out std_logic;
+--    CLK_REC_OUT_P     : out std_logic;
+--    CLK_REC_OUT_N     : out std_logic;
     
 --    TTC_P             : in  std_logic;
 --    TTC_N             : in  std_logic;
@@ -195,20 +195,20 @@ entity top is
     REFCLK_REC_P            : in std_logic;
     REFCLK_REC_N            : in std_logic;
     
-    TCDS_TTC_P              : in  std_logic;
-    TCDS_TTC_N              : in  std_logic;
-    TCDS_TTS_P              : out std_logic;
-    TCDS_TTS_N              : out std_logic;
-
-    
-    CM1_TCDS_TTS_P          : in    std_logic; 
-    CM1_TCDS_TTS_N          : in    std_logic;
-    CM1_TCDS_TTC_P          : out   std_logic; 
-    CM1_TCDS_TTC_N          : out   std_logic;
-    CM2_TCDS_TTS_P          : in    std_logic; 
-    CM2_TCDS_TTS_N          : in    std_logic;
-    CM2_TCDS_TTC_P          : out   std_logic; 
-    CM2_TCDS_TTC_N          : out   std_logic;
+--    TCDS_TTC_P              : in  std_logic;
+--    TCDS_TTC_N              : in  std_logic;
+--    TCDS_TTS_P              : out std_logic;
+--    TCDS_TTS_N              : out std_logic;
+--
+--    
+--    CM1_TCDS_TTS_P          : in    std_logic; 
+--    CM1_TCDS_TTS_N          : in    std_logic;
+--    CM1_TCDS_TTC_P          : out   std_logic; 
+--    CM1_TCDS_TTC_N          : out   std_logic;
+--    CM2_TCDS_TTS_P          : in    std_logic; 
+--    CM2_TCDS_TTS_N          : in    std_logic;
+--    CM2_TCDS_TTC_P          : out   std_logic; 
+--    CM2_TCDS_TTC_N          : out   std_logic;
     
 
 --
@@ -219,10 +219,10 @@ entity top is
     REFCLK_C2C2_N          : in    std_logic;
 
 
-    LDAQ_RX_P              : in    std_logic;
-    LDAQ_RX_N              : in    std_logic;
-    LDAQ_TX_P              : out   std_logic;
-    LDAQ_TX_N              : out   std_logic;
+--    LDAQ_RX_P              : in    std_logic;
+--    LDAQ_RX_N              : in    std_logic;
+--    LDAQ_TX_P              : out   std_logic;
+--    LDAQ_TX_N              : out   std_logic;
     -------------------------------------------------------------------------------------------
     -- IPMC Interface
     -------------------------------------------------------------------------------------------
@@ -420,7 +420,7 @@ begin  -- architecture structure
 
   zynq_bd_wrapper_1: entity work.zynq_bd_wrapper
     port map (
-      clk_125              => clk_125Mhz,
+--      clk_125              => clk_125Mhz,
       AXI_RST_N(0)         => axi_reset_n,
       AXI_CLK              => AXI_clk,
       CM_PB_UART_rxd                     => C2C_pB_UART_tx,
@@ -559,45 +559,6 @@ begin  -- architecture structure
       PLXVC_wstrb                => AXI_BUS_WMOSI(6).data_write_strobe,
       PLXVC_wvalid               => AXI_BUS_WMOSI(6).data_valid,
 
-      TCDS_araddr                => AXI_BUS_RMOSI(7).address,
-      TCDS_arprot                => AXI_BUS_RMOSI(7).protection_type,
-      TCDS_arready               => AXI_BUS_RMISO(7).ready_for_address,
-      TCDS_arvalid               => AXI_BUS_RMOSI(7).address_valid,
-      TCDS_awaddr                => AXI_BUS_WMOSI(7).address,
-      TCDS_awprot                => AXI_BUS_WMOSI(7).protection_type,
-      TCDS_awready               => AXI_BUS_WMISO(7).ready_for_address,
-      TCDS_awvalid               => AXI_BUS_WMOSI(7).address_valid,
-      TCDS_bready                => AXI_BUS_WMOSI(7).ready_for_response,
-      TCDS_bresp                 => AXI_BUS_WMISO(7).response,
-      TCDS_bvalid                => AXI_BUS_WMISO(7).response_valid,
-      TCDS_rdata                 => AXI_BUS_RMISO(7).data,
-      TCDS_rready                => AXI_BUS_RMOSI(7).ready_for_data,
-      TCDS_rresp                 => AXI_BUS_RMISO(7).response,
-      TCDS_rvalid                => AXI_BUS_RMISO(7).data_valid,
-      TCDS_wdata                 => AXI_BUS_WMOSI(7).data,
-      TCDS_wready                => AXI_BUS_WMISO(7).ready_for_data,
-      TCDS_wstrb                 => AXI_BUS_WMOSI(7).data_write_strobe,
-      TCDS_wvalid                => AXI_BUS_WMOSI(7).data_valid,
-
-      LDAQ_araddr                  => AXI_BUS_RMOSI(8).address,
-      LDAQ_arprot                  => AXI_BUS_RMOSI(8).protection_type,
-      LDAQ_arready                 => AXI_BUS_RMISO(8).ready_for_address,
-      LDAQ_arvalid                 => AXI_BUS_RMOSI(8).address_valid,
-      LDAQ_awaddr                  => AXI_BUS_WMOSI(8).address,
-      LDAQ_awprot                  => AXI_BUS_WMOSI(8).protection_type,
-      LDAQ_awready                 => AXI_BUS_WMISO(8).ready_for_address,
-      LDAQ_awvalid                 => AXI_BUS_WMOSI(8).address_valid,
-      LDAQ_bready                  => AXI_BUS_WMOSI(8).ready_for_response,
-      LDAQ_bresp                   => AXI_BUS_WMISO(8).response,
-      LDAQ_bvalid                  => AXI_BUS_WMISO(8).response_valid,
-      LDAQ_rdata                   => AXI_BUS_RMISO(8).data,
-      LDAQ_rready                  => AXI_BUS_RMOSI(8).ready_for_data,
-      LDAQ_rresp                   => AXI_BUS_RMISO(8).response,
-      LDAQ_rvalid                  => AXI_BUS_RMISO(8).data_valid,
-      LDAQ_wdata                   => AXI_BUS_WMOSI(8).data,
-      LDAQ_wready                  => AXI_BUS_WMISO(8).ready_for_data,
-      LDAQ_wstrb                   => AXI_BUS_WMOSI(8).data_write_strobe,
-      LDAQ_wvalid                  => AXI_BUS_WMOSI(8).data_valid,
 
       init_clk                  =>  AXI_C2C_aurora_init_clk,
       C2C1_phy_Rx_rxn           =>  AXI_C2C_CM1_Rx_N(0 to 0),
@@ -1202,55 +1163,5 @@ begin  -- architecture structure
       event_b       => '1',
       rate          => Clocking_Mon.AXI_CLK_FREQ);
    
-  TCDS_1: entity work.TCDS
-    generic map (
-      ALLOCATED_MEMORY_RANGE => to_integer(AXI_RANGE_TCDS),
-      AXI_CLK_FREQ => 125000000)
-    port map (
-      clk_axi           => clk_125Mhz,
-      reset_axi_n       => axi_reset_n,
-      slave_readMOSI    => AXI_BUS_RMOSI(7),
-      slave_readMISO    => AXI_BUS_RMISO(7),
-      slave_writeMOSI   => AXI_BUS_WMOSI(7),
-      slave_writeMISO   => AXI_BUS_WMISO(7),
-      clk_sys_125mhz    => clk_125mhz,
-      mgt_tx_p_o        => TCDS_TTS_P,
-      mgt_tx_n_o        => TCDS_TTS_N,
-      mgt_rx_p_i        => TCDS_TTC_P,
-      mgt_rx_n_i        => TCDS_TTC_N,
-      clk_TCDS_REC_in_p  => REFCLK_REC_P,
-      clk_TCDS_REC_in_n  => REFCLK_REC_N,
-      clk_TCDS_320_in_p  => REFCLK_CMS_P(0),
-      clk_TCDS_320_in_n  => REFCLK_CMS_N(0),      
-      clk_TCDS_REC_out_p => CLK_REC_OUT_P,
-      clk_TCDS_REC_out_n => CLK_REC_OUT_N,
-      clk_TCDS           => open,
-      LTTC_P(0)          => CM1_TCDS_TTC_P,
-      LTTC_P(1)          => CM2_TCDS_TTC_P,
-      LTTC_N(0)          => CM1_TCDS_TTC_N,
-      LTTC_N(1)          => CM2_TCDS_TTC_N,
-      LTTS_P(0)          => CM1_TCDS_TTS_P,
-      LTTS_P(1)          => CM2_TCDS_TTS_P,
-      LTTS_N(0)          => CM1_TCDS_TTS_N,
-      LTTS_N(1)          => CM2_TCDS_TTS_N
-      );
-
-  LDAQ_1: entity work.LDAQ
-    generic map (
-      ALLOCATED_MEMORY_RANGE => to_integer(AXI_RANGE_LDAQ)
-      )
-    port map (
-      clk_axi         => axi_clk,         
-      reset_axi_n     => axi_reset_n,      
-      slave_readMOSI  => AXI_BUS_RMOSI(8),
-      slave_readMISO  => AXI_BUS_RMISO(8),
-      slave_writeMOSI => AXI_BUS_WMOSI(8),
-      slave_writeMISO => AXI_BUS_WMISO(8),
-      LDAQ_CLK_P      => refclk_cms_p(1),
-      LDAQ_CLK_N      => refclk_cms_n(1),
-      LDAQ_RX_P       => LDAQ_RX_P,
-      LDAQ_RX_N       => LDAQ_RX_N,
-      LDAQ_TX_P       => LDAQ_TX_P,
-      LDAQ_TX_N       => LDAQ_TX_N);
 
 end architecture structure;

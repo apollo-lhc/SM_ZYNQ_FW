@@ -27,8 +27,6 @@ constant AXI_ADDR_CM_PB_UART : unsigned(31 downto 0) := x"A00A0000";
 constant AXI_ADDR_ESM_UART : unsigned(31 downto 0) := x"A00B0000";
 constant AXI_ADDR_AXI_MON : unsigned(31 downto 0) := x"B4050000";
 constant AXI_ADDR_INT_AXI_FW : unsigned(31 downto 0) := x"B4060000";
-constant AXI_ADDR_TCDS : unsigned(31 downto 0) := x"A0170000";
-constant AXI_ADDR_LDAQ : unsigned(31 downto 0) := x"A0180000";
 constant AXI_ADDR_MASTER_CDMA : unsigned(31 downto 0) := x"A00C0000";
 -- ranges
 constant AXI_RANGE_IRQ0_INTR_CTRL : unsigned(31 downto 0) :=  x"00010000";
@@ -55,7 +53,5 @@ constant AXI_RANGE_CM_PB_UART : unsigned(31 downto 0) :=  x"00010000";
 constant AXI_RANGE_ESM_UART : unsigned(31 downto 0) :=  x"00010000";
 constant AXI_RANGE_AXI_MON : unsigned(31 downto 0) :=  x"00010000";
 constant AXI_RANGE_INT_AXI_FW : unsigned(31 downto 0) :=  x"00010000";
-constant AXI_RANGE_TCDS : unsigned(31 downto 0) :=  x"00010000";
-constant AXI_RANGE_LDAQ : unsigned(31 downto 0) :=  x"00001000";
 constant AXI_RANGE_MASTER_CDMA : unsigned(31 downto 0) :=  x"00010000";
 end package AXISlaveAddrPkg;

@@ -53,93 +53,6 @@ set vhdl_files "\
      ${autogen_path}/PLXVC/PLXVC_PKG.vhd \
      src/plXVC/plXVC_intf.vhd \
      src/plXVC/virtualJTAG.vhd \
-     src/TCDS/tclink/firmware/source/common/bit_synchronizer.vhd \
-     src/TCDS/tclink/firmware/source/common/reset_synchronizer.vhd \
-     src/TCDS/tclink/firmware/source/datapath/cdc_user/cdc_rx.vhd \
-     src/TCDS/tclink/firmware/source/datapath/cdc_user/cdc_tx.vhd \
-     src/TCDS/tclink/firmware/source/datapath/hprbs_framing/prbs_chk.vhd \
-     src/TCDS/tclink/firmware/source/datapath/hprbs_framing/prbs_gen.vhd \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fe/lpgbt-fe/gf_add_4.v \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fe/lpgbt-fe/gf_add_5.v \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fe/lpgbt-fe/gf_multBy2_4.v \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fe/lpgbt-fe/gf_multBy2_5.v \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fe/lpgbt-fe/gf_multBy3_4.v \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fe/lpgbt-fe/gf_multBy3_5.v \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fe/lpgbt-fe/rs_encoder_N15K13.v \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fe/lpgbt-fe/rs_encoder_N31K29.v \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fe/lpgbt-fe/scrambler51bitOrder49.v \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fe/lpgbt-fe/scrambler53bitOrder49.v \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fe/lpgbt-fe/scrambler58bitOrder58.v \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fe/lpgbt-fe/scrambler60bitOrder58.v \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fe/lpgbt-fe/upLinkDataSelect.v \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fe/lpgbt-fe/upLinkFECEncoder.v \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fe/lpgbt-fe/upLinkInterleaver.v \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fe/lpgbt-fe/upLinkScrambler.v \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fe/lpgbt-fe/upLinkTxDataPath.v \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fe/lpgbt-fe/upLinkTxGearBox.v \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fe/lpgbt_fe_tx.vhd \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fpga/lpgbtfpga_package.vhd \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fpga/lpgbtfpga_uplink.vhd \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fpga/uplink/descrambler_51bitOrder49.vhd \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fpga/uplink/descrambler_53bitOrder49.vhd \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fpga/uplink/descrambler_58bitOrder58.vhd \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fpga/uplink/descrambler_60bitOrder58.vhd \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fpga/uplink/fec_rsDecoderN15K13.vhd \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fpga/uplink/fec_rsDecoderN31K29.vhd \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fpga/uplink/lpgbtfpga_decoder.vhd \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fpga/uplink/lpgbtfpga_deinterleaver.vhd \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fpga/uplink/lpgbtfpga_descrambler.vhd \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fpga/uplink/lpgbtfpga_framealigner.vhd \
-     src/TCDS/tclink/firmware/source/datapath/lpgbt-fpga/uplink/lpgbtfpga_rxgearbox.vhd \
-     src/TCDS/tclink/firmware/source/tclink/master_rx_slide_compensation.vhd \
-     src/TCDS/tclink/firmware/source/tclink/tclink.vhd \
-     src/TCDS/tclink/firmware/source/tclink/tclink_controller/dco_controller.vhd \
-     src/TCDS/tclink/firmware/source/tclink/tclink_controller/phase_offset_removal.vhd \
-     src/TCDS/tclink/firmware/source/tclink/tclink_controller/pi_controller.vhd \
-     src/TCDS/tclink/firmware/source/tclink/tclink_controller/scaler.vhd \
-     src/TCDS/tclink/firmware/source/tclink/tclink_controller/sigma_delta_modulator.vhd \
-     src/TCDS/tclink/firmware/source/tclink/tclink_controller/tclink_controller.vhd \
-     src/TCDS/tclink/firmware/source/tclink/tclink_channel_controller.vhd \
-     src/TCDS/tclink/firmware/source/tclink/tclink_phase_detector/dmtd_phase_meas.vhd \
-     src/TCDS/tclink/firmware/source/tclink/tclink_phase_detector/dmtd_with_deglitcher.vhd \
-     src/TCDS/tclink/firmware/source/tclink/tclink_phase_detector/gc_extend_pulse.vhd \
-     src/TCDS/tclink/firmware/source/tclink/tclink_phase_detector/gc_pulse_synchronizer.vhd \
-     src/TCDS/tclink/firmware/source/tclink/tclink_phase_detector/gc_sync_ffs.vhd \
-     src/TCDS/tclink/firmware/source/tclink/tclink_tester/tclink_tester_unit.vhd \
-     src/TCDS/tclink/firmware/source/tclink_lpgbt.vhd \
-     src/TCDS/tclink/firmware/source/tclink_lpgbt_pkg.vhd \
-     src/TCDS/tclink/firmware/source/transceiver/mgt_fixed_phase/drp_arbiter.vhd \
-     src/TCDS/tclink/firmware/source/transceiver/mgt_fixed_phase/hptd_ip_core/fifo_fill_level_acc.vhd \
-     src/TCDS/tclink/firmware/source/transceiver/mgt_fixed_phase/hptd_ip_core/tx_phase_aligner.vhd \
-     src/TCDS/tclink/firmware/source/transceiver/mgt_fixed_phase/hptd_ip_core/tx_phase_aligner_fsm.vhd \
-     src/TCDS/tclink/firmware/source/transceiver/mgt_fixed_phase/hptd_ip_core/tx_pi_ctrl.vhd \
-     src/TCDS/tclink/firmware/source/transceiver/mgt_fixed_phase/mgt_fixed_phase.vhd \
-     src/TCDS/tclink/firmware/source/transceiver/mgt_user_clock.vhd \
-     src/TCDS/top_secret/counters/firmware/hdl/unlock_counter.vhd \
-     src/TCDS/top_secret/tcds2_interface/firmware/hdl/tcds2_interface_pkg.vhd \
-     src/TCDS/top_secret/tcds2_interface/firmware/hdl/tcds2_interface_choice_speed_10g.vhd \
-     src/TCDS/top_secret/tcds2_interface/firmware/hdl/tcds2_interface_with_mgt.vhd \
-     src/TCDS/top_secret/tcds2_interface/firmware/hdl/tcds2_interface_choice_mgt_usp_gth.vhd \
-     src/TCDS/top_secret/tcds2_interface/firmware/hdl/tcds2_interface.vhd \
-     src/TCDS/top_secret/tcds2_interface/firmware/hdl/tcds2_interface_mgt.vhd \
-     src/TCDS/top_secret/tcds2_link/firmware/hdl/ttc2_frame_splitter.vhd \
-     src/TCDS/top_secret/tcds2_link/firmware/hdl/tts2_frame_builder.vhd \
-     src/TCDS/top_secret/tcds2_link/firmware/hdl/tcds2_choice_speed_10g.vhd \
-     src/TCDS/top_secret/tcds2_link/firmware/hdl/tcds2_link_pkg.vhd \
-     src/TCDS/top_secret/tcds2_link/firmware/hdl/tcds2_link_speed_pkg.vhd \
-     src/TCDS/top_secret/tcds2_link/firmware/hdl/tcds2_streams_pkg.vhd \
-     src/TCDS/top_secret/tcds2_link/firmware/hdl/tcds2_link_medium_pkg.vhd \
-     src/TCDS/top_secret/tcds2_link/firmware/hdl/tcds2_link_csr_pkg.vhd \
-     src/TCDS/top_secret/constants/firmware/hdl/constants_tcds2.vhd \
-     src/TCDS/top_secret/board_and_fw_id/firmware/hdl/board_and_fw_id_pkg.vhd \
-     ${autogen_path}/TCDS/TCDS_map.vhd \
-     ${autogen_path}/TCDS/TCDS_PKG.vhd \
-     src/TCDS/TCDS_BP.vhd \
-     src/TCDS/TCDS_localCPLL.vhd \
-     src/TCDS/TCDS.vhd \
-     ${autogen_path}/LDAQ/LDAQ_map.vhd \
-     ${autogen_path}/LDAQ/LDAQ_PKG.vhd \
-     src/LDAQ/LDAQ.vhd \
      "
 
 set xdc_files "\
@@ -148,8 +61,4 @@ set xdc_files "\
      configs/rev2a_xczu7ev/src/top_MGMT.xdc \
      "
 
-set xci_files "\
-              src/TCDS/tclink/firmware/source/transceiver/ip_mgt_timing/gthe4_slave_timing_10g.xcix \
-              configs/rev2a_xczu7ev/cores/LDAQ_MGBT.tcl \
-              "
 
