@@ -84,6 +84,7 @@ include mk/Monitoring.mk
 include mk/CM_MCU.mk
 #include mk/mmc-utils.mk
 include mk/overlay-tools.mk
+include mk/netconfig-daemon.mk
 include mk/users.mk
 
 #${SECURE_CHECK}:
@@ -117,7 +118,7 @@ include mk/users.mk
 	#setup software and libraries
 	${MAKE} pip_install_$*
 #	${MAKE} ${OPT_PATH}/BUTool/bin ${OPT_PATH}/cactus ${OPT_PATH}/mcu_tools ${OPT_PATH}/Graphite_Monitor ${INSTALL_PATH}usr/local/bin/mmc ${OPT_PATH}/overlay-tools
-	${MAKE} ${OPT_PATH}/BUTool/bin ${OPT_PATH}/cactus ${OPT_PATH}/mcu_tools ${OPT_PATH}/Graphite_Monitor ${OPT_PATH}/uio-daemon
+	${MAKE} ${OPT_PATH}/BUTool/bin ${OPT_PATH}/cactus ${OPT_PATH}/mcu_tools ${OPT_PATH}/Graphite_Monitor ${OPT_PATH}/uio-daemon ${OPT_PATH}/netconfig-daemon
 	sudo cp ${SCRIPTS_PATH}/cleanup_locale.sh ${TMP_PATH} 
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/cleanup_locale.sh 
 	sudo rm -rf ${TMP_PATH}/*
