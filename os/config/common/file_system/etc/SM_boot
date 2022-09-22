@@ -15,7 +15,7 @@ regwrite=CM.CM_1.MONITOR.ENABLE 1
 ## REV2 hard UART needs this
 regwrite=CM.CM_1.MONITOR.COUNT_16X_BAUD 0x1a 
 ## Rev1 soft uart needs this 
-regwrite=CM.CM_1.MONITOR.COUNT_16X_BAUD 0x1b 
+#regwrite=CM.CM_1.MONITOR.COUNT_16X_BAUD 0x1b 
 
 #AXI MON (all on bus0)
 regwrite=AXI_MON.CTRL 0x0020002
