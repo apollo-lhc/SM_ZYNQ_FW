@@ -20,6 +20,7 @@
 	  <node id="BYTE_3" address="0x0"        permission="r" mask="0xFF000000" description="eth0 mac adder byte 4"/>
 	  <node id="BYTE_4" address="0x1"        permission="r" mask="0x000000FF" description="eth0 mac adder byte 5"/>
 	  <node id="BYTE_5" address="0x1"        permission="r" mask="0x0000FF00" description="eth0 mac adder byte 6"/>
+	  <node id="CHECKSUM" address="0x1"      permission="r" mask="0x00FF0000" description="8-bit checksum for ETH0"/>
 	</node>
 	<node id="ETH1_MAC" address="0x7">
 	  <node id="BYTE_0" address="0x0"        permission="r" mask="0x000000FF" description="eth1 mac adder byte 1"/>
@@ -28,6 +29,7 @@
 	  <node id="BYTE_3" address="0x0"        permission="r" mask="0xFF000000" description="eth1 mac adder byte 4"/>
 	  <node id="BYTE_4" address="0x1"        permission="r" mask="0x000000FF" description="eth1 mac adder byte 5"/>
 	  <node id="BYTE_5" address="0x1"        permission="r" mask="0x0000FF00" description="eth1 mac adder byte 6"/>
+	  <node id="CHECKSUM" address="0x1"      permission="r" mask="0x00FF0000" description="8-bit checksum for ETH1"/>
 	</node>
     </node>      
     <node id="CM" address="0x09">
