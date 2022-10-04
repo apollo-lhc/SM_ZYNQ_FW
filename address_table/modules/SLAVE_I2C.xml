@@ -9,7 +9,7 @@
 	  <node id="SHUTDOWN"      permission="rw" mask="0x00000020" description="1 when petalinux shuts down"/>
 	</node>
 	<node id="INFO" address="0x1">
-	  <node id="SN"            permission="r"  mask="0x000000FF" description="Service module serial number" parameters="Table=IPMC;Row=_5;Column=ID;Status=1"/>
+	  <node id="SN"            permission="r"  mask="0x000000FF" description="Service module serial number" parameters="Table=IPMC;Row=_5;Column=ID;Format=u;Status=1"/>
 	  <node id="SLOT"          permission="r"  mask="0x0000FF00" description="Shelf physical slot IPMB addr"  parameters="Table=IPMC;Row=_5;Column=Addr;Status=1"/>
 	  <node id="RN"         permission="r"  mask="0xFF000000" description="Revision Number"  parameters="Table=IPMC;Row=_5;Column=ID;Status=1"/>
 	</node>	
