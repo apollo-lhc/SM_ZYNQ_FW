@@ -52,3 +52,4 @@ src/services/services_rev2.vhd 93
 proj/top.srcs/sources_1/imports/hdl/zynq_bd_wrapper.vhd 93
 configs/rev2a_xczu7ev/src/top.vhd top=top 93
 src/CM_interface/picoblaze/uart_tx6.vhd 93
+src/register_pkg.vhd 93
