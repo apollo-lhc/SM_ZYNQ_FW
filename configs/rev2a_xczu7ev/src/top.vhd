@@ -13,6 +13,25 @@ library UNISIM;
 use UNISIM.vcomponents.all;
 
 entity top is
+generic (
+    -- Global Generic Variables
+    GLOBAL_DATE : std_logic_vector(31 downto 0);
+    GLOBAL_TIME : std_logic_vector(31 downto 0);
+    GLOBAL_VER  : std_logic_vector(31 downto 0);
+    GLOBAL_SHA  : std_logic_vector(31 downto 0);
+    TOP_VER     : std_logic_vector(31 downto 0);
+    TOP_SHA     : std_logic_vector(31 downto 0);
+    CON_VER     : std_logic_vector(31 downto 0);
+    CON_SHA     : std_logic_vector(31 downto 0);
+    HOG_VER     : std_logic_vector(31 downto 0);
+    HOG_SHA     : std_logic_vector(31 downto 0);
+
+    -- Project Specific Lists (One for each .src file in your Top/myproj/list folder)
+    xil_defaultlib_VER : std_logic_vector(31 downto 0);
+    xil_defaultlib_SHA : std_logic_vector(31 downto 0);
+    Default_VER        : std_logic_vector(31 downto 0);
+    Default_SHA        : std_logic_vector(31 downto 0)
+    );
   port (
 
 
