@@ -46,6 +46,7 @@ kernel/zynq_os
 /os/Virtex_slaves.yaml
 /os/address_table/
 /os/slaves.yaml
+/os/make_log*
 
 #picoblaze
 *.fmt
