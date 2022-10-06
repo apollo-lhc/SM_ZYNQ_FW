@@ -7,7 +7,7 @@ VIVADO_FLAGS=-notrace -mode batch
 BUILD_VIVADO_VERSION?=2020.2
 BUILD_VIVADO_BASE?="/opt/Xilinx/Vivado"
 BUILD_VIVADO_SHELL=${BUILD_VIVADO_BASE}"/"$(BUILD_VIVADO_VERSION)"/settings64.sh"
-
+#DO_NOT_PRINT_LAYOUT=0 #need to update build-scripts before enabling this variable
 
 #################################################################################
 # TCL scripts
@@ -135,7 +135,7 @@ $(BIT_BASE)%.bit	: $(ADDRESS_TABLE_CREATION_PATH)config_%.yaml
 	mkdir -p ${MAKE_PATH}/proj &&\
 	mkdir -p ${MAKE_PATH}/bit &&\
 	cd proj &&\
-	vivado $(VIVADO_FLAGS) -source $(SETUP_BUILD_TCL) -tclargs ${MAKE_PATH} ${BUILD_SCRIPTS_PATH} $(subst .bit,,$(subst ${BIT_BASE},,$@)) $(OUTPUT_MARKUP)
+	vivado $(VIVADO_FLAGS) -source $(SETUP_BUILD_TCL) -tclargs ${MAKE_PATH} ${BUILD_SCRIPTS_PATH} $(subst .bit,,$(subst ${BIT_BASE},,$@)) $(DO_NOT_PRINT_LAYOUT) $(OUTPUT_MARKUP)
 	$(MAKE) NOTIFY_DAN_GOOD
 
 full_%: BUILD_NAME=%

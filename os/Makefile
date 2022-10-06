@@ -140,6 +140,15 @@ docker_% :
 	docker pull centos:centos7
 	time docker run --rm --name os_build_$* --privileged -it -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v ${PWD}:/app:Z -v /etc/binfmt.d:/etc/binfmt.d:Z centos:centos7 /app/scripts/docker_build.sh $*
 
+podman :
+	rm -f $*.tar.gz
+	podman pull docker.io/centos:centos7
+	time podman run --rm --name os_build_$* --privileged -it -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v ${PWD}:/app -v ${PWD}/binfmt.d/:/etc/binfmt.d:rw docker.io/centos:centos7
+
+podman_% :
+	rm -f $*.tar.gz
+	podman pull docker.io/centos:centos7
+	time podman run --rm --name os_build_$* --privileged -it -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v ${PWD}:/app -v ${PWD}/binfmt.d/:/etc/binfmt.d:rw docker.io/centos:centos7 /app/scripts/docker_build.sh $*
 
 #################################################################################
 # Help
