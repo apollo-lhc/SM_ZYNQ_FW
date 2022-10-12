@@ -491,8 +491,8 @@ begin  -- architecture structure
       MDIO_ETHERNET_1_0_mdio_io => ETH1_MDIO,
 
 
-      AXI_CLK_PL                => pl_clk,
-      AXI_RSTN_PL               => pl_reset_n,
+--      AXI_CLK_PL                => pl_clk,
+--      AXI_RSTN_PL               => pl_reset_n,
       AXIM_PL_awaddr            => AXI_MSTR_WMOSI.address,
       AXIM_PL_awprot            => AXI_MSTR_WMOSI.protection_type,
       AXIM_PL_awvalid           => AXI_MSTR_WMOSI.address_valid,
@@ -974,7 +974,8 @@ begin  -- architecture structure
   ETH1_RESET_N <= '1';
   SM_info_1: entity work.SM_info
     generic map (
-      ALLOCATED_MEMORY_RANGE =>  to_integer(AXI_RANGE_SM_INFO)
+      ALLOCATED_MEMORY_RANGE =>  to_integer(AXI_RANGE_SM_INFO),
+      FPGA_GENERATION => "7SERIES"
       )
     port map (
       clk_axi     => axi_clk,
