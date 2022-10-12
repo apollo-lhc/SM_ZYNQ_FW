@@ -27,9 +27,6 @@ set PL_MASTER PL
 set PL_M      AXIM_${PL_MASTER}
 set PL_M_CLK  ${AXI_MASTER_CLK}
 set PL_M_RSTN ${AXI_PRIMARY_MASTER_RSTN}
-#set PL_M_RSTN AXI_RSTN_${PL_MASTER}
-#set PL_M_CLK  AXI_CLK_${PL_MASTER}
-#set PL_M_RSTN AXI_RSTN_${PL_MASTER}
 set PL_M_FREQ [get_property CONFIG.FREQ_HZ [get_bd_pin ${AXI_MASTER_CLK}]]
 AXI_PL_MASTER_PORT "name ${PL_M} axi_clk ${PL_M_CLK} axi_rstn ${PL_M_RSTN} axi_freq ${PL_M_FREQ}"
 
@@ -38,7 +35,7 @@ Add_Global_Constant AXI_MASTER_CLK_FREQ integer ${AXI_MASTER_CLK_FREQ}
 
 puts "  Primary interconnect"
 [BUILD_AXI_INTERCONNECT ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_PRIMARY_MASTER_RSTN} [list ${ZYNQ_NAME}/M_AXI_GP0 ${PL_M}] [list ${AXI_MASTER_CLK} ${PL_M_CLK}] [list ${AXI_PRIMARY_MASTER_RSTN} ${PL_M_RSTN}]]
-#[BUILD_AXI_INTERCONNECT ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_PRIMARY_MASTER_RSTN} [list ${ZYNQ_NAME}/M_AXI_GP0 ] [list ${AXI_MASTER_CLK} ] [list ${AXI_PRIMARY_MASTER_RSTN} ]]
+
 
 
 #build the C2C interconnect
@@ -98,6 +95,5 @@ make_wrapper -files [get_files zynq_bd.bd] -top -import -force
 save_bd_design
 
 close_bd_design "zynq_bd"
-
 
 Generate_Global_package

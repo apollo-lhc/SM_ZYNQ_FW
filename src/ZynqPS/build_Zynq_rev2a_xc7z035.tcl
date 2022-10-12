@@ -25,10 +25,10 @@ set AXI_C2C_INTERCONNECT_NAME AXI_C2C_INTERCONNECT
 
 set PL_MASTER PL
 set PL_M      AXIM_${PL_MASTER}
-set PL_M_CLK  AXI_CLK_${PL_MASTER}
-set PL_M_RSTN AXI_RSTN_${PL_MASTER}
+set PL_M_CLK  ${AXI_MASTER_CLK}
+set PL_M_RSTN ${AXI_PRIMARY_MASTER_RSTN}
 set PL_M_FREQ [get_property CONFIG.FREQ_HZ [get_bd_pin ${AXI_MASTER_CLK}]]
-[AXI_PL_MASTER_PORT ${PL_M} ${PL_M_CLK} ${PL_M_RSTN} ${PL_M_FREQ}]
+AXI_PL_MASTER_PORT "name ${PL_M} axi_clk ${PL_M_CLK} axi_rstn ${PL_M_RSTN} axi_freq ${PL_M_FREQ}"
 
 set AXI_MASTER_CLK_FREQ [get_property CONFIG.FREQ_HZ [get_bd_pin ${AXI_MASTER_CLK}]]
 Add_Global_Constant AXI_MASTER_CLK_FREQ integer ${AXI_MASTER_CLK_FREQ}
@@ -83,6 +83,9 @@ read_vhdl "${apollo_root_path}/configs/${build_name}/autogen/AXI_slave_pkg.vhd"
 #========================================
 #  Finish up
 #========================================
+
+regenerate_bd_layout
+
 set_property CONFIG.STRATEGY {1} [get_bd_cells ${AXI_C2C_INTERCONNECT_NAME}]
 validate_bd_design
 

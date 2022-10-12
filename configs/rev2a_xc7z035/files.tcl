@@ -16,6 +16,7 @@ set vhdl_files "\
      src/misc/pacd.vhd \
      src/misc/capture_CDC.vhd \
      src/misc/rate_counter.vhd \
+     src/misc/XILINX_DNA.vhd \
      regmap_helper/axiReg/axiRegWidthPkg_32.vhd \
      regmap_helper/axiReg/axiRegPkg.vhd \
      regmap_helper/axiReg/axiReg.vhd \

@@ -1,1 +1,0 @@
-../rev2_xc7z035/files.tcl
