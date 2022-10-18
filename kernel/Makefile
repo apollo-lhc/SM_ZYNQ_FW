@@ -267,6 +267,9 @@ define build_USp =
 #	for -C, remember that the have state, so ../ infront of address talbes because of the output dir change
 	tar -h -zcf $$@.tar.gz -C output BOOT.BIN boot.scr image.ub \
 		-C ../address_tables/ address_table 			$(OUTPUT_MARKUP)
+#	free up some space we no longer need
+	rm -rf $(ZYNQ_OS_PROJECT_PATH)/build/tmp                        $(OUTPUT_MARKUP)
+	rm -rf $(ZYNQ_OS_PROJECT_PATH)/build/downloads                  $(OUTPUT_MARKUP)
 	@echo "Build ended:"						$(OUTPUT_MARKUP)
 	@date								$(OUTPUT_MARKUP)
 endef
@@ -302,3 +305,6 @@ docker :
 docker_% :
 	docker pull centos:centos7
 	time docker run --rm -it -v ${MAKE_PATH}/../:/app:Z -v /opt/Xilinx/petalinux:/opt/Xilinx/petalinux:Z,ro centos:centos7 /app/kernel/scripts/build_container.sh $* ${BUILD_PETALINUX_VERSION} ${BUILD_PETALINUX_ROOT}
+
+apptainer_%:
+	../build-scripts/RunInApptainer.sh $(realpath ..) $*

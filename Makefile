@@ -147,6 +147,9 @@ full_%: clean clean_bd clean_kernel clean_bit clean_remote clean_CM clean_prebui
 	cd kernel && $(MAKE) {BUILD_NAME} && cd ${MAKE_PATH}
 	cd os     && $(MAKE) {BUILD_NAME}.tar.gz && cd ${MAKE_PATH}
 
+apptainer_%:
+	./build-scripts/RunInApptainer.sh ${MAKE_PATH} $*
+
 init:
 	git submodule update --init --recursive 
 	$(git remote -v | grep push | sed 's/https:\/\//git@/g' | sed 's/.com\//.com:/g' | awk '{print "git remote set-url --push " $1 " " $2}')
