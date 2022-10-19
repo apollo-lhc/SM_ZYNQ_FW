@@ -30,17 +30,38 @@ set PL_M_RSTN ${AXI_PRIMARY_MASTER_RSTN}
 set PL_M_FREQ [get_property CONFIG.FREQ_HZ [get_bd_pin ${AXI_MASTER_CLK}]]
 AXI_PL_MASTER_PORT "name ${PL_M} axi_clk ${PL_M_CLK} axi_rstn ${PL_M_RSTN} axi_freq ${PL_M_FREQ}"
 
+set PL_MASTER PL
+set PL_M      AXIM_${PL_MASTER}
+set PL_M_CLK  ${AXI_MASTER_CLK}
+set PL_M_RSTN ${AXI_PRIMARY_MASTER_RSTN}
+set PL_M_FREQ [get_property CONFIG.FREQ_HZ [get_bd_pin ${AXI_MASTER_CLK}]]
+AXI_PL_MASTER_PORT "name ${PL_M} axi_clk ${PL_M_CLK} axi_rstn ${PL_M_RSTN} axi_freq ${PL_M_FREQ}"
+
+
+
 set AXI_MASTER_CLK_FREQ [get_property CONFIG.FREQ_HZ [get_bd_pin ${AXI_MASTER_CLK}]]
 Add_Global_Constant AXI_MASTER_CLK_FREQ integer ${AXI_MASTER_CLK_FREQ}
 
 #create the main interconnect
 puts "  Primary interconnect"
-[BUILD_AXI_INTERCONNECT ${AXI_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_PRIMARY_MASTER_RSTN} [list ${ZYNQ_NAME}/M_AXI_HPM0_FPD ${PL_M}] [list ${AXI_MASTER_CLK} ${PL_M_CLK}] [list ${AXI_PRIMARY_MASTER_RSTN} ${PL_M_RSTN}]]
+BUILD_AXI_INTERCONNECT \
+     ${AXI_INTERCONNECT_NAME} \
+     ${AXI_MASTER_CLK} \
+     ${AXI_PRIMARY_MASTER_RSTN} \
+     [list ${ZYNQ_NAME}/M_AXI_HPM0_FPD ${PL_M} ] \
+     [list ${AXI_MASTER_CLK} ${AXI_MASTER_CLK}] \
+     [list ${AXI_PRIMARY_MASTER_RSTN} ${AXI_PRIMARY_MASTER_RSTN}] 
 
 
 #build the C2C interconnect
 puts "  C2C interconnect"
-[BUILD_AXI_INTERCONNECT ${AXI_C2C_INTERCONNECT_NAME} ${AXI_MASTER_CLK} ${AXI_C2C_MASTER_RSTN} [list ${ZYNQ_NAME}/M_AXI_HPM1_FPD] [list ${AXI_MASTER_CLK}] [list ${AXI_C2C_MASTER_RSTN}]]
+BUILD_AXI_INTERCONNECT \
+    ${AXI_C2C_INTERCONNECT_NAME} \
+    ${AXI_MASTER_CLK} \
+    ${AXI_C2C_MASTER_RSTN} \
+    [list ${ZYNQ_NAME}/M_AXI_HPM1_FPD] \
+    [list ${AXI_MASTER_CLK}] \
+    [list ${AXI_C2C_MASTER_RSTN}]
 set_property CONFIG.STRATEGY {1} [get_bd_cells ${AXI_C2C_INTERCONNECT_NAME}]
 
 
