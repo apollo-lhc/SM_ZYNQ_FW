@@ -9,7 +9,7 @@
 	  <node id="SHUTDOWN"      permission="rw" mask="0x00000020" description="1 when petalinux shuts down"/>
 	</node>
 	<node id="INFO" address="0x1">
-	  <node id="SN"            permission="r"  mask="0x000000FF" description="Service module serial number" parameters="Table=IPMC;Row=_5;Column=ID;Format=u;Status=1"/>
+	  <node id="SN"            permission="r"  mask="0x000000FF" description="Service module serial number" parameters="Table=IPMC;Row=_5;Column=ID;Status=1"/>
 	  <node id="SLOT"          permission="r"  mask="0x0000FF00" description="Shelf physical slot IPMB addr"  parameters="Table=IPMC;Row=_5;Column=Addr;Status=1"/>
 	  <node id="RN"         permission="r"  mask="0xFF000000" description="Revision Number"  parameters="Table=IPMC;Row=_5;Column=ID;Status=1"/>
 	</node>	
@@ -20,7 +20,6 @@
 	  <node id="BYTE_3" address="0x0"        permission="r" mask="0xFF000000" description="eth0 mac adder byte 4"/>
 	  <node id="BYTE_4" address="0x1"        permission="r" mask="0x000000FF" description="eth0 mac adder byte 5"/>
 	  <node id="BYTE_5" address="0x1"        permission="r" mask="0x0000FF00" description="eth0 mac adder byte 6"/>
-	  <node id="CHECKSUM" address="0x1"      permission="r" mask="0x00FF0000" description="8-bit checksum for ETH0"/>
 	</node>
 	<node id="ETH1_MAC" address="0x7">
 	  <node id="BYTE_0" address="0x0"        permission="r" mask="0x000000FF" description="eth1 mac adder byte 1"/>
@@ -29,7 +28,6 @@
 	  <node id="BYTE_3" address="0x0"        permission="r" mask="0xFF000000" description="eth1 mac adder byte 4"/>
 	  <node id="BYTE_4" address="0x1"        permission="r" mask="0x000000FF" description="eth1 mac adder byte 5"/>
 	  <node id="BYTE_5" address="0x1"        permission="r" mask="0x0000FF00" description="eth1 mac adder byte 6"/>
-	  <node id="CHECKSUM" address="0x1"      permission="r" mask="0x00FF0000" description="8-bit checksum for ETH1"/>
 	</node>
     </node>      
     <node id="CM" address="0x09">
