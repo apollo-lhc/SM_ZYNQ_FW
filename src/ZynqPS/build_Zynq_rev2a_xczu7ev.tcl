@@ -30,13 +30,6 @@ set PL_M_RSTN ${AXI_PRIMARY_MASTER_RSTN}
 set PL_M_FREQ [get_property CONFIG.FREQ_HZ [get_bd_pin ${AXI_MASTER_CLK}]]
 AXI_PL_MASTER_PORT "name ${PL_M} axi_clk ${PL_M_CLK} axi_rstn ${PL_M_RSTN} axi_freq ${PL_M_FREQ}"
 
-set PL_MASTER PL
-set PL_M      AXIM_${PL_MASTER}
-set PL_M_CLK  ${AXI_MASTER_CLK}
-set PL_M_RSTN ${AXI_PRIMARY_MASTER_RSTN}
-set PL_M_FREQ [get_property CONFIG.FREQ_HZ [get_bd_pin ${AXI_MASTER_CLK}]]
-AXI_PL_MASTER_PORT "name ${PL_M} axi_clk ${PL_M_CLK} axi_rstn ${PL_M_RSTN} axi_freq ${PL_M_FREQ}"
-
 
 
 set AXI_MASTER_CLK_FREQ [get_property CONFIG.FREQ_HZ [get_bd_pin ${AXI_MASTER_CLK}]]

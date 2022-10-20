@@ -82,7 +82,7 @@ include mk/uHAL.mk
 include mk/BUTool.mk
 include mk/Monitoring.mk
 include mk/CM_MCU.mk
-#include mk/mmc-utils.mk
+
 include mk/overlay-tools.mk
 include mk/users.mk
 
