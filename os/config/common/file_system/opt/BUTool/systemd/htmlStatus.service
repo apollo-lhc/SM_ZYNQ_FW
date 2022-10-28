@@ -8,6 +8,7 @@ Type=forking
 PIDFile=/var/run/htmlStatus.pid
 Restart=always
 RestartSec=1
+RuntimeMaxSec=12h
 User=root
 ExecStart=/opt/BUTool/bin/htmlStatus
 

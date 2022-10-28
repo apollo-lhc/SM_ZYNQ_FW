@@ -8,6 +8,7 @@ Type=forking
 PIDFile=/var/run/graphite_monitor.pid
 Restart=always
 RestartSec=1
+RuntimeMaxSec=12h
 User=root
 ExecStart=/opt/Graphite/bin/graphite_monitor
 
