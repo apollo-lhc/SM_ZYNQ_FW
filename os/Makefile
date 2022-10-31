@@ -103,6 +103,8 @@ include mk/users.mk
 	sudo chmod o+x ${ETC_PATH}/rc.local
 	#Change ownership of the CM fw path
 	sudo chmod a+rwX -R ${INSTALL_PATH}/fw/CM
+	#Change ownership of the uio_daemon config file
+	sudo chmod a+rw  ${INSTALL_PATH}/etc/uio_daemon	
 	#Remove ipv6 from lighttpd
 	sudo sed -i -e "s/server.use-ipv6 = \"enable\"/server.use-ipv6 = \"disable\"/g" ${ETC_PATH}/lighttpd/lighttpd.conf  
 	#this service breaks things
