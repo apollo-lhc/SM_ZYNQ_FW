@@ -1,0 +1,34 @@
+# The list of ports to check the MAC address for
+ports:
+  - eth0
+
+# List of valid port names: If a port name is provided which is outside
+# the list of these valid ports, an exception will be thrown and the process will terminate
+valid_ports:
+  - eth0
+  - eth1
+
+# Default MAC addresses to fall to (for each port)
+default_mac_addr: 
+  eth0: '00:50:51:FF:00:00'
+  eth1: '00:50:51:FF:10:00'
+
+#interface setup
+interface_setup:
+  eth0: 
+    - ethtool -s eth0 speed 100 duplex full autoneg on
+
+# ZYNQ I2C register names to read from BUTool
+register_names:
+  top: 'SLAVE_I2C.S1.SM'
+  mac_addr: 'BYTE*'
+  checksum: 'CHECKSUM'
+
+# Path to the address table
+addr_table: /opt/address_table/connections.xml
+
+# Directory of the eth0_mac.dat (or eth1) file (if exists)
+eth_mac_dir: /fw/SM
+
+# time (sec) to wait for interface to go up
+ifup_wait_time: 120

@@ -1,7 +1,7 @@
 [Unit]
 Description=Status display generator
-After=systemd-udevd.service uio_daemon.service
-Requires=systemd-udevd.service uio_daemon.service
+After=uio_daemon.service lighttpd.service
+Requires=uio_daemon.service lighttpd.service
 
 [Service]
 Type=forking

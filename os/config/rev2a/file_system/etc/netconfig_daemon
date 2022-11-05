@@ -13,6 +13,11 @@ default_mac_addr:
   eth0: '00:50:51:FF:00:00'
   eth1: '00:50:51:FF:10:00'
 
+#interface setup
+interface_setup:
+  eth1: 
+    - ethtool -s eth1 speed 1000 duplex full autoneg on
+
 # ZYNQ I2C register names to read from BUTool
 register_names:
   top: 'SLAVE_I2C.S1.SM'
@@ -24,3 +29,6 @@ addr_table: /opt/address_table/connections.xml
 
 # Directory of the eth0_mac.dat (or eth1) file (if exists)
 eth_mac_dir: /fw/SM
+
+# time (sec) to wait for interface to go up
+ifup_wait_time: 120

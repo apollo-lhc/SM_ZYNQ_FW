@@ -1,7 +1,7 @@
 [Unit]
 Description=XVC server for CM JTAG chain 2
-After=systemd-udevd.service uio_daemon.service
-Requires=systemd-udevd.service uio_daemon.service
+After=systemd-udevd.service uio_daemon.service dhclient.service
+Requires=systemd-udevd.service uio_daemon.service dhclient.service
 
 
 [Service]
