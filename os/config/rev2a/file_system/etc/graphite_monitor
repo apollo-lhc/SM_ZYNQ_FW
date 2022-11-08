@@ -34,6 +34,7 @@ graphite_port=2003
 # $IPMC_IP => IPMC IP stored as A-B-C-D (instead of A.B.C.D due to grafite naming)
 sensor=ApolloMonitor /opt/address_tables/connections.xml Apollo$SN CM_FF_MON 3
 sensor=ApolloMonitor /opt/address_tables/connections.xml Apollo$SN CM_TEMPS 3
+sensor=ApolloMonitor /opt/address_tables/connections.xml Apollo$SN CM_MON 3
 sensor=ApolloMonitor /opt/address_tables/connections.xml Apollo$SN C2C 1
 sensor=ApolloMonitor /opt/address_tables/connections.xml Apollo$SN ZYNQ_OS 1
 sensor=ApolloMonitor /opt/address_tables/connections.xml Apollo$SN SM_Power 9
