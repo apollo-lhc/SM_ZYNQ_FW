@@ -66,6 +66,7 @@ package SERV_CTRL is
     HQ_CLK_FREQ                :std_logic_vector(31 downto 0);  -- Measured Freq of clock
     TTC_CLK_FREQ               :std_logic_vector(31 downto 0);  -- Measured Freq of clock
     AXI_CLK_FREQ               :std_logic_vector(31 downto 0);  -- Measured Freq of clock
+    TCDS_CLK_FREQ              :std_logic_vector(31 downto 0);  -- Measured Freq of clock
   end record SERV_CLOCKING_MON_t;
 
 
