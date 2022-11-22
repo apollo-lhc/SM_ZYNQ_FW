@@ -6,15 +6,6 @@ set outputDir $apollo_root_path/Projects/rev1_xc7z045
 puts $build_name
 puts ${build_name}
 
-proc pause {{message "Hit Enter to continue ==> "}} {
-    puts -nonewline $message
-    flush stdout
-    gets stdin
-}
-
-#pause "Hurry, hit enter: "; # Sample usage 1
-pause;                      # Sample usage 2, use default message
-
 report_timing_summary -file $outputDir/post_route_timing_summary.rpt
 report_timing -sort_by group -max_paths 100 -path_type summary -file $outputDir/post_route_timing.rpt
 report_clock_utilization -file $outputDir/clock_util.rpt
