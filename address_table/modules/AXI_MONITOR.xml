@@ -1,0 +1,169 @@
+<node id="KINTEX_SYS_MGMT">
+
+  <!-- upper and lower words of 64bit Global Counter -->
+  <node id="GLOBAL_CNT" address="0x0">
+    <node id="LO" address="0x1" permission="r" mask="0xFFFFFFFF" />
+    <node id="HI" address="0x0" permission="r" mask="0xFFFFFFFF" />
+  </node>
+
+  <node id="SAMPLE_INTERVAL" address="0x9">
+    <node id="INTERVAL"              address="0x0" permission="rw" mask="0xFFFFFFFF"/>
+    <node id="METRIC_COUNTERS_RESET" address="0x1" permission="rw" mask="0x00000100"/>
+    <node id="LOAD"                  address="0x1" permission="rw" mask="0x00000002"/>
+    <node id="ENABLE"                address="0x1" permission="rw" mask="0x00000001"/>
+    <node id="REGISTER"              address="0x2" permission="r"  mask="0xFFFFFFFF"/>
+  </node>
+
+  <node id="INTERUPT" address="0xC">
+    <node id="GLOBAL_ENABLE"                        address="0x0" permission="rw" mask="0x0001"/>
+    <node id="ENABLE_METRIC_COUNTER_9"              address="0x1" permission="rw" mask="0x1000"/>
+    <node id="ENABLE_METRIC_COUNTER_8"              address="0x1" permission="rw" mask="0x0800"/>
+    <node id="ENABLE_METRIC_COUNTER_7"              address="0x1" permission="rw" mask="0x0400"/>
+    <node id="ENABLE_METRIC_COUNTER_6"              address="0x1" permission="rw" mask="0x0200"/>
+    <node id="ENABLE_METRIC_COUNTER_5"              address="0x1" permission="rw" mask="0x0100"/>
+    <node id="ENABLE_METRIC_COUNTER_4"              address="0x1" permission="rw" mask="0x0080"/>
+    <node id="ENABLE_METRIC_COUNTER_3"              address="0x1" permission="rw" mask="0x0040"/>
+    <node id="ENABLE_METRIC_COUNTER_2"              address="0x1" permission="rw" mask="0x0020"/>
+    <node id="ENABLE_METRIC_COUNTER_1"              address="0x1" permission="rw" mask="0x0010"/>
+    <node id="ENABLE_METRIC_COUNTER_0"              address="0x1" permission="rw" mask="0x0008"/>
+    <node id="EVENT_LOG_FIFO_OVERFLOW_ENABLE"       address="0x1" permission="rw" mask="0x0004"/>
+    <node id="SAMPLE_COUNTER_OVERFLOW_ENABLE"       address="0x1" permission="rw" mask="0x0002"/>
+    <node id="GLOBAL_CLOCK_COUNTER_OVERFLOW_ENABLE" address="0x1" permission="rw" mask="0x0001"/>
+    <node id="METRIC_COUNTER_OVERFLOW_INTERUPT_9"   address="0x2" permission="rw" mask="0x1000"/>
+    <node id="METRIC_COUNTER_OVERFLOW_INTERUPT_8"   address="0x2" permission="rw" mask="0x0800"/>
+    <node id="METRIC_COUNTER_OVERFLOW_INTERUPT_7"   address="0x2" permission="rw" mask="0x0400"/>
+    <node id="METRIC_COUNTER_OVERFLOW_INTERUPT_6"   address="0x2" permission="rw" mask="0x0200"/>
+    <node id="METRIC_COUNTER_OVERFLOW_INTERUPT_5"   address="0x2" permission="rw" mask="0x0100"/>
+    <node id="METRIC_COUNTER_OVERFLOW_INTERUPT_4"   address="0x2" permission="rw" mask="0x0080"/>
+    <node id="METRIC_COUNTER_OVERFLOW_INTERUPT_3"   address="0x2" permission="rw" mask="0x0040"/>
+    <node id="METRIC_COUNTER_OVERFLOW_INTERUPT_2"   address="0x2" permission="rw" mask="0x0020"/>
+    <node id="METRIC_COUNTER_OVERFLOW_INTERUPT_1"   address="0x2" permission="rw" mask="0x0010"/>
+    <node id="METRIC_COUNTER_OVERFLOW_INTERUPT_0"   address="0x2" permission="rw" mask="0x0008"/>
+    <node id="EVENT_LOG_FIFO_OVERFLOW"              address="0x2" permission="rw" mask="0x0004"/>
+    <node id="SAMPLE_COUNTER_OVERFLOW"              address="0x2" permission="rw" mask="0x0002"/>
+    <node id="GLOBAL_CLOCK_COUNTER_OVERFLOW"        address="0x2" permission="rw" mask="0x0001"/>
+  </node>
+
+  <!-- These Registers are used to select the kinds of metrics computer by counters 0-9 -->
+  <node id="METRIC_SELECTOR" address="0x11">
+    <node id="BUS_0"   address="0x0" permission="rw" mask="0x000000E0" parameters="Format=t_0_LOCAL_1_C2C_2_SLOT2_3_SLOT3_4_SLOT4_5_SLOT5_6_SLOT6_7_SLOT7;Table=AXI_BUS_MONITOR;Row=Bus;Column=0;Status=2"/>
+    <node id="TYPE_0"  address="0x0" permission="rw" mask="0x0000001F" parameters="Format=t_0_WriteCount_1_ReadCount_2_WriteByteCount_3_ReadByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_MaxWriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount;Table=AXI_BUS_MONITOR;Row=Type;Column=0;Status=2"/>
+    <node id="BUS_1"   address="0x0" permission="rw" mask="0x0000E000" parameters="Format=t_0_LOCAL_1_C2C_2_SLOT2_3_SLOT3_4_SLOT4_5_SLOT5_6_SLOT6_7_SLOT7;Table=AXI_BUS_MONITOR;Row=Bus;Column=1;Status=2"/>
+    <node id="TYPE_1"  address="0x0" permission="rw" mask="0x00001F00" parameters="Format=t_0_WriteCount_1_ReadCount_2_WriteByteCount_3_ReadByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_MaxWriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount;Table=AXI_BUS_MONITOR;Row=Type;Column=1;Status=2"/>
+    <node id="BUS_2"   address="0x0" permission="rw" mask="0x00E00000" parameters="Format=t_0_LOCAL_1_C2C_2_SLOT2_3_SLOT3_4_SLOT4_5_SLOT5_6_SLOT6_7_SLOT7;Table=AXI_BUS_MONITOR;Row=Bus;Column=2;Status=2"/>
+    <node id="TYPE_2"  address="0x0" permission="rw" mask="0x001F0000" parameters="Format=t_0_WriteCount_1_ReadCount_2_WriteByteCount_3_ReadByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_MaxWriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount;Table=AXI_BUS_MONITOR;Row=Type;Column=2;Status=2"/>
+    <node id="BUS_3"   address="0x0" permission="rw" mask="0xE0000000" parameters="Format=t_0_LOCAL_1_C2C_2_SLOT2_3_SLOT3_4_SLOT4_5_SLOT5_6_SLOT6_7_SLOT7;Table=AXI_BUS_MONITOR;Row=Bus;Column=3;Status=2"/>
+    <node id="TYPE_3"  address="0x0" permission="rw" mask="0x1F000000" parameters="Format=t_0_WriteCount_1_ReadCount_2_WriteByteCount_3_ReadByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_MaxWriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount;Table=AXI_BUS_MONITOR;Row=Type;Column=3;Status=2"/>
+
+    <node id="BUS_4"   address="0x1" permission="rw" mask="0x000000E0" parameters="Format=t_0_LOCAL_1_C2C_2_SLOT2_3_SLOT3_4_SLOT4_5_SLOT5_6_SLOT6_7_SLOT7;Table=AXI_BUS_MONITOR;Row=Bus;Column=4;Status=2"/>
+    <node id="TYPE_4"  address="0x1" permission="rw" mask="0x0000001F" parameters="Format=t_0_WriteCount_1_ReadCount_2_WriteByteCount_3_ReadByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_MaxWriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount;Table=AXI_BUS_MONITOR;Row=Type;Column=4;Status=2"/>
+    <node id="BUS_5"   address="0x1" permission="rw" mask="0x0000E000" parameters="Format=t_0_LOCAL_1_C2C_2_SLOT2_3_SLOT3_4_SLOT4_5_SLOT5_6_SLOT6_7_SLOT7;Table=AXI_BUS_MONITOR;Row=Bus;Column=5;Status=2"/>
+    <node id="TYPE_5"  address="0x1" permission="rw" mask="0x00001F00" parameters="Format=t_0_WriteCount_1_ReadCount_2_WriteByteCount_3_ReadByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_MaxWriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount;Table=AXI_BUS_MONITOR;Row=Type;Column=5;Status=2"/>
+    <node id="BUS_6"   address="0x1" permission="rw" mask="0x00E00000" parameters="Format=t_0_LOCAL_1_C2C_2_SLOT2_3_SLOT3_4_SLOT4_5_SLOT5_6_SLOT6_7_SLOT7;Table=AXI_BUS_MONITOR;Row=Bus;Column=6;Status=2"/>
+    <node id="TYPE_6"  address="0x1" permission="rw" mask="0x001F0000" parameters="Format=t_0_WriteCount_1_ReadCount_2_WriteByteCount_3_ReadByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_MaxWriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount;Table=AXI_BUS_MONITOR;Row=Type;Column=6;Status=2"/>
+    <node id="BUS_7"   address="0x1" permission="rw" mask="0xE0000000" parameters="Format=t_0_LOCAL_1_C2C_2_SLOT2_3_SLOT3_4_SLOT4_5_SLOT5_6_SLOT6_7_SLOT7;Table=AXI_BUS_MONITOR;Row=Bus;Column=7;Status=2"/>
+    <node id="TYPE_7"  address="0x1" permission="rw" mask="0x1F000000" parameters="Format=t_0_WriteCount_1_ReadCount_2_WriteByteCount_3_ReadByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_MaxWriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount;Table=AXI_BUS_MONITOR;Row=Type;Column=7;Status=2"/>
+
+    <node id="BUS_8"   address="0x2" permission="rw" mask="0x000000E0" parameters="Format=t_0_LOCAL_1_C2C_2_SLOT2_3_SLOT3_4_SLOT4_5_SLOT5_6_SLOT6_7_SLOT7;Table=AXI_BUS_MONITOR;Row=Bus;Column=8;Status=2"/>
+    <node id="TYPE_8"  address="0x2" permission="rw" mask="0x0000001F" parameters="Format=t_0_WriteCount_1_ReadCount_2_WriteByteCount_3_ReadByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_MaxWriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount;Table=AXI_BUS_MONITOR;Row=Type;Column=8;Status=2"/>
+    <node id="BUS_9"   address="0x2" permission="rw" mask="0x0000E000" parameters="Format=t_0_LOCAL_1_C2C_2_SLOT2_3_SLOT3_4_SLOT4_5_SLOT5_6_SLOT6_7_SLOT7;Table=AXI_BUS_MONITOR;Row=Bus;Column=9;Status=2"/>
+    <node id="TYPE_9"  address="0x2" permission="rw" mask="0x00001F00" parameters="Format=t_0_WriteCount_1_ReadCount_2_WriteByteCount_3_ReadByteCount_4_WriteBeatCount_5_TotalReadLatency_6_TotalWriteLatency_7_SlvWrIdleCnt_8_MstRdIdleCnt_9_NumBValids_10_NumWLasts_11_NumRLasts_12_MinWriteLatency_13_MaxWriteLatency_14_MinReadLatency_15_MaxReadLatency_16_TransferCycleCount_17_PacketCount_18_DataByteCount_19_PositionByteCount_20_NullByteCount_21_SlvIdleCnt_22_MstIdleCnt_30_ExternalEventCount;Table=AXI_BUS_MONITOR;Row=Type;Column=9;Status=2"/>
+
+
+  </node>
+
+  <!-- These contain the accumulated value of the events that are chosen -->
+  <node id="METRIC_COUNTERS" address="0x40">
+    <node id="0"  address="0x00"  module="file://AXI_MONITOR_COUNTER.xml"/>
+    <node id="1"  address="0x04"  module="file://AXI_MONITOR_COUNTER.xml"/>
+    <node id="2"  address="0x08"  module="file://AXI_MONITOR_COUNTER.xml"/>
+    <node id="3"  address="0x0C"  module="file://AXI_MONITOR_COUNTER.xml"/>
+    <node id="4"  address="0x10"  module="file://AXI_MONITOR_COUNTER.xml"/>
+    <node id="5"  address="0x14"  module="file://AXI_MONITOR_COUNTER.xml"/>
+    <node id="6"  address="0x18"  module="file://AXI_MONITOR_COUNTER.xml"/>
+    <node id="7"  address="0x1C"  module="file://AXI_MONITOR_COUNTER.xml"/>
+    <node id="8"  address="0x20"  module="file://AXI_MONITOR_COUNTER.xml"/>
+    <node id="9"  address="0x24"  module="file://AXI_MONITOR_COUNTER.xml"/>
+  </node>
+
+  <node id="SAMPLED_METRIC_COUNTERS" address="0x80">
+    <node id="COUNTER_0"     address="0x00" permission="r" mask="0xFFFFFFFF"/>
+    <node id="INCREMENTER_0" address="0x01" permission="r" mask="0xFFFFFFFF"/>
+    <node id="COUNTER_1"     address="0x02" permission="r" mask="0xFFFFFFFF"/>
+    <node id="INCREMENTER_1" address="0x03" permission="r" mask="0xFFFFFFFF"/>
+    <node id="COUNTER_2"     address="0x04" permission="r" mask="0xFFFFFFFF"/>
+    <node id="INCREMENTER_2" address="0x05" permission="r" mask="0xFFFFFFFF"/>
+    <node id="COUNTER_2"     address="0x06" permission="r" mask="0xFFFFFFFF"/>
+    <node id="INCREMENTER_2" address="0x07" permission="r" mask="0xFFFFFFFF"/>
+    <node id="COUNTER_3"     address="0x08" permission="r" mask="0xFFFFFFFF"/>
+    <node id="INCREMENTER_3" address="0x09" permission="r" mask="0xFFFFFFFF"/>
+    <node id="COUNTER_4"     address="0x0A" permission="r" mask="0xFFFFFFFF"/>
+    <node id="INCREMENTER_4" address="0x0B" permission="r" mask="0xFFFFFFFF"/>
+    <node id="COUNTER_5"     address="0x0C" permission="r" mask="0xFFFFFFFF"/>
+    <node id="INCREMENTER_5" address="0x0D" permission="r" mask="0xFFFFFFFF"/>
+    <node id="COUNTER_6"     address="0x0E" permission="r" mask="0xFFFFFFFF"/>
+    <node id="INCREMENTER_6" address="0x0F" permission="r" mask="0xFFFFFFFF"/>
+    <node id="COUNTER_7"     address="0x10" permission="r" mask="0xFFFFFFFF"/>
+    <node id="INCREMENTER_7" address="0x11" permission="r" mask="0xFFFFFFFF"/>
+    <node id="COUNTER_8"     address="0x12" permission="r" mask="0xFFFFFFFF"/>
+    <node id="INCREMENTER_8" address="0x13" permission="r" mask="0xFFFFFFFF"/>
+    <node id="COUNTER_9"     address="0x14" permission="r" mask="0xFFFFFFFF"/>
+    <node id="INCREMENTER_9" address="0x15" permission="r" mask="0xFFFFFFFF"/>
+  </node>
+
+  <node id="CTRL" address="0xC0">
+    <node id="STREAMING_FIFO_RESET"        address="0x0" permission="rw" mask="0x02000000"/>
+    <node id="GLOBAL_CLK_CNT_RESET"        address="0x0" permission="rw" mask="0x00020000"/>
+    <node id="GLOBAL_CLK_CNT_EN"           address="0x0" permission="rw" mask="0x00010000"/>
+    <node id="USE_EXT_TRIG_LOG"            address="0x0" permission="rw" mask="0x00000200"/>
+    <node id="ENABLE_EVENT_LOG"            address="0x0" permission="rw" mask="0x00000100"/>
+    <node id="READ_LATENCY_END_POINT"      address="0x0" permission="rw" mask="0x00000080"/>
+    <node id="READ_LATENCY_START_POINT"    address="0x0" permission="rw" mask="0x00000040"/>
+    <node id="WRITE_LATENCY_END_POINT"     address="0x0" permission="rw" mask="0x00000020"/>
+    <node id="WRITE_LATENCY_START_POINT"   address="0x0" permission="rw" mask="0x00000010"/>
+    <node id="ENABLE_ID_FILTERING_MASKING" address="0x0" permission="rw" mask="0x00000008"/>
+    <node id="USE_EXT_TRIG"                address="0x0" permission="rw" mask="0x00000004"/>
+    <node id="METRICS_CNT_RESET"           address="0x0" permission="rw" mask="0x00000002"/>
+    <node id="METRICS_CNT_EN"              address="0x0" permission="rw" mask="0x00000001"/>
+
+    <node id="RID1" address="0x1" permission="rw" mask="0xFFFF0000"/>
+    <node id="WID1" address="0x1" permission="rw" mask="0x0000FFFF"/>
+
+    <node id="RID1_MASK" address="0x2" permission="rw" mask="0xFFFF0000"/>
+    <node id="WID1_MASK" address="0x2" permission="rw" mask="0x0000FFFF"/>
+
+    <node id="RID2" address="0x3" permission="rw" mask="0xFFFF0000"/>
+    <node id="WID2" address="0x3" permission="rw" mask="0x0000FFFF"/>
+
+    <node id="RID2_MASK" address="0x4" permission="rw" mask="0xFFFF0000"/>
+    <node id="WID2_MASK" address="0x4" permission="rw" mask="0x0000FFFF"/>
+  </node>
+
+  <node id="EVENT_LOG" address="0x100">
+    <node id="ENABLE_METRIC_COUNTER9_FLAG9"            address="0x0" permission="rw" mask="0x80000000"/>
+    <node id="ENABLE_METRIC_COUNTER9_FLAG8"            address="0x0" permission="rw" mask="0x40000000"/>
+    <node id="ENABLE_METRIC_COUNTER9_FLAG7"            address="0x0" permission="rw" mask="0x20000000"/>
+    <node id="ENABLE_METRIC_COUNTER9_FLAG6"            address="0x0" permission="rw" mask="0x10000000"/>
+    <node id="ENABLE_METRIC_COUNTER9_FLAG5"            address="0x0" permission="rw" mask="0x08000000"/>
+    <node id="ENABLE_METRIC_COUNTER9_FLAG4"            address="0x0" permission="rw" mask="0x04000000"/>
+    <node id="ENABLE_METRIC_COUNTER9_FLAG3"            address="0x0" permission="rw" mask="0x02000000"/>
+    <node id="ENABLE_METRIC_COUNTER9_FLAG2"            address="0x0" permission="rw" mask="0x01000000"/>
+    <node id="ENABLE_METRIC_COUNTER9_FLAG1"            address="0x0" permission="rw" mask="0x00800000"/>
+    <node id="ENABLE_METRIC_COUNTER9_FLAG0"            address="0x0" permission="rw" mask="0x00400000"/>
+    <node id="ENABLE_SMAPE_COUNTER_LAPSE_FLAG"         address="0x0" permission="rw" mask="0x00200000"/>
+    <node id="ENABLE_GLOBAL_CLOCK_COUNT_OVERFLOW_FLAG" address="0x0" permission="rw" mask="0x00100000"/>
+    <node id="ENABLE_EXTERNAL_EVENT_START_FLAG"        address="0x0" permission="rw" mask="0x00080000"/>
+    <node id="ENABLE_EXTERNAL_EVENT_STOP_FLAG"         address="0x0" permission="rw" mask="0x00040000"/>
+    <node id="ENABLE_EXTERNAL_EVENT_FLAG"              address="0x0" permission="rw" mask="0x00020000"/>
+    <node id="ENABLE_SOFTWARE_WRITTEN_DATA_FLAG"       address="0x0" permission="rw" mask="0x00010000"/>
+    <node id="ENABLE_LAST_READ_FLAG"                   address="0x0" permission="rw" mask="0x00000040"/>
+    <node id="ENABLE_FIRST_READ_FLAG"                  address="0x0" permission="rw" mask="0x00000020"/>
+    <node id="ENABLE_READ_ADDR_FLAG"                   address="0x0" permission="rw" mask="0x00000010"/>
+    <node id="ENABLE_RESPONSE_FLAG"                    address="0x0" permission="rw" mask="0x00000008"/>
+    <node id="ENABLE_LAST_WRITE_FLAG"                  address="0x0" permission="rw" mask="0x00000004"/>
+    <node id="ENABLE_FIRST_WRITE_FLAG"                 address="0x0" permission="rw" mask="0x00000002"/>
+    <node id="ENABLE_WRITE_ADDR_FLAG"                  address="0x0" permission="rw" mask="0x00000001"/>
+
+    <node id="SW_WRITTEN_DATA" address="0x1" permission="rw" mask="0xFFFFFFFF"/>
+  </node>
+</node>

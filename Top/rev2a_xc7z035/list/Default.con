@@ -1,0 +1,3 @@
+configs/rev2a_xc7z035/src/top.xdc
+configs/rev2a_xc7z035/src/top_clocks.xdc
+configs/rev2a_xc7z035/src/top_MGMT.xdc

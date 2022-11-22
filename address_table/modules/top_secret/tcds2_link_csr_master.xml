@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!-- Control and status for a 'master' TCLink channel. -->
+<node id="TCSDS2_LINK_CSR_MASTER" fwinfo=" width=6">
+
+  <node id="CONTROL"
+        module="file://tcds2_link_csr_master_control.xml"
+        address="0x00000000" />
+
+  <node id="STATUS"
+        module="file://tcds2_link_csr_master_status.xml"
+        address="0x00000020" />
+
+</node>

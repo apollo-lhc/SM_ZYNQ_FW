@@ -1,0 +1,6 @@
+#tempfiles
+*~
+*#
+*.pyc
+*.txt
+*.backup

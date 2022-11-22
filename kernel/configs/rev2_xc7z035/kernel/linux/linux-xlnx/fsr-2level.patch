@@ -1,0 +1,58 @@
+diff --git a/arch/arm/mm/fault.c b/arch/arm/mm/fault.c
+index bd0f482..356536b 100644
+--- a/arch/arm/mm/fault.c
++++ b/arch/arm/mm/fault.c
+@@ -494,7 +494,16 @@ static inline bool access_error(unsigned int fsr, struct vm_area_struct *vma)
+ {
+ 	return 1;
+ }
++                                                                                                                                                                                             
++/*
++ * This abort handler returns no fault, but also calls arm_notifiy_die
++ * Forward declaration here
++ */ 
++static int
++do_ignore(unsigned long addr, unsigned int fsr, struct pt_regs *regs);
++
+ 
++  
+ struct fsr_info {
+ 	int	(*fn)(unsigned long addr, unsigned int fsr, struct pt_regs *regs);
+ 	int	sig;
+@@ -542,6 +551,23 @@ struct fsr_info {
+ 		       fsr, 0);
+ }
+ 
++/*  
++ * This abort handler returns no fault, but also calls arm_notifiy_die    
++ * forward declaration above 
++ */ 
++static int    
++do_ignore(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
++{   
++  //Taken from do_DataAbort()
++  const struct fsr_info *inf = fsr_info + fsr_fs(fsr);
++  arm_notify_die("", regs, inf->sig, inf->code, (void __user *)addr,
++		       fsr, 0);
++  
++  return 0;   
++}   
++    
++ 
++
+ void __init
+ hook_ifault_code(int nr, int (*fn)(unsigned long, unsigned int, struct pt_regs *),
+ 		 int sig, int code, const char *name)
+diff --git a/arch/arm/mm/fsr-2level.c b/arch/arm/mm/fsr-2level.c
+index f2be951..f1a3f8d 100644
+--- a/arch/arm/mm/fsr-2level.c
++++ b/arch/arm/mm/fsr-2level.c
+@@ -12,7 +12,7 @@
+ 	{ do_translation_fault,	SIGSEGV, SEGV_MAPERR,	"section translation fault"	   },
+ 	{ do_bad,		SIGBUS,	 0,		"external abort on linefetch"	   },
+ 	{ do_page_fault,	SIGSEGV, SEGV_MAPERR,	"page translation fault"	   },
+-	{ do_bad,		SIGBUS,	 0,		"external abort on non-linefetch"  },
++        { do_ignore,            SIGBUS,  0,             "external abort on non-linefetch. Hi Dan!"  },      
+ 	{ do_bad,		SIGSEGV, SEGV_ACCERR,	"section domain fault"		   },
+ 	{ do_bad,		SIGBUS,	 0,		"external abort on non-linefetch"  },
+ 	{ do_bad,		SIGSEGV, SEGV_ACCERR,	"page domain fault"		   },

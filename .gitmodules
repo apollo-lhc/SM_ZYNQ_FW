@@ -17,4 +17,4 @@
 	branch = develop
 [submodule "Hog"]
 	path = Hog
-	url = ../../hog-cern/Hog.git
+	url = ../../hog/Hog.git

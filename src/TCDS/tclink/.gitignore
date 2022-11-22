@@ -1,0 +1,7 @@
+*~
+.Xil/
+vivado*.jou
+vivado*.log
+__pycache__/
+tclink_kcu105/
+tclink_vcu118/

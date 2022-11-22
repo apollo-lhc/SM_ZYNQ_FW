@@ -1,0 +1,14 @@
+<node id="MYREG0">
+  <node id="CONST_1"  address="0x00000000" permission="rw"/>
+  <node id="ADDRESS"  address="0x00000001" permission="rw"/>
+  <node id="CONST_2"  address="0x00000002" permission="rw"/>
+  <node id="CONST_3"  address="0x00000003" permission="rw"/>
+  <node id="RGB"  address="0x00000004">
+    <node id="R" mask="0xFF" permission="rw"/>
+    <node id="G" mask="0xFF00" permission="rw"/>
+    <node id="B" mask="0xFF0000" permission="rw"/>
+  </node>
+  <node id="REG_1"  address="0x00000005" permission="rw"/>
+  <node id="REG_2"  address="0x00000006" permission="rw"/>
+  <node id="REG_3"  address="0x00000007" permission="rw"/>
+</node>

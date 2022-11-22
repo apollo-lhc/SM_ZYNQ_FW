@@ -1,0 +1,10 @@
+<node id="MYREG1">
+  <node id="CONST_1"  address="0x00000000" permission="rw"/>
+  <node id="ADDRESS"  address="0x00000001" permission="rw"/>
+  <node id="CONST_2"  address="0x00000002" permission="rw"/>
+  <node id="CONST_3"  address="0x00000003" permission="rw"/>
+  <node id="REG1"  address="0x00000004" permission="rw"/>
+  <node id="REG2"  address="0x00000005" permission="rw"/>
+  <node id="REG3"  address="0x00000006" permission="rw"/>
+  <node id="REG4"  address="0x00000007" permission="rw"/>
+</node>

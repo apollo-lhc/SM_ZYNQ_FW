@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!-- SPY ON THE RAW TCDS2 TTC2/TTS2 SERIAL STREAM FRAME. -->
+
+<node id="TCDS2_FRAME_SPY" fwinfo="ENDPOINT; WidTH=3">
+
+  <node id="WORD0" address="0X00000000" mask="0XFFFFFFFF" permission="r" />
+  <node id="WORD1" address="0X00000001" mask="0XFFFFFFFF" permission="r" />
+  <node id="WORD2" address="0X00000002" mask="0XFFFFFFFF" permission="r" />
+  <node id="WORD3" address="0X00000003" mask="0XFFFFFFFF" permission="r" />
+  <node id="WORD4" address="0X00000004" mask="0XFFFFFFFF" permission="r" />
+  <node id="WORD5" address="0X00000005" mask="0XFFFFFFFF" permission="r" />
+  <node id="WORD6" address="0X00000006" mask="0XFFFFFFFF" permission="r" />
+  <node id="WORD7" address="0X00000007" mask="0X000003FF" permission="r" />
+
+</node>

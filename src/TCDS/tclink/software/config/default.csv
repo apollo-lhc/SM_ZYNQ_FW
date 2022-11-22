@@ -1,0 +1,78 @@
+#==============================================================================
+# C Copyright CERN for the benefit of the HPTD interest group 2019. All rights not
+#   expressly granted are reserved.
+#
+#   This file is part of TCLink.
+#
+# TCLink is free VHDL code: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# TCLink is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with TCLink.  If not, see <https://www.gnu.org/licenses/>.
+#==============================================================================
+# Author: EBSM - CERN EP/ESE
+# Date: 14/11/2019
+#=============================================================================
+#
+#                        TCLink user configuration
+#
+#==============================================================================
+# Design parameters - Link/architectural design fixed parameters
+#==============================================================================
+# Free-running system clock frequency in Hz
+clk_sys_freq, 125e6
+
+# Transmitter data-rate in b/s 
+tx_datarate, 10.260224e9
+# Transmitter high-speed PLL clock divider (check your transceiver design and read Ultrascale user guide to know more about txoutdiv parameter)
+txoutdiv, 1
+
+# Carrier frequency (low-speed Tx and Rx clocks) in Hz               
+carrier_freq, 320.632e6
+
+# Rx word width in bits  
+rx_word_width, 32
+
+#=============================================================================
+#
+#                        TCLink expert user configuration
+#
+#==============================================================================
+# TCLink loop parameters - Loop parameters for TCLink design
+#==============================================================================
+# --- Phase-detector ---
+# Phase-detector (DDMTD) beat-frequency (Hz) and averaging number
+ddmtd_offset_freq, 320.0e6
+ddmtd_avg, 64
+
+# --- Mirror compensation ---
+# Enables TCLink mirror compensation branch
+enable_mirror, 1
+# Alpha coefficient for mirror compensation branch (variation downstream / variation roundtrip)
+alpha, 0.5
+
+# --- Loop dynamics ---
+# Loop natural frequency in Hz (it is recommended to choose a value at least 50x smaller than ddmtd_beat_freq/(ddmtd_avg+1))
+# For a proportional-only loop (enable_Ki=0), this corresponds to the -3dB cutoff frequency
+natural_freq, 100
+# Loop damping coefficient (only useful when enable_Ki=1)
+damping, 1.44
+# Enable Integral part of the controller                                         
+enable_Ki, 0
+# Sigma-delta oversampling factor (multiple of 2)
+SD_OSR, 32
+
+#==============================================================================
+# TCLink tester parameters - Tester parameters (only useful when tester is enabled)
+#==============================================================================
+# Sinus amplitude in ps         
+amplitude_sinus,200.0
+# Sinus frequency in Hz 
+frequency_sinus, 15.0

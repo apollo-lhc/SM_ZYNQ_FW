@@ -1,0 +1,19 @@
+<node id="MONITOR">
+  <node id="RESET_REG"         address="0x00" permission="w" description="Only write 0xA to this"/>
+  <node id="HARD_RESET_REG"    address="0x04" permission="w" description="bit 1"/>
+  <node id="TEMP"              address="0x80" permission="r" mask="0xFFF0" parameters="Table=STATUS;Row=Zynq;Column=_2;Format=m_1_503975_4096000_0_27315_100;Status=1"/>
+  <node id="VCCINT"            address="0x81" permission="r" mask="0xFFF0" parameters="Table=STATUS;Row=Zynq;Column=_2;Format=m_1_3_4096_0_0_1;Status=2"/>
+  <node id="VCCAUX"            address="0x82" permission="r" mask="0xFFF0" parameters="Table=STATUS;Row=Zynq;Column=_2;Format=m_1_3_4096_0_0_1;Status=2"/>
+  <node id="VCCBRAM"           address="0x86" permission="r" mask="0xFFF0" parameters="Table=STATUS;Row=Zynq;Column=_2;Format=m_1_3_4096_0_0_1;Status=2"/>
+  <node id="ZYNQ_VCCINT"       address="0x8D" permission="r" mask="0xFFF0" parameters="Table=STATUS;Row=Zynq;Column=_2;Format=m_1_3_4096_0_0_1;Status=2"/>
+  <node id="ZYNQ_VCCAUX"       address="0x8E" permission="r" mask="0xFFF0" parameters="Table=STATUS;Row=Zynq;Column=_2;Format=m_1_3_4096_0_0_1;Status=2"/>
+  <node id="ZYNQ_VCCCORE"      address="0x8F" permission="r" mask="0xFFF0" parameters="Table=STATUS;Row=Zynq;Column=_2;Format=m_1_3_4096_0_0_1;Status=2"/>
+  <node id="TEMP_MAX"          address="0xA0" permission="r" mask="0xFFF0" parameters="Table=STATUS;Row=Zynq;Column=_2;Format=m_1_503975_4096000_0_27315_100;Status=1"/>
+  <node id="VCCINT_MAX"        address="0xA1" permission="r" mask="0xFFF0" parameters="Table=STATUS;Row=Zynq;Column=_2;Format=m_1_3_4096_0_0_1;Status=3"/>
+  <node id="VCCAUX_MAX"        address="0xA2" permission="r" mask="0xFFF0" parameters="Table=STATUS;Row=Zynq;Column=_2;Format=m_1_3_4096_0_0_1;Status=3"/>
+  <node id="VCCBRAM_MAX"       address="0xA3" permission="r" mask="0xFFF0" parameters="Table=STATUS;Row=Zynq;Column=_2;Format=m_1_3_4096_0_0_1;Status=3"/>
+  <node id="TEMP_MIN"          address="0xA4" permission="r" mask="0xFFF0" parameters="Table=STATUS;Row=Zynq;Column=_2;Format=m_1_503975_4096000_0_27315_100;Status=1"/>
+  <node id="VCCINT_MIN"        address="0xA5" permission="r" mask="0xFFF0" parameters="Table=STATUS;Row=Zynq;Column=_2;Format=m_1_3_4096_0_0_1;Status=3"/>
+  <node id="VCCAUX_MIN"        address="0xA6" permission="r" mask="0xFFF0" parameters="Table=STATUS;Row=Zynq;Column=_2;Format=m_1_3_4096_0_0_1;Status=3"/>
+  <node id="VCCBRAM_MIN"       address="0xA7" permission="r" mask="0xFFF0" parameters="Table=STATUS;Row=Zynq;Column=_2;Format=m_1_3_4096_0_0_1;Status=3"/>
+</node>

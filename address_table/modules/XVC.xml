@@ -1,0 +1,8 @@
+<node id="XVC">
+  <node id="LENGTH"  address="0x0" permission="rw" description="Length of shift operation in bits"/>
+  <node id="TMS_VECTOR"  address="0x1" permission="rw" description="Test Mode Select (TMS) Bit Vector"/>
+  <node id="TDI_VECTOR"  address="0x2" permission="rw" description="Test Data In (TDI) Bit Vector"/>
+  <node id="TDO_VECTOR"  address="0x3" permission="rw" description="Test Data Out (TDO) Capture Vector"/>
+  <node id="GO"  address="0x4" mask="0x1" permission="rw" description="Enable shift operation"/>
+  <node id="LOOPBACK"  address="0x4" mask="0x2" permission="rw" description="Control bit to loopback TDI to TDO inside Debug Bridge IP"/>
+</node>

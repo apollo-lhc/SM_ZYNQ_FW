@@ -1,0 +1,15 @@
+set_property SRC_FILE_INFO {cfile:/home/pgkounto/Project/hog_SM/SM_ZYNQ_FW/configs/rev1_xc7z035/autogen/cores/onboardclk/onboardclk.xdc rfile:../../../../configs/rev1_xc7z035/autogen/cores/onboardclk/onboardclk.xdc id:1 order:EARLY scoped_inst:inst} [current_design]
+set_property src_info {type:SCOPED_XDC file:1 line:56 export:INPUT save:INPUT read:READ} [current_design]
+create_clock -period 5.000 -name clk_in1_p [get_ports clk_in1_p]
+current_instance inst
+set_property src_info {type:SCOPED_XDC file:1 line:60 export:INPUT save:INPUT read:READ} [current_design]
+set_property PHASESHIFT_MODE WAVEFORM [get_cells mmcm_adv_inst]
+current_instance
+set_property src_info {type:PI file:{} line:-1 export:INPUT save:INPUT read:READ} [current_design]
+create_generated_clock -name clkfbout_onboardclk -source [get_pins inst/mmcm_adv_inst/CLKIN1] -multiply_by 1 -add -master_clock [get_clocks clk_in1_p] [get_pins inst/mmcm_adv_inst/CLKFBOUT]
+set_property src_info {type:PI file:{} line:-1 export:INPUT save:INPUT read:READ} [current_design]
+create_generated_clock -name clk_200MHz_onboardclk -source [get_pins inst/mmcm_adv_inst/CLKIN1] -multiply_by 1 -add -master_clock [get_clocks clk_in1_p] [get_pins inst/mmcm_adv_inst/CLKOUT0]
+set_property src_info {type:PI file:{} line:-1 export:INPUT save:INPUT read:READ} [current_design]
+create_generated_clock -name clk_50MHz_onboardclk -source [get_pins inst/mmcm_adv_inst/CLKIN1] -edges {1 2 3} -edge_shift {0.000 7.500 15.000} -add -master_clock [get_clocks clk_in1_p] [get_pins inst/mmcm_adv_inst/CLKOUT1]
+set_property src_info {type:TCL file:{} line:-1 export:INPUT save:INPUT read:READ} [current_design]
+set_property KEEP_HIERARCHY SOFT [get_cells inst]

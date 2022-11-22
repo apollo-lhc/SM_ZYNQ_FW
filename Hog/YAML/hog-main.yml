@@ -1,0 +1,223 @@
+#   Copyright 2018-2022 The University of Birmingham
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+.tag-hog: &tag-hog
+  tags:
+     - hog
+
+.tag-sr: &tag-sr
+  tags:
+     - docker
+  image: gitlab-registry.cern.ch/hog/hog-docker:tclsh
+
+
+.tag-badge: &tag-badge
+  tags:
+     - docker
+  image: gitlab-registry.cern.ch/hog/hog-docker:ubuntu
+
+.vars: &vars
+  GIT_STRATEGY: clone
+#   CI_DEBUG_TRACE: "true"
+
+.only-default: &only-default
+   rules:
+      - if: '$CI_COMMIT_REF_NAME =~ /^test\/.*$/i'
+        when: never
+      - if: '$CI_COMMIT_MESSAGE =~ /DOXYGEN_ONLY/'
+        when: never
+      - if: '$CI_MERGE_REQUEST_TITLE =~ /^Draft:.*$/ && $CI_COMMIT_MESSAGE !~ /^RESOLVE_WIP:/'
+        when: never
+      - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^master.*$/ && $HOG_TARGET_BRANCH == null'
+        when: on_success
+      - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $HOG_TARGET_BRANCH && $HOG_TARGET_BRANCH != null'
+        when: on_success
+      - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $HOG_INTERMEDIATE_BRANCH && $HOG_INTERMEDIATE_BRANCH != null'
+        when: on_success
+
+.only-default-doxygen: &only-default-doxygen
+   rules:
+      - if: '$HOG_USE_DOXYGEN != "1"'
+        when: never
+      - if: '$CI_COMMIT_REF_NAME =~ /^test\/.*$/i'
+        when: never
+      - if: '$CI_MERGE_REQUEST_TITLE =~ /^Draft:.*$/ && $CI_COMMIT_MESSAGE !~ /^RESOLVE_WIP:/'
+        when: never
+      - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^master.*$/ && $HOG_TARGET_BRANCH == null'
+        when: on_success
+      - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $HOG_TARGET_BRANCH && $HOG_TARGET_BRANCH != null'
+        when: on_success
+
+merge_and_tag:
+  <<: *only-default
+  <<: *tag-sr
+  stage: merge
+  variables:
+    GIT_STRATEGY: clone
+  script:
+    - "if [[ $CI_COMMIT_MESSAGE == *RESOLVE_WIP* && $CI_MERGE_REQUEST_TITLE == Draft* ]]; then echo 'removing Draft status'; curl ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/merge_requests/${CI_MERGE_REQUEST_IID}/notes?body=/wip --header \"PRIVATE-TOKEN: ${HOG_PUSH_TOKEN}\" --request POST; fi;"
+    - "MR_PARAMETERS=`curl --header \"PRIVATE-TOKEN: ${HOG_PUSH_TOKEN}\" ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/merge_requests/${CI_MERGE_REQUEST_IID}`"
+    - if [[ ((-n $HOG_TARGET_BRANCH) && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "$HOG_TARGET_BRANCH") || ((-z $HOG_TARGET_BRANCH) && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == master*) ]]; then INCREASE=""; else INCREASE="-no_increase"; fi;
+    - if [[ ${HOG_CHECK_YAMLREF} != 1 ]]; then
+        echo 'Yaml consistency checker is disabled';
+      else
+          tclsh ./Hog/Tcl/utils/check_yaml_ref.tcl;
+      fi;
+    - tclsh ./Hog/Tcl/CI/merge_and_tag.tcl -mr_par "$MR_PARAMETERS" -mr_id $CI_MERGE_REQUEST_IID -push $CI_COMMIT_REF_NAME -main_branch $CI_MERGE_REQUEST_TARGET_BRANCH_NAME -branch_name $CI_COMMIT_REF_SLUG $INCREASE;
+  interruptible: true
+
+make_doxygen:
+    <<: *only-default-doxygen
+    tags:
+     - docker
+    image: gitlab-registry.cern.ch/hog/hog-docker:doxygen
+    stage: generation_and_simulation
+    variables:
+        <<: *vars
+    script:
+        - tclsh ./Hog/Tcl/utils/make_doxygen.tcl
+    artifacts:
+        name: docs
+        paths:
+            - Doc
+        expire_in: 10 years
+    dependencies: []
+    allow_failure: true
+    interruptible: true
+
+tag_official_version:
+  <<: *tag-sr
+  stage: merge
+  script:
+    - git fetch origin refs/notes/*:refs/notes/*
+    - note=(`git notes show`)
+    - new_tag=${note[2]}
+    - if [ "$(git tag --list ${new_tag}*)" != "" ]; then
+        latest_tag=(`git tag -l ${new_tag}* --sort=-v:refname --merged`);
+        if [[ $latest_tag =~ ".*-(.*)" ]]; then
+          nr="${BASH_REMATCH[1]}";
+          new_tag="$new_tag-$(($nr+1))";
+        else
+          new_tag="$new_tag-0";
+        fi;
+      fi;
+    - git tag $new_tag -m "Official_version_${new_tag}" 
+    - git push --tags
+  rules:
+    - if: '$HOG_TARGET_BRANCH != null && $CI_COMMIT_REF_NAME == $HOG_TARGET_BRANCH && $CI_PIPELINE_SOURCE == "push"'
+      when: always
+    - if: '$HOG_TARGET_BRANCH == null && $CI_COMMIT_REF_NAME =~ /^master\d*$/  && $CI_PIPELINE_SOURCE == "push"'
+      when: always
+    - when: never
+
+archive_binary_files:
+  only:
+    refs:
+      - tags
+    variables:
+      - $CI_COMMIT_TAG =~ /^v.*$/ && $HOG_CREATE_OFFICIAL_RELEASE == "1"
+      - $CI_COMMIT_TAG =~ /^v.*$/ && $HOG_OFFICIAL_BIN_EOS_PATH != null
+  <<: *tag-sr
+  stage: archive
+  script:
+    - if [[ -v HOG_OFFICIAL_BIN_EOS_PATH ]]; then
+        ENABLE_EOS=1;
+        if [ -z ${EOS_PASSWORD+x} ]; then
+          if [ -z ${HOG_PASSWORD+x} ]; then
+            ENABLE_EOS=0;
+            echo "No EOS_PASSWORD has been defined. Artifacts cannot be uploaded to EOS...";
+          else
+            EOS_PASSWORD=${HOG_PASSWORD};
+          fi;
+        fi;
+        if [ -z ${EOS_USER+x} ]; then
+          if [ -z ${HOG_USER+x} ]; then
+            ENABLE_EOS=0;
+            echo "No EOS_USER has been defined. Artifacts cannot be uploaded to EOS...";
+          else
+            EOS_USER=${HOG_USER};
+          fi;
+        fi;
+
+        if [ $ENABLE_EOS -eq 1 ]; then
+          until echo $EOS_PASSWORD | kinit $EOS_USER@CERN.CH; do
+            echo Retrying;
+            sleep 2;
+          done;
+        fi;
+      fi;
+    - git fetch origin refs/notes/*:refs/notes/*
+    - MR=( `git notes show` )
+    - if [[ -v HOG_USE_DOXYGEN ]] && [[ "$HOG_USE_DOXYGEN" == "1" ]]; then
+        ./Hog/Other/GetArtifactsAndRename.sh -token $HOG_PUSH_TOKEN -url $CI_API_V4_URL -proj_id $CI_PROJECT_ID -mr $MR -doxygen ;
+        if [ $ENABLE_EOS -eq 1 ]; then
+          echo "Copying Doxygen documentation to ${HOG_OFFICIAL_BIN_EOS_PATH}/Doc";
+          eos mkdir -p ${HOG_OFFICIAL_BIN_EOS_PATH}/Doc;
+          xrdcp -rsf Doc/html/* ${EOS_MGM_URL}//${HOG_OFFICIAL_BIN_EOS_PATH}/Doc;
+        fi;
+      else
+        ./Hog/Other/GetArtifactsAndRename.sh -token $HOG_PUSH_TOKEN -url $CI_API_V4_URL -proj_id $CI_PROJECT_ID -mr $MR;
+      fi
+    - mkdir zipped
+    - cd bin
+    - projects=$(find . -name "*.bit" -o -name "*.pof")
+    - if [ -z ${HOG_MAX_ZIP_SIZE+x} ]; then
+        export HOG_MAX_ZIP_SIZE=10m;
+        echo "Hog-CI(info) - Maximum size of artifact zip set to $HOG_MAX_ZIP_SIZE";
+      fi;
+    - for proj in $projects; do
+        PRJ_DIR=$(dirname "$proj");
+        PRJ_DIR=$(echo "$PRJ_DIR" | sed -r 's#\./##g');
+        DEST_ZIP=$(echo "$PRJ_DIR" | sed -r 's#/#_#g');
+        echo "Archiving $PRJ_DIR into $HOG_MAX_ZIP_SIZE";
+        zip -r -q -s $HOG_MAX_ZIP_SIZE ../zipped/$DEST_ZIP.zip $PRJ_DIR;
+      done;
+    - cd ..
+    - if [[ -v HOG_CREATE_OFFICIAL_RELEASE ]] && [[ $HOG_CREATE_OFFICIAL_RELEASE == "1" ]]; then
+        if [[ -v HOG_CHECK_PROJVER ]] && [[ $HOG_CHECK_PROJVER == '1' ]]; then
+            tclsh ./Hog/Tcl/CI/get_binary_links.tcl $HOG_PUSH_TOKEN $CI_API_V4_URL $CI_PROJECT_ID $CI_PROJECT_URL $CI_COMMIT_TAG "$HOG_EXTERNAL_PATH";
+        else
+            tclsh ./Hog/Tcl/CI/get_binary_links.tcl -force $HOG_PUSH_TOKEN $CI_API_V4_URL $CI_PROJECT_ID $CI_PROJECT_URL $CI_COMMIT_TAG "$HOG_EXTERNAL_PATH";
+        fi;
+        ./Hog/Other/MakeGitlabRelease.sh $HOG_PUSH_TOKEN $CI_API_V4_URL $CI_PROJECT_ID $CI_COMMIT_TAG bin/note.md -load_artifacts;
+      fi;
+    - if [ $ENABLE_EOS -eq 1 ]; then
+        echo "Copying binary files to ${HOG_OFFICIAL_BIN_EOS_PATH}/${CI_COMMIT_TAG}";
+        eos mkdir $HOG_OFFICIAL_BIN_EOS_PATH/$CI_COMMIT_TAG;
+        xrdcp -rfs bin/* ${EOS_MGM_URL}//${HOG_OFFICIAL_BIN_EOS_PATH}/${CI_COMMIT_TAG};
+      fi;
+    
+  allow_failure: true
+  artifacts:
+    paths:
+      - bin
+    expire_in: 10 years
+
+create_badge:
+  only:
+    refs:
+      - tags
+    variables:
+      - $CI_COMMIT_TAG =~ /^v.*$/ && $HOG_BADGE_PROJECTS != null
+  <<: *tag-badge 
+  stage: badge
+  script:
+    - for project in $HOG_BADGE_PROJECTS; do
+        tclsh Hog/Tcl/CI/create_badges.tcl $HOG_PUSH_TOKEN $CI_API_V4_URL $CI_PROJECT_ID $CI_PROJECT_URL $project "$HOG_EXTERNAL_PATH";
+      done;
+  allow_failure: true
+  artifacts:
+    paths:
+      - bin
+    expire_in: 10 years
