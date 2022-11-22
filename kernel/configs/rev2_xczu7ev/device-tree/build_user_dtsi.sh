@@ -1,1 +1,0 @@
-build_user_dtsi.emmc

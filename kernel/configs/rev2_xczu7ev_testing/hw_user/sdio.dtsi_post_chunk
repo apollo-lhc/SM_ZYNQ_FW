@@ -1,7 +1,0 @@
-  &sdhci1 {
-    no-1-8-v;   
-    max-frequency = <25000000>;
-    // Disable write protect so we can write to the SD card (microSD)
-    disable-wp;
-    broken-cd;
-  };
