@@ -199,6 +199,12 @@ set_clock_groups -asynchronous												                                    \
 		 		    												 			    \
 		 -group [get_clocks zynq_bd_wrapper_1/zynq_bd_i/C2C1_PHY/inst/zynq_bd_C2C1_PHY_0_core_i/zynq_bd_C2C1_PHY_0_wrapper_i/zynq_bd_C2C1_PHY_0_multi_gt_i/zynq_bd_C2C1_PHY_0_gtx_inst/gtxe2_i/RXOUTCLK -include_generated_clocks] \
 		 -group [get_clocks zynq_bd_wrapper_1/zynq_bd_i/C2C1_PHY/inst/zynq_bd_C2C1_PHY_0_core_i/zynq_bd_C2C1_PHY_0_wrapper_i/zynq_bd_C2C1_PHY_0_multi_gt_i/zynq_bd_C2C1_PHY_0_gtx_inst/gtxe2_i/TXOUTCLK -include_generated_clocks] \
+		 -group [get_clocks *C2C1B_PHY_0_gtx_inst/gtxe2_i/RXOUTCLK -include_generated_clocks] \
+		 -group [get_clocks *C2C1B_PHY_0_gtx_inst/gtxe2_i/TXOUTCLK -include_generated_clocks] \
+		 -group [get_clocks *C2C2_PHY_0_gtx_inst/gtxe2_i/RXOUTCLK -include_generated_clocks] \
+		 -group [get_clocks *C2C2_PHY_0_gtx_inst/gtxe2_i/TXOUTCLK -include_generated_clocks] \
+		 -group [get_clocks *C2C2B_PHY_0_gtx_inst/gtxe2_i/RXOUTCLK -include_generated_clocks] \
+		 -group [get_clocks *C2C2B_PHY_0_gtx_inst/gtxe2_i/TXOUTCLK  -include_generated_clocks] \
 		 -group [get_clocks zynq_bd_wrapper_1/zynq_bd_i/XVC_LOCAL/U0/bs_switch/inst/BSCAN_SWITCH.N_EXT_BSCAN.bscan_inst/SERIES7_BSCAN.bscan_inst/TCK -include_generated_clocks] 
  
 
