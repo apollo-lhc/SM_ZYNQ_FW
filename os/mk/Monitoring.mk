@@ -1,6 +1,5 @@
-MONITORING_TAG=v1.1.4
-MONITORING_TAG=2022-06-27_apollosm_fix
-MONITORING_URI=https://github.com/apollo-lhc/Grafana-Monitor.git
+MONITORING_TAG=v2.0.0
+MONITORING_URI=https://gitlab.com/BU-EDF/shelf-tools.git
 
 %xc7z035/opt/Graphite_Monitor : QEMU=qemu-arm-static
 %xc7z045/opt/Graphite_Monitor : QEMU=qemu-arm-static

@@ -1,0 +1,2 @@
+atlas  ALL=/usr/bin/systemctl restart uio_daemon
+cms    ALL=/usr/bin/systemctl restart uio_daemon

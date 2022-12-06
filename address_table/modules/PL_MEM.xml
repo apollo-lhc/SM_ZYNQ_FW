@@ -8,28 +8,28 @@
   </node>
   <node id="SM_POWER" address="0x000007D0">
     <node id="ZYNQ_1V8" address="0x0">
-      <node id="V" address="0x0" permission="rw" parameters="Table=SM_Power;Row=_3;Column=mV;Format=u;Status=1"/>
-      <node id="I" address="0x1" permission="rw" parameters="Table=SM_Power;Row=_3;Column=mA;Format=u;Status=1"/>
+      <node id="V" address="0x0" permission="rw" parameters="Table=SM_Power;Row=_3;Column=Volts;Format=m_1_1_1000_1_0_1;Status=1"/>
+      <node id="I" address="0x1" permission="rw" parameters="Table=SM_Power;Row=_3;Column=Amps;Format=m_1_1_1000_1_0_1;Status=1"/>
     </node>
     <node id="ZYNQ_3V3" address="0x2">
-      <node id="V" address="0x0" permission="rw" parameters="Table=SM_Power;Row=_3;Column=mV;Format=u;Status=1"/>
-      <node id="I" address="0x1" permission="rw" parameters="Table=SM_Power;Row=_3;Column=mA;Format=u;Status=1"/>
+      <node id="V" address="0x0" permission="rw" parameters="Table=SM_Power;Row=_3;Column=Volts;Format=m_1_1_1000_1_0_1;Status=1"/>
+      <node id="I" address="0x1" permission="rw" parameters="Table=SM_Power;Row=_3;Column=Amps;Format=m_1_1_1000_1_0_1;Status=1"/>
     </node>
     <node id="ZYNQ_12V" address="0x4">
-      <node id="V" address="0x0" permission="rw" parameters="Table=SM_Power;Row=_3;Column=mV;Format=u;Status=1"/>
-      <node id="I" address="0x1" permission="rw" parameters="Table=SM_Power;Row=_3;Column=mA;Format=u;Status=1"/>
+      <node id="V" address="0x0" permission="rw" parameters="Table=SM_Power;Row=_3;Column=Volts;Format=m_1_1_1000_1_0_1;Status=1"/>
+      <node id="I" address="0x1" permission="rw" parameters="Table=SM_Power;Row=_3;Column=Amps;Format=m_1_1_1000_1_0_1;Status=1"/>
     </node>
     <node id="MISC_1V8" address="0x6">
-      <node id="V" address="0x0" permission="rw" parameters="Table=SM_Power;Row=_3;Column=mV;Format=u;Status=1"/>
-      <node id="I" address="0x1" permission="rw" parameters="Table=SM_Power;Row=_3;Column=mA;Format=u;Status=1"/>
+      <node id="V" address="0x0" permission="rw" parameters="Table=SM_Power;Row=_3;Column=Volts;Format=m_1_1_1000_1_0_1;Status=1"/>
+      <node id="I" address="0x1" permission="rw" parameters="Table=SM_Power;Row=_3;Column=Amps;Format=m_1_1_1000_1_0_1;Status=1"/>
     </node>
     <node id="MISC_3V3" address="0x8">
-      <node id="V" address="0x0" permission="rw" parameters="Table=SM_Power;Row=_3;Column=mV;Format=u;Status=1"/>
-      <node id="I" address="0x1" permission="rw" parameters="Table=SM_Power;Row=_3;Column=mA;Format=u;Status=1"/>
+      <node id="V" address="0x0" permission="rw" parameters="Table=SM_Power;Row=_3;Column=Volts;Format=m_1_1_1000_1_0_1;Status=1"/>
+      <node id="I" address="0x1" permission="rw" parameters="Table=SM_Power;Row=_3;Column=Amps;Format=m_1_1_1000_1_0_1;Status=1"/>
     </node>
     <node id="STBY_3V3" address="0xa">
-      <node id="V" address="0x0" permission="rw" parameters="Table=SM_Power;Row=_3;Column=mV;Format=u;Status=1"/>
-      <node id="I" address="0x1" permission="rw" parameters="Table=SM_Power;Row=_3;Column=mA;Format=u;Status=1"/>
+      <node id="V" address="0x0" permission="rw" parameters="Table=SM_Power;Row=_3;Column=Volts;Format=m_1_1_1000_1_0_1;Status=1"/>
+      <node id="I" address="0x1" permission="rw" parameters="Table=SM_Power;Row=_3;Column=Amps;Format=m_1_1_1000_1_0_1;Status=1"/>
     </node>
   </node>
 

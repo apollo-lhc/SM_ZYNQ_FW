@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <node id="SLAVE_I2C">
   <node id="S1" address ="0x00">
     <node id="SM" address="0x0">
@@ -170,6 +171,26 @@
   <!--   <node id="E"  address="0xE" permission="rw"/> -->
   <!--   <node id="F"  address="0xF" permission="rw"/> -->
   <!-- </node> -->
+  <node id="S7" address ="0x60">
+    <node id="PIM">
+      <node id="STATUS" address="0x00">
+	<node id= "ENABLE_A"          permission="r" mask="0x00000001" description="ENABLE_AF signal status"        parameters="Table=SM_Power;Row=PIM_A;Column=ENABLED;Format=u;Status=1"/>
+	<node id= "ENABLE_B"          permission="r" mask="0x00000002" description="ENABLE_BF signal status"        parameters="Table=SM_Power;Row=PIM_B;Column=ENABLED;Format=u;Status=1"/>
+	<node id= "ALARM"             permission="r" mask="0x00000004" description="ALARM signal status"            parameters="Table=SM_Power;Row=PIM;Column=ALARM;Format=u;Status=1"/>
+	<node id= "HOLDUP"            permission="r" mask="0x00000010" description="Holdup status"                  parameters="Table=SM_Power;Row=PIM_HLDUP;Column=STATUS;Format=t_0_DISCONNECTED_1_CONNECTED;Status=3"/>
+	<node id= "HOTSWAP_SWITCH"    permission="r" mask="0x00000020" description="Hotswap status"                 parameters="Table=SM_Power;Row=PIM_HOTSWAP;Column=STATUS;Format=t_0_OFF_1_ON;Status=3"/>
+	<node id= "UNDERVOLTAGE_OUT"  permission="r" mask="0x00000040" description="-48V undervoltage alarm status" parameters="Table=SM_Power;Row=PIM_OUT_STATUS;Column=STATUS;Format=t_0_UnderVoltage_1_OK;Status=3"/>
+      </node>
+      <node id="HOLDUP_VOLTAGE" address="0x01" permission="r" mask="0x000000FF" description="Holdup voltage w.r.t. -48V_OUT 0.398 V/bit" parameters="Table=SM_Power;Row=PIM_HLDUP;Column=Volts;Format=m_1_398_1000_1_0_1;Status=1"/>
+      <node id="OUT_CURRENT"    address="0x01" permission="r" mask="0x0000FF00" description="-48V_OUT current 0.094 A/bit" parameters="Table=SM_Power;Row=PIM;Column=Amps;Format=m_1_94_1000_1_0_1;Status=1"/>
+      <node id="VIN_A"          address="0x01" permission="r" mask="0x00FF0000" description="Voltage between -48V_AF and VRTN_AF 0.325 V/bit" parameters="Table=SM_Power;Row=PIM_VIN_A;Column=Volts;Format=m_1_325_1000_1_0_1;Status=1"/>
+      <node id="VIN_B"          address="0x01" permission="r" mask="0xFF000000" description="Voltage between -48V_BF and VRTN_BF 0.325 V/bit" parameters="Table=SM_Power;Row=PIM_VIN_B;Column=Volts;Format=m_1_325_1000_1_0_1;Status=1"/>
+      <node id="TEMP"           address="0x02" permission="r" mask="0x000000FF" description="Module Temperature (1.961 C/bit) - 50C" parameters="Table=SM_TEMPS;Row=PIM;Column=C;Format=m_1_1961_1000_0_50_1;Status=1"/>
+    </node>
+    <node id="SM_TEMP_TOP"      address="0x5"  permission="r" mask="0x00007FF0" description="SM temp sensor top (absolute value)"     parameters="Table=SM_TEMPS;Row=SM_Top;Column=C;Format=m_1_1_16_1_0_1;Status=1"/>
+    <node id="SM_TEMP_MIDDLE"   address="0x5"  permission="r" mask="0x7FF00000" description="SM temp sensor middle (absolute value)"  parameters="Table=SM_TEMPS;Row=SM_Middle;Column=C;Format=m_1_1_16_1_0_1;Status=1"/>
+    <node id="SM_TEMP_BOTTOM"   address="0x6"  permission="r" mask="0x00007FF0" description="SM temp sensor bottom (absolute value)"  parameters="Table=SM_TEMPS;Row=SM_Bottom;Column=C;Format=m_1_1_16_1_0_1;Status=1"/>
+  </node>
   <node id="S8" address ="0x70">
     <node id="IPMC_MAC" address="0x0">
 	<node id="BYTE_0"      address="0x0"        permission="r" mask="0x000000FF" description="IPMC mac adder byte 1"/>

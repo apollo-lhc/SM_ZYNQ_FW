@@ -12,6 +12,5 @@
 
 bash /etc/rc.local.common
 
-ethtool -s eth1 speed 1000 duplex full autoneg on
 
 

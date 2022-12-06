@@ -85,6 +85,7 @@ include mk/CM_MCU.mk
 
 include mk/overlay-tools.mk
 include mk/netconfig-daemon.mk
+include mk/apollo-updater.mk
 include mk/users.mk
 
 #${SECURE_CHECK}:
@@ -99,16 +100,16 @@ include mk/users.mk
 	# Add rev specific mods
 	@echo ${CONFIG_DIR} 
 	sudo cp -r ${CONFIG_DIR}/file_system/* ${INSTALL_PATH} 
-	sudo chmod o+x ${ETC_PATH}/rc.local 
+	sudo chmod o+x ${ETC_PATH}/rc.local
+	#Change ownership of the CM fw path
+	sudo chmod a+rwX -R ${INSTALL_PATH}/fw/CM
+	#Change ownership of the uio_daemon config file
+	sudo chmod a+rw  ${INSTALL_PATH}/etc/uio_daemon	
 	#Remove ipv6 from lighttpd
 	sudo sed -i -e "s/server.use-ipv6 = \"enable\"/server.use-ipv6 = \"disable\"/g" ${ETC_PATH}/lighttpd/lighttpd.conf  
 	#this service breaks things
 	sudo rm -f ${ETC_PATH}/systemd/system/multi-user.target.wants/auditd.service 
 	#Add all the password files and keys
-#	sudo install -m 644 ${SECURE_PATH}/group   ${ETC_PATH}/ 
-#	sudo install -m 644 ${SECURE_PATH}/passwd  ${ETC_PATH}/ 
-#	sudo install -m 000 ${SECURE_PATH}/gshadow ${ETC_PATH}/ 
-#	sudo install -m 000 ${SECURE_PATH}/shadow  ${ETC_PATH}/ 
 	sudo install -m 640 -g 997 -o 0 ${SECURE_PATH}/ssh/ssh_host_ecdsa_key       ${ETC_PATH}/ssh/ 
 	sudo install -m 644 -g 0   -o 0 ${SECURE_PATH}/ssh/ssh_host_ecdsa_key.pub   ${ETC_PATH}/ssh/ 
 	sudo install -m 640 -g 997 -o 0 ${SECURE_PATH}/ssh/ssh_host_ed25519_key     ${ETC_PATH}/ssh/ 
@@ -117,10 +118,8 @@ include mk/users.mk
 	sudo install -m 644 -g 0   -o 0 ${SECURE_PATH}/ssh/ssh_host_rsa_key.pub     ${ETC_PATH}/ssh/ 
 	#setup software and libraries
 	${MAKE} pip_install_$*
-#	${MAKE} ${OPT_PATH}/BUTool/bin ${OPT_PATH}/cactus ${OPT_PATH}/mcu_tools ${OPT_PATH}/Graphite_Monitor ${INSTALL_PATH}usr/local/bin/mmc ${OPT_PATH}/overlay-tools
-	${MAKE} ${OPT_PATH}/BUTool/bin ${OPT_PATH}/cactus ${OPT_PATH}/mcu_tools ${OPT_PATH}/Graphite_Monitor ${OPT_PATH}/uio-daemon ${OPT_PATH}/netconfig-daemon
+	${MAKE} ${OPT_PATH}/BUTool/bin ${OPT_PATH}/cactus ${OPT_PATH}/mcu_tools ${OPT_PATH}/Graphite_Monitor ${OPT_PATH}/uio-daemon ${OPT_PATH}/netconfig-daemon ${OPT_PATH}/apollo-updater
 	sudo cp ${SCRIPTS_PATH}/cleanup_locale.sh ${TMP_PATH} 
-	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/cleanup_locale.sh 
 	sudo rm -rf ${TMP_PATH}/*
 	#setup local user accounts
 	${MAKE} users_$*

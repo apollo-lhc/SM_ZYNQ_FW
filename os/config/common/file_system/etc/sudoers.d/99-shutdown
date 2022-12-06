@@ -1,0 +1,2 @@
+atlas  ALL=/sbin/reboot
+cms    ALL=/sbin/reboot

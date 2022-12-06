@@ -1162,6 +1162,38 @@ begin  -- architecture structure
       reset_A_async => axi_reset,
       event_b       => '1',
       rate          => Clocking_Mon.AXI_CLK_FREQ);
-   
+
+
+  TCDS_clk_buf : IBUFDS_GTE4
+    generic map (
+      REFCLK_EN_TX_PATH   => '0',
+      REFCLK_HROW_CK_SEL => "00")
+    port map (
+      CEB   => '0',
+      I     => REFCLK_REC_P,
+      IB    => REFCLK_REC_N,
+      O     => open,
+      ODIV2 => refclk_TCDS);
+
+  TCDS_gtbuf : BUFG_GT
+    port map (
+      CE       => '1',
+      CEMASK   => '1',
+      CLR      => '0',
+      CLRMASK  => '0',
+      DIV      => "000",
+      I        => refclk_TCDS,
+      O        => clk_TCDS);
+  
+  rate_counter_TCDS: entity work.rate_counter
+    generic map (
+      CLK_A_1_SECOND => AXI_MASTER_CLK_FREQ)
+    port map (
+      clk_A         => axi_clk,
+      clk_B         => clk_TCDS,
+      reset_A_async => axi_reset,
+      event_b       => '1',
+      rate          => Clocking_Mon.TCDS_CLK_FREQ);
+
 
 end architecture structure;
