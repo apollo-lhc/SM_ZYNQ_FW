@@ -52,11 +52,20 @@ if { [file exists ${output_path}/${name}/${name}.xci] && ([file mtime ${output_p
 			    CONFIG.FREERUN_FREQUENCY {50}             \
 			    CONFIG.Component_Name ${name}             \
 			    CONFIG.LOCATE_COMMON {EXAMPLE_DESIGN}     \
+			    CONFIG.ENABLE_OPTIONAL_PORTS {drpaddr_in drpclk_in drpdi_in drpen_in          \
+							  drpwe_in eyescanreset_in eyescantrigger_in      \
+							  pcsrsvdin_in rxbufreset_in          \
+							  rxcdrhold_in rxdfelpmreset_in rxlpmen_in        \
+							  rxpcsreset_in rxpmareset_in                     \
+							  rxprbscntreset_in rxprbssel_in rxrate_in        \
+							  txdiffctrl_in txinhibit_in txpcsreset_in        \
+							  txpmareset_in txpolarity_in txpostcursor_in     \
+							  txprbsforceerr_in txprbssel_in txprecursor_in   \
+							  cplllock_out dmonitorout_out drpdo_out          \
+							  drprdy_out eyescandataerror_out rxbufstatus_out \
+							  rxprbserr_out rxsyncdone_out    \
+							  txbufstatus_out }                \
 			   ] [get_ips ${name}]
 }
 
 
-
-
-#			    CONFIG.RX_REFCLK_SOURCE {X0Y4 clk0+2}     \
-#			    CONFIG.TX_REFCLK_SOURCE {X0Y4 clk0+2}     \

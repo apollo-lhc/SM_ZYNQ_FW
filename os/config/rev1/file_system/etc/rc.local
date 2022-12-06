@@ -12,12 +12,6 @@
 
 bash /etc/rc.local.common
 
-ethtool -s eth0 speed 100 duplex full autoneg on
 
-if [ -f "/fw/mac.dat" ]; then
-    ifconfig eth0 down
-    cat /fw/mac.dat | xargs ifconfig eth0 hw ether 
-    ifconfig eth0 up
-fi
-dhclient eth0
+
 

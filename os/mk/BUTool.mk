@@ -1,5 +1,5 @@
 #Build BUTool from ApolloTool meta repo
-APOLLO_TOOL_TAG=master
+APOLLO_TOOL_TAG=v2.1.0
 APOLLO_TOOL_URI=https://github.com/apollo-lhc/ApolloTool.git
 
 #target level variables
@@ -16,10 +16,13 @@ APOLLO_TOOL_URI=https://github.com/apollo-lhc/ApolloTool.git
 		git checkout ${APOLLO_TOOL_TAG}
 	cd ${TMP_PATH}/ApolloTool && \
 		make init
+	cd ${TMP_PATH}/ApolloTool && \
+		make init
 	cp ${SCRIPTS_PATH}/build_BUTool.sh ${TMP_PATH}/ApolloTool/
+
 	sudo chroot ${INSTALL_PATH} ${QEMU_PATH}/${QEMU} /bin/bash /tmp/ApolloTool/build_BUTool.sh
-	(find address_table/ -xtype f -exec sudo install -Dm 666 "{}" "${OPT_PATH}/{}" \;)
-	sudo ln -s /opt/address_table ${OPT_PATH}/address_tables
+	sudo mkdir -p /opt/address_table
+
 
 
 

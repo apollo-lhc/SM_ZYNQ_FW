@@ -1,0 +1,26 @@
+From 1f4df737f96d57226b625ffbc84297dda41b1582 Mon Sep 17 00:00:00 2001
+From: Dan Gastler <dgastler@gmail.com>
+Date: Mon, 24 Jan 2022 11:16:25 -0500
+Subject: [PATCH 7/9] Fix for SSD
+
+---
+ lib/sw_apps/zynqmp_fsbl/misc/zcu102/psu_init.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/lib/sw_apps/zynqmp_fsbl/misc/zcu102/psu_init.c b/lib/sw_apps/zynqmp_fsbl/misc/zcu102/psu_init.c
+index 5686bd4..faee14f 100644
+--- a/lib/sw_apps/zynqmp_fsbl/misc/zcu102/psu_init.c
++++ b/lib/sw_apps/zynqmp_fsbl/misc/zcu102/psu_init.c
+@@ -23544,7 +23544,8 @@ static int serdes_illcalib (u32 lane3_protocol, u32 lane3_rate, u32 lane2_protoc
+       serdes_illcalib_pcie_gen1 (0, 0, 1, 0, 0, 0, 0, 0, 0);
+      //Revert the ILL settings to SATA-Gen2 case
+       Xil_Out32(SERDES_L2_PLL_FBDIV_FRAC_3_MSB,temp_pll_fbdiv_frac_3_msb_offset);
+-      Xil_Out32(SERDES_PLL_REF_SEL3_OFFSET, temp_PLL_REF_SEL_OFFSET);
++      //      Xil_Out32(SERDES_PLL_REF_SEL3_OFFSET, temp_PLL_REF_SEL_OFFSET);
++      Xil_Out32(SERDES_PLL_REF_SEL2_OFFSET, temp_PLL_REF_SEL_OFFSET);
+       Xil_Out32(SERDES_L2_TM_IQ_ILL1,temp_TM_IQ_ILL1);
+       Xil_Out32(SERDES_L2_TX_DIG_TM_61, temp_tx_dig_tm_61);
+       Xil_Out32(SERDES_L2_TM_DIG_6, temp_tm_dig_6);
+-- 
+1.8.3.1
+

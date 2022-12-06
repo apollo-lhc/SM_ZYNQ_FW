@@ -13,6 +13,8 @@ create_bd_cell -type ip -vlnv [get_ipdefs -filter {NAME == zynq_ultra_ps_e}] ${Z
 
 #configure the Zynq system
 
+#puts [list_property [get_bd_cells ${ZYNQ_NAME}] *]
+
 ###############################
 #clocking
 ###############################
@@ -26,6 +28,8 @@ set_property CONFIG.PSU__CRL_APB__IOU_SWITCH_CTRL__FREQMHZ {250}    [get_bd_cell
 set_property CONFIG.PSU__CRL_APB__LPD_SWITCH_CTRL__FREQMHZ {500}    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU__CRL_APB__ADMA_REF_CTRL__FREQMHZ {500}      [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU__FPGA_PL1_ENABLE {1}                        [get_bd_cells ${ZYNQ_NAME}]
+#set_property CONFIG.PSU__CRL_APB__PL1_REF_CTRL__FREQMHZ {80}        [get_bd_cells ${ZYNQ_NAME}]
+#set_property CONFIG.PSU__CRL_APB__PL1_REF_CTRL__FREQMHZ {71.427856}        [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU__CRL_APB__PL1_REF_CTRL__FREQMHZ {50}        [get_bd_cells ${ZYNQ_NAME}]
 
 
@@ -50,6 +54,7 @@ set_property CONFIG.PSU__USE__M_AXI_GP0 {1}			    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU__USE__M_AXI_GP1 {1}			    [get_bd_cells ${ZYNQ_NAME}]
 
 #connect FCLK_CLK0 to the master AXI_GP0 clock
+#set AXI_MASTER_CLK ${ZYNQ_NAME}/pl_clk1
 set AXI_MASTER_CLK ${ZYNQ_NAME}/pl_clk1
 make_bd_pins_external -name axi_clk [get_bd_pins ${AXI_MASTER_CLK}]
 
@@ -68,19 +73,37 @@ set ZYNQ_RESETN ${ZYNQ_NAME}/pl_resetn0
 #All MIO configurations are in build_CPU_MIO.tcl
 source ../src/ZynqPS/xczu7ev/build_CPU_MIO_rev2.tcl
 
+#master reset circuit
+set SYS_RESETTER_PRIMARY sys_resetter_primary
+IP_SYS_RESET [dict create \
+	          device_name ${SYS_RESETTER_PRIMARY} \
+		  external_reset_n ${ZYNQ_RESETN} \
+		  slowest_clk ${AXI_MASTER_CLK}]
+####set interconnect reset
+set AXI_PRIMARY_MASTER_RSTN [get_bd_pins ${SYS_RESETTER_PRIMARY}/interconnect_aresetn]
+set AXI_PRIMARY_SLAVE_RSTN [get_bd_pins ${SYS_RESETTER_PRIMARY}/peripheral_aresetn]
+make_bd_pins_external -name axi_rst_n [get_bd_pins ${AXI_PRIMARY_SLAVE_RSTN}]
 
 
-set SYS_RESETER sys_reseter
-create_bd_cell -type ip -vlnv [get_ipdefs -filter {NAME == proc_sys_reset}] $SYS_RESETER
+#c2c interconnect reset circuit
+set SYS_RESETTER_C2C sys_resetter_c2c
+set SYS_RESETTER_C2C_RST c2c_interconnect_reset
+create_bd_port -dir I -type rst ${SYS_RESETTER_C2C_RST}
+set_property CONFIG.POLARITY ACTIVE_HIGH [get_bd_ports ${SYS_RESETTER_C2C_RST}]
+IP_SYS_RESET [dict create \
+	          device_name ${SYS_RESETTER_C2C} \
+		  external_reset_n ${ZYNQ_RESETN} \
+		  slowest_clk ${AXI_MASTER_CLK} \
+		  aux_reset ${SYS_RESETTER_C2C_RST} \
+	     ]
+set AXI_C2C_MASTER_RSTN [get_bd_pins ${SYS_RESETTER_C2C}/interconnect_aresetn]
+set AXI_C2C_SLAVE_RSTN [get_bd_pins ${SYS_RESETTER_C2C}/peripheral_aresetn]
+make_bd_pins_external -name axi_c2c_rst_n [get_bd_pins ${AXI_C2C_SLAVE_RSTN}]
 
-#connect external reset
-connect_bd_net [get_bd_pins ${ZYNQ_RESETN}] [get_bd_pins $SYS_RESETER/ext_reset_in]
-#connect clock
-connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins $SYS_RESETER/slowest_sync_clk]
-#set interconnect reset
-set AXI_MASTER_RSTN [get_bd_pins ${SYS_RESETER}/interconnect_aresetn]
-set AXI_SLAVE_RSTN [get_bd_pins ${SYS_RESETER}/peripheral_aresetn]
-make_bd_pins_external -name axi_rst_n [get_bd_pins ${AXI_SLAVE_RSTN}]
+
+
+
+
 
 
 #add interrupts from PL to PS

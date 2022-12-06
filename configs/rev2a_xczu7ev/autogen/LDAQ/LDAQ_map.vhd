@@ -8,7 +8,12 @@ use work.AXIRegPkg.all;
 use work.types.all;
 use work.LDAQ_Ctrl.all;
 
+
+
 entity LDAQ_map is
+  generic (
+    ALLOCATED_MEMORY_RANGE : integer
+    );
   port (
     clk_axi          : in  std_logic;
     reset_axi_n      : in  std_logic;
@@ -38,6 +43,13 @@ begin  -- architecture behavioral
   -- AXI 
   -------------------------------------------------------------------------------
   -------------------------------------------------------------------------------
+  assert ((4*19) <= ALLOCATED_MEMORY_RANGE)
+    report "LDAQ: Regmap addressing range " & integer'image(4*19) & " is outside of AXI mapped range " & integer'image(ALLOCATED_MEMORY_RANGE)
+  severity ERROR;
+  assert ((4*19) > ALLOCATED_MEMORY_RANGE)
+    report "LDAQ: Regmap addressing range " & integer'image(4*19) & " is inside of AXI mapped range " & integer'image(ALLOCATED_MEMORY_RANGE)
+  severity NOTE;
+
   AXIRegBridge : entity work.axiLiteReg
     port map (
       clk_axi     => clk_axi,
@@ -112,6 +124,13 @@ begin  -- architecture behavioral
   reg_writes: process (clk_axi, reset_axi_n) is
   begin  -- process reg_writes
     if reset_axi_n = '0' then                 -- asynchronous reset (active low)
+      reg_data( 0)( 0)  <= DEFAULT_LDAQ_CTRL_t.RESET.RESET_ALL;
+      reg_data( 0)( 4)  <= DEFAULT_LDAQ_CTRL_t.RESET.TX_PLL_AND_DATAPATH;
+      reg_data( 0)( 5)  <= DEFAULT_LDAQ_CTRL_t.RESET.TX_DATAPATH;
+      reg_data( 0)( 6)  <= DEFAULT_LDAQ_CTRL_t.RESET.RX_PLL_AND_DATAPATH;
+      reg_data( 0)( 7)  <= DEFAULT_LDAQ_CTRL_t.RESET.RX_DATAPATH;
+      reg_data( 0)( 8)  <= DEFAULT_LDAQ_CTRL_t.RESET.USERCLK_TX;
+      reg_data( 0)( 9)  <= DEFAULT_LDAQ_CTRL_t.RESET.USERCLK_RX;
       reg_data(16)(15 downto  0)  <= DEFAULT_LDAQ_CTRL_t.TX.CTRL0;
       reg_data(16)(31 downto 16)  <= DEFAULT_LDAQ_CTRL_t.TX.CTRL1;
       reg_data(17)( 7 downto  0)  <= DEFAULT_LDAQ_CTRL_t.TX.CTRL2;

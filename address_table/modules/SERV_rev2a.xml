@@ -1,21 +1,21 @@
 <node id="SERV">
   <node id="SI5344"  address="0x00" permission="r">
-    <node id="OE" address="0x0" permission="rw" mask="0x1" description="Enable Si5344 outputs" parameters="Table=CLOCKING;Column=_3;Row=_2;Status=2;default=0x1"/>
-    <node id="EN" address="0x0" permission="rw" mask="0x2" description="Power on Si5344" parameters="Table=CLOCKING;Column=_3;Row=_2;Status=2;default=0x1"/>
+    <node id="OE" address="0x0" permission="rw" mask="0x1" description="Enable Si5344 outputs" parameters="Table=CLOCKING;Column=OE;Row=SI5344;Status=2;default=0x1"/>
+    <node id="EN" address="0x0" permission="rw" mask="0x2" description="Power on Si5344" parameters="Table=CLOCKING;Column=EN;Row=SI5344;Status=2;default=0x1"/>
     <node id="FPGA_PLL_RESET" address="0x0" permission="rw" mask="0x4"/>
     <node id="INT" address="0x0" permission="r" mask="0x10" description="Si5344 i2c interrupt"/>
-    <node id="LOL" address="0x0" permission="r" mask="0x20" description="Si5344 Loss of lock" parameters="Table=CLOCKING;Column=_3;Row=_2;Status=2;Show=nz"/>
-    <node id="LOS" address="0x0" permission="r" mask="0x40" description="Si5344 Loss of signal" parameters="Table=CLOCKING;Column=_3;Row=_2;Status=2;Show=nz"/>
+    <node id="LOL" address="0x0" permission="r" mask="0x20" description="Si5344 Loss of lock" parameters="Table=CLOCKING;Column=LOL;Row=SI5344;Status=2;Show=nz"/>
+    <node id="LOS" address="0x0" permission="r" mask="0x40" description="Si5344 Loss of signal" parameters="Table=CLOCKING;Column=LOS;Row=SI5344;Status=2;Show=nz"/>
   </node>
   <node id="TCDS" address="0x04" permission="r">
     <node id="TTC_SOURCE" address="0x0" permission="rw" mask="0x1" description="TTC source select (0:TCDS,1:TTC_FAKE" parameters="default=0x1"/>
     <node id="REFCLK_LOCKED" address="0x0" permission="r" mask="0x10" description="TCDS refclk locked"/>
     <node id="SI5344"  address="0x01" permission="r">
-      <node id="OE"  address="0x0" permission="rw" mask="0x01" description="Enable Si5344 outputs" parameters="Table=CLOCKING;Column=_4;Row=_3;Status=2;default=0x1"/>
-      <node id="EN"  address="0x0" permission="rw" mask="0x02" description="Power on Si5344" parameters="Table=CLOCKING;Column=_4;Row=_3;Status=2;default=0x1"/>
+      <node id="OE"  address="0x0" permission="rw" mask="0x01" description="Enable Si5344 outputs" parameters="Table=CLOCKING;Column=TCDS;Row=OE;Status=2;default=0x1"/>
+      <node id="EN"  address="0x0" permission="rw" mask="0x02" description="Power on Si5344" parameters="Table=CLOCKING;Column=TCDS;Row=EN;Status=2;default=0x1"/>
       <node id="INT" address="0x0" permission="r"  mask="0x10" description="Si5344 i2c interrupt"/>
-      <node id="LOL" address="0x0" permission="r"  mask="0x20" description="Si5344 Loss of lock" parameters="Table=CLOCKING;Column=_4;Row=_3;Status=2;Show=nz"/>
-      <node id="LOS" address="0x0" permission="r"  mask="0x40" description="Si5344 Loss of signal" parameters="Table=CLOCKING;Column=_4;Row=_3;Status=2;Show=nz"/>
+      <node id="LOL" address="0x0" permission="r"  mask="0x20" description="Si5344 Loss of lock" parameters="Table=CLOCKING;Column=TCDS;Row=LOL;Status=2;Show=nz"/>
+      <node id="LOS" address="0x0" permission="r"  mask="0x40" description="Si5344 Loss of signal" parameters="Table=CLOCKING;Column=TCDS;Row=LOS;Status=2;Show=nz"/>
     </node>
   </node>
   <node id="CLOCKING" address="0x06" permission="r">
@@ -32,6 +32,7 @@
     <node id="HQ_CLK_FREQ" address="0x2" permission="r" mask="0xFFFFFFFF" description="Measured Freq of clock" parameters="Table=CLOCKING;Column=FREQ;Row=HQ;Status=3;Show=nz;Format=m_1_1_1000000_1_0_1" />
     <node id="TTC_CLK_FREQ" address="0x3" permission="r" mask="0xFFFFFFFF" description="Measured Freq of clock" parameters="Table=CLOCKING;Column=FREQ;Row=TTC;Status=3;Show=nz;Format=m_1_1_1000000_1_0_1" />
     <node id="AXI_CLK_FREQ" address="0x4" permission="r" mask="0xFFFFFFFF" description="Measured Freq of clock" parameters="Table=CLOCKING;Column=FREQ;Row=AXI;Status=3;Show=nz;Format=m_1_1_1000000_1_0_1" />
+    <node id="TCDS_CLK_FREQ" address="0x5" permission="r" mask="0xFFFFFFFF" description="Measured Freq of clock" parameters="Table=CLOCKING;Column=FREQ;Row=TCDS;Status=3;Show=nz;Format=m_1_1_1000000_1_0_1" />
 
   </node>
   <node id="FP_LEDS" address="0x10">
@@ -51,6 +52,10 @@
   <node id="CPLD" address="0x30">
     <node id="ENABLE_JTAG" address="0x00" mask="0x00000001" permission="rw" description="Enable the JTAG lines to the CPLD" parameters="default=0x0"/>
     <node id="IO" address="0x02" mask="0x0000000F" permission="r" description="inputs(for now) from CPLD"/>
+  </node>
+  <node id="MISC" address="0x50">
+    <node id="ETH1_RESET_N" address="0x0" permission="rw" mask="0x1" parameters="default=0x1" />
+    <node id="ETH1_CLK_FREQ" address="0x1" permission="r" mask="0xFFFFFFFF" description="Measured Freq of clock" parameters="Table=CLOCKING;Column=FREQ;Row=ETH1;Status=3;Show=nz;Format=m_1_1_1000000_1_0_1" />
   </node>
 
 </node>

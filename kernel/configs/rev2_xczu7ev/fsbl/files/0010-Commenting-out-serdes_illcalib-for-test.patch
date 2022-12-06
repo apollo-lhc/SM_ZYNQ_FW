@@ -1,0 +1,25 @@
+From bb7a38684e45f9c87f314d32256b5376d6902d2e Mon Sep 17 00:00:00 2001
+From: Dan Gastler <dgastler@gmail.com>
+Date: Wed, 26 Jan 2022 10:14:05 -0500
+Subject: [PATCH 10/10] Commenting out serdes_illcalib for test
+
+---
+ lib/sw_apps/zynqmp_fsbl/misc/zcu102/psu_init.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/sw_apps/zynqmp_fsbl/misc/zcu102/psu_init.c b/lib/sw_apps/zynqmp_fsbl/misc/zcu102/psu_init.c
+index c4bce28..2033126 100644
+--- a/lib/sw_apps/zynqmp_fsbl/misc/zcu102/psu_init.c
++++ b/lib/sw_apps/zynqmp_fsbl/misc/zcu102/psu_init.c
+@@ -20223,7 +20223,7 @@ unsigned long psu_serdes_init_data(void)
+     /*
+     * SERDES ILL CALIB
+     */
+-		serdes_illcalib(2,3,3,0,4,0,1,1);
++	//dan 2022-01-26		serdes_illcalib(2,3,3,0,4,0,1,1);
+ 
+ /*##################################################################### */
+ 
+-- 
+1.8.3.1
+

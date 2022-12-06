@@ -1,10 +1,19 @@
 #tempfiles
+dump*
 slack_msg
 make_log.txt
+make_output.txt
 *~
 *#
 vivado*.log
 vivado*.jou
+*backup*
+
+#################################################################################
+## Configs
+#################################################################################
+configs/*/autogen/cores
+configs/*/cores/*/
 #################################################################################
 ## Vivado files
 #################################################################################
@@ -25,14 +34,24 @@ bd/*/*
 bit
 kernel/hw
 kernel/*
+!kernel/output/BOOT.BIN
+!kernel/output/boot.scr
+!kernel/output/image.ub
 !kernel/*.dtsi_post_chunk
 !kernel/*.dtsi_chunk
+!kernel/scripts
 kernel/zynq_os
 !kernel/configs
 /os/Kintex_slaves.yaml
 /os/Virtex_slaves.yaml
 /os/address_table/
 /os/slaves.yaml
+
+#picoblaze
+*.fmt
+src/CM_interface/picoblaze/picoblaze/KCPSM6_session_log.txt
+src/CM_interface/picoblaze/picoblaze/Reprogram.script
+src/CM_interface/picoblaze/picoblaze/cli.log
 
 
 #################################################################################

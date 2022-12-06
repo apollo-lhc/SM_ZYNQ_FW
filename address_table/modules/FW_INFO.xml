@@ -1,16 +1,16 @@
 <node id="FW_INFO">
-  <node id="GIT_VALID"  address="0x0" permission="r" mask="0x2"        parameters="Table=FIRMWARE;Column=_1;Row=_2;Status=3"/>
-  <node id="GIT_HASH_1" address="0x1" permission="r" mask="0xFFFFFFFF" parameters="Table=FIRMWARE;Column=_1;Row=_2;Status=3"/>
-  <node id="GIT_HASH_2" address="0x2" permission="r" mask="0xFFFFFFFF" parameters="Table=FIRMWARE;Column=_1;Row=_2;Status=3"/>
-  <node id="GIT_HASH_3" address="0x3" permission="r" mask="0xFFFFFFFF" parameters="Table=FIRMWARE;Column=_1;Row=_2;Status=3"/>
-  <node id="GIT_HASH_4" address="0x4" permission="r" mask="0xFFFFFFFF" parameters="Table=FIRMWARE;Column=_1;Row=_2;Status=3"/>
-  <node id="GIT_HASH_5" address="0x5" permission="r" mask="0xFFFFFFFF" parameters="Table=FIRMWARE;Column=_1;Row=_2;Status=3"/>
-  <node id="BUILD_DATE" address="0x10" parameters="Table=FIRMWARE;Column=_1;Row=_2;Status=1">
+  <node id="GIT_VALID"  address="0x0" permission="r" mask="0x2"        parameters="Table=FIRMWARE;Column=_1;Row=GIT_VALID;Status=3"/>
+  <node id="GIT_HASH_1" address="0x1" permission="r" mask="0xFFFFFFFF" parameters="Table=FIRMWARE;Column=_1;Row=GIT_HASH__1;Status=3"/>
+  <node id="GIT_HASH_2" address="0x2" permission="r" mask="0xFFFFFFFF" parameters="Table=FIRMWARE;Column=_1;Row=GIT_HASH__2;Status=3"/>
+  <node id="GIT_HASH_3" address="0x3" permission="r" mask="0xFFFFFFFF" parameters="Table=FIRMWARE;Column=_1;Row=GIT_HASH__3;Status=3"/>
+  <node id="GIT_HASH_4" address="0x4" permission="r" mask="0xFFFFFFFF" parameters="Table=FIRMWARE;Column=_1;Row=GIT_HASH__4;Status=3"/>
+  <node id="GIT_HASH_5" address="0x5" permission="r" mask="0xFFFFFFFF" parameters="Table=FIRMWARE;Column=_1;Row=GIT_HASH__5;Status=3"/>
+  <node id="BUILD_DATE" address="0x10" parameters="Table=FIRMWARE;Column=_1;Row=BUILD_DATE;Status=1">
     <node id="YEAR" permission="r" mask="0xFFFF0000"/>
     <node id="MONTH" permission="r"  mask="0xFF00"/>
     <node id="DAY" permission="r"  mask="0xFF"/>
   </node>
-  <node id="BUILD_TIME" address="0x11" parameters="Table=FIRMWARE;Column=_1;Row=_2;Status=1">
+  <node id="BUILD_TIME" address="0x11" parameters="Table=FIRMWARE;Column=_1;Row=BUILD_TIME;Status=1">
     <node id="SEC" permission="r"  mask="0xFF"/>
     <node id="MIN" permission="r"  mask="0xFF00"/>
     <node id="HOUR" permission="r"  mask="0xFF0000"/>
@@ -26,5 +26,12 @@
     <node id="WORD_07" address="0x7" permission="r" mask="0xFFFFFFFF"/>
     <node id="WORD_08" address="0x8" permission="r" mask="0xFFFFFFFF"/>
   </node>
-  
+  <node id="DNA" address="0x20">
+    <node id="VALID"   address="0x0" permission="r" mask="0x00000001"/>
+    <node id="WORD_0"  address="0x1" permission="r" mask="0xFFFFFFFF"/>
+    <node id="WORD_1"  address="0x2" permission="r" mask="0xFFFFFFFF"/>
+    <node id="WORD_2"  address="0x3" permission="r" mask="0xFFFFFFFF"/>
+  </node>
+
+  <!-- <node id="MEMORY_SPACE" address="0x20" module="file://SM_MEM_SPACE.xml"/> -->
 </node>

@@ -1,7 +1,7 @@
 SHELL=bash
 #rules for building QEMU emulators
 #location on host and emulated system for the qemu binary
-QEMU_PATH=usr/local/bin
+QEMU_PATH=/usr/local/bin
 #types of arches we want rules for
 QEMU_ARCHS=qemu-aarch64-static qemu-arm-static
 

@@ -9,7 +9,9 @@ library UNISIM;
 use UNISIM.VCOMPONENTS.ALL;
 
 entity LDAQ is
-  
+  generic (
+    ALLOCATED_MEMORY_RANGE : integer
+    );
   port (
     clk_axi          : in  std_logic;
     reset_axi_n      : in  std_logic;
@@ -97,7 +99,10 @@ begin  -- architecture behavioral
       txpmaresetdone_out(0)                 => Mon.STATUS.tx_pma_reset_done);
 
 
-  LDAQ_interface_1: entity work.LDAQ_interface
+  LDAQ_interface_1: entity work.LDAQ_map
+    generic map(
+      ALLOCATED_MEMORY_RANGE => ALLOCATED_MEMORY_RANGE
+      )              
     port map (
       clk_axi         => clk_axi,
       reset_axi_n     => reset_axi_n,

@@ -8,6 +8,7 @@ use work.types.all;
 use work.CM_package.all;
 use work.CM_Ctrl.all;
 use work.AXISlaveAddrPkg.all;
+use work.uC_LINK.all;
 
 Library UNISIM;
 use UNISIM.vcomponents.all;
@@ -21,7 +22,8 @@ entity CM_intf is
                                                              -- CM1 
     COUNTER_COUNT    : integer := 5;               --Count for counters in loop
     CLKFREQ          : integer := 50000000;       --clk frequency in Hz
-    ERROR_WAIT_TIME  : integer := 50000000);      --Wait time for error checking states
+    ERROR_WAIT_TIME  : integer := 50000000;       --Wait time for error checking states
+    ALLOCATED_MEMORY_RANGE : integer);            
   port (
     clk_axi           : in  std_logic;
     reset_axi_n       : in  std_logic;
@@ -41,8 +43,13 @@ entity CM_intf is
     to_CM_in          : in  to_CM_t; --from SM
     to_CM_out         : out to_CM_t; --from SM, but tristated
     clk_C2C           : in  std_logic_vector(4 downto 1);
+    DRP_clk           : in  std_logic_vector(4 downto 1);
+    reset_c2c         : out std_logic;
     CM_C2C_Mon        : in  C2C_Monitor_t;
-    CM_C2C_Ctrl       : out C2C_Control_t);
+    CM_C2C_Ctrl       : out C2C_Control_t;
+    UART_Rx           : in  std_logic;
+    UART_Tx           : out std_logic
+    );
 end entity CM_intf;
 
 architecture behavioral of CM_intf is
@@ -60,17 +67,18 @@ architecture behavioral of CM_intf is
   signal localRdReq        : std_logic;
   signal localRdAck        : std_logic;
   
-  signal PWR_good          : std_logic_vector(2 downto 1);
-  signal enable_PWR_out    : std_logic_vector(2 downto 1);
-  signal enable_IOs_out    : std_logic_vector(2 downto 1);
-  signal CM_disable        : std_logic_vector(2 downto 1);
-  signal CM_uCIO_disable   : std_logic_vector(2 downto 1);
+  signal PWR_good          : std_logic_vector(HW_CM_COUNT downto 1);
+  signal enable_PWR_out    : std_logic_vector(HW_CM_COUNT downto 1);
+  signal enable_IOs_out    : std_logic_vector(HW_CM_COUNT downto 1);
+  signal CM_disable        : std_logic_vector(HW_CM_COUNT downto 1);
+  signal CM_uCIO_disable   : std_logic_vector(HW_CM_COUNT downto 1);
 
   --phy_lane_control
-  signal phylanelock     : std_logic_vector(4 downto 1);
-  signal aurora_init_buf : std_logic_vector(4 downto 1);
-  signal phycontrol_en   : std_logic_vector(4 downto 1);
-    
+  signal phylanelock     : std_logic_vector(HW_LINK_COUNT downto 1);
+  signal aurora_init_buf : std_logic_vector(HW_LINK_COUNT downto 1);
+  signal phycontrol_en   : std_logic_vector(HW_LINK_COUNT downto 1);
+  signal phy_reset       : std_logic_vector(HW_LINK_COUNT downto 1);
+  
   signal reset : std_logic;                     
 
   signal mon_active : std_logic_vector(2 downto 1);
@@ -87,10 +95,21 @@ architecture behavioral of CM_intf is
   signal Mon  : CM_Mon_t;
   signal Ctrl : CM_Ctrl_t;
 
-  constant CDC_PRBS_SEL_LENGTH : integer := CM_C2C_Ctrl.Link(1).LINK_DEBUG.RX.PRBS_SEL'length;
+  constant CDC_PRBS_SEL_LENGTH : integer := CM_C2C_Ctrl.Link(1).DEBUG.RX.PRBS_SEL'length;
   type CDC_PASSTHROUGH_t is array (1 to 2*2) of std_logic_vector(CDC_PRBS_SEL_LENGTH -1 + 1 downto 0);
   signal CDC_PASSTHROUGH : CDC_PASSTHROUGH_t;
-  
+
+  signal single_bit_error_rate : slv32_array_t(HW_LINK_COUNT*COUNTER_COUNT downto 1);
+  signal multi_bit_error_rate : slv32_array_t(HW_LINK_COUNT*COUNTER_COUNT downto 1);
+  signal link_INFO_out : uC_Link_out_t_array(0 to 3);
+  signal link_INFO_in  : uC_Link_in_t_array (0 to 3);
+
+  signal drp_en_signal : std_logic_vector(4 downto 1);
+
+  type DRP_MOSI_array_t is array (1 to 4) of CM_CM_C2C_DRP_MOSI_t;
+  signal DRP_MOSI : DRP_MOSI_array_t;
+
+  signal clk_TCDS_o : std_logic;
 begin
   --reset
   reset <= not reset_axi_n;
@@ -116,8 +135,17 @@ begin
   end generate CM_CTRL_GENERATE_2;
 
 
+  reset_c2c <= Ctrl.C2C_RESET;
+
+
+
+  
   --For AXI
   CM_interface_1: entity work.CM_map
+    generic map(
+      READ_TIMEOUT    => 2047,
+      ALLOCATED_MEMORY_RANGE =>         ALLOCATED_MEMORY_RANGE      
+      )
     port map (
       clk_axi         => clk_axi,
       reset_axi_n     => reset_axi_n,
@@ -170,6 +198,69 @@ begin
       channel_active                 => mon_active(1));
 
 
+
+  Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.ADDR_LSB      <= x"00000000";--std_logic_vector(AXI_ADDR_C2C1_AXI_BRIDGE(31 downto 0));
+  Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.ADDR_MSB      <= x"00000000";
+  Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.SIZE          <= x"00000000";-- std_logic_vector(AXI_RANGE_C2C1_AXI_BRIDGE);
+  Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.VALID         <= '1';
+  Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.ADDR_LSB  <= x"00000000";
+  Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.ADDR_MSB  <= x"00000000";
+  Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.SIZE      <= x"00000000";
+  Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.VALID     <= '0';
+
+  Mon.CM(1).C2C(2).BRIDGE_INFO.AXI.ADDR_LSB      <= x"00000000";
+  Mon.CM(1).C2C(2).BRIDGE_INFO.AXI.ADDR_MSB      <= x"00000000";
+  Mon.CM(1).C2C(2).BRIDGE_INFO.AXI.SIZE          <= x"00000000";
+  Mon.CM(1).C2C(2).BRIDGE_INFO.AXI.VALID         <= '0';
+  Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.ADDR_LSB  <=  x"00000000";--std_logic_vector(AXI_ADDR_C2C1B_AXI_LITE_BRIDGE(31 downto 0));
+  Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.ADDR_MSB  <= x"00000000";
+  Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.SIZE      <=  x"00000000";--std_logic_vector(AXI_RANGE_C2C1B_AXI_LITE_BRIDGE);
+  Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.VALID     <= '1';
+
+  
+  Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.ADDR_LSB      <=  x"00000000";--std_logic_vector(AXI_ADDR_C2C2_AXI_BRIDGE(31 downto 0));
+  Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.ADDR_MSB      <= x"00000000";
+  Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.SIZE          <=  x"00000000";--std_logic_vector(AXI_RANGE_C2C2_AXI_BRIDGE);
+  Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.VALID         <= '1';
+  Mon.CM(2).C2C(1).BRIDGE_INFO.AXILITE.ADDR_LSB  <= x"00000000";
+  Mon.CM(2).C2C(1).BRIDGE_INFO.AXILITE.ADDR_MSB  <= x"00000000";
+  Mon.CM(2).C2C(1).BRIDGE_INFO.AXILITE.SIZE      <= x"00000000";
+  Mon.CM(2).C2C(1).BRIDGE_INFO.AXILITE.VALID     <= '0';
+
+  Mon.CM(2).C2C(2).BRIDGE_INFO.AXI.ADDR_LSB      <= x"00000000";
+  Mon.CM(2).C2C(2).BRIDGE_INFO.AXI.ADDR_MSB      <= x"00000000";
+  Mon.CM(2).C2C(2).BRIDGE_INFO.AXI.SIZE          <= x"00000000";
+  Mon.CM(2).C2C(2).BRIDGE_INFO.AXI.VALID         <= '0';
+  Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.ADDR_LSB  <= x"00000000";--std_logic_vector(AXI_ADDR_C2C2b_AXI_LITE_BRIDGE(31 downto 0));
+  Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.ADDR_MSB  <= x"00000000";
+  Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.SIZE      <= x"00000000";--std_logic_vector(AXI_RANGE_C2C2b_AXI_LITE_BRIDGE);
+  Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.VALID     <= '1';
+
+  rd_dv: process(clk_axi) is
+  begin
+    if clk_axi'event and clk_axi = '1' then
+      MON.PB.MEM.rd_data_valid <= CTRL.PB.MEM.enable;
+    end if;
+  end process rd_dv;
+  uC_1: entity work.uC
+    generic map(
+      LINK_COUNT => 4)
+    port map (
+      clk                   => clk_axi,
+      reset                 => reset,
+      reprogram_addr        => CTRL.PB.MEM.address,
+      reprogram_wen         => CTRL.PB.MEM.wr_enable,
+      reprogram_di          => CTRL.PB.MEM.wr_data,
+      reprogram_do          => MON.PB.MEM.rd_data,
+      reprogram_reset       => CTRL.PB.reset,
+      UART_Rx               => UART_Rx,
+      UART_Tx               => UART_Tx,
+      irq_count             => CTRL.PB.IRQ_COUNT,
+      link_INFO_in          => link_INFO_in,
+      link_INFO_out         => link_INFO_out
+      );
+
+  
   GENERATE_LOOP: for iCM in 1 to 2 generate
 
     -------------------------------------------------------------------------------
@@ -232,10 +323,7 @@ begin
 
     GENERATE_LANE_LOOP: for iLane in 1 to 2 generate
       signal linkID : integer := 2*(iCM-1) + (iLane);
-    begin
-      Mon.CM(iCM).C2C(iLane).LINK_DEBUG         <= CM_C2C_Mon.Link(linkID).LINK_DEBUG;
-      Mon.CM(iCM).C2C(iLane).STATUS             <= CM_C2C_Mon.Link(linkID).STATUS;
-      Mon.CM(iCM).C2C(iLane).CNT.USER_CLK_FREQ  <= CM_C2C_Mon.Link(linkID).user_clk_freq;
+    begin      
       --C2C control signals
       --CM_C2C_Ctrl.Link(I).aurora_pma_init_in <= CTRL.CM(I).C2C.INITIALIZE;
     
@@ -255,49 +343,124 @@ begin
           clk_in               => clk_axi,
           clk_out              => clk_C2C(linkID),
           reset                => reset,
-          pass_in(0)                                      => CTRL.CM(iCM).C2C(iLane).LINK_DEBUG.RX.PRBS_CNT_RST,
-          pass_in( (CDC_PRBS_SEL_LENGTH -1) + 1 downto 1) => CTRL.CM(iCM).C2C(iLane).LINK_DEBUG.RX.PRBS_SEL,
+          pass_in(0)                                      => CTRL.CM(iCM).C2C(iLane).DEBUG.RX.PRBS_CNT_RST,
+          pass_in( (CDC_PRBS_SEL_LENGTH -1) + 1 downto 1) => CTRL.CM(iCM).C2C(iLane).DEBUG.RX.PRBS_SEL,
           pass_out(0)                                     => CDC_PASSTHROUGH(linkID)(0),               
           pass_out((CDC_PRBS_SEL_LENGTH -1) + 1 downto 1) => CDC_PASSTHROUGH(linkID)((CDC_PRBS_SEL_LENGTH - 1) + 1 downto 1));
 
-      partial_assignment: process (clk_axi) is
-      begin  -- process partial_assignment
-        if clk_axi'event and clk_axi = '1' then  -- rising clock edge
-          --assign everything
-          CM_C2C_Ctrl.Link(linkID).link_debug                 <= CTRL.CM(iCM).C2C(iLane).LINK_DEBUG;
-          CM_C2C_Ctrl.Link(linkID).status                     <= CTRL.CM(iCM).C2C(iLane).status;
-          --override these signals with the CDC versions
-          CM_C2C_Ctrl.Link(linkID).LINK_DEBUG.RX.PRBS_CNT_RST <= CDC_PASSTHROUGH(linkID)(0);
-          CM_C2C_Ctrl.Link(linkID).LINK_DEBUG.RX.PRBS_SEL     <= CDC_PASSTHROUGH(linkID)((CDC_PRBS_SEL_LENGTH -1) + 1 downto 1);        
-        end if;
-      end process partial_assignment;
-    
 
+      Mon.CM(iCM).C2C(iLane).DEBUG                   <= CM_C2C_Mon.Link(linkID).DEBUG;
+      Mon.CM(iCM).C2C(iLane).STATUS                  <= CM_C2C_Mon.Link(linkID).STATUS;
+      Mon.CM(iCM).C2C(iLane).COUNTERS.USER_CLK_FREQ  <= CM_C2C_Mon.Link(linkID).user_clk_freq;
+            
+      partial_assignment: process (Ctrl.CM(iCM).C2C(iLane).debug,
+                                   DRP_MOSI,
+                                   Ctrl.CM(iCM).C2C(iLane).status,
+                                   CDC_PASSTHROUGH,
+                                   aurora_init_buf,
+                                   phy_reset
+                                   ) is
+      begin  -- process partial_assignment
+        CM_C2C_Ctrl.Link(linkID).debug                 <= CTRL.CM(iCM).C2C(iLane).DEBUG;
+        CM_C2C_Ctrl.Link(linkID).DRP                   <= DRP_MOSI(linkID);
+        CM_C2C_Ctrl.Link(linkID).status                <= CTRL.CM(iCM).C2C(iLane).status;
+        CM_C2C_Ctrl.Link(linkID).DEBUG.RX.PRBS_CNT_RST <= CDC_PASSTHROUGH(linkID)(0);
+        CM_C2C_Ctrl.Link(linkID).DEBUG.RX.PRBS_SEL     <= CDC_PASSTHROUGH(linkID)((CDC_PRBS_SEL_LENGTH -1) + 1 downto 1);
+
+        if CTRL.CM(iCM).C2C(iLane).ENABLE_PHY_CTRL = '1' then
+          CM_C2C_Ctrl.Link(linkID).STATUS.INITIALIZE  <= aurora_init_buf(linkID);
+          CM_C2C_Ctrl.Link(linkID).DEBUG.RX.PMA_RESET <= (phy_reset(linkID) or Ctrl.CM(iCM).C2C(iLane).DEBUG.RX.PMA_RESET);
+        else
+          CM_C2C_Ctrl.Link(linkID).STATUS.INITIALIZE  <= Ctrl.CM(iCM).C2C(iLane).STATUS.INITIALIZE;
+          CM_C2C_Ctrl.Link(linkID).DEBUG.RX.PMA_RESET <= Ctrl.CM(iCM).C2C(iLane).DEBUG.RX.PMA_RESET;
+        end if;
+        
+      end process partial_assignment;
+      ---------------------------------------------------------------------------
+      -- DRP CDC
+      ---------------------------------------------------------------------------
+      drp_en_signal(linkID) <= CTRL.CM(iCM).C2C(iLane).DRP.wr_enable or CTRL.CM(iCM).C2C(iLane).DRP.enable;
+      DRP_DATA_to_DRP : entity work.data_CDC
+        generic map (
+          WIDTH => (1 +
+                    CTRL.CM(iCM).C2C(iLane).DRP.address'LENGTH +
+                    CTRL.CM(iCM).C2C(iLane).DRP.wr_data'LENGTH)
+          )
+        port map (
+          clkA       => CTRL.CM(iCM).C2C(iLane).DRP.clk,
+          resetA     => reset,
+          clkB       => DRP_clk(2*(iCM-1) + (iLane)),
+          resetB     => reset,
+          inA(0)                                                     => CTRL.CM(iCM).C2C(iLane).DRP.wr_enable,
+
+          inA(CM_C2C_Ctrl.Link(2*(iCM-1) + (iLane)).DRP.address'LENGTH downto 1)  => CTRL.CM(iCM).C2C(iLane).DRP.address,
+
+          inA(CM_C2C_Ctrl.Link(2*(iCM-1) + (iLane)).DRP.wr_data'LENGTH - 1 +
+              CM_C2C_Ctrl.Link(2*(iCM-1) + (iLane)).DRP.address'LENGTH + 1
+              downto
+              CM_C2C_Ctrl.Link(2*(iCM-1) + (iLane)).DRP.address'LENGTH + 1)       => CTRL.CM(iCM).C2C(iLane).DRP.wr_data,
+        
+          inA_valid  => drp_en_signal(2*(iCM-1) + (iLane)),
+          
+          outB(0)                                                    => DRP_MOSI(2*(iCM-1) + (iLane)).wr_enable,
+          outB(CM_C2C_Ctrl.Link(2*(iCM-1) + (iLane)).DRP.address'LENGTH downto 1) => DRP_MOSI(2*(iCM-1) + (iLane)).address,
+          outB(CM_C2C_Ctrl.Link(2*(iCM-1) + (iLane)).DRP.wr_data'LENGTH - 1 +
+               CM_C2C_Ctrl.Link(2*(iCM-1) + (iLane)).DRP.address'LENGTH + 1
+               downto
+               CM_C2C_Ctrl.Link(2*(iCM-1) + (iLane)).DRP.address'LENGTH + 1)      => DRP_MOSI(2*(iCM-1) + (iLane)).wr_data,
+          outB_valid => DRP_MOSI(2*(iCM-1) + (iLane)).enable);
+      DRP_DATA_from_DRP: entity work.data_CDC
+        generic map (
+          WIDTH => CM_C2C_Mon.Link(linkID).DRP.rd_data'LENGTH)
+        port map (
+          clkA       => DRP_clk(linkID),
+          resetA     => reset,
+          clkB       => clk_axi,
+          resetB     => reset,
+          inA        => CM_C2C_Mon.Link(linkID).DRP.rd_data,
+          inA_valid  => CM_C2C_Mon.Link(linkID).DRP.rd_data_valid,
+          outB       => Mon.CM(iCM).C2C(iLane).DRP.rd_data,
+          outB_valid => Mon.CM(iCM).C2C(iLane).DRP.rd_data_valid);
+      ---------------------------------------------------------------------------
+
+      
       -------------------------------------------------------------------------------
       -- Phy_lane_control
       -------------------------------------------------------------------------------
-      Phy_lane_control_X: entity work.CM_phy_lane_control
+      single_bit_error_rate_counter: entity work.rate_counter
         generic map (
-          CLKFREQ          => CLKFREQ,
-          DATA_WIDTH       => DATA_WIDTH,
-          ERROR_WAIT_TIME  => ERROR_WAIT_TIME)
+          CLK_A_1_SECOND => CLKFREQ)
         port map (
-          clk              => clk_axi,
-          reset            => reset,
-          reset_counter    => CTRL.CM(iCM).C2C(iLane).CNT.RESET_COUNTERS,
-          enable           => phycontrol_en(linkID),
-          phy_lane_up      => CM_C2C_Mon.Link(linkID).status.phy_lane_up(0),
-          phy_lane_stable  => CTRL.CM(iCM).C2C(iLane).PHY_LANE_STABLE,
-          READ_TIME        => CTRL.CM(iCM).C2C(iLane).PHY_READ_TIME,
-          initialize_out   => aurora_init_buf(linkID),
-          lock             => phylanelock(linkID),
-          state_out        => Mon.CM(iCM).C2C(iLane).CNT.PHYLANE_STATE,
-          count_error_wait => Mon.CM(iCM).C2C(iLane).CNT.PHY_ERRORSTATE_COUNT,
-          count_alltime    => Mon.CM(iCM).C2C(iLane).CNT.INIT_ALLTIME,
-          count_shortterm  => Mon.CM(iCM).C2C(iLane).CNT.INIT_SHORTTERM);
-      CM_C2C_Ctrl.Link(linkID).aurora_pma_init_in <= (aurora_init_buf(linkID) and CTRL.CM(iCM).C2C(iLane).ENABLE_PHY_CTRL) or
-                                                     (CTRL.CM(iCM).C2C(iLane).STATUS.INITIALIZE and (not CTRL.CM(iCM).C2C(iLane).ENABLE_PHY_CTRL));
-    
+          clk_A             => clk_axi,
+          clk_B             => clk_axi,
+          reset_A_async     => '0',
+          event_b           => Mon.CM(iCM).C2C(iLane).STATUS.LINK_ERROR,
+          rate              => single_bit_error_rate(linkID));
+      Mon.CM(iCM).C2C(iLane).COUNTERS.SB_ERROR_RATE <= single_bit_error_rate(linkID);
+      multi_bit_error_rate_counter: entity work.rate_counter
+        generic map (
+          CLK_A_1_SECOND => CLKFREQ)
+        port map (
+          clk_A             => clk_axi,
+          clk_B             => clk_axi,
+          reset_A_async     => '0',
+          event_b           => Mon.CM(iCM).C2C(iLane).STATUS.MB_ERROR,
+          rate              => multi_bit_error_rate(linkID));
+      Mon.CM(iCM).C2C(iLane).COUNTERS.MB_ERROR_RATE <= multi_bit_error_rate(linkID);
+      
+
+      phy_reset(linkID)                             <= link_INFO_out(linkID-1).link_reset;       
+      aurora_init_buf(linkID)                       <= link_INFO_out(linkID-1).link_init;        
+      Mon.CM(iCM).C2C(iLane).COUNTERS.PHYLANE_STATE <= link_INFO_out(linkID-1).state(2 downto 0);
+                                  
+      link_INFO_in(linkID-1).link_reset_done          <= '1';--Mon.CM(iCM).C2C(iLane).DEBUG.RX.PMA_RESET_DONE;     
+      link_INFO_in(linkID-1).link_good                <= Mon.CM(iCM).C2C(iLane).status.LINK_GOOD;
+      link_INFO_in(linkID-1).lane_up                  <= Mon.CM(iCM).C2C(iLane).status.phy_lane_up(0);
+      link_INFO_in(linkID-1).sb_err_rate              <= single_bit_error_rate(linkID);
+      link_INFO_in(linkID-1).sb_err_rate_threshold    <= CTRL.CM(iCM).C2C(iLane).PHY_MAX_SINGLE_BIT_ERROR_RATE;
+      link_INFO_in(linkID-1).mb_err_rate              <= multi_bit_error_rate(linkID);
+      link_INFO_in(linkID-1).mb_err_rate_threshold    <= CTRL.CM(iCM).C2C(iLane).PHY_MAX_MULTI_BIT_ERROR_RATE;
+
 
       -------------------------------------------------------------------------------
       -- COUNTERS
@@ -313,7 +476,7 @@ begin
           port map (
             clk         => clk_axi,
             reset_async => reset,
-            reset_sync  => CTRL.CM(iCM).C2C(iLane).CNT.RESET_COUNTERS,
+            reset_sync  => CTRL.CM(iCM).C2C(iLane).COUNTERS.RESET_COUNTERS,
             enable      => counter_en(linkID),
             event       => counter_events((linkID-1)*COUNTER_COUNT + iCNT ),
             count       => C2C_Counter((LinkID-1)*COUNTER_COUNT + iCNT),          --runs 1 to COUNTER_COUNT
@@ -327,11 +490,11 @@ begin
       counter_events((LinkID-1)*COUNTER_COUNT + 3) <= Mon.CM(iCM).C2C(iLane).STATUS.PHY_HARD_ERR;
       counter_events((LinkID-1)*COUNTER_COUNT + 4) <= Mon.CM(iCM).C2C(iLane).STATUS.PHY_SOFT_ERR;
       --setting counters, run 1 to COUNTER_COUNT
-      Mon.CM(iCM).C2C(iLane).CNT.CONFIG_ERROR_COUNT   <= C2C_Counter((LinkID-1)*COUNTER_COUNT + 0);
-      Mon.CM(iCM).C2C(iLane).CNT.LINK_ERROR_COUNT     <= C2C_Counter((LinkID-1)*COUNTER_COUNT + 1);
-      Mon.CM(iCM).C2C(iLane).CNT.MB_ERROR_COUNT       <= C2C_Counter((LinkID-1)*COUNTER_COUNT + 2);
-      Mon.CM(iCM).C2C(iLane).CNT.PHY_HARD_ERROR_COUNT <= C2C_Counter((LinkID-1)*COUNTER_COUNT + 3);
-      Mon.CM(iCM).C2C(iLane).CNT.PHY_SOFT_ERROR_COUNT <= C2C_Counter((LinkID-1)*COUNTER_COUNT + 4);   
+      Mon.CM(iCM).C2C(iLane).COUNTERS.CONFIG_ERROR_COUNT   <= C2C_Counter((LinkID-1)*COUNTER_COUNT + 0);
+      Mon.CM(iCM).C2C(iLane).COUNTERS.LINK_ERROR_COUNT     <= C2C_Counter((LinkID-1)*COUNTER_COUNT + 1);
+      Mon.CM(iCM).C2C(iLane).COUNTERS.MB_ERROR_COUNT       <= C2C_Counter((LinkID-1)*COUNTER_COUNT + 2);
+      Mon.CM(iCM).C2C(iLane).COUNTERS.PHY_HARD_ERROR_COUNT <= C2C_Counter((LinkID-1)*COUNTER_COUNT + 3);
+      Mon.CM(iCM).C2C(iLane).COUNTERS.PHY_SOFT_ERROR_COUNT <= C2C_Counter((LinkID-1)*COUNTER_COUNT + 4);   
     end generate GENERATE_LANE_LOOP;
   end generate GENERATE_LOOP;
 end architecture behavioral;

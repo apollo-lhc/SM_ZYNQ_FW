@@ -1,1 +1,0 @@
-../rev1_xc7z035/top.vhd

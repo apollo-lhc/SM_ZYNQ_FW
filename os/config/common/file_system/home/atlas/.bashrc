@@ -7,6 +7,11 @@ if [ -f /etc/bashrc ]; then
 	. /etc/bashrc
 fi
 
+# local customizations if they exist
+if [ -f $HOME/.bashrc_local ]; then
+	. $HOME/.bashrc_local
+fi
+
 CACTUS_ROOT=/opt/cactus
 LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${CACTUS_ROOT}/lib
 PATH=${PATH}:/opt/BUTool/bin:/opt/mcu_tools/bin/

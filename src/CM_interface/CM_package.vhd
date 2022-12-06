@@ -7,7 +7,8 @@ use work.CM_CTRL.all;
 package CM_package is
   type single_C2C_Monitor_t is record
     status             : CM_CM_C2C_STATUS_MON_t;     -- from address table via CM_PKG
-    link_debug         : CM_CM_C2C_LINK_DEBUG_MON_t; -- from address table via CM_PKG
+    debug              : CM_CM_C2C_DEBUG_MON_t; -- from address table via CM_PKG
+    DRP                : CM_CM_C2C_DRP_MISO_t;
     user_clk_freq      : std_logic_vector(31 downto 0);
   end record single_C2C_Monitor_t;
   type C2C_Monitor_t_ARRAY is array (1 to 4) of single_C2C_Monitor_t;
@@ -17,14 +18,14 @@ package CM_package is
   
 
   type single_C2C_Control_t is record    
-    aurora_pma_init_in : std_logic;
     status             : CM_CM_C2C_STATUS_CTRL_t;     -- from address table via CM_PKG
-    link_debug         : CM_CM_C2C_LINK_DEBUG_CTRL_t; -- from address table via CM_PKG
+    debug              : CM_CM_C2C_DEBUG_CTRL_t; -- from address table via CM_PKG
+    DRP                : CM_CM_C2C_DRP_MOSI_t;
   end record single_C2C_Control_t;
   constant DEFAULT_single_C2C_Control_t : single_C2C_Control_t := (
-    aurora_pma_init_in => '0',
     status             => DEFAULT_CM_CM_C2C_STATUS_CTRL_t,     -- from address table via CM_PKG
-    link_debug         => DEFAULT_CM_CM_C2C_LINK_DEBUG_CTRL_t -- from address table via CM_PKG
+    debug              => DEFAULT_CM_CM_C2C_DEBUG_CTRL_t, -- from address table via CM_PKG
+    drp                => Default_CM_CM_C2C_DRP_MOSI_t
     );
   type C2C_Control_t_ARRAY is array (1 to 4) of single_C2C_Control_t;
   type C2C_Control_t is record
