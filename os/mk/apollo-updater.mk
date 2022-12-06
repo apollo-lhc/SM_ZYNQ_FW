@@ -1,4 +1,4 @@
-APOLLO_UPDATER_BRANCH=main
+APOLLO_UPDATER_BRANCH=v1.0.0
 APOLLO_UPDATER_URI=https://gitlab.com/apollo-lhc/soc-tools/apollo-updater.git
 APOLLO_UPDATER_NAME=apollo-updater
 

@@ -1,5 +1,5 @@
 #Build BUTool from ApolloTool meta repo
-APOLLO_TOOL_TAG=master
+APOLLO_TOOL_TAG=v2.1.0
 APOLLO_TOOL_URI=https://github.com/apollo-lhc/ApolloTool.git
 
 #target level variables

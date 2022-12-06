@@ -146,7 +146,7 @@ AXI_SLAVES:
           axi_fw_bus: "/AXIM_PL"
           axi_control: "${::AXI_C2C_CTRL}"
         XML: "address_table/modules/CM_MON_AXI_FW.xml"
-        UHAL_BASE: 0x20000000
+        UHAL_BASE: 0x21000000
 
 
   SI:

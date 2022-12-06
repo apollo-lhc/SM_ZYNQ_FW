@@ -1,4 +1,4 @@
-DTBO_TAG=develop
+DTBO_TAG=v1.0.0
 DTBO_URI=https://gitlab.com/apollo-lhc/soc-tools/bootup-daemon.git
 NAME=uio-daemon
 

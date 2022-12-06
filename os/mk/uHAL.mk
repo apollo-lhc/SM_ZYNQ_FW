@@ -3,7 +3,7 @@ UHAL_TAG=v2.8.1
 UHAL_URI=https://github.com/ipbus/ipbus-software.git
 
 UIO_UHAL_URI=https://github.com/BU-Tools/UIOuHAL.git
-UIO_UHAL_TAG=develop
+UIO_UHAL_TAG=v1.2
 #UIO_UHAL_TAG=feature/extra-protection
 
 
