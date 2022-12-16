@@ -101,6 +101,9 @@ include mk/users.mk
 	@echo ${CONFIG_DIR} 
 	sudo cp -r ${CONFIG_DIR}/file_system/* ${INSTALL_PATH} 
 	sudo chmod o+x ${ETC_PATH}/rc.local
+        #add the following dirs
+        sudo mkdir -p ${INSTALL_PATH}/fw/SM
+        sudo mkdir -p ${INSTALL_PATH}/fw/CM
 	#Change ownership of the CM fw path
 	sudo chmod a+rwX -R ${INSTALL_PATH}/fw/CM
 	#Change ownership of the uio_daemon config file
