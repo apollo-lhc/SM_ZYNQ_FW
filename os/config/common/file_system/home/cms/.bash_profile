@@ -1,1 +1,0 @@
-../atlas/.bash_profile
