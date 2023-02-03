@@ -61,23 +61,10 @@ set_property CONFIG.STRATEGY {1} [get_bd_cells ${AXI_C2C_INTERCONNECT_NAME}]
 puts "Building interrupt controller"
 #add interrupt controller
 set IRQ0_INTR_CTRL IRQ0_INTR_CTRL
-AXI_IP_IRQ_CTRL [dict create \
-		 device_name ${IRQ0_INTR_CTRL} \
-		 irq_dest ${ZYNQ_NAME}/pl_ps_irq0 \
-		 axi_control [dict create \
-		    axi_interconnect ${::AXI_INTERCONNECT_NAME} \
-		    axi_clk ${::AXI_MASTER_CLK} \
-		    axi_rstn ${::AXI_PRIMARY_SLAVE_RSTN} \
-		    axi_freq ${::AXI_MASTER_CLK_FREQ} \
-		    ] \
-		 dt_data {    compatible = "xlnx,axi-intc-4.1", "xlnx,xps-intc-1.00.a", "generic-uio"; \
-                              interrupt-parent = <&gic>; \
-                              interrupts = <0 89 0>; \
-                              xlnx,kind-of-intr = <0x0>; \
-                              label = "$device_name"; \
-                              linux,uio-name = "$device_name";\
-                         }\
-		    ]
+AXI_IP_IRQ_SIMPLE [dict create \
+		       device_name ${IRQ0_INTR_CTRL} \
+		       irq_dest ${ZYNQ_NAME}/pl_ps_irq0 \
+		      ]
 
 
 puts "Adding init clk"

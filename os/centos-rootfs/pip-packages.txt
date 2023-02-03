@@ -1,8 +1,0 @@
-docutils
-pybind11
-python-pidfile
-python-daemon
-lxml
-jinja2
-sdnotify
-pyyaml

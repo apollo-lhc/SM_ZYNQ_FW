@@ -61,9 +61,7 @@ As mentioned above, make is used to drive the build.  There are three parts to t
    Located in ./kernel
    Builds the files needed to boot the Zynq PS+PL
  - CentOS FS build
-   Located in ./os
-   Builds the CentOS filesystem used.  
-   Requires sudo privilages (for now)
+   Now in https://gitlab.com/apollo-lhc/soc-os
 
 #### Make
 Buildable Groups:
@@ -72,7 +70,7 @@ Buildable Groups:
     - Apollo SM config:
       Different FWs to make (you probably just want one of these)
     - Prebuild:
-      provides address table to HDL conversions, kernel & OS yaml files, and AddSlaves.tcl building
+      provides address table to HDL conversions, kernel yaml files, and AddSlaves.tcl building
     - Vivado:
       Drive interactive vivado sessions
     - Clean:
@@ -99,27 +97,13 @@ To Build zynq fsbl+kernel+fs
   - `cd kernel`
     `make revN_xcFPGA`
 
-  Output:
-  
-   - kernel/zynq_os/images/linux/BOOT.bin
-  
-   - kernel/zynq_os/images/linux/image.ub
 
-
-To Build the centos image
-   - First, build FPGA FW if you haven't already
-   - `cd os`
-   - `sudo make clean; sudo make revN_xcFPGA.tar.gz`
-
-   Output: (follow os/README for copying instructions)   
-   - os/image/revN_xcFPGA.tar.gz
-   - os/image/revN_xcFPGA/
 
    
 ### Organization:
   Build scripts are in ./scripts and are called by the Makefile
   
-  Zynq block diagram generation tcl scripts are in ./src/ZynqOS
+  Zynq block diagram generation tcl scripts are in ./src/ZynqPS
     build_Zynq_revN_xcFPGA.tcl is automatically called by build scripts.
   This relies on the tcl scripts in the submodule in bd.
 
@@ -133,10 +117,6 @@ To Build the centos image
     ./kernel/hw contains device-tree elements and the xilinx hwdef files needed to build the PS system
     ./kernel/zynq_os_mods contains recipes for mods/patches for/of the petalinux system.
 
-  CentOS:
-    ./os/address_table contains the build address table and module files
-    ./os/configs/revN contains the modifications to the centos file system.
-    ./os/scripts and ./os/mk contain the build rules and scripts for the filesystem creation.
 
 ### Dependencies:
 	generation of xml regmaps requires the Jinja2 library for python

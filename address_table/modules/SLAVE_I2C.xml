@@ -6,6 +6,7 @@
 	  <node id="DONE"          permission="rw" mask="0x00000001"/>
 	  <node id="ERROR"         permission="rw" mask="0x00000002"/>
 	  <node id="ZYNQ_DONE"     permission="rw" mask="0x00000004"/>
+          <node id="I2C_DONE"      permission="rw" mask="0x00000008" description="If 1, all I2C writes to S1 are done"/>
 	  <node id="SHUTDOWN_REQ"  permission="rw" mask="0x00000010" description="If 1, petalinux will shut down"/>
 	  <node id="SHUTDOWN"      permission="rw" mask="0x00000020" description="1 when petalinux shuts down"/>
 	</node>
