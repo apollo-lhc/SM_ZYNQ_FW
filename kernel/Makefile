@@ -160,6 +160,7 @@ define copy_configs =
 		$(KERNEL_MODS_DST_PATH) || : 				$(OUTPUT_MARKUP)
 
 #	Device Tree mods ========================================================
+	@echo "Building device tree mods"	 			$(OUTPUT_MARKUP)
 	DTSI_PATH= $(DEVTREE_MODS_SCRIPT) \
 		 	$(DEVTREE_MODS_SRC_PATHS) > \
 			$(DEVTREE_MODS_DST_FILE) || : 			$(OUTPUT_MARKUP)

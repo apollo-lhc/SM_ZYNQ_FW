@@ -252,9 +252,9 @@ AXI_SLAVES:
     XML: "address_table/modules/AXI_MONITOR.xml"
     UHAL_BASE: 0x1F000000
 
-  IRQ_CTRL:
-    XML: "address_table/modules/INTERRUPT_CONTROLLER.xml"
-    UHAL_BASE: 0x16000000
+#  IRQ_CTRL:
+#    XML: "address_table/modules/INTERRUPT_CONTROLLER.xml"
+#    UHAL_BASE: 0x16000000
 
   INT_AXI_FW:
     TCL_CALL:
@@ -266,33 +266,33 @@ AXI_SLAVES:
 
 
 
-  ZYNQ_DMA:
-    TCL_CALL:
-      command: "set_property -dict [list CONFIG.PSU__USE__S_AXI_GP3 {1} CONFIG.PSU__SAXIGP3__DATA_WIDTH {32}] [get_bd_cells ZynqMPSoC];#"
-    SUB_SLAVES:
-      ZYNQ_MASTER_SLAVE:
-        TCL_CALL:
-          command: "AXI_CONNECT ZynqMPSoC ${::AXI_INTERCONNECT_NAME} ${::AXI_MASTER_CLK} ${::AXI_PRIMARY_SLAVE_RSTN} ${::AXI_MASTER_CLK_FREQ} ;#"
-      MASTER_CDMA:
-        TCL_CALL:
-          command: "AXI_IP_CDMA"
-          axi_control: "${::AXI_MASTER_CTRL}"
-          irq_port: "${::IRQ0_INTR_CTRL}"
-          zynq_axi: "${::AXI_INTERCONNECT_NAME}"
-          zynq_clk: "${::AXI_MASTER_CLK}"
-        SUB_SLAVES:
-          MASTER_CDMA_DEBUG:
-            TCL_CALL:
-              command: "AXI_IP_SYSTEM_ILA"
-              axi_clk: "${::AXI_MASTER_CLK}"
-              axi_rstn: "${::AXI_PRIMARY_SLAVE_RSTN}"
-              slots:
-                slot0:
-                  axi_bus: "ZynqMPSoC/S_AXI_HP1_FPD"
-                slot1:
-                  axi_bus: "MASTER_CDMA/M_AXI"
-                slot2:
-                  axi_bus: "PL_MEM/S_AXI"
+#  ZYNQ_DMA:
+#    TCL_CALL:
+#      command: "set_property -dict [list CONFIG.PSU__USE__S_AXI_GP3 {1} CONFIG.PSU__SAXIGP3__DATA_WIDTH {32}] [get_bd_cells ZynqMPSoC];#"
+#    SUB_SLAVES:
+#      ZYNQ_MASTER_SLAVE:
+#        TCL_CALL:
+#          command: "AXI_CONNECT ZynqMPSoC ${::AXI_INTERCONNECT_NAME} ${::AXI_MASTER_CLK} ${::AXI_PRIMARY_SLAVE_RSTN} ${::AXI_MASTER_CLK_FREQ} ;#"
+#      MASTER_CDMA:
+#        TCL_CALL:
+#          command: "AXI_IP_CDMA"
+#          axi_control: "${::AXI_MASTER_CTRL}"
+#          irq_port: "${::IRQ0_INTR_CTRL}"
+#          zynq_axi: "${::AXI_INTERCONNECT_NAME}"
+#          zynq_clk: "${::AXI_MASTER_CLK}"
+#        SUB_SLAVES:
+#          MASTER_CDMA_DEBUG:
+#            TCL_CALL:
+#              command: "AXI_IP_SYSTEM_ILA"
+#              axi_clk: "${::AXI_MASTER_CLK}"
+#              axi_rstn: "${::AXI_PRIMARY_SLAVE_RSTN}"
+#              slots:
+#                slot0:
+#                  axi_bus: "ZynqMPSoC/S_AXI_HP1_FPD"
+#                slot1:
+#                  axi_bus: "MASTER_CDMA/M_AXI"
+#                slot2:
+#                  axi_bus: "PL_MEM/S_AXI"
 
 CORES:
   onboardclk:
@@ -304,42 +304,42 @@ CORES:
         1: 200
         2: 50
         3: 125
-  localTCDS_MGT:
-    TCL_CALL:
-      command: BuildMGTCores
-      GT_TYPE: GTH
-      freerun_frequency: 125
-      clocking:
-        TX:
-          LINE_RATE: 10.260224
-          PLL_TYPE: CPLL
-          REFCLK_FREQUENCY: 320.632
-          OUTCLK_SOURCE: TXOUTCLKPMA
-        RX:
-          LINE_RATE: 10.260224
-          PLL_TYPE: CPLL
-          REFCLK_FREQUENCY: 320.632
-          OUTCLK_SOURCE: RXOUTCLKPMA
-      protocol:
-        TX:
-          DATA_ENCODING: 8B10B
-          INT_DATA_WIDTH: 40
-        RX:
-          DATA_DECODING: 8B10B
-          COMMA_PRESET: K28.5
-          COMMA_P_ENABLE: true
-          COMMA_M_ENABLE: true
-          COMMA_MASK: 1111111111
-      core:
-        LOCATE_TX_USER_CLOCKING: CORE
-        LOCATE_RX_USER_CLOCKING: CORE
-        LOCATE_COMMON: EXAMPLE_DESIGN
-      links:
-        X0Y12:
-          RX: clk0
-          TX: clk0
-      optional: "drpaddr_in drpclk_in drpdi_in drpen_in drpwe_in eyescanreset_in eyescantrigger_in pcsrsvdin_in rxbufreset_in rxcdrhold_in rxdfelpmreset_in rxlpmen_in rxpcsreset_in rxpmareset_in rxprbscntreset_in rxprbssel_in rxrate_in txdiffctrl_in txinhibit_in txpcsreset_in txpmareset_in txpolarity_in txpostcursor_in txprbsforceerr_in txprbssel_in txprecursor_in cplllock_out dmonitorout_out drpdo_out drprdy_out eyescandataerror_out rxprbserr_out rxresetdone_out txbufstatus_out txresetdone_out txoutclksel_in rxoutclksel_in cpllreset_in"
-
+#  localTCDS_MGT:
+#    TCL_CALL:
+#      command: BuildMGTCores
+#      GT_TYPE: GTH
+#      freerun_frequency: 125
+#      clocking:
+#        TX:
+#          LINE_RATE: 10.260224
+#          PLL_TYPE: CPLL
+#          REFCLK_FREQUENCY: 320.632
+#          OUTCLK_SOURCE: TXOUTCLKPMA
+#        RX:
+#          LINE_RATE: 10.260224
+#          PLL_TYPE: CPLL
+#          REFCLK_FREQUENCY: 320.632
+#          OUTCLK_SOURCE: RXOUTCLKPMA
+#      protocol:
+#        TX:
+#          DATA_ENCODING: 8B10B
+#          INT_DATA_WIDTH: 40
+#        RX:
+#          DATA_DECODING: 8B10B
+#          COMMA_PRESET: K28.5
+#          COMMA_P_ENABLE: true
+#          COMMA_M_ENABLE: true
+#          COMMA_MASK: 1111111111
+#      core:
+#        LOCATE_TX_USER_CLOCKING: CORE
+#        LOCATE_RX_USER_CLOCKING: CORE
+#        LOCATE_COMMON: EXAMPLE_DESIGN
+#      links:
+#        X0Y12:
+#          RX: clk0
+#          TX: clk0
+#      optional: "drpaddr_in drpclk_in drpdi_in drpen_in drpwe_in eyescanreset_in eyescantrigger_in pcsrsvdin_in rxbufreset_in rxcdrhold_in rxdfelpmreset_in rxlpmen_in rxpcsreset_in rxpmareset_in rxprbscntreset_in rxprbssel_in rxrate_in txdiffctrl_in txinhibit_in txpcsreset_in txpmareset_in txpolarity_in txpostcursor_in txprbsforceerr_in txprbssel_in txprecursor_in cplllock_out dmonitorout_out drpdo_out drprdy_out eyescandataerror_out rxprbserr_out rxresetdone_out txbufstatus_out txresetdone_out txoutclksel_in rxoutclksel_in cpllreset_in"
+#
 
 
 
