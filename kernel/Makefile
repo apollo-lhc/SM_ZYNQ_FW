@@ -82,7 +82,8 @@ ATF_MOD_DST_PATH=$(YOCTO_USER_BSP_BASE)/arm-trusted-firmware/
 KERNEL_MODS_SRC_PATH=$(CONFIG_BASE)/kernel/linux
 KERNEL_MODS_DST_PATH=$(YOCTO_USER_KERNEL_BASE)/
 
-DEVTREE_MODS_SRC_PATHS="./hw ./hw_* $(CONFIG_BASE)/hw_user"
+#DEVTREE_MODS_SRC_PATHS="./hw ./hw_* $(CONFIG_BASE)/hw_user"
+DEVTREE_MODS_SRC_PATHS="./hw/$(1)"
 DEVTREE_MODS_SCRIPT=$(CONFIG_BASE)/device-tree/build_user_dtsi.sh
 DEVTREE_MODS_DST_FILE=$(YOCTO_USER_BSP_BASE)/device-tree/files/system-user.dtsi
 
@@ -206,7 +207,7 @@ define build_project =
 		source $(SOURCE_PETALINUX_ENV) && \
 		pwd && \
 		petalinux-config --get-hw-description \
-			../hw/ $(PETALINUX_OLD_CONFIG_OPTION) 		$(OUTPUT_MARKUP)
+			../hw/$(1) $(PETALINUX_OLD_CONFIG_OPTION) 		$(OUTPUT_MARKUP)
 	@echo "Apply all mods" 						$(OUTPUT_MARKUP)
 	$(copy_configs) 
 	@echo "Reset the project build"

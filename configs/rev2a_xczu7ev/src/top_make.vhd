@@ -8,30 +8,11 @@ use work.CM_package.all;
 use work.SERV_CTRL.all;
 use work.Global_PKG.all; 
 use work.AXISlaveAddrPkg.all;
-use work.register_pkg.all;
 
 library UNISIM;
 use UNISIM.vcomponents.all;
 
 entity top is
-generic (
-    -- Global Generic Variables
-    GLOBAL_DATE         : std_logic_vector(31 downto 0);
-    GLOBAL_TIME         : std_logic_vector(31 downto 0);
-    GLOBAL_VER          : std_logic_vector(31 downto 0);
-    GLOBAL_SHA          : std_logic_vector(31 downto 0);
-    TOP_VER             : std_logic_vector(31 downto 0);
-    TOP_SHA             : std_logic_vector(31 downto 0);
-    CON_VER             : std_logic_vector(31 downto 0);
-    CON_SHA             : std_logic_vector(31 downto 0);
-    HOG_VER             : std_logic_vector(31 downto 0);
-    HOG_SHA             : std_logic_vector(31 downto 0);
-
-    xil_defaultlib_VER  : std_logic_vector(31 downto 0);
-    xil_defaultlib_SHA  : std_logic_vector(31 downto 0);
-    Default_VER         : std_logic_vector(31 downto 0);
-    Default_SHA         : std_logic_vector(31 downto 0)
-    );
   port (
 
 
@@ -257,20 +238,7 @@ end entity top;
 
 architecture structure of top is
 
-  component onboardclk is 
-  port (
-      clk_200MHz:   out std_logic;
-      clk_50MHz:    out std_logic;
-      clk_125MHz:   out std_logic;
-      reset:        in  std_logic;
-      locked:       out std_logic;       
-      clk_in1_p:    in  std_logic;
-      clk_in1_n:    in  std_logic
-  ); end component;
 
-
-  signal status : reg_matrix(0 to N_STATUS_REGS-1):= (others => (others => '0'));
-  signal ctrl   : reg_matrix(0 to N_CTRL_REGS-1);
   
   signal pl_clk : std_logic;
   signal axi_reset_n : std_logic;
@@ -929,17 +897,17 @@ begin  -- architecture structure
       CPLD_Mon        => CPLD_Mon,
       CPLD_Ctrl       => CPLD_Ctrl);
 
---  SM_info_1: entity work.SM_info
---    generic map (
---      ALLOCATED_MEMORY_RANGE => to_integer(AXI_RANGE_SM_INFO)
---      )
---    port map (
---      clk_axi     => axi_clk,
---      reset_axi_n => axi_reset_n,
---      readMOSI    => AXI_BUS_RMOSI(3),
---      readMISO    => AXI_BUS_RMISO(3),
---      writeMOSI   => AXI_BUS_WMOSI(3),
---      writeMISO   => AXI_BUS_WMISO(3));
+  SM_info_1: entity work.SM_info
+    generic map (
+      ALLOCATED_MEMORY_RANGE => to_integer(AXI_RANGE_SM_INFO)
+      )
+    port map (
+      clk_axi     => axi_clk,
+      reset_axi_n => axi_reset_n,
+      readMOSI    => AXI_BUS_RMOSI(3),
+      readMISO    => AXI_BUS_RMISO(3),
+      writeMOSI   => AXI_BUS_WMOSI(3),
+      writeMISO   => AXI_BUS_WMISO(3));
   
   IPMC_i2c_slave_1: entity work.IPMC_i2c_slave
     generic map(
@@ -1100,7 +1068,7 @@ begin  -- architecture structure
   -------------------------------------------------------------------------------
   -- Clocking
   -------------------------------------------------------------------------------
-  onboardCLK_1: onboardCLK
+  onboardCLK_1: entity work.onboardCLK
     port map (
       clk_200Mhz => clk_200Mhz,
       clk_50Mhz  => AXI_C2C_aurora_init_clk,
@@ -1225,22 +1193,5 @@ begin  -- architecture structure
       event_b       => '1',
       rate          => Clocking_Mon.TCDS_CLK_FREQ);
 
-	  	-- register connection
-	--ctrl registers
---	reset_from_software							<= ctrl(reset_from_software_REG)(reset_from_software_RANGE);
-	
-    -- status registers
-    status(GLOBAL_DATE_REG)(GLOBAL_DATE_RANGE)                     <= GLOBAL_DATE;
-    status(GLOBAL_TIME_REG)(GLOBAL_TIME_RANGE)                     <= GLOBAL_TIME;
-    status(TOP_VER_REG)(TOP_VER_RANGE)                             <= TOP_VER;
-    status(TOP_SHA_REG)(TOP_SHA_RANGE)                             <= TOP_SHA;
-    status(CON_VER_REG)(CON_VER_RANGE)                             <= CON_VER;
-    status(CON_SHA_REG)(CON_SHA_RANGE)                             <= CON_SHA;
-    status(HOG_VER_REG)(HOG_VER_RANGE)                             <= HOG_VER;
-    status(HOG_SHA_REG)(HOG_SHA_RANGE)                             <= HOG_SHA;
-    status(xil_defaultlib_VER_REG)(xil_defaultlib_VER_RANGE)       <= xil_defaultlib_VER;
-    status(xil_defaultlib_SHA_REG)(xil_defaultlib_SHA_RANGE)       <= xil_defaultlib_SHA;
-    status(Default_VER_REG)(Default_VER_RANGE)                     <= Default_VER;
-    status(Default_SHA_REG)(Default_SHA_RANGE)                     <= Default_SHA;  
 
 end architecture structure;

@@ -9,17 +9,25 @@ vivado*.log
 vivado*.jou
 *backup*
 
+bin
+
 #################################################################################
 ## Configs
 #################################################################################
 configs/*/autogen/cores
 configs/*/cores/*/
-
 #################################################################################
 ## Vivado files
 #################################################################################
 #build direcotry
-proj/
+Projects/
+.Xil
+build-scripts/.Xil
+build-scripts/zynq_bd
+usage_statistics_webtalk.html
+usage_statistics_webtalk.xml
+configs/*/autogen/
+
 
 #all the vivado stuff in the cores directory execpt the xci files
 cores/*/*
@@ -62,7 +70,6 @@ sim/*
 ## Temp build files
 #################################################################################
 src/fw_version.vhd
-
 
 #################################################################################
 ## Autogen files
