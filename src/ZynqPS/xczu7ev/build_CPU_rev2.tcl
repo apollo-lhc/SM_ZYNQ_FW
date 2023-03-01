@@ -71,7 +71,9 @@ set ZYNQ_RESETN ${ZYNQ_NAME}/pl_resetn0
 #MIO configuration
 ###############################
 #All MIO configurations are in build_CPU_MIO.tcl
-source ../src/ZynqPS/xczu7ev/build_CPU_MIO_rev2.tcl
+puts "################ BUILD_CPU CURRENT_PATH ################"
+puts $script_path
+source $apollo_root_path/src/ZynqPS/xczu7ev/build_CPU_MIO_rev2.tcl
 
 #master reset circuit
 set SYS_RESETTER_PRIMARY sys_resetter_primary
