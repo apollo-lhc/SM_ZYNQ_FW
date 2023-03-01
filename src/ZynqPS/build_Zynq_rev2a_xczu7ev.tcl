@@ -1,8 +1,7 @@
 source ${apollo_root_path}/bd/Xilinx_Helpers.tcl
 
 #create a block design called "zynq_bd"
-#create_bd_design -dir ./ $bd_name
-create_bd_design -dir ${apollo_root_path}/Projects/$build_name $bd_name
+create_bd_design -dir ./ $bd_name
 
 set AXI_ADDR_WIDTH 32
 
@@ -31,6 +30,8 @@ set PL_M_RSTN ${AXI_PRIMARY_MASTER_RSTN}
 set PL_M_FREQ [get_property CONFIG.FREQ_HZ [get_bd_pin ${AXI_MASTER_CLK}]]
 AXI_PL_MASTER_PORT "name ${PL_M} axi_clk ${PL_M_CLK} axi_rstn ${PL_M_RSTN} axi_freq ${PL_M_FREQ}"
 
+
+
 set AXI_MASTER_CLK_FREQ [get_property CONFIG.FREQ_HZ [get_bd_pin ${AXI_MASTER_CLK}]]
 Add_Global_Constant AXI_MASTER_CLK_FREQ integer ${AXI_MASTER_CLK_FREQ}
 
@@ -57,30 +58,13 @@ BUILD_AXI_INTERCONNECT \
 set_property CONFIG.STRATEGY {1} [get_bd_cells ${AXI_C2C_INTERCONNECT_NAME}]
 
 
-#puts "Building interrupt controller"
-#add interrupt controller
-#set IRQ0_INTR_CTRL IRQ0_INTR_CTRL
-#AXI_IP_IRQ_SIMPLE [dict create \
-#		       device_name ${IRQ0_INTR_CTRL} \
-#		       irq_dest ${ZYNQ_NAME}/pl_ps_irq0 \
-#		      ]
 puts "Building interrupt controller"
-#add interrupt controller                                                                                                                                                                     
+#add interrupt controller
 set IRQ0_INTR_CTRL IRQ0_INTR_CTRL
-AXI_IP_IRQ_CTRL [dict create \
-    device_name ${IRQ0_INTR_CTRL} \
-    irq_dest ${ZYNQ_NAME}/pl_ps_irq0 \
-    axi_control [dict create \
-        axi_interconnect ${::AXI_INTERCONNECT_NAME} \
-        axi_clk ${::AXI_MASTER_CLK} \
-        axi_rstn ${::AXI_PRIMARY_SLAVE_RSTN} \
-        axi_freq ${::AXI_MASTER_CLK_FREQ} \
-        ]\
-    dt_data { \
-        interrupt-parent = <&gic>; \
-        interrupts = <0 89 0>; \
-            } \
-    ]
+AXI_IP_IRQ_SIMPLE [dict create \
+		       device_name ${IRQ0_INTR_CTRL} \
+		       irq_dest ${ZYNQ_NAME}/pl_ps_irq0 \
+		      ]
 
 
 puts "Adding init clk"
