@@ -15,6 +15,3 @@
 	path = src/misc
 	url = https://gitlab.com/BU-EDF/fw-bits/misc-vhdl.git
 	branch = develop
-[submodule "Hog"]
-	path = Hog
-	url = https://gitlab.com/hog-cern/Hog
