@@ -99,8 +99,8 @@ architecture behavioral of CM_intf is
   type CDC_PASSTHROUGH_t is array (1 to 2*2) of std_logic_vector(CDC_PRBS_SEL_LENGTH -1 + 1 downto 0);
   signal CDC_PASSTHROUGH : CDC_PASSTHROUGH_t;
 
-  signal single_bit_error_rate : slv32_array_t(HW_LINK_COUNT*COUNTER_COUNT downto 1);
-  signal multi_bit_error_rate : slv32_array_t(HW_LINK_COUNT*COUNTER_COUNT downto 1);
+  signal soft_error_rate : slv32_array_t(HW_LINK_COUNT*COUNTER_COUNT downto 1);
+  signal hard_error_rate : slv32_array_t(HW_LINK_COUNT*COUNTER_COUNT downto 1);
   signal link_INFO_out : uC_Link_out_t_array(0 to 3);
   signal link_INFO_in  : uC_Link_in_t_array (0 to 3);
 
@@ -427,26 +427,26 @@ begin
       -------------------------------------------------------------------------------
       -- Phy_lane_control
       -------------------------------------------------------------------------------
-      single_bit_error_rate_counter: entity work.rate_counter
+      soft_error_rate_counter: entity work.rate_counter
         generic map (
           CLK_A_1_SECOND => CLKFREQ)
         port map (
           clk_A             => clk_axi,
           clk_B             => clk_axi,
           reset_A_async     => '0',
-          event_b           => Mon.CM(iCM).C2C(iLane).STATUS.LINK_ERROR,
-          rate              => single_bit_error_rate(linkID));
-      Mon.CM(iCM).C2C(iLane).COUNTERS.SB_ERROR_RATE <= single_bit_error_rate(linkID);
-      multi_bit_error_rate_counter: entity work.rate_counter
+          event_b           => Mon.CM(iCM).C2C(iLane).STATUS.PHY_SOFT_ERR,
+          rate              => soft_error_rate(linkID));
+      Mon.CM(iCM).C2C(iLane).COUNTERS.SOFT_ERROR_RATE <= soft_error_rate(linkID);
+      hard_error_rate_counter: entity work.rate_counter
         generic map (
           CLK_A_1_SECOND => CLKFREQ)
         port map (
           clk_A             => clk_axi,
           clk_B             => clk_axi,
           reset_A_async     => '0',
-          event_b           => Mon.CM(iCM).C2C(iLane).STATUS.MB_ERROR,
-          rate              => multi_bit_error_rate(linkID));
-      Mon.CM(iCM).C2C(iLane).COUNTERS.MB_ERROR_RATE <= multi_bit_error_rate(linkID);
+          event_b           => Mon.CM(iCM).C2C(iLane).STATUS.PHY_HARD_ERR,
+          rate              => hard_error_rate(linkID));
+      Mon.CM(iCM).C2C(iLane).COUNTERS.HARD_ERROR_RATE <= hard_error_rate(linkID);
       
 
       phy_reset(linkID)                             <= link_INFO_out(linkID-1).link_reset;       
@@ -456,10 +456,10 @@ begin
       link_INFO_in(linkID-1).link_reset_done          <= '1';--Mon.CM(iCM).C2C(iLane).DEBUG.RX.PMA_RESET_DONE;     
       link_INFO_in(linkID-1).link_good                <= Mon.CM(iCM).C2C(iLane).status.LINK_GOOD;
       link_INFO_in(linkID-1).lane_up                  <= Mon.CM(iCM).C2C(iLane).status.phy_lane_up(0);
-      link_INFO_in(linkID-1).sb_err_rate              <= single_bit_error_rate(linkID);
-      link_INFO_in(linkID-1).sb_err_rate_threshold    <= CTRL.CM(iCM).C2C(iLane).PHY_MAX_SINGLE_BIT_ERROR_RATE;
-      link_INFO_in(linkID-1).mb_err_rate              <= multi_bit_error_rate(linkID);
-      link_INFO_in(linkID-1).mb_err_rate_threshold    <= CTRL.CM(iCM).C2C(iLane).PHY_MAX_MULTI_BIT_ERROR_RATE;
+      link_INFO_in(linkID-1).soft_err_rate              <= soft_error_rate(linkID);
+      link_INFO_in(linkID-1).soft_err_rate_threshold    <= CTRL.CM(iCM).C2C(iLane).PHY_MAX_SOFT_ERROR_RATE;
+      link_INFO_in(linkID-1).hard_err_rate              <= hard_error_rate(linkID);
+      link_INFO_in(linkID-1).hard_err_rate_threshold    <= CTRL.CM(iCM).C2C(iLane).PHY_MAX_HARD_ERROR_RATE;
 
 
       -------------------------------------------------------------------------------

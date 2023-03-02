@@ -16,8 +16,8 @@
   <node id="PHY_READ_TIME"                 address="0x431" mask="0x00FFFFFF" permission="rw" description="Time spent waiting for phylane to stabilize"   parameters="default=0x4C4B40"/> <!-- 100ms default -->       
   <node id="PHY_LANE_STABLE"               address="0x432" mask="0x000FFFFF" permission="rw" description="Contious phy_lane_up signals required to lock phylane control" parameters="default=0xFF"/>
   <node id="PHY_LANE_ERRORS_TO_RESET"      address="0x433" mask="0x000000FF" permission="rw" description="Number of failures before we reset the pma" parameters="default=0xFF"/>
-  <node id="PHY_MAX_SINGLE_BIT_ERROR_RATE" address="0x434" mask="0xFFFFFFFF" permission="rw" description="Max single bit error rate" parameters="default=0x00FF"/>
-  <node id="PHY_MAX_MULTI_BIT_ERROR_RATE"  address="0x435" mask="0xFFFFFFFF" permission="rw" description="Max multi  bit error rate" parameters="default=0x00FF"/>
+  <node id="PHY_MAX_SOFT_ERROR_RATE" address="0x434" mask="0xFFFFFFFF" permission="rw" description="Max soft error rate" parameters="default=0x00FF"/>
+  <node id="PHY_MAX_HARD_ERROR_RATE"  address="0x435" mask="0xFFFFFFFF" permission="rw" description="Max hard error rate" parameters="default=0x00FF"/>
 
 </node>
 
