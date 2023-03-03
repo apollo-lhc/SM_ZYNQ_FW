@@ -54,9 +54,10 @@
       <node id="MINS"    mask="0x0000FFFF" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=_4;Format=m_1_1_100_1_0_1;Status=1;Show=nz"/>
       <node id="HOURS"   mask="0xFFFF0000" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=_4;Format=m_1_1_100_1_0_1;Status=1;Show=nz"/>
       <node id="DAYS"    address="0x1" mask="0xFFFFFFFF" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=_4;Format=m_1_1_100_1_0_1;Status=1;Show=nz"/>
+      <node id="RAW"     address="0x2" mask="0xFFFFFFFF" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=sec;Format=d"/>
     </node>
   </node>
-  <node id="XVC_LOCK" address="0x000007E5">
+  <node id="XVC_LOCK" address="0x000007E6">
     <node id="XVC1"       address="0x0" mask="0x1" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=Locked;Status=1;Show=nz" description="warning"/>
     <node id="XVC2"       address="0x1" mask="0x1" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=Locked;Status=1;Show=nz" description="warning"/>
     <node id="XVC_LOCAL"  address="0x2" mask="0x1" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=Locked;Status=1;Show=nz" description="warning"/>                       
