@@ -491,8 +491,8 @@ begin
       counter_events((LinkID-1)*COUNTER_COUNT + 4) <= Mon.CM(iCM).C2C(iLane).STATUS.PHY_SOFT_ERR;
       --setting counters, run 1 to COUNTER_COUNT
       Mon.CM(iCM).C2C(iLane).COUNTERS.CONFIG_ERROR_COUNT   <= C2C_Counter((LinkID-1)*COUNTER_COUNT + 0);
-      Mon.CM(iCM).C2C(iLane).COUNTERS.LINK_ERROR_COUNT     <= C2C_Counter((LinkID-1)*COUNTER_COUNT + 1);
-      Mon.CM(iCM).C2C(iLane).COUNTERS.MB_ERROR_COUNT       <= C2C_Counter((LinkID-1)*COUNTER_COUNT + 2);
+      Mon.CM(iCM).C2C(iLane).COUNTERS.SOFT_ERROR_COUNT     <= C2C_Counter((LinkID-1)*COUNTER_COUNT + 1);
+      Mon.CM(iCM).C2C(iLane).COUNTERS.HARD_ERROR_COUNT       <= C2C_Counter((LinkID-1)*COUNTER_COUNT + 2);
       Mon.CM(iCM).C2C(iLane).COUNTERS.PHY_HARD_ERROR_COUNT <= C2C_Counter((LinkID-1)*COUNTER_COUNT + 3);
       Mon.CM(iCM).C2C(iLane).COUNTERS.PHY_SOFT_ERROR_COUNT <= C2C_Counter((LinkID-1)*COUNTER_COUNT + 4);   
     end generate GENERATE_LANE_LOOP;
