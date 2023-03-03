@@ -33,14 +33,16 @@
 	  <node id="BYTE_5" address="0x1"        permission="r" mask="0x0000FF00" description="eth1 mac adder byte 6"/>
 	  <node id="CHECKSUM" address="0x1"      permission="r" mask="0x00FF0000" description="8-bit checksum for ETH1"/>
 	</node>
+	<node id="TEMP" address="0x09">
+	  <node id="CURRENT" address="0x0"      permission="rw" mask="0x000000FF" description="8bit temp of zynq for IPMC"/>
+	  <node id="HIGHEST" address="0x0"      permission="rw" mask="0x0000FF00" description="8bit max temp of zynq for IPMC"/>
+	  <node id="LOWEST"  address="0x0"      permission="rw" mask="0x00FF0000" description="8bit min temp of zynq for IPMC"/>
+	</node>
     </node>      
-    <node id="CM" address="0x09">
+    <node id="CM" address="0x0A">
       <node id="DONE_KINTEX" address="0x0"        permission="rw" mask="0x00000001" description="KINTEX_PGRM_DONE" parameters="Table=STATUS;Row=CM_FPGA;Column=_4;Format=u;Status=1"/>
       <node id="DONE_VIRTEX" address="0x0"        permission="rw" mask="0x00000010" description="KINTEX_PGRM_DONE" parameters="Table=STATUS;Row=CM_FPGA;Column=_4;Format=u;Status=1"/>
     </node>
-    <!-- <node id="3"  address="0x3" permission="rw"/> -->
-    <!-- <node id="4"  address="0x4" permission="rw"/> -->
-    <!-- <node id="9"  address="0x9" permission="rw"/> -->
     <!-- <node id="A"  address="0xA" permission="rw"/> -->
     <!-- <node id="B"  address="0xB" permission="rw"/> -->
     <!-- <node id="C"  address="0xC" permission="rw"/> -->
