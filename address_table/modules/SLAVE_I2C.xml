@@ -34,9 +34,9 @@
 	  <node id="CHECKSUM" address="0x1"      permission="r" mask="0x00FF0000" description="8-bit checksum for ETH1"/>
 	</node>
 	<node id="TEMP" address="0x09">
-	  <node id="CURRENT" address="0x0"      permission="rw" mask="0x000000FF" description="8bit temp of zynq for IPMC"/>
-	  <node id="HIGHEST" address="0x0"      permission="rw" mask="0x0000FF00" description="8bit max temp of zynq for IPMC"/>
-	  <node id="LOWEST"  address="0x0"      permission="rw" mask="0x00FF0000" description="8bit min temp of zynq for IPMC"/>
+	  <node id="TEMP" address="0x0"      permission="rw" mask="0x000000FF" description="8bit temp of zynq for IPMC"/>
+	  <node id="TEMP_MAX" address="0x0"      permission="rw" mask="0x0000FF00" description="8bit max temp of zynq for IPMC"/>
+	  <node id="TEMP_MIN"  address="0x0"      permission="rw" mask="0x00FF0000" description="8bit min temp of zynq for IPMC"/>
 	</node>
     </node>      
     <node id="CM" address="0x0A">
