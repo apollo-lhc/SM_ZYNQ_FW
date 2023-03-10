@@ -8,12 +8,12 @@
   </node>
   <node id="INVENTORY" address="0x000007C0">
     <node id="SM_FW" address="0x0">
-      <node id="DB_MATCH" address="0x0" mask="0x1" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=t_0_No_1_Yes;Status=1" />
-      <node id="IS_LATEST_TAG" address="0x0" mask="0x2" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=t_0_No_1_Yes;Status=1" />
+      <node id="DB_MATCH" address="0x0" mask="0x1" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=u;Status=1" />
+      <node id="IS_LATEST_TAG" address="0x0" mask="0xE" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=u;Status=1" />
     </node>
     <node id="CM_MCU_FW" address="0x1">
-      <node id="DB_MATCH" address="0x0" mask="0x1" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=t_0_No_1_Yes;Status=1" />
-      <node id="IS_LATEST_TAG" address="0x0" mask="0x2" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=t_0_No_1_Yes;Status=1" />
+      <node id="DB_MATCH" address="0x0" mask="0x1" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=u;Status=1" />
+      <node id="IS_LATEST_TAG" address="0x0" mask="0xE" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=u;Status=1" />
     </node>
   </node>
   <node id="SM_POWER" address="0x000007D0">
