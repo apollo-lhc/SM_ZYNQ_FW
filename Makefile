@@ -57,11 +57,17 @@ endif
 #################################################################################
 # address tables
 #################################################################################
+$(BIT_BASE)%.bit $(BIT_BASE)%.svf       : ADDRESS_TABLE=${MAKE_PATH}/kernel/address_table_%/address_%.xml
 ifneq ("$(wildcard ${BUILD_SCRIPTS_PATH}/mk/addrTable.mk)","")
   include ${BUILD_SCRIPTS_PATH}/mk/addrTable.mk
 endif
 
 
+#################################################################################
+# Device tree overlays
+#################################################################################
+DTSI_PATH=${SLAVE_DTSI_PATH}/hw/
+-include build-scripts/mk/deviceTreeOverlays.mk
 
 .SECONDARY:
 
@@ -136,6 +142,9 @@ $(BIT_BASE)%.bit	: $(ADDRESS_TABLE_CREATION_PATH)config_%.yaml
 	mkdir -p ${MAKE_PATH}/bit &&\
 	cd proj &&\
 	vivado $(VIVADO_FLAGS) -source $(SETUP_BUILD_TCL) -tclargs ${MAKE_PATH} ${BUILD_SCRIPTS_PATH} $(subst .bit,,$(subst ${BIT_BASE},,$@)) $(OUTPUT_MARKUP)
+	@echo   ${MAKE} $(ADDRESS_TABLE_CREATION_PATH)address_tables/address_table_$*/address_apollo.xml
+	${MAKE} $(ADDRESS_TABLE_CREATION_PATH)address_tables/address_table_$*/address_apollo.xml
+	$(MAKE) overlays  $(OUTPUT_MARKUP)
 	$(MAKE) NOTIFY_DAN_GOOD
 
 full_%: BUILD_NAME=%
@@ -145,7 +154,6 @@ full_%: clean clean_bd clean_kernel clean_bit clean_remote clean_CM clean_prebui
 	$(MAKE) init
 	$(MAKE) ${BUILD_NAME}
 	cd kernel && $(MAKE) {BUILD_NAME} && cd ${MAKE_PATH}
-	cd os     && $(MAKE) {BUILD_NAME}.tar.gz && cd ${MAKE_PATH}
 
 init:
 	git submodule update --init --recursive 
