@@ -11,6 +11,7 @@
   <node id="PHY_LANE_UP"        address="0x0" mask="0x00003000" permission="r"  description="Aurora phy lanes up"      parameters="Table=C2C;Column=_2_3;Row=PHY_LANE_UP;Status=1"/>
   <node id="PHY_HARD_ERR"       address="0x0" mask="0x00010000" permission="r"  description="Aurora phy hard error"    parameters="Table=C2C;Column=_2_3;Row=PHY_HARD_ERR;Status=2;Show=nz"/>
   <node id="PHY_SOFT_ERR"       address="0x0" mask="0x00020000" permission="r"  description="Aurora phy soft error"    parameters="Table=C2C;Column=_2_3;Row=PHY_SOFT_ERR;Status=2;Show=nz"/>
+  <node id="PB_RESET"           address="0x0" mask="0x00040000" permission="r"  description="Reset of the C2C PHY"    />
   <node id="LINK_IN_FW"         address="0x0" mask="0x80000000" permission="r"  description="FW includes this link"    parameters="Table=C2C;Column=_2_3;Row=LINK_IN_FW;Status=2;Show=nz;default=0x0"/>
 </node>
   

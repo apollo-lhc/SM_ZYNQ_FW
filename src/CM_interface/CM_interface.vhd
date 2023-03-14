@@ -20,7 +20,7 @@ entity CM_intf is
                                                              -- CM1 
     CM2_LANES        : std_logic_vector(2 downto 1) := "01"; -- active links on
                                                              -- CM1 
-    COUNTER_COUNT    : integer := 5;               --Count for counters in loop
+    COUNTER_COUNT    : integer := 2;               --Count for counters in loop
     CLKFREQ          : integer := 50000000;       --clk frequency in Hz
     ERROR_WAIT_TIME  : integer := 50000000;       --Wait time for error checking states
     ALLOCATED_MEMORY_RANGE : integer);            
@@ -91,6 +91,7 @@ architecture behavioral of CM_intf is
   signal counter_en      : std_logic_vector(4 downto 1);
   signal C2C_counter     : slv32_array_t(0 to (2*2*COUNTER_COUNT)-1);
   signal counter_events  : std_logic_vector(  (2*2*COUNTER_COUNT)-1 downto 0);
+  signal counter_clk     : std_logic_vector(  (2*2*COUNTER_COUNT)-1 downto 0);
   
   signal Mon  : CM_Mon_t;
   signal Ctrl : CM_Ctrl_t;
@@ -432,7 +433,7 @@ begin
           CLK_A_1_SECOND => CLKFREQ)
         port map (
           clk_A             => clk_axi,
-          clk_B             => clk_axi,
+          clk_B             => clk_C2C(iLane),
           reset_A_async     => '0',
           event_b           => Mon.CM(iCM).C2C(iLane).STATUS.PHY_SOFT_ERR,
           rate              => soft_error_rate(linkID));
@@ -442,7 +443,7 @@ begin
           CLK_A_1_SECOND => CLKFREQ)
         port map (
           clk_A             => clk_axi,
-          clk_B             => clk_axi,
+          clk_B             => clk_C2C(iLane),
           reset_A_async     => '0',
           event_b           => Mon.CM(iCM).C2C(iLane).STATUS.PHY_HARD_ERR,
           rate              => hard_error_rate(linkID));
@@ -453,9 +454,9 @@ begin
       aurora_init_buf(linkID)                       <= link_INFO_out(linkID-1).link_init;        
       Mon.CM(iCM).C2C(iLane).COUNTERS.PHYLANE_STATE <= link_INFO_out(linkID-1).state(2 downto 0);
                                   
-      link_INFO_in(linkID-1).link_reset_done          <= '1';--Mon.CM(iCM).C2C(iLane).DEBUG.RX.PMA_RESET_DONE;     
-      link_INFO_in(linkID-1).link_good                <= Mon.CM(iCM).C2C(iLane).status.LINK_GOOD;
-      link_INFO_in(linkID-1).lane_up                  <= Mon.CM(iCM).C2C(iLane).status.phy_lane_up(0);
+      link_INFO_in(linkID-1).link_reset_done            <= '1';--Mon.CM(iCM).C2C(iLane).DEBUG.RX.PMA_RESET_DONE;     
+      link_INFO_in(linkID-1).link_good                  <= Mon.CM(iCM).C2C(iLane).status.LINK_GOOD;
+      link_INFO_in(linkID-1).lane_up                    <= Mon.CM(iCM).C2C(iLane).status.phy_lane_up(0);
       link_INFO_in(linkID-1).soft_err_rate              <= soft_error_rate(linkID);
       link_INFO_in(linkID-1).soft_err_rate_threshold    <= CTRL.CM(iCM).C2C(iLane).PHY_MAX_SOFT_ERROR_RATE;
       link_INFO_in(linkID-1).hard_err_rate              <= hard_error_rate(linkID);
@@ -466,35 +467,30 @@ begin
       -- COUNTERS
       -------------------------------------------------------------------------------
       GENERATE_COUNTERS_LOOP: for iCNT in 0 to COUNTER_COUNT -1 generate --....counter_count
-        Counter_X: entity work.counter
+        counter_CDC_X: entity work.counter_CDC
           generic map (
-            roll_over   => '0',
-            end_value   => x"FFFFFFFF",
-            start_value => x"00000000",
-            A_RST_CNT   => x"00000000",
-            DATA_WIDTH  => 32)
+            roll_over   => '0' )
           port map (
-            clk         => clk_axi,
-            reset_async => reset,
-            reset_sync  => CTRL.CM(iCM).C2C(iLane).COUNTERS.RESET_COUNTERS,
-            enable      => counter_en(linkID),
+            clk_in      => counter_clk(iCNT),
+            reset_async => reset or Mon.CM(iCM).C2C(iLane).STATUS.PB_RESET,
             event       => counter_events((linkID-1)*COUNTER_COUNT + iCNT ),
-            count       => C2C_Counter((LinkID-1)*COUNTER_COUNT + iCNT),          --runs 1 to COUNTER_COUNT
-            at_max      => open);   
+            clk_out     => clk_axi,
+            enable      => counter_en(linkID),
+            reset_sync  => CTRL.CM(iCM).C2C(iLane).COUNTERS.RESET_COUNTERS,
+            count       => C2C_Counter((LinkID-1)*COUNTER_COUNT + iCNT),
+            at_max      => open);
+        
       end generate GENERATE_COUNTERS_LOOP;
       --PATTERN FOR COUNTERS
+      counter_clk((LinkID-1)*COUNTER_COUNT + 0) <= clk_C2C(LinkID);
+      counter_clk((LinkID-1)*COUNTER_COUNT + 1) <= clk_C2C(LinkID);
+      
       --setting events, run 0 to (COUNTER_COUNT - 1)
-      counter_events((LinkID-1)*COUNTER_COUNT + 0) <= Mon.CM(iCM).C2C(iLane).STATUS.CONFIG_ERROR;
-      counter_events((LinkID-1)*COUNTER_COUNT + 1) <= Mon.CM(iCM).C2C(iLane).STATUS.LINK_ERROR; 
-      counter_events((LinkID-1)*COUNTER_COUNT + 2) <= Mon.CM(iCM).C2C(iLane).STATUS.MB_ERROR;
-      counter_events((LinkID-1)*COUNTER_COUNT + 3) <= Mon.CM(iCM).C2C(iLane).STATUS.PHY_HARD_ERR;
-      counter_events((LinkID-1)*COUNTER_COUNT + 4) <= Mon.CM(iCM).C2C(iLane).STATUS.PHY_SOFT_ERR;
+      counter_events((LinkID-1)*COUNTER_COUNT + 0) <= Mon.CM(iCM).C2C(iLane).STATUS.PHY_HARD_ERR;
+      counter_events((LinkID-1)*COUNTER_COUNT + 1) <= Mon.CM(iCM).C2C(iLane).STATUS.PHY_SOFT_ERR;
       --setting counters, run 1 to COUNTER_COUNT
-      Mon.CM(iCM).C2C(iLane).COUNTERS.CONFIG_ERROR_COUNT   <= C2C_Counter((LinkID-1)*COUNTER_COUNT + 0);
-      Mon.CM(iCM).C2C(iLane).COUNTERS.SOFT_ERROR_COUNT     <= C2C_Counter((LinkID-1)*COUNTER_COUNT + 1);
-      Mon.CM(iCM).C2C(iLane).COUNTERS.HARD_ERROR_COUNT       <= C2C_Counter((LinkID-1)*COUNTER_COUNT + 2);
-      Mon.CM(iCM).C2C(iLane).COUNTERS.PHY_HARD_ERROR_COUNT <= C2C_Counter((LinkID-1)*COUNTER_COUNT + 3);
-      Mon.CM(iCM).C2C(iLane).COUNTERS.PHY_SOFT_ERROR_COUNT <= C2C_Counter((LinkID-1)*COUNTER_COUNT + 4);   
+      Mon.CM(iCM).C2C(iLane).COUNTERS.PHY_HARD_ERROR_COUNT <= C2C_Counter((LinkID-1)*COUNTER_COUNT + 0);
+      Mon.CM(iCM).C2C(iLane).COUNTERS.PHY_SOFT_ERROR_COUNT <= C2C_Counter((LinkID-1)*COUNTER_COUNT + 1);   
     end generate GENERATE_LANE_LOOP;
   end generate GENERATE_LOOP;
 end architecture behavioral;

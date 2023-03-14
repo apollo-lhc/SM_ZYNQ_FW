@@ -575,6 +575,7 @@ begin  -- architecture structure
       C2C1_axi_c2c_link_error_out       => CM_C2C_Mon.Link(1).status.link_error,
       C2C1_axi_c2c_link_status_out      => CM_C2C_Mon.Link(1).status.link_good,
       C2C1_axi_c2c_multi_bit_error_out  => CM_C2C_Mon.Link(1).status.mb_error,
+      C2C1_aurora_reset_pb              => CM_C2C_Mon.Link(1).status.pb_reset,
       C2C1_phy_gt_pll_lock              => CM_C2C_Mon.Link(1).status.phy_gt_pll_lock,
       C2C1_phy_hard_err                 => CM_C2C_Mon.Link(1).status.phy_hard_err,
       C2C1_phy_lane_up(0)               => CM_C2C_Mon.Link(1).status.phy_lane_up(0),
@@ -637,6 +638,7 @@ begin  -- architecture structure
       C2C1b_axi_c2c_link_error_out       => CM_C2C_Mon.Link(2).status.link_error,
       C2C1b_axi_c2c_link_status_out      => CM_C2C_Mon.Link(2).status.link_good,
       C2C1b_axi_c2c_multi_bit_error_out  => CM_C2C_Mon.Link(2).status.mb_error,
+      C2C1b_aurora_reset_pb              => CM_C2C_Mon.Link(2).status.pb_reset,
       C2C1b_phy_gt_pll_lock              => CM_C2C_Mon.Link(2).status.phy_gt_pll_lock,
       C2C1b_phy_hard_err                 => CM_C2C_Mon.Link(2).status.phy_hard_err,
       C2C1b_phy_lane_up(0)               => CM_C2C_Mon.Link(2).status.phy_lane_up(0),
@@ -704,6 +706,7 @@ begin  -- architecture structure
       C2C2_axi_c2c_link_error_out       => CM_C2C_Mon.Link(3).status.link_error,
       C2C2_axi_c2c_link_status_out      => CM_C2C_Mon.Link(3).status.link_good,
       C2C2_axi_c2c_multi_bit_error_out  => CM_C2C_Mon.Link(3).status.mb_error,
+      C2C2_aurora_reset_pb              => CM_C2C_Mon.Link(3).status.pb_reset,
       C2C2_phy_gt_pll_lock              => CM_C2C_Mon.Link(3).status.phy_gt_pll_lock,
       C2C2_phy_hard_err                 => CM_C2C_Mon.Link(3).status.phy_hard_err,
       C2C2_phy_lane_up(0)               => CM_C2C_Mon.Link(3).status.phy_lane_up(0),
@@ -767,6 +770,7 @@ begin  -- architecture structure
       C2C2b_axi_c2c_link_error_out       => CM_C2C_Mon.Link(4).status.link_error,
       C2C2b_axi_c2c_link_status_out      => CM_C2C_Mon.Link(4).status.link_good,
       C2C2b_axi_c2c_multi_bit_error_out  => CM_C2C_Mon.Link(4).status.mb_error,
+      C2C2b_aurora_reset_pb              => CM_C2C_Mon.Link(4).status.pb_reset,
       C2C2b_phy_gt_pll_lock              => CM_C2C_Mon.Link(4).status.phy_gt_pll_lock,
       C2C2b_phy_hard_err                 => CM_C2C_Mon.Link(4).status.phy_hard_err,
       C2C2b_phy_lane_up(0)               => CM_C2C_Mon.Link(4).status.phy_lane_up(0),
@@ -967,7 +971,7 @@ begin  -- architecture structure
   CM_interface_1: entity work.CM_intf
     generic map (
       CM_COUNT             => 2,
-      COUNTER_COUNT        => 5,
+      COUNTER_COUNT        => 2,
       CLKFREQ              => AXI_MASTER_CLK_FREQ,
       ERROR_WAIT_TIME      => AXI_MASTER_CLK_FREQ,
       ALLOCATED_MEMORY_RANGE => to_integer(AXI_RANGE_CM)
@@ -1150,6 +1154,8 @@ begin  -- architecture structure
       rate          => Clocking_Mon.TTC_CLK_FREQ);
 
   CM_C2C_Mon.Link(2).USER_CLK_FREQ <=   CM_C2C_Mon.Link(1).USER_CLK_FREQ;
+  CM_C2C_Mon.Link(3).USER_CLK_FREQ <=   CM_C2C_Mon.Link(1).USER_CLK_FREQ;
+  CM_C2C_Mon.Link(4).USER_CLK_FREQ <=   CM_C2C_Mon.Link(1).USER_CLK_FREQ;
   rate_counter_C2C_USER: entity work.rate_counter
     generic map (
       CLK_A_1_SECOND => AXI_MASTER_CLK_FREQ)
