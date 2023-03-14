@@ -1,5 +1,4 @@
 <node id="PL_MEM">  
-  <node id="CM" address="0x00000000" module="file://PL_MEM_CM.xml"/>
   <node id="NETWORK" address="0x00000061">
     <node id="ETH0" address="0x00000000">
       <node id="RX" address="0x00000000" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=_4;Status=1;Format=m_1_1_1000_1_0_1;Format=d;" description="Rate of ETH0_RX at kB/sec"/>
@@ -8,12 +7,12 @@
   </node>
   <node id="INVENTORY" address="0x000007C0">
     <node id="SM_FW" address="0x0">
-      <node id="DB_MATCH" address="0x0" mask="0x1" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=t_0_No_1_Yes;Status=1" />
-      <node id="IS_LATEST_TAG" address="0x0" mask="0x2" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=t_0_No_1_Yes;Status=1" />
+      <node id="DB_MATCH" address="0x0" mask="0xF" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=u;Status=1" />
+      <node id="IS_LATEST_TAG" address="0x0" mask="0xF0" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=u;Status=1" />
     </node>
     <node id="CM_MCU_FW" address="0x1">
-      <node id="DB_MATCH" address="0x0" mask="0x1" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=t_0_No_1_Yes;Status=1" />
-      <node id="IS_LATEST_TAG" address="0x0" mask="0x2" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=t_0_No_1_Yes;Status=1" />
+      <node id="DB_MATCH" address="0x0" mask="0xF" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=u;Status=1" />
+      <node id="IS_LATEST_TAG" address="0x0" mask="0xF0" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=u;Status=1" />
     </node>
   </node>
   <node id="SM_POWER" address="0x000007D0">

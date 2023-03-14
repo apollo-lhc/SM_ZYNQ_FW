@@ -203,7 +203,7 @@
 	<node id="BYTE_4"      address="0x1"        permission="r" mask="0x000000FF" description="IPMC mac adder byte 5"/>
 	<node id="BYTE_5"      address="0x1"        permission="r" mask="0x0000FF00" description="IPMC mac adder byte 6"/>
     </node>
-    <node id="IPMC_IP" address="0x2" parameters="Table=IPMC;Row=ETH;Column=IP;Status=1;Format=IP;Show=nz">
+    <node id="IPMC_IP" address="0x2" parameters="Table=IPMC;Row=ETH;Column=IP;Status=2;Format=IP;Show=nz">
 	<node id="BYTE_0"      address="0x0"        permission="r" mask="0x000000FF" description="IPMC IP adder byte 1"/>
 	<node id="BYTE_1"      address="0x0"        permission="r" mask="0x0000FF00" description="IPMC IP adder byte 2"/>
 	<node id="BYTE_2"      address="0x0"        permission="r" mask="0x00FF0000" description="IPMC IP adder byte 3"/>
