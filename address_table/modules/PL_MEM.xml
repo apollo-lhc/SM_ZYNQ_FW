@@ -1,5 +1,4 @@
 <node id="PL_MEM">  
-  <node id="CM" address="0x00000000" module="file://PL_MEM_CM.xml"/>
   <node id="NETWORK" address="0x00000061">
     <node id="ETH0" address="0x00000000">
       <node id="RX" address="0x00000000" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=_4;Status=1;Format=m_1_1_1000_1_0_1;Format=d;" description="Rate of ETH0_RX at kB/sec"/>

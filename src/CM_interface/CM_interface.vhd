@@ -166,7 +166,7 @@ begin
     generic map (
       BAUD_COUNT_BITS                => 8,
       INACTIVE_COUNT                 => INACTIVE_COUNT,
-      BASE_ADDRESS                   => AXI_ADDR_PL_MEM)
+      BASE_ADDRESS                   => AXI_ADDR_PL_MEM_CM)
     port map (
       clk                            => clk_axi,
       reset                          => reset,

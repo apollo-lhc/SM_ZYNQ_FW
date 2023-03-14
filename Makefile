@@ -85,7 +85,7 @@ clean_bit:
 	@rm -rf ${MAKE_PATH}/bit/*
 clean_kernel:
 	@echo "Clean hw files"
-	@rm -f ${MAKE_PATH}/kernel/hw/*
+	@rm -rf ${MAKE_PATH}/kernel/hw/*
 clean_ip_%:
 	source $(BUILD_VIVADO_SHELL) &&\
 	cd ${MAKE_PATH}/proj &&\
