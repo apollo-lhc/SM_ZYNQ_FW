@@ -15,6 +15,13 @@
       <node id="DB_MATCH" address="0x0" mask="0xF" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=u;Status=1" />
       <node id="IS_LATEST_TAG" address="0x0" mask="0xF0" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=u;Status=1" />
     </node>
+    <node id="IPMC_FW" address="0x2">
+      <node id="DB_MATCH" address="0x0" mask="0xF" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=u;Status=1" />
+      <node id="IS_LATEST_TAG" address="0x0" mask="0xF0" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=u;Status=1" />
+    </node>
+    <node id="IPMC_UID" address="0x3">
+      <node id="DB_MATCH" address="0x0" mask="0xF" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=u;Status=1" />
+    </node>
   </node>
   <node id="SM_POWER" address="0x000007D0">
     <node id="ZYNQ_1V8" address="0x0">
