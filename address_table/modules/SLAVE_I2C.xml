@@ -210,16 +210,16 @@
 	<node id="BYTE_3"      address="0x0"        permission="r" mask="0xFF000000" description="IPMC IP adder byte 4"/>
     </node>      
     <node id="IPMC_FW" address="0x4">
-  <node id="GIT_HASH_0" address="0x0"        permission="r" mask="0x000000FF" description="IPMC FW hash byte 1"/>
-  <node id="GIT_HASH_1" address="0x0"        permission="r" mask="0x0000FF00" description="IPMC FW hash byte 2"/>
-  <node id="GIT_HASH_2" address="0x0"        permission="r" mask="0x00FF0000" description="IPMC FW hash byte 3"/>
-  <node id="GIT_HASH_3" address="0x0"        permission="r" mask="0xFF000000" description="IPMC FW hash byte 4"/>
+      <node id="GIT_HASH_0" address="0x0"        permission="r" mask="0x000000FF" description="IPMC FW hash byte 1"/>
+      <node id="GIT_HASH_1" address="0x0"        permission="r" mask="0x0000FF00" description="IPMC FW hash byte 2"/>
+      <node id="GIT_HASH_2" address="0x0"        permission="r" mask="0x00FF0000" description="IPMC FW hash byte 3"/>
+      <node id="GIT_HASH_3" address="0x0"        permission="r" mask="0xFF000000" description="IPMC FW hash byte 4"/>
     </node>
     <node id="IPMC_UID" address="0x5">
-  <node id="BYTE_0" address="0x0"        permission="r" mask="0x000000FF" description="IPMC UID hash byte 1"/>
-  <node id="BYTE_1" address="0x0"        permission="r" mask="0x0000FF00" description="IPMC UID hash byte 2"/>
-  <node id="BYTE_2" address="0x0"        permission="r" mask="0x00FF0000" description="IPMC UID hash byte 3"/>
-  <node id="BYTE_3" address="0x0"        permission="r" mask="0xFF000000" description="IPMC UID hash byte 4"/>
+      <node id="BYTE_0" address="0x0"        permission="r" mask="0x000000FF" description="IPMC UID hash byte 1"/>
+      <node id="BYTE_1" address="0x0"        permission="r" mask="0x0000FF00" description="IPMC UID hash byte 2"/>
+      <node id="BYTE_2" address="0x0"        permission="r" mask="0x00FF0000" description="IPMC UID hash byte 3"/>
+      <node id="BYTE_3" address="0x0"        permission="r" mask="0xFF000000" description="IPMC UID hash byte 4"/>
     </node>
     <!-- <node id="3"  address="0x3" permission="rw"/> -->
     <!-- <node id="4"  address="0x4" permission="rw"/> -->
