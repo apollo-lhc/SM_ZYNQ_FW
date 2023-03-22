@@ -138,6 +138,16 @@
     <!-- <node id="E"  address="0xE" permission="rw"/> -->
     <!-- <node id="F"  address="0xF" permission="rw"/> -->
   </node>
+  <node id="S6" address ="0x50">
+    <node id="SITE_NUMBER" permission="r" address="0x0" />
+    <node id="SHELF_ID"    permission="r" address="0x1" mode="incremental" size="0x5" parameters="Format=c;">
+      <node id="WORD_1" permission="r" address="0x0" parameters="Format=c;" />
+      <node id="WORD_2" permission="r" address="0x1" parameters="Format=c;" />
+      <node id="WORD_3" permission="r" address="0x2" parameters="Format=c;" />
+      <node id="WORD_4" permission="r" address="0x3" parameters="Format=c;" />
+      <node id="WORD_5" permission="r" address="0x4" parameters="Format=c;" />
+    </node>
+  </node>
   <!-- <node id="S6" address ="0x50"> -->
   <!--   <node id="0"  address="0x0" permission="rw"/> -->
   <!--   <node id="1"  address="0x1" permission="rw"/> -->
