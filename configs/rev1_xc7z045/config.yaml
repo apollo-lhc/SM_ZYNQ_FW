@@ -132,6 +132,13 @@ AXI_SLAVES:
             range: "8K"
         XML: "address_table/modules/PL_MEM.xml"
         UHAL_BASE: 0x15000000
+      PL_MEM_CM:
+        TCL_CALL:
+          command: "AXI_IP_BRAM"
+          axi_control: "${::AXI_LOCAL_CTRL}"
+          addr:
+            offset: -1
+            range: "8K"
       SERV:
         TCL_CALL:
           command: "AXI_PL_DEV_CONNECT"

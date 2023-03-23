@@ -5,10 +5,10 @@ package uC_LINK is
     link_reset_done       : std_logic;    
     link_good             : std_logic;
     lane_up               : std_logic;
-    sb_err_rate           : std_logic_vector(31 downto 0);
-    sb_err_rate_threshold : std_logic_vector(31 downto 0);
-    mb_err_rate           : std_logic_vector(31 downto 0);
-    mb_err_rate_threshold : std_logic_vector(31 downto 0);
+    soft_err_rate           : std_logic_vector(31 downto 0);
+    soft_err_rate_threshold : std_logic_vector(31 downto 0);
+    hard_err_rate           : std_logic_vector(31 downto 0);
+    hard_err_rate_threshold : std_logic_vector(31 downto 0);
   end record uc_Link_in_t;
   type uC_link_in_t_ARRAY is array(integer range <>) of uC_Link_in_t;
   type uC_Link_out_t is record
@@ -218,8 +218,8 @@ architecture arch of uC is
   signal link_INFO_out_local: uC_link_out_t_ARRAY(0 to LINK_COUNT-1);
 
   signal iLink              : integer range 0 to LINK_COUNT-1;
-  signal err_sb_over_thresh : std_logic_vector(0 to LINK_COUNT-1);
-  signal err_mb_over_thresh : std_logic_vector(0 to LINK_COUNT-1);
+  signal err_soft_over_thresh : std_logic_vector(0 to LINK_COUNT-1);
+  signal err_hard_over_thresh : std_logic_vector(0 to LINK_COUNT-1);
   
 begin  -- architecture arch
 
@@ -394,8 +394,8 @@ begin  -- architecture arch
           in_port(2) <= link_INFO_out_local(iLink).link_init;
           in_port(3) <= link_INFO_in(iLink).link_good;
           in_port(4) <= link_INFO_in(iLink).lane_up;
-          in_port(5) <= err_sb_over_thresh(iLink);
-          in_port(6) <= err_mb_over_thresh(iLink);
+          in_port(5) <= err_soft_over_thresh(iLink);
+          in_port(6) <= err_hard_over_thresh(iLink);
         when PB_PORT_LINK_SELECT =>
           in_port    <= std_logic_vector(to_unsigned(LINK_COUNT,8));
         -----------------------------------------------------------------------
@@ -479,15 +479,15 @@ begin  -- architecture arch
 
       for i in 0 to LINK_COUNT-1 loop
 
-        if unsigned(link_INFO_in(i).sb_err_rate) > unsigned(link_INFO_in(i).sb_err_rate_threshold) then
-          err_sb_over_thresh(i) <= '1';
+        if unsigned(link_INFO_in(i).soft_err_rate) > unsigned(link_INFO_in(i).soft_err_rate_threshold) then
+          err_soft_over_thresh(i) <= '1';
         else
-          err_sb_over_thresh(i) <= '0';    
+          err_soft_over_thresh(i) <= '0';    
         end if;
-        if unsigned(link_INFO_in(i).mb_err_rate) > unsigned(link_INFO_in(i).mb_err_rate_threshold) then
-          err_mb_over_thresh(i) <= '1';
+        if unsigned(link_INFO_in(i).hard_err_rate) > unsigned(link_INFO_in(i).hard_err_rate_threshold) then
+          err_hard_over_thresh(i) <= '1';
         else
-          err_mb_over_thresh(i) <= '0';    
+          err_hard_over_thresh(i) <= '0';    
         end if;    
         
       end loop;  -- i

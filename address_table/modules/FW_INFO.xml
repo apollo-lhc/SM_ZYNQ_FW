@@ -15,7 +15,7 @@
     <node id="MIN" permission="r"  mask="0xFF00"/>
     <node id="HOUR" permission="r"  mask="0xFF0000"/>
   </node>
-  <node id="FPGA" address="0x12">
+  <node id="FPGA" address="0x12"  mode="incremental" size="0x9" parameters="Format=c;">
     <node id="WORD_00" address="0x0" permission="r" mask="0xFFFFFFFF"/>
     <node id="WORD_01" address="0x1" permission="r" mask="0xFFFFFFFF"/>
     <node id="WORD_02" address="0x2" permission="r" mask="0xFFFFFFFF"/>
