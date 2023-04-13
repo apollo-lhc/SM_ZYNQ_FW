@@ -3,7 +3,7 @@
 #================================================================================
 #This code is directly sourced and builds the Zynq CPU
 
-set ZYNQ_NAME ZynqMPSoC
+global ZYNQ_NAME; set ZYNQ_NAME ZynqMPSoC
 
 startgroup
 
@@ -21,16 +21,15 @@ create_bd_cell -type ip -vlnv [get_ipdefs -filter {NAME == zynq_ultra_ps_e}] ${Z
 #CPU frequency
 set_property CONFIG.PSU__CRF_APB__ACPU_CTRL__FREQMHZ {1200}	    [get_bd_cells ${ZYNQ_NAME}]
 #other clocks
-set_property CONFIG.PSU__CRL_APB__PL1_REF_CTRL__FREQMHZ {50}	    [get_bd_cells ${ZYNQ_NAME}]
+#set_property CONFIG.PSU__CRL_APB__PL1_REF_CTRL__FREQMHZ {50}	    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU__CRF_APB__TOPSW_MAIN_CTRL__FREQMHZ {500}    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU__CRL_APB__CPU_R5_CTRL__FREQMHZ {500}	    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU__CRL_APB__IOU_SWITCH_CTRL__FREQMHZ {250}    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU__CRL_APB__LPD_SWITCH_CTRL__FREQMHZ {500}    [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU__CRL_APB__ADMA_REF_CTRL__FREQMHZ {500}      [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PSU__FPGA_PL1_ENABLE {1}                        [get_bd_cells ${ZYNQ_NAME}]
-#set_property CONFIG.PSU__CRL_APB__PL1_REF_CTRL__FREQMHZ {80}        [get_bd_cells ${ZYNQ_NAME}]
-#set_property CONFIG.PSU__CRL_APB__PL1_REF_CTRL__FREQMHZ {71.427856}        [get_bd_cells ${ZYNQ_NAME}]
-set_property CONFIG.PSU__CRL_APB__PL1_REF_CTRL__FREQMHZ {50}        [get_bd_cells ${ZYNQ_NAME}]
+#set_property CONFIG.PSU__CRL_APB__PL1_REF_CTRL__FREQMHZ {71.427856}    [get_bd_cells ${ZYNQ_NAME}]
+set_property CONFIG.PSU__CRL_APB__PL1_REF_CTRL__FREQMHZ {50}    [get_bd_cells ${ZYNQ_NAME}]
 
 
 ###############################
@@ -55,7 +54,7 @@ set_property CONFIG.PSU__USE__M_AXI_GP1 {1}			    [get_bd_cells ${ZYNQ_NAME}]
 
 #connect FCLK_CLK0 to the master AXI_GP0 clock
 #set AXI_MASTER_CLK ${ZYNQ_NAME}/pl_clk1
-set AXI_MASTER_CLK ${ZYNQ_NAME}/pl_clk1
+global set AXI_MASTER_CLK; set AXI_MASTER_CLK ${ZYNQ_NAME}/pl_clk1
 make_bd_pins_external -name axi_clk [get_bd_pins ${AXI_MASTER_CLK}]
 
 set_property CONFIG.PSU__MAXIGP0__DATA_WIDTH {32}		    [get_bd_cells ${ZYNQ_NAME}]
@@ -80,8 +79,8 @@ IP_SYS_RESET [dict create \
 		  external_reset_n ${ZYNQ_RESETN} \
 		  slowest_clk ${AXI_MASTER_CLK}]
 ####set interconnect reset
-set AXI_PRIMARY_MASTER_RSTN [get_bd_pins ${SYS_RESETTER_PRIMARY}/interconnect_aresetn]
-set AXI_PRIMARY_SLAVE_RSTN [get_bd_pins ${SYS_RESETTER_PRIMARY}/peripheral_aresetn]
+global AXI_PRIMARY_MASTER_RSTN; set AXI_PRIMARY_MASTER_RSTN [get_bd_pins ${SYS_RESETTER_PRIMARY}/interconnect_aresetn]
+global AXI_PRIMARY_SLAVE_RSTN ; set AXI_PRIMARY_SLAVE_RSTN  [get_bd_pins ${SYS_RESETTER_PRIMARY}/peripheral_aresetn]
 make_bd_pins_external -name axi_rst_n [get_bd_pins ${AXI_PRIMARY_SLAVE_RSTN}]
 
 
@@ -96,8 +95,8 @@ IP_SYS_RESET [dict create \
 		  slowest_clk ${AXI_MASTER_CLK} \
 		  aux_reset ${SYS_RESETTER_C2C_RST} \
 	     ]
-set AXI_C2C_MASTER_RSTN [get_bd_pins ${SYS_RESETTER_C2C}/interconnect_aresetn]
-set AXI_C2C_SLAVE_RSTN [get_bd_pins ${SYS_RESETTER_C2C}/peripheral_aresetn]
+global AXI_C2C_MASTER_RSTN; set AXI_C2C_MASTER_RSTN [get_bd_pins ${SYS_RESETTER_C2C}/interconnect_aresetn]
+global AXI_C2C_SLAVE_RSTN ; set AXI_C2C_SLAVE_RSTN  [get_bd_pins ${SYS_RESETTER_C2C}/peripheral_aresetn]
 make_bd_pins_external -name axi_c2c_rst_n [get_bd_pins ${AXI_C2C_SLAVE_RSTN}]
 
 

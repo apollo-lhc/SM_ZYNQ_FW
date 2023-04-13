@@ -16,9 +16,6 @@ AXI_CONTROL_SETS:
     axi_freq: "${::AXI_MASTER_CLK_FREQ}"
 
 AXI_SLAVES:
-  IRQ_CTRL:
-    XML: "address_table/modules/INTERRUPT_CONTROLLER.xml"
-    UHAL_BASE: 0x16000000
   C2C1:
     TCL_CALL:
       command: "AXI_C2C_MASTER"

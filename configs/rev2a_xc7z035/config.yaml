@@ -260,9 +260,6 @@ AXI_SLAVES:
     XML: "address_table/modules/AXI_MONITOR.xml"
     UHAL_BASE: 0x1F000000
 
-  IRQ_CTRL:
-    XML: "address_table/modules/INTERRUPT_CONTROLLER.xml"
-    UHAL_BASE: 0x16000000
 
 
 CORES:
