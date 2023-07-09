@@ -366,8 +366,8 @@ architecture structure of top is
   signal clk_TCDS_locked : std_logic;
 
   signal clk_C2C1_PHY : std_logic;
-  signal C2C_pB_UART_tx : std_logic;
-  signal C2C_pB_UART_rx : std_logic;
+  signal C2C_pB_UART_tx : std_logic_vector(2 downto 1);
+  signal C2C_pB_UART_rx : std_logic_vector(2 downto 1);
 
 
   --other clocks
@@ -423,8 +423,10 @@ begin  -- architecture structure
 --      clk_125              => clk_125Mhz,
       AXI_RST_N(0)         => axi_reset_n,
       AXI_CLK              => AXI_clk,
-      CM_PB_UART_rxd                     => C2C_pB_UART_tx,
-      CM_PB_UART_txd                     => C2C_pB_UART_rx,
+      CM1_PB_UART_rxd                     => C2C_pB_UART_tx(1),
+      CM1_PB_UART_txd                     => C2C_pB_UART_rx(1),
+      CM2_PB_UART_rxd                     => C2C_pB_UART_tx(2),
+      CM2_PB_UART_txd                     => C2C_pB_UART_rx(2),
 
       c2c_interconnect_reset    => reset_c2c,
 

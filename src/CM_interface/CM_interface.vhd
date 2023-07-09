@@ -47,8 +47,8 @@ entity CM_intf is
     reset_c2c         : out std_logic;
     CM_C2C_Mon        : in  C2C_Monitor_t;
     CM_C2C_Ctrl       : out C2C_Control_t;
-    UART_Rx           : in  std_logic;
-    UART_Tx           : out std_logic
+    UART_Rx           : in  std_logic_vector(2 downto 1);
+    UART_Tx           : out std_logic_vector(2 downto 1)
     );
 end entity CM_intf;
 
@@ -237,29 +237,6 @@ begin
   Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.SIZE      <= x"00000000";--std_logic_vector(AXI_RANGE_C2C2b_AXI_LITE_BRIDGE);
   Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.VALID     <= '1';
 
-  rd_dv: process(clk_axi) is
-  begin
-    if clk_axi'event and clk_axi = '1' then
-      MON.PB.MEM.rd_data_valid <= CTRL.PB.MEM.enable;
-    end if;
-  end process rd_dv;
-  uC_1: entity work.uC
-    generic map(
-      LINK_COUNT => 4)
-    port map (
-      clk                   => clk_axi,
-      reset                 => reset,
-      reprogram_addr        => CTRL.PB.MEM.address,
-      reprogram_wen         => CTRL.PB.MEM.wr_enable,
-      reprogram_di          => CTRL.PB.MEM.wr_data,
-      reprogram_do          => MON.PB.MEM.rd_data,
-      reprogram_reset       => CTRL.PB.reset,
-      UART_Rx               => UART_Rx,
-      UART_Tx               => UART_Tx,
-      irq_count             => CTRL.PB.IRQ_COUNT,
-      link_INFO_in          => link_INFO_in,
-      link_INFO_out         => link_INFO_out
-      );
 
   
   GENERATE_LOOP: for iCM in 1 to 2 generate
@@ -320,8 +297,31 @@ begin
     -------------------------------------------------------------------------------
     -- AXI 
     -------------------------------------------------------------------------------
-
-
+    rd_dv: process(clk_axi) is
+    begin
+      if clk_axi'event and clk_axi = '1' then
+        MON.CM(iCM).PB.MEM.rd_data_valid <= CTRL.CM(iCM).PB.MEM.enable;
+      end if;
+    end process rd_dv;
+    uC_1: entity work.uC
+    generic map(
+      LINK_COUNT => 2)
+      port map (
+        clk                   => clk_axi,
+        reset                 => reset,
+        reprogram_addr        => CTRL.CM(iCM).PB.MEM.address,
+        reprogram_wen         => CTRL.CM(iCM).PB.MEM.wr_enable,
+        reprogram_di          => CTRL.CM(iCM).PB.MEM.wr_data,
+        reprogram_do          => MON.CM(iCM).PB.MEM.rd_data,
+        reprogram_reset       => CTRL.CM(iCM).PB.reset,
+        UART_Rx               => UART_Rx(iCM),
+        UART_Tx               => UART_Tx(iCM),
+        irq_count             => CTRL.CM(iCM).PB.IRQ_COUNT,
+        link_INFO_in          => link_INFO_in (2*(iCM-1) to (2*iCM)-1),
+        link_INFO_out         => link_INFO_out(2*(iCM-1) to (2*iCM)-1)
+        );
+    
+    
     GENERATE_LANE_LOOP: for iLane in 1 to 2 generate
       signal linkID : integer := 2*(iCM-1) + (iLane);
     begin      

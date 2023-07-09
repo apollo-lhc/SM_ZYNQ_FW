@@ -221,7 +221,7 @@ AXI_SLAVES:
       dt_data: "port-number = <2>;"
 
 
-  CM_PB_UART:
+  CM1_PB_UART:
     TCL_CALL:
       command: "AXI_IP_UART"
       baud_rate: "115200"
@@ -229,6 +229,14 @@ AXI_SLAVES:
       axi_control: "${::AXI_MASTER_CTRL}"
       remote_slave: "0"
       dt_data: "port-number = <100>;"
+  CM2_PB_UART:
+    TCL_CALL:
+      command: "AXI_IP_UART"
+      baud_rate: "115200"
+      irq_port: "${::IRQ0_INTR_CTRL}"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      remote_slave: "0"
+      dt_data: "port-number = <101>;"
 
 
 
