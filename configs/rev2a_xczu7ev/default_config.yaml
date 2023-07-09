@@ -27,6 +27,7 @@ AXI_SLAVES:
       refclk_freq: "100"
       irq_port: "${::IRQ0_INTR_CTRL}"
       speed: 5
+      singleend_refclk: True
       axi_control: "${::AXI_C2C_CTRL}"
       addr:
         offset: 0xB0000000
@@ -51,10 +52,11 @@ AXI_SLAVES:
           command: "AXI_C2C_MASTER"
           device_name: "C2C2"
           axi_control: "${::AXI_C2C_CTRL}"
-          primary_serdes: "C2C1_PHY"
+          primary_serdes: 1
           init_clk: "${::INIT_CLK}"
           irq_port: "${::IRQ0_INTR_CTRL}"
           speed: 5
+          singleend_refclk: True
           refclk_freq: "100"
           addr:
             offset: 0xB2000000
@@ -66,7 +68,7 @@ AXI_SLAVES:
               command: "AXI_C2C_MASTER"
               device_name: "C2C2B"
               axi_control: "${::AXI_C2C_CTRL}"
-              primary_serdes: "C2C1_PHY"
+              primary_serdes: "C2C2_PHY"
               init_clk: "${::INIT_CLK}"
               irq_port: "${::IRQ0_INTR_CTRL}"
               refclk_freq: "100"

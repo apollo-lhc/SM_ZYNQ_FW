@@ -382,6 +382,11 @@ architecture structure of top is
   signal clk_TTC : std_logic;
   signal local_clk_TTC : std_logic;
   signal clk_TTC_freq : std_logic_vector(31 downto 0);
+  
+  signal C2C_REFCLK_FREQ : slv_32_t;
+  signal c2c_refclk : std_logic;
+  signal c2c_refclk_odiv2     : std_logic;
+  signal buf_c2c_refclk_odiv2 : std_logic;
 
   
   signal reset_c2c : std_logic;
@@ -567,8 +572,14 @@ begin  -- architecture structure
       C2C1_phy_Rx_rxp           =>  AXI_C2C_CM1_Rx_P(0 to 0),
       C2C1_phy_Tx_txn           =>  AXI_C2C_CM1_Tx_N(0 to 0),
       C2C1_phy_Tx_txp           =>  AXI_C2C_CM1_Tx_P(0 to 0),
-      C2C1_phy_refclk_clk_n     => refclk_C2C1_N(1),
-      C2C1_phy_refclk_clk_p     => refclk_C2C1_P(1),
+      C2C1_phy_refclk           => c2c_refclk,
+      C2C2_phy_refclk           => c2c_refclk,
+      
+--      C2C1_phy_refclk_clk_n     => refclk_C2C1_N(1),
+--      C2C1_phy_refclk_clk_p     => refclk_C2C1_P(1),
+--      C2C2_phy_refclk_clk_n     => refclk_C2C1_N(1),
+--      C2C2_phy_refclk_clk_p     => refclk_C2C1_P(1),
+
       C2C1_phy_power_down       => AXI_C2C_powerdown(1),
 
       C2C1_aurora_do_cc                 => CM_C2C_Mon.Link(1).status.do_cc,
@@ -870,6 +881,44 @@ begin  -- architecture structure
   GPIO  <= "0000000";
   ZYNQ_BOOT_DONE <= linux_booted;
   IPMC_OUT <= "00";
+
+
+  ibufds_c2c : ibufds_gte4
+    generic map (
+      REFCLK_EN_TX_PATH  => '0',
+      REFCLK_HROW_CK_SEL => "00",
+      REFCLK_ICNTL_RX    => "00")
+    port map (
+      O     => c2c_refclk,
+      ODIV2 => c2c_refclk_odiv2,
+      CEB   => '0',
+      I     => refclk_C2C1_P(1),
+      IB    => refclk_C2C1_N(1)
+      );
+  
+  BUFG_GT_inst_c2c_odiv2 : BUFG_GT
+    port map (
+      O => buf_c2c_refclk_odiv2,
+      CE => '1',
+      CEMASK => '1',
+      CLR => '0',
+      CLRMASK => '1', 
+      DIV => "000",
+      I => c2c_refclk_odiv2
+      );
+  rate_counter_c2c: entity work.rate_counter
+    generic map (
+      CLK_A_1_SECOND => AXI_MASTER_CLK_FREQ)
+    port map (
+      clk_A         => axi_clk,
+      clk_B         => buf_c2c_refclk_odiv2,
+      reset_A_async => AXI_RESET,
+      event_b       => '1',
+      rate          => c2c_refclk_freq);                
+
+
+
+
   
   services_1: entity work.services
     generic map(
@@ -952,22 +1001,22 @@ begin  -- architecture structure
   -------------------------------------------------------------------------------
   -- Command modules and C2C links
   -------------------------------------------------------------------------------
-  AXI_C2C_powerdown <= (others => '0');
+--  AXI_C2C_powerdown <= (others => '0');
 --  AXI_C2C_powerdown(1) <= not CM_enable_IOs(1);
 --  AXI_C2C_powerdown(2) <= not CM_enable_IOs(1);
 
   CM_COUNT_IS_1_ASSIGNMENTS: if CM_COUNT = 1 generate
---    AXI_C2C_powerdown(3) <= not CM_enable_IOs(1);
---    AXI_C2C_powerdown(4) <= not CM_enable_IOs(1);
-    CM_C2C_Mon.Link(3).status.phy_mmcm_lol  <= '0';
-    CM_C2C_Mon.Link(3).debug.cpll_lock      <= '0';
-    CM_C2C_Mon.Link(4).status.phy_mmcm_lol  <= '0';
-    CM_C2C_Mon.Link(4).debug.cpll_lock      <= '0';
+    AXI_C2C_powerdown(3) <= not CM_enable_IOs(1);
+    AXI_C2C_powerdown(4) <= not CM_enable_IOs(1);
+--    CM_C2C_Mon.Link(3).status.phy_mmcm_lol  <= '0';
+--    CM_C2C_Mon.Link(3).debug.cpll_lock      <= '0';
+--    CM_C2C_Mon.Link(4).status.phy_mmcm_lol  <= '0';
+--    CM_C2C_Mon.Link(4).debug.cpll_lock      <= '0';
   end generate CM_COUNT_IS_1_ASSIGNMENTS;
   
   CM_COUNT_IS_2_ASSIGNMENTS: if CM_COUNT = 2 generate
---    AXI_C2C_powerdown(3) <= not CM_enable_IOs(2);
---    AXI_C2C_powerdown(4) <= not CM_enable_IOs(2);
+    AXI_C2C_powerdown(3) <= not CM_enable_IOs(2);
+    AXI_C2C_powerdown(4) <= not CM_enable_IOs(2);
   end generate CM_COUNT_IS_2_ASSIGNMENTS;
 
   CM_interface_1: entity work.CM_intf

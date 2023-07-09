@@ -116,22 +116,22 @@ begin
   reset <= not reset_axi_n;
 
   --For signals variable on CM_COUNT
-  phycontrol_en(1) <=                    from_CM.CM(1).PWR_good and CTRL.CM(1).C2C(1).ENABLE_PHY_CTRL;
+--  phycontrol_en(1) <=                    from_CM.CM(1).PWR_good and CTRL.CM(1).C2C(1).ENABLE_PHY_CTRL;
   counter_en(1)    <= from_CM.CM(1).PWR_good;
   
-  phycontrol_en(2) <= phylanelock(1) and from_CM.CM(1).PWR_good and CTRL.CM(1).C2C(2).ENABLE_PHY_CTRL;
+--  phycontrol_en(2) <= phylanelock(1) and from_CM.CM(1).PWR_good and CTRL.CM(1).C2C(2).ENABLE_PHY_CTRL;
   counter_en(2)    <= from_CM.CM(1).PWR_good;
 
   CM_CTRL_GENERATE_1: if CM_COUNT = 1 generate
-    phycontrol_en(3) <= phylanelock(1) and from_CM.CM(1).PWR_good and CTRL.CM(2).C2C(1).ENABLE_PHY_CTRL;
+--    phycontrol_en(3) <= phylanelock(1) and from_CM.CM(1).PWR_good and CTRL.CM(2).C2C(1).ENABLE_PHY_CTRL;
     counter_en(3)    <= from_CM.CM(1).PWR_good;
-    phycontrol_en(4) <= phylanelock(1) and from_CM.CM(1).PWR_good and CTRL.CM(2).C2C(2).ENABLE_PHY_CTRL;
+--    phycontrol_en(4) <= phylanelock(1) and from_CM.CM(1).PWR_good and CTRL.CM(2).C2C(2).ENABLE_PHY_CTRL;
     counter_en(4)    <= from_CM.CM(1).PWR_good;
   end generate CM_CTRL_GENERATE_1;
   CM_CTRL_GENERATE_2: if CM_COUNT = 2 generate
-    phycontrol_en(3) <=                    from_CM.CM(2).PWR_good and CTRL.CM(2).C2C(1).ENABLE_PHY_CTRL;
+--    phycontrol_en(3) <=                    from_CM.CM(2).PWR_good and CTRL.CM(2).C2C(1).ENABLE_PHY_CTRL;
     counter_en(3)    <= from_CM.CM(2).PWR_good;
-    phycontrol_en(4) <= phylanelock(3) and from_CM.CM(2).PWR_good and CTRL.CM(2).C2C(2).ENABLE_PHY_CTRL;
+--    phycontrol_en(4) <= phylanelock(3) and from_CM.CM(2).PWR_good and CTRL.CM(2).C2C(2).ENABLE_PHY_CTRL;
     counter_en(4)    <= from_CM.CM(2).PWR_good;
   end generate CM_CTRL_GENERATE_2;
 
@@ -200,9 +200,9 @@ begin
 
 
 
-  Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.ADDR_LSB      <= x"00000000";--std_logic_vector(AXI_ADDR_C2C1_AXI_BRIDGE(31 downto 0));
+  Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.ADDR_LSB      <= std_logic_vector(AXI_ADDR_C2C1_AXI_BRIDGE(31 downto 0));
   Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.ADDR_MSB      <= x"00000000";
-  Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.SIZE          <= x"00000000";-- std_logic_vector(AXI_RANGE_C2C1_AXI_BRIDGE);
+  Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.SIZE          <= std_logic_vector(AXI_RANGE_C2C1_AXI_BRIDGE);
   Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.VALID         <= '1';
   Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.ADDR_LSB  <= x"00000000";
   Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.ADDR_MSB  <= x"00000000";
@@ -213,15 +213,15 @@ begin
   Mon.CM(1).C2C(2).BRIDGE_INFO.AXI.ADDR_MSB      <= x"00000000";
   Mon.CM(1).C2C(2).BRIDGE_INFO.AXI.SIZE          <= x"00000000";
   Mon.CM(1).C2C(2).BRIDGE_INFO.AXI.VALID         <= '0';
-  Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.ADDR_LSB  <=  x"00000000";--std_logic_vector(AXI_ADDR_C2C1B_AXI_LITE_BRIDGE(31 downto 0));
+  Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.ADDR_LSB  <= std_logic_vector(AXI_ADDR_C2C1B_AXI_LITE_BRIDGE(31 downto 0));
   Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.ADDR_MSB  <= x"00000000";
-  Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.SIZE      <=  x"00000000";--std_logic_vector(AXI_RANGE_C2C1B_AXI_LITE_BRIDGE);
+  Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.SIZE      <= std_logic_vector(AXI_RANGE_C2C1B_AXI_LITE_BRIDGE);
   Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.VALID     <= '1';
 
   
-  Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.ADDR_LSB      <=  x"00000000";--std_logic_vector(AXI_ADDR_C2C2_AXI_BRIDGE(31 downto 0));
+  Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.ADDR_LSB      <= std_logic_vector(AXI_ADDR_C2C2_AXI_BRIDGE(31 downto 0));
   Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.ADDR_MSB      <= x"00000000";
-  Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.SIZE          <=  x"00000000";--std_logic_vector(AXI_RANGE_C2C2_AXI_BRIDGE);
+  Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.SIZE          <= std_logic_vector(AXI_RANGE_C2C2_AXI_BRIDGE);
   Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.VALID         <= '1';
   Mon.CM(2).C2C(1).BRIDGE_INFO.AXILITE.ADDR_LSB  <= x"00000000";
   Mon.CM(2).C2C(1).BRIDGE_INFO.AXILITE.ADDR_MSB  <= x"00000000";
@@ -232,9 +232,9 @@ begin
   Mon.CM(2).C2C(2).BRIDGE_INFO.AXI.ADDR_MSB      <= x"00000000";
   Mon.CM(2).C2C(2).BRIDGE_INFO.AXI.SIZE          <= x"00000000";
   Mon.CM(2).C2C(2).BRIDGE_INFO.AXI.VALID         <= '0';
-  Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.ADDR_LSB  <= x"00000000";--std_logic_vector(AXI_ADDR_C2C2b_AXI_LITE_BRIDGE(31 downto 0));
+  Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.ADDR_LSB  <= std_logic_vector(AXI_ADDR_C2C2b_AXI_LITE_BRIDGE(31 downto 0));
   Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.ADDR_MSB  <= x"00000000";
-  Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.SIZE      <= x"00000000";--std_logic_vector(AXI_RANGE_C2C2b_AXI_LITE_BRIDGE);
+  Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.SIZE      <= std_logic_vector(AXI_RANGE_C2C2b_AXI_LITE_BRIDGE);
   Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.VALID     <= '1';
 
 
