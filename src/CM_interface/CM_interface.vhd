@@ -45,6 +45,7 @@ entity CM_intf is
     clk_C2C           : in  std_logic_vector(4 downto 1);
     DRP_clk           : in  std_logic_vector(4 downto 1);
     reset_c2c         : out std_logic;
+    C2C_REFCLK_FREQ   : in  std_logic_vector(31 downto  0);
     CM_C2C_Mon        : in  C2C_Monitor_t;
     CM_C2C_Ctrl       : out C2C_Control_t;
     UART_Rx           : in  std_logic_vector(2 downto 1);
@@ -237,7 +238,7 @@ begin
   Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.SIZE      <= std_logic_vector(AXI_RANGE_C2C2b_AXI_LITE_BRIDGE);
   Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.VALID     <= '1';
 
-
+  Mon.C2C_REFCLK_FREQ <= C2C_REFCLK_FREQ;
   
   GENERATE_LOOP: for iCM in 1 to 2 generate
 

@@ -355,7 +355,7 @@ architecture structure of top is
   signal TCDS_Mon       : SERV_TCDS_MON_t;
   signal TCDS_Ctrl      : SERV_TCDS_CTRL_t;
   
-  signal CM_enable_IOs   : std_logic_vector(1 downto 0);
+  signal CM_enable_IOs   : std_logic_vector(2 downto 1);
   signal CM_C2C_Ctrl : C2C_Control_t;
   signal C2C1_phy_gt_refclk1_out : std_logic;
 
@@ -1002,8 +1002,8 @@ begin  -- architecture structure
   -- Command modules and C2C links
   -------------------------------------------------------------------------------
 --  AXI_C2C_powerdown <= (others => '0');
---  AXI_C2C_powerdown(1) <= not CM_enable_IOs(1);
---  AXI_C2C_powerdown(2) <= not CM_enable_IOs(1);
+  AXI_C2C_powerdown(1) <= not CM_enable_IOs(1);
+  AXI_C2C_powerdown(2) <= not CM_enable_IOs(1);
 
   CM_COUNT_IS_1_ASSIGNMENTS: if CM_COUNT = 1 generate
     AXI_C2C_powerdown(3) <= not CM_enable_IOs(1);
@@ -1077,6 +1077,7 @@ begin  -- architecture structure
       DRP_clk(3)                => AXI_C2C_aurora_init_clk,
       DRP_clk(4)                => AXI_C2C_aurora_init_clk,
       reset_c2c                 => reset_c2c,
+      C2C_REFCLK_FREQ           => c2c_refclk_freq,
       CM_C2C_Mon                => CM_C2C_Mon,
       CM_C2C_Ctrl               => CM_C2C_Ctrl,
       UART_Rx                   => C2C_pB_UART_rx,
