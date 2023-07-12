@@ -574,6 +574,8 @@ begin  -- architecture structure
       C2C1_phy_Tx_txp           =>  AXI_C2C_CM1_Tx_P(0 to 0),
       C2C1_phy_refclk           => c2c_refclk,
       C2C2_phy_refclk           => c2c_refclk,
+      C2C1B_phy_refclk           => c2c_refclk,
+      C2C2B_phy_refclk           => c2c_refclk,
       
 --      C2C1_phy_refclk_clk_n     => refclk_C2C1_N(1),
 --      C2C1_phy_refclk_clk_p     => refclk_C2C1_P(1),
