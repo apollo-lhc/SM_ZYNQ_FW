@@ -426,7 +426,7 @@ begin  -- architecture structure
   zynq_bd_wrapper_1: entity work.zynq_bd_wrapper
     port map (
 --      clk_125              => clk_125Mhz,
-      AXI_RST_N(0)         => axi_reset_n,
+      sys_resetter_primary_rst_n(0)         => axi_reset_n,
       AXI_CLK              => AXI_clk,
       CM1_PB_UART_rxd                     => C2C_pB_UART_tx(1),
       CM1_PB_UART_txd                     => C2C_pB_UART_rx(1),
