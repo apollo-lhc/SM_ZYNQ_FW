@@ -287,8 +287,8 @@ architecture structure of top is
 
   signal CLOCKING_Mon   : SERV_CLOCKING_MON_t;
   signal CLOCKING_Ctrl  : SERV_CLOCKING_CTRL_t;
-  signal C2C_pB_UART_tx : std_logic;
-  signal C2C_pB_UART_rx : std_logic;
+  signal C2C_pB_UART_tx : std_logic_vector(2 downto 1);
+  signal C2C_pB_UART_rx : std_logic_vector(2 downto 1);
 
   signal TCDS_Mon       : SERV_TCDS_MON_t;
   signal TCDS_Ctrl      : SERV_TCDS_CTRL_t;
@@ -319,6 +319,11 @@ architecture structure of top is
   constant one : std_logic := '1';
   constant zero : std_logic := '0';
 
+  signal C2C_REFCLK_FREQ : slv_32_t;
+  signal c2c_refclk : std_logic;
+  signal c2c_refclk_odiv2     : std_logic;
+  signal buf_c2c_refclk_odiv2 : std_logic;
+
   signal reset_c2c : std_logic;
 
 begin  -- architecture structure
@@ -327,8 +332,10 @@ begin  -- architecture structure
 --  pl_clk <= axi_clk;
   zynq_bd_wrapper_1: entity work.zynq_bd_wrapper
     port map (
-      AXI_RST_N(0)         => axi_reset_n,
+--      AXI_RST_N(0)         => axi_reset_n,
       AXI_CLK              => AXI_clk,
+      sys_resetter_primary_rst_n(0)         => axi_reset_n,
+
       DDR_addr             => DDR_addr,
       DDR_ba               => DDR_ba,
       DDR_cas_n            => DDR_cas_n,
@@ -374,9 +381,10 @@ begin  -- architecture structure
       SI_sda_t                  => SDA_t_phy,--SDA_t_normal,
 --      AXI_CLK_PL                => pl_clk,
 --      AXI_RSTN_PL               => pl_reset_n,
-
-      CM_PB_UART_rxd                     => C2C_pB_UART_tx,
-      CM_PB_UART_txd                     => C2C_pB_UART_rx,
+      CM1_PB_UART_rxd                     => C2C_pB_UART_tx(1),
+      CM1_PB_UART_txd                     => C2C_pB_UART_rx(1),
+      CM2_PB_UART_rxd                     => C2C_pB_UART_tx(2),
+      CM2_PB_UART_txd                     => C2C_pB_UART_rx(2),
 
       c2c_interconnect_reset    => reset_c2c,
 
@@ -501,13 +509,14 @@ begin  -- architecture structure
       PLXVC_wstrb                => AXI_BUS_WMOSI(4).data_write_strobe,
       PLXVC_wvalid               => AXI_BUS_WMOSI(4).data_valid,
 
+      C2C1_phy_refclk           => c2c_refclk,
+      C2C2_phy_refclk           => c2c_refclk,
+      
       init_clk                  =>  AXI_C2C_aurora_init_clk,
       C2C1_phy_Rx_rxn           =>  AXI_C2C_CM1_Rx_N(0 to 0),
       C2C1_phy_Rx_rxp           =>  AXI_C2C_CM1_Rx_P(0 to 0),
       C2C1_phy_Tx_txn           =>  AXI_C2C_CM1_Tx_N(0 to 0),
       C2C1_phy_Tx_txp           =>  AXI_C2C_CM1_Tx_P(0 to 0),
-      C2C1_phy_refclk_clk_n     => refclk_C2C_N(0),
-      C2C1_phy_refclk_clk_p     => refclk_C2C_P(0),
       C2C1_phy_power_down       => AXI_C2C_powerdown(1),
 
       C2C1_aurora_do_cc                 => CM_C2C_Mon.Link(1).status.do_cc                ,
@@ -846,7 +855,38 @@ begin  -- architecture structure
   Clocking_Mon.HQ_LOS_BP   <= HQ_CLK_CMS_LOS;
   Clocking_Mon.HQ_LOS_OSC  <= HQ_CLK_OSC_LOS;
   LHC_SRC_SEL                   <= Clocking_Ctrl.LHC_SEL;
-  HQ_SRC_SEL                    <= Clocking_Ctrl.HQ_SEL;      
+  HQ_SRC_SEL                    <= Clocking_Ctrl.HQ_SEL;
+
+  ibufds_c2c : ibufds_gte2
+    generic map (
+      CLKSWING_CFG       => "11",
+      CLKCM_CFG          => TRUE,
+      CLKRCV_TRST        => TRUE)
+    port map (
+      O     => c2c_refclk,
+      ODIV2 => c2c_refclk_odiv2,
+      CEB   => '0',
+      I     => refclk_C2C_P(0),
+      IB    => refclk_C2C_N(0)
+      );
+  
+  BUFG_GT_inst_c2c_odiv2 : BUFG
+    port map (
+      O => buf_c2c_refclk_odiv2,
+      I => c2c_refclk_odiv2
+      );
+  rate_counter_c2c: entity work.rate_counter
+    generic map (
+      CLK_A_1_SECOND => AXI_MASTER_CLK_FREQ)
+    port map (
+      clk_A         => axi_clk,
+      clk_B         => buf_c2c_refclk_odiv2,
+      reset_A_async => AXI_RESET,
+      event_b       => '1',
+      rate          => c2c_refclk_freq);                
+
+
+  
   services_1: entity work.services
     generic map(
       CLK_FREQ => AXI_MASTER_CLK_FREQ,
@@ -992,6 +1032,7 @@ begin  -- architecture structure
       DRP_clk(2)                => AXI_C2C_aurora_init_clk,
       DRP_clk(3)                => AXI_C2C_aurora_init_clk,
       DRP_clk(4)                => AXI_C2C_aurora_init_clk,
+      C2C_REFCLK_FREQ           => c2c_refclk_freq,
       CM_C2C_Mon                => CM_C2C_Mon,
       CM_C2C_Ctrl               => CM_C2C_Ctrl,
       UART_Rx                   => C2C_pB_UART_rx,
