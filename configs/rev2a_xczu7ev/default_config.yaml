@@ -18,10 +18,10 @@ AXI_CONTROL_SETS:
 
 AXI_SLAVES:
   BASE:
-    INCLUDE_FILE: "${::apollo_root_path}/configs/${::build_name}/config_zynq.yaml"
+    INCLUDE_FILE: "${::apollo_root_path}/src/ZynqPS/config_ZynqMP.yaml"
     SUB_SLAVES:
       C2C:
-        INCLUDE_FILE: "${::apollo_root_path}/src/C2C/config_c2c.yaml"
+        INCLUDE_FILE: "${::apollo_root_path}/src/C2C/config_c2c_usp.yaml"
       AXI_LOCAL_INTERCONNECT:
         TCL_CALL:
           command: "BUILD_CHILD_AXI_INTERCONNECT"

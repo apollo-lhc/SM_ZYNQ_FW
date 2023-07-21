@@ -9,7 +9,6 @@ set ZYNQ_NAME ZynqMPSoC
 startgroup
 
 #create the zynq MPSoC
-#create_bd_cell -type ip -vlnv xilinx.com:ip:zynq_ultra_ps_e:3.2 zynq_ultra_ps_e_0
 create_bd_cell -type ip -vlnv [get_ipdefs -filter {NAME == zynq_ultra_ps_e}] ${ZYNQ_NAME}
 
 #configure the Zynq system
@@ -65,7 +64,6 @@ set_property CONFIG.PSU__MAXIGP1__DATA_WIDTH {32}		    [get_bd_cells ${ZYNQ_NAME
 
 connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins ${ZYNQ_NAME}/maxihpm0_fpd_aclk]
 connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins ${ZYNQ_NAME}/maxihpm1_fpd_aclk]
-#connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins ${ZYNQ_NAME}/maxihpm0_lpd_aclk]
 
 global ZYNQ_RESETN
 set ZYNQ_RESETN ${ZYNQ_NAME}/pl_resetn0
@@ -108,12 +106,9 @@ set AXI_C2C_SLAVE_RSTN [get_bd_pins ${SYS_RESETTER_C2C}/peripheral_aresetn]
 make_bd_pins_external -name axi_c2c_rst_n [get_bd_pins ${AXI_C2C_SLAVE_RSTN}]
 
 
-
-
-
-
-
 #add interrupts from PL to PS
 set_property CONFIG.PSU__USE__IRQ0 {1} [get_bd_cells ${ZYNQ_NAME}]
 
+#validate the design
+validate_bd_design
 endgroup
