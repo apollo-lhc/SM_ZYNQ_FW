@@ -8,7 +8,6 @@ AXI_SLAVES:
       refclk_freq: "100.000"
       irq_port: IRQ0_INTR_CTRL
       speed: 5
-      singleend_refclk: True
       axi_control: "${::AXI_C2C_CTRL}"
       addr:
         offset: 0x80000000
@@ -57,7 +56,7 @@ AXI_SLAVES:
               addr:
                 offset: 0x82000000
                 range: "16M"
-            SUB_SLAVES:   
+            SUB_SLAVES:
               C2C2_AXI_FW:
                 TCL_CALL:
                   command: "AXI_IP_AXI_FW"
@@ -87,4 +86,3 @@ AXI_SLAVES:
                       axi_control: "${::AXI_MASTER_CTRL}"
                     XML: "address_table/modules/C2C2_AXILITE_FW.xml"
                     UHAL_BASE: 0x14000000
-          

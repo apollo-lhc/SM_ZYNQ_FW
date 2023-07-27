@@ -330,8 +330,53 @@ begin  -- architecture structure
 
 --  pl_reset_n <= axi_reset_n ;
 --  pl_clk <= axi_clk;
-  zynq_bd_wrapper_1: entity work.zynq_bd_wrapper
+  zynq_bd_wrapper_1: entity work.zynq_bd_sane_wrapper
     port map (
+          --AXI master--  
+          AXIM_PL_RMOSI   => AXI_MSTR_RMOSI,
+          AXIM_PL_RMISO   => AXI_MSTR_RMISO,
+          AXIM_PL_WMOSI   => AXI_MSTR_WMOSI,
+          AXIM_PL_WMISO   => AXI_MSTR_WMISO,
+          --AXI endpoint--
+          CM_RMOSI        => AXI_BUS_RMOSI(2),
+          CM_RMISO        => AXI_BUS_RMISO(2),
+          CM_WMOSI        => AXI_BUS_WMOSI(2),
+          CM_WMISO        => AXI_BUS_WMISO(2),
+          --AXI endpoint--
+          PLXVC_RMOSI     => AXI_BUS_RMOSI(4),
+          PLXVC_RMISO     => AXI_BUS_RMISO(4),
+          PLXVC_WMOSI     => AXI_BUS_WMOSI(4),
+          PLXVC_WMISO     => AXI_BUS_WMISO(4),
+          --AXI endpoint--
+          SERV_RMOSI      => AXI_BUS_RMOSI(0),
+          SERV_RMISO      => AXI_BUS_RMISO(0),
+          SERV_WMOSI      => AXI_BUS_WMOSI(0),
+          SERV_WMISO      => AXI_BUS_WMISO(0),
+          --AXI endpoint--
+          SLAVE_I2C_RMOSI => AXI_BUS_RMOSI(1),
+          SLAVE_I2C_RMISO => AXI_BUS_RMISO(1),
+          SLAVE_I2C_WMOSI => AXI_BUS_WMOSI(1),
+          SLAVE_I2C_WMISO => AXI_BUS_WMISO(1),
+          --AXI endpoint--
+          SM_INFO_RMOSI   => AXI_BUS_RMOSI(3),
+          SM_INFO_RMISO   => AXI_BUS_RMISO(3),
+          SM_INFO_WMOSI   => AXI_BUS_WMOSI(3),
+          SM_INFO_WMISO   => AXI_BUS_WMISO(3),
+
+
+
+
+
+
+
+
+
+      
+
+
+      
+
+      
 --      AXI_RST_N(0)         => axi_reset_n,
       AXI_CLK              => AXI_clk,
       sys_resetter_primary_rst_n(0)         => axi_reset_n,
@@ -357,20 +402,6 @@ begin  -- architecture structure
       FIXED_IO_ps_clk      => FIXED_IO_ps_clk,
       FIXED_IO_ps_porb     => FIXED_IO_ps_porb,
       FIXED_IO_ps_srstb    => FIXED_IO_ps_srstb,
---      ENET1_EXT_INTIN_0         => ENET1_EXT_INTIN_0         ,
---      GMII_ETHERNET_1_0_col     => GMII_ETHERNET_col     ,
---      GMII_ETHERNET_1_0_crs     => GMII_ETHERNET_crs     ,
---      GMII_ETHERNET_1_0_rx_clk  => GMII_ETHERNET_rx_clk  ,
---      GMII_ETHERNET_1_0_rx_dv   => GMII_ETHERNET_rx_dv   ,
---      GMII_ETHERNET_1_0_rx_er   => GMII_ETHERNET_rx_er   ,
---      GMII_ETHERNET_1_0_rxd     => GMII_ETHERNET_rxd     ,
---      GMII_ETHERNET_1_0_tx_clk  => GMII_ETHERNET_tx_clk  ,
---      GMII_ETHERNET_1_0_tx_en   => GMII_ETHERNET_tx_en   ,
---      GMII_ETHERNET_1_0_tx_er   => GMII_ETHERNET_tx_er   ,
---      GMII_ETHERNET_1_0_txd     => GMII_ETHERNET_txd     ,
---      ENET1_MDIO_MDC_0          => MDIO_ETHERNET_mdc     ,
---      ENET1_MDIO_I_0            => MDIO_ETHERNET_mdio_i  ,
---      ENET1_MDIO_O_0            => MDIO_ETHERNET_mdio_o  ,
       IIC_0_0_scl_io            => I2C_SCL,
       IIC_0_0_sda_io            => I2C_SDA,
       SI_scl_i                  => SCL_i_phy,--SCL_i_normal,
@@ -379,8 +410,6 @@ begin  -- architecture structure
       SI_sda_i                  => SDA_i_phy,--SDA_i_normal,
       SI_sda_o                  => SDA_o_phy,--SDA_o_normal,
       SI_sda_t                  => SDA_t_phy,--SDA_t_normal,
---      AXI_CLK_PL                => pl_clk,
---      AXI_RSTN_PL               => pl_reset_n,
       CM1_PB_UART_rxd                     => C2C_pB_UART_tx(1),
       CM1_PB_UART_txd                     => C2C_pB_UART_rx(1),
       CM2_PB_UART_rxd                     => C2C_pB_UART_tx(2),
@@ -388,129 +417,12 @@ begin  -- architecture structure
 
       c2c_interconnect_reset    => reset_c2c,
 
-      AXIM_PL_awaddr            => AXI_MSTR_WMOSI.address,
-      AXIM_PL_awprot            => AXI_MSTR_WMOSI.protection_type,
-      AXIM_PL_awvalid           => AXI_MSTR_WMOSI.address_valid,
-      AXIM_PL_awready           => AXI_MSTR_WMISO.ready_for_address,
-      AXIM_PL_wdata             => AXI_MSTR_WMOSI.data,
-      AXIM_PL_wstrb             => AXI_MSTR_WMOSI.data_write_strobe,
-      AXIM_PL_wvalid            => AXI_MSTR_WMOSI.data_valid,
-      AXIM_PL_wready            => AXI_MSTR_WMISO.ready_for_data,
-      AXIM_PL_bresp             => AXI_MSTR_WMISO.response,
-      AXIM_PL_bvalid            => AXI_MSTR_WMISO.response_valid,
-      AXIM_PL_bready            => AXI_MSTR_WMOSI.ready_for_response,
-      AXIM_PL_araddr            => AXI_MSTR_RMOSI.address,
-      AXIM_PL_arprot            => AXI_MSTR_RMOSI.protection_type,
-      AXIM_PL_arvalid           => AXI_MSTR_RMOSI.address_valid,
-      AXIM_PL_arready           => AXI_MSTR_RMISO.ready_for_address,
-      AXIM_PL_rdata             => AXI_MSTR_RMISO.data,
-      AXIM_PL_rresp             => AXI_MSTR_RMISO.response,
-      AXIM_PL_rvalid            => AXI_MSTR_RMISO.data_valid,
-      AXIM_PL_rready            => AXI_MSTR_RMOSI.ready_for_data,
---      PL_CLK                    => pl_clk,
---      PL_RESET_N                => pl_reset_n,
-      SERV_araddr               => AXI_BUS_RMOSI(0).address,
-      SERV_arprot               => AXI_BUS_RMOSI(0).protection_type,
-      SERV_arready              => AXI_BUS_RMISO(0).ready_for_address,
-      SERV_arvalid              => AXI_BUS_RMOSI(0).address_valid,
-      SERV_awaddr               => AXI_BUS_WMOSI(0).address,
-      SERV_awprot               => AXI_BUS_WMOSI(0).protection_type,
-      SERV_awready              => AXI_BUS_WMISO(0).ready_for_address,
-      SERV_awvalid              => AXI_BUS_WMOSI(0).address_valid,
-      SERV_bready               => AXI_BUS_WMOSI(0).ready_for_response,
-      SERV_bresp                => AXI_BUS_WMISO(0).response,
-      SERV_bvalid               => AXI_BUS_WMISO(0).response_valid,
-      SERV_rdata                => AXI_BUS_RMISO(0).data,
-      SERV_rready               => AXI_BUS_RMOSI(0).ready_for_data,
-      SERV_rresp                => AXI_BUS_RMISO(0).response,
-      SERV_rvalid               => AXI_BUS_RMISO(0).data_valid,
-      SERV_wdata                => AXI_BUS_WMOSI(0).data,
-      SERV_wready               => AXI_BUS_WMISO(0).ready_for_data,
-      SERV_wstrb                => AXI_BUS_WMOSI(0).data_write_strobe,
-      SERV_wvalid               => AXI_BUS_WMOSI(0).data_valid,
 
-      SLAVE_I2C_araddr               => AXI_BUS_RMOSI(1).address,
-      SLAVE_I2C_arprot               => AXI_BUS_RMOSI(1).protection_type,
-      SLAVE_I2C_arready              => AXI_BUS_RMISO(1).ready_for_address,
-      SLAVE_I2C_arvalid              => AXI_BUS_RMOSI(1).address_valid,
-      SLAVE_I2C_awaddr               => AXI_BUS_WMOSI(1).address,
-      SLAVE_I2C_awprot               => AXI_BUS_WMOSI(1).protection_type,
-      SLAVE_I2C_awready              => AXI_BUS_WMISO(1).ready_for_address,
-      SLAVE_I2C_awvalid              => AXI_BUS_WMOSI(1).address_valid,
-      SLAVE_I2C_bready               => AXI_BUS_WMOSI(1).ready_for_response,
-      SLAVE_I2C_bresp                => AXI_BUS_WMISO(1).response,
-      SLAVE_I2C_bvalid               => AXI_BUS_WMISO(1).response_valid,
-      SLAVE_I2C_rdata                => AXI_BUS_RMISO(1).data,
-      SLAVE_I2C_rready               => AXI_BUS_RMOSI(1).ready_for_data,
-      SLAVE_I2C_rresp                => AXI_BUS_RMISO(1).response,
-      SLAVE_I2C_rvalid               => AXI_BUS_RMISO(1).data_valid,
-      SLAVE_I2C_wdata                => AXI_BUS_WMOSI(1).data,
-      SLAVE_I2C_wready               => AXI_BUS_WMISO(1).ready_for_data,
-      SLAVE_I2C_wstrb                => AXI_BUS_WMOSI(1).data_write_strobe,
-      SLAVE_I2C_wvalid               => AXI_BUS_WMOSI(1).data_valid,
-
-      CM_araddr               => AXI_BUS_RMOSI(2).address,
-      CM_arprot               => AXI_BUS_RMOSI(2).protection_type,
-      CM_arready              => AXI_BUS_RMISO(2).ready_for_address,
-      CM_arvalid              => AXI_BUS_RMOSI(2).address_valid,
-      CM_awaddr               => AXI_BUS_WMOSI(2).address,
-      CM_awprot               => AXI_BUS_WMOSI(2).protection_type,
-      CM_awready              => AXI_BUS_WMISO(2).ready_for_address,
-      CM_awvalid              => AXI_BUS_WMOSI(2).address_valid,
-      CM_bready               => AXI_BUS_WMOSI(2).ready_for_response,
-      CM_bresp                => AXI_BUS_WMISO(2).response,
-      CM_bvalid               => AXI_BUS_WMISO(2).response_valid,
-      CM_rdata                => AXI_BUS_RMISO(2).data,
-      CM_rready               => AXI_BUS_RMOSI(2).ready_for_data,
-      CM_rresp                => AXI_BUS_RMISO(2).response,
-      CM_rvalid               => AXI_BUS_RMISO(2).data_valid,
-      CM_wdata                => AXI_BUS_WMOSI(2).data,
-      CM_wready               => AXI_BUS_WMISO(2).ready_for_data,
-      CM_wstrb                => AXI_BUS_WMOSI(2).data_write_strobe,
-      CM_wvalid               => AXI_BUS_WMOSI(2).data_valid,
-
-      SM_INFO_araddr          => AXI_BUS_RMOSI(3).address,
-      SM_INFO_arprot          => AXI_BUS_RMOSI(3).protection_type,
-      SM_INFO_arready         => AXI_BUS_RMISO(3).ready_for_address,
-      SM_INFO_arvalid         => AXI_BUS_RMOSI(3).address_valid,
-      SM_INFO_awaddr          => AXI_BUS_WMOSI(3).address,
-      SM_INFO_awprot          => AXI_BUS_WMOSI(3).protection_type,
-      SM_INFO_awready         => AXI_BUS_WMISO(3).ready_for_address,
-      SM_INFO_awvalid         => AXI_BUS_WMOSI(3).address_valid,
-      SM_INFO_bready          => AXI_BUS_WMOSI(3).ready_for_response,
-      SM_INFO_bresp           => AXI_BUS_WMISO(3).response,
-      SM_INFO_bvalid          => AXI_BUS_WMISO(3).response_valid,
-      SM_INFO_rdata           => AXI_BUS_RMISO(3).data,
-      SM_INFO_rready          => AXI_BUS_RMOSI(3).ready_for_data,
-      SM_INFO_rresp           => AXI_BUS_RMISO(3).response,
-      SM_INFO_rvalid          => AXI_BUS_RMISO(3).data_valid,
-      SM_INFO_wdata           => AXI_BUS_WMOSI(3).data,
-      SM_INFO_wready          => AXI_BUS_WMISO(3).ready_for_data,
-      SM_INFO_wstrb           => AXI_BUS_WMOSI(3).data_write_strobe,
-      SM_INFO_wvalid          => AXI_BUS_WMOSI(3).data_valid,
-
-      PLXVC_araddr               => AXI_BUS_RMOSI(4).address,
-      PLXVC_arprot               => AXI_BUS_RMOSI(4).protection_type,
-      PLXVC_arready              => AXI_BUS_RMISO(4).ready_for_address,
-      PLXVC_arvalid              => AXI_BUS_RMOSI(4).address_valid,
-      PLXVC_awaddr               => AXI_BUS_WMOSI(4).address,
-      PLXVC_awprot               => AXI_BUS_WMOSI(4).protection_type,
-      PLXVC_awready              => AXI_BUS_WMISO(4).ready_for_address,
-      PLXVC_awvalid              => AXI_BUS_WMOSI(4).address_valid,
-      PLXVC_bready               => AXI_BUS_WMOSI(4).ready_for_response,
-      PLXVC_bresp                => AXI_BUS_WMISO(4).response,
-      PLXVC_bvalid               => AXI_BUS_WMISO(4).response_valid,
-      PLXVC_rdata                => AXI_BUS_RMISO(4).data,
-      PLXVC_rready               => AXI_BUS_RMOSI(4).ready_for_data,
-      PLXVC_rresp                => AXI_BUS_RMISO(4).response,
-      PLXVC_rvalid               => AXI_BUS_RMISO(4).data_valid,
-      PLXVC_wdata                => AXI_BUS_WMOSI(4).data,
-      PLXVC_wready               => AXI_BUS_WMISO(4).ready_for_data,
-      PLXVC_wstrb                => AXI_BUS_WMOSI(4).data_write_strobe,
-      PLXVC_wvalid               => AXI_BUS_WMOSI(4).data_valid,
-
-      C2C1_phy_refclk           => c2c_refclk,
-      C2C2_phy_refclk           => c2c_refclk,
+      --C2C1_phy_refclk           => c2c_refclk,
+      C2C1_PHY_refclk_clk_p              => refclk_C2C_P(0),
+      C2C1_PHY_refclk_clk_n              => refclk_C2C_N(0),
+      C2C1_PHY_gt_refclk1_out            => c2c_refclk_odiv2,
+      
       
       init_clk                  =>  AXI_C2C_aurora_init_clk,
       C2C1_phy_Rx_rxn           =>  AXI_C2C_CM1_Rx_N(0 to 0),
@@ -857,18 +769,18 @@ begin  -- architecture structure
   LHC_SRC_SEL                   <= Clocking_Ctrl.LHC_SEL;
   HQ_SRC_SEL                    <= Clocking_Ctrl.HQ_SEL;
 
-  ibufds_c2c : ibufds_gte2
-    generic map (
-      CLKSWING_CFG       => "11",
-      CLKCM_CFG          => TRUE,
-      CLKRCV_TRST        => TRUE)
-    port map (
-      O     => c2c_refclk,
-      ODIV2 => c2c_refclk_odiv2,
-      CEB   => '0',
-      I     => refclk_C2C_P(0),
-      IB    => refclk_C2C_N(0)
-      );
+--ibufds_c2c : ibufds_gte2
+--    generic map (
+--      CLKSWING_CFG       => "11",
+--      CLKCM_CFG          => TRUE,
+--      CLKRCV_TRST        => TRUE)
+--    port map (
+--      O     => c2c_refclk,
+--      ODIV2 => c2c_refclk_odiv2,
+--      CEB   => '0',
+--      I     => refclk_C2C_P(0),
+--      IB    => refclk_C2C_N(0)
+--      );
   
   BUFG_GT_inst_c2c_odiv2 : BUFG
     port map (

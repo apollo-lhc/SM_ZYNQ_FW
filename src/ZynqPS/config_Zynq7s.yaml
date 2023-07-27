@@ -1,0 +1,54 @@
+AXI_SLAVES:
+  EXT_CLK:
+    TCL_CALL:
+      command: ADD_PL_CLK
+      name: INIT
+      freq: 50000000
+      global_signal: true
+    SUB_SLAVES:
+      SYS_RESET:
+        TCL_CALL:
+          command: IP_SYS_RESET
+          external_reset_n: ${::ZYNQ_RESETN}
+          slowest_clk: ${::AXI_MASTER_CLK}
+        SUB_SLAVES:
+          AXI_MAIN_INTERCONNECT:
+            TCL_CALL:
+              command: BUILD_CHILD_AXI_INTERCONNECT
+              axi_clk: ${::AXI_MASTER_CLK}
+              axi_rstn: "${::AXI_PRIMARY_MASTER_RSTN}"
+              parent:
+                - ${::ZYNQ_NAME}/M_AXI_GP0
+              master_clk:
+                - ${::AXI_MASTER_CLK}
+              master_rstn:
+                - ${::AXI_PRIMARY_MASTER_RSTN}
+            SUB_SLAVES:
+              AXIM_PL:
+                TCL_CALL:
+                  command: GENERATE_PL_MASTER_FOR_INTERCONNECT
+                  interconnect: AXI_MAIN_INTERCONNECT
+                  axi_clk: "${::AXI_MASTER_CLK}"
+                  axi_rstn: "${::AXI_PRIMARY_MASTER_RSTN}"
+                  axi_freq: "${::AXI_MASTER_CLK_FREQ}"
+              AXI_C2C_INTERCONNECT:
+                TCL_CALL:
+                  command: BUILD_CHILD_AXI_INTERCONNECT
+                  axi_clk: ${::AXI_MASTER_CLK}
+                  axi_rstn: "${::AXI_C2C_MASTER_RSTN}"
+                  parent:
+                    - ${::ZYNQ_NAME}/M_AXI_GP1
+                  master_clk:
+                    - ${::AXI_MASTER_CLK}
+                  master_rstn:
+                    - ${::AXI_C2C_MASTER_RSTN}
+                SUB_SLAVES:
+                  IRQ0_INTR_CTRL:
+                    TCL_CALL:
+                      command: AXI_IP_IRQ_CTRL
+                      axi_control: "${::AXI_MASTER_CTRL}"
+                      irq_dest: ${::ZYNQ_NAME}/IRQ_F2P
+                      dt_data: "   interrupt-parent = <&intc>; \n
+                                   interrupts = <0 29 0>;  \n
+                                   xlnx,kind-of-intr = <0x0>; \n
+                               "

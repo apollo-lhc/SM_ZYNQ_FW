@@ -57,7 +57,7 @@ AXI_SLAVES:
       addr:
         offset: 0xB2000000
         range: "16M"
-    SUB_SLAVES:   
+    SUB_SLAVES:
       C2C2_AXI_FW:
         TCL_CALL:
           command: "AXI_IP_AXI_FW"

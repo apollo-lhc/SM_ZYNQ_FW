@@ -22,176 +22,176 @@ AXI_SLAVES:
     SUB_SLAVES:
       C2C:
         INCLUDE_FILE: "${::apollo_root_path}/src/C2C/config_c2c_7s.yaml"
-#        SUB_SLAVES:
-#          AXI_LOCAL_INTERCONNECT:
-#            TCL_CALL:
-#              command: "BUILD_CHILD_AXI_INTERCONNECT"
-#              axi_clk: "${::AXI_MASTER_CLK}"
-#              axi_rstn: "${::AXI_PRIMARY_SLAVE_RSTN}"
-#              parent: AXI_MAIN_INTERCONNECT
-#              master_clk: "${::AXI_MASTER_CLK}"
-#              master_rstn: "${::AXI_PRIMARY_SLAVE_RSTN}"
-#            SUB_SLAVES: 
-#              PL_MEM:
-#                TCL_CALL:
-#                  command: "AXI_IP_BRAM"
-#                  axi_control: "${::AXI_LOCAL_CTRL}"
-#                  addr:
-#                    offset: -1
-#                    range: "8K"
-#                XML: "address_table/modules/PL_MEM.xml"
-#                UHAL_BASE: 0x15000000
-#              PL_MEM_CM:
-#                TCL_CALL:
-#                  command: "AXI_IP_BRAM"
-#                  axi_control: "${::AXI_LOCAL_CTRL}"
-#                  addr:
-#                    offset: -1
-#                    range: "8K"
-#              SERV:
-#                TCL_CALL:
-#                  command: "AXI_PL_DEV_CONNECT"
-#                  axi_control: "${::AXI_LOCAL_CTRL}"
-#                XML: "address_table/modules/SERV_rev1.xml"
-#                UHAL_BASE: 0x04000000
-#                HDL:
-#                  map_template: "axi_generic/template_map.vhd"
-#              SLAVE_I2C:
-#                TCL_CALL:
-#                  command: "AXI_PL_DEV_CONNECT"
-#                  axi_control: "${::AXI_LOCAL_CTRL}"
-#                  addr:
-#                    offset: -1
-#                    range: "8K"
-#                XML: "address_table/modules/SLAVE_I2C.xml"
-#                UHAL_BASE: 0x05000000
-#              CM_MON_AXI_FW:
-#                TCL_CALL:
-#                  command: "AXI_IP_AXI_FW"
-#                  axi_fw_bus: "/AXIM_PL"
-#                  axi_control: "${::AXI_C2C_CTRL}"
-#                XML: "address_table/modules/CM_MON_AXI_FW.xml"
-#                UHAL_BASE: 0x21000000
-#       
-#       
-#          SI:
-#            TCL_CALL:
-#              command: "AXI_IP_I2C"
-#              axi_control: "${::AXI_MASTER_CTRL}"
-#              irq_port: IRQ0_INTR_CTRL
-#              dt_data: "compatible = \"xlnx,axi-iic-2.0\", \"xlnx,xps-iic-2.00.a\";"
-#       
-#       
-#          PLXVC:
-#            TCL_CALL:
-#              command: "AXI_PL_DEV_CONNECT"
-#              axi_control: "${::AXI_MASTER_CTRL}"
-#            XML: "address_table/modules/plXVC_rev2.xml"
-#            UHAL_BASE: 0x06000000
-#            HDL:
-#              map_template: "axi_generic/template_map_withbram.vhd"
-#       
-#          CM:
-#            TCL_CALL:
-#              command: "AXI_PL_DEV_CONNECT"
-#              axi_control: "${::AXI_MASTER_CTRL}"
-#              addr:
-#                offset: 0x40100000
-#                range: "128K"
-#            XML: "address_table/modules/CM_7s.xml"
-#            UHAL_BASE: 0x03000000
-#            HDL:
-#              map_template: "axi_generic/template_map_withbram.vhd"
-#       
-#          SM_INFO:
-#            TCL_CALL:
-#              command: "AXI_PL_DEV_CONNECT"
-#              axi_control: "${::AXI_MASTER_CTRL}"
-#            XML: "address_table/modules/FW_INFO.xml"
-#            UHAL_BASE: 0x0A000000
-#            HDL:
-#              map_template: "axi_generic/template_map_withbram.vhd"
-#       
-#          MONITOR:
-#            TCL_CALL:
-#              command: "AXI_IP_XADC"
-#              axi_control: "${::AXI_MASTER_CTRL}"
-#              enable_i2c_pins: 0
-#            XML: "address_table/modules/MONITOR.xml"
-#            UHAL_BASE: 0x0B000000
-#       
-#          CM1_UART:
-#            TCL_CALL:
-#              command: "AXI_IP_UART"
-#              baud_rate: "115200"
-#              irq_port: IRQ0_INTR_CTRL
-#              axi_control: "${::AXI_MASTER_CTRL}"
-#              remote_slave: "0"
-#              dt_data: "port-number = <1>;"
-#       
-#          CM2_UART:
-#            TCL_CALL:
-#              command: "AXI_IP_UART"
-#              baud_rate: "115200"
-#              irq_port: IRQ0_INTR_CTRL
-#              axi_control: "${::AXI_MASTER_CTRL}"
-#              remote_slave: "0"
-#              dt_data: "port-number = <2>;"
-#       
-#       
-#          CM1_PB_UART:
-#            TCL_CALL:
-#              command: "AXI_IP_UART"
-#              baud_rate: "115200"
-#              irq_port: IRQ0_INTR_CTRL
-#              axi_control: "${::AXI_MASTER_CTRL}"
-#              remote_slave: "0"
-#              dt_data: "port-number = <100>;"
-#          CM2_PB_UART:
-#            TCL_CALL:
-#              command: "AXI_IP_UART"
-#              baud_rate: "115200"
-#              irq_port: IRQ0_INTR_CTRL
-#              axi_control: "${::AXI_MASTER_CTRL}"
-#              remote_slave: "0"
-#              dt_data: "port-number = <101>;"
-#       
-#       
-#       
-#          ESM_UART:
-#            TCL_CALL:
-#              command: "AXI_IP_UART"
-#              baud_rate: "115200"
-#              irq_port: IRQ0_INTR_CTRL
-#              axi_control: "${::AXI_MASTER_CTRL}"
-#              remote_slave: "0"
-#              dt_data: "port-number = <3>;"
-#       
-#       
-#          AXI_MON:
-#            TCL_CALL:
-#              command: "AXI_IP_AXI_MONITOR"
-#              axi_control: "${::AXI_C2C_CTRL}"
-#              core_clk: "${::AXI_MASTER_CLK}"
-#              core_rstn: "${::AXI_PRIMARY_MASTER_RSTN}"
-#              mon_axi:
-#                - "${::ZYNQ_NAME}/M_AXI_GP0"
-#                - "${::ZYNQ_NAME}/M_AXI_GP1"
-#              mon_axi_clk:
-#                - ${::AXI_MASTER_CLK}
-#                - ${::AXI_MASTER_CLK}
-#              mon_axi_rstn: "${::AXI_PRIMARY_MASTER_RSTN} ${::AXI_C2C_MASTER_RSTN}"
-#       
-#            XML: "address_table/modules/AXI_MONITOR.xml"
-#            UHAL_BASE: 0x1F000000
-#    
-#          INT_AXI_FW:
-#            TCL_CALL:
-#              command: "AXI_IP_AXI_FW"
-#              axi_fw_bus: "/${::ZYNQ_NAME}/M_AXI_GP0"
-#              axi_control: "${::AXI_C2C_CTRL}"
-#            XML: "address_table/modules/INT_AXI_FW.xml"
-#            UHAL_BASE: 0x20000000
+        SUB_SLAVES:
+          AXI_LOCAL_INTERCONNECT:
+            TCL_CALL:
+              command: "BUILD_CHILD_AXI_INTERCONNECT"
+              axi_clk: "${::AXI_MASTER_CLK}"
+              axi_rstn: "${::AXI_PRIMARY_SLAVE_RSTN}"
+              parent: AXI_MAIN_INTERCONNECT
+              master_clk: "${::AXI_MASTER_CLK}"
+              master_rstn: "${::AXI_PRIMARY_SLAVE_RSTN}"
+            SUB_SLAVES: 
+              PL_MEM:
+                TCL_CALL:
+                  command: "AXI_IP_BRAM"
+                  axi_control: "${::AXI_LOCAL_CTRL}"
+                  addr:
+                    offset: -1
+                    range: "8K"
+                XML: "address_table/modules/PL_MEM.xml"
+                UHAL_BASE: 0x15000000
+              PL_MEM_CM:
+                TCL_CALL:
+                  command: "AXI_IP_BRAM"
+                  axi_control: "${::AXI_LOCAL_CTRL}"
+                  addr:
+                    offset: -1
+                    range: "8K"
+              SERV:
+                TCL_CALL:
+                  command: "AXI_PL_DEV_CONNECT"
+                  axi_control: "${::AXI_LOCAL_CTRL}"
+                XML: "address_table/modules/SERV_rev1.xml"
+                UHAL_BASE: 0x04000000
+                HDL:
+                  map_template: "axi_generic/template_map.vhd"
+              SLAVE_I2C:
+                TCL_CALL:
+                  command: "AXI_PL_DEV_CONNECT"
+                  axi_control: "${::AXI_LOCAL_CTRL}"
+                  addr:
+                    offset: -1
+                    range: "8K"
+                XML: "address_table/modules/SLAVE_I2C.xml"
+                UHAL_BASE: 0x05000000
+              CM_MON_AXI_FW:
+                TCL_CALL:
+                  command: "AXI_IP_AXI_FW"
+                  axi_fw_bus: "/AXIM_PL"
+                  axi_control: "${::AXI_C2C_CTRL}"
+                XML: "address_table/modules/CM_MON_AXI_FW.xml"
+                UHAL_BASE: 0x21000000
+       
+       
+          SI:
+            TCL_CALL:
+              command: "AXI_IP_I2C"
+              axi_control: "${::AXI_MASTER_CTRL}"
+              irq_port: IRQ0_INTR_CTRL
+              dt_data: "compatible = \"xlnx,axi-iic-2.0\", \"xlnx,xps-iic-2.00.a\";"
+       
+       
+          PLXVC:
+            TCL_CALL:
+              command: "AXI_PL_DEV_CONNECT"
+              axi_control: "${::AXI_MASTER_CTRL}"
+            XML: "address_table/modules/plXVC_rev2.xml"
+            UHAL_BASE: 0x06000000
+            HDL:
+              map_template: "axi_generic/template_map_withbram.vhd"
+       
+          CM:
+            TCL_CALL:
+              command: "AXI_PL_DEV_CONNECT"
+              axi_control: "${::AXI_MASTER_CTRL}"
+              addr:
+                offset: 0x40100000
+                range: "128K"
+            XML: "address_table/modules/CM_7s.xml"
+            UHAL_BASE: 0x03000000
+            HDL:
+              map_template: "axi_generic/template_map_withbram.vhd"
+       
+          SM_INFO:
+            TCL_CALL:
+              command: "AXI_PL_DEV_CONNECT"
+              axi_control: "${::AXI_MASTER_CTRL}"
+            XML: "address_table/modules/FW_INFO.xml"
+            UHAL_BASE: 0x0A000000
+            HDL:
+              map_template: "axi_generic/template_map_withbram.vhd"
+       
+          MONITOR:
+            TCL_CALL:
+              command: "AXI_IP_XADC"
+              axi_control: "${::AXI_MASTER_CTRL}"
+              enable_i2c_pins: 0
+            XML: "address_table/modules/MONITOR.xml"
+            UHAL_BASE: 0x0B000000
+       
+          CM1_UART:
+            TCL_CALL:
+              command: "AXI_IP_UART"
+              baud_rate: "115200"
+              irq_port: IRQ0_INTR_CTRL
+              axi_control: "${::AXI_MASTER_CTRL}"
+              remote_slave: "0"
+              dt_data: "port-number = <1>;"
+       
+          CM2_UART:
+            TCL_CALL:
+              command: "AXI_IP_UART"
+              baud_rate: "115200"
+              irq_port: IRQ0_INTR_CTRL
+              axi_control: "${::AXI_MASTER_CTRL}"
+              remote_slave: "0"
+              dt_data: "port-number = <2>;"
+       
+       
+          CM1_PB_UART:
+            TCL_CALL:
+              command: "AXI_IP_UART"
+              baud_rate: "115200"
+              irq_port: IRQ0_INTR_CTRL
+              axi_control: "${::AXI_MASTER_CTRL}"
+              remote_slave: "0"
+              dt_data: "port-number = <100>;"
+          CM2_PB_UART:
+            TCL_CALL:
+              command: "AXI_IP_UART"
+              baud_rate: "115200"
+              irq_port: IRQ0_INTR_CTRL
+              axi_control: "${::AXI_MASTER_CTRL}"
+              remote_slave: "0"
+              dt_data: "port-number = <101>;"
+       
+       
+       
+          ESM_UART:
+            TCL_CALL:
+              command: "AXI_IP_UART"
+              baud_rate: "115200"
+              irq_port: IRQ0_INTR_CTRL
+              axi_control: "${::AXI_MASTER_CTRL}"
+              remote_slave: "0"
+              dt_data: "port-number = <3>;"
+       
+       
+          AXI_MON:
+            TCL_CALL:
+              command: "AXI_IP_AXI_MONITOR"
+              axi_control: "${::AXI_C2C_CTRL}"
+              core_clk: "${::AXI_MASTER_CLK}"
+              core_rstn: "${::AXI_PRIMARY_MASTER_RSTN}"
+              mon_axi:
+                - "${::ZYNQ_NAME}/M_AXI_GP0"
+                - "${::ZYNQ_NAME}/M_AXI_GP1"
+              mon_axi_clk:
+                - ${::AXI_MASTER_CLK}
+                - ${::AXI_MASTER_CLK}
+              mon_axi_rstn: "${::AXI_PRIMARY_MASTER_RSTN} ${::AXI_C2C_MASTER_RSTN}"
+       
+            XML: "address_table/modules/AXI_MONITOR.xml"
+            UHAL_BASE: 0x1F000000
+    
+          INT_AXI_FW:
+            TCL_CALL:
+              command: "AXI_IP_AXI_FW"
+              axi_fw_bus: "/${::ZYNQ_NAME}/M_AXI_GP0"
+              axi_control: "${::AXI_C2C_CTRL}"
+            XML: "address_table/modules/INT_AXI_FW.xml"
+            UHAL_BASE: 0x20000000
 
 CORES:
   onboardclk:
