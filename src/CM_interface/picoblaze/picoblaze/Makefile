@@ -41,3 +41,8 @@ clean:
 	@rm -f $(BASE).log > /dev/null
 
 
+docker: clean
+	docker run 	--net=host --volume="${HOME}/.Xauthority:/root/.Xauthority:rw" \
+			--env DISPLAY=${DISPLAY} \
+			--rm -i -t -v ${PWD}:/app \
+			dgastler/picoblaze_builder:1.0 /app/build.sh

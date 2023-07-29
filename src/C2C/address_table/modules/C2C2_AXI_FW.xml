@@ -1,0 +1,22 @@
+<node id="C2C2_AXI_FW"> 
+  <node id="STATUS" address="0x0">
+    <node id="ERRS_BRESP" mask="0x00100000" permission="r" parameters="Table=C2C;Column=AXI_BRESP_ERR;Row=CM1_V;Status=1;Show=nz" description="error"/>
+    <node id="RECS_WRITE_TO_BVALID_MAX_WAIT" mask="0x00080000" permission="r" parameters="Table=C2C;Column=AXI_BVALID_TIMEOUT;Row=CM1_V;Status=1;Show=nz" description="error"/>
+    <node id="RECS_WREADY_MAX_WAIT" mask="0x00040000" permission="r" parameters="Table=C2C;Column=AXI_WD_READY_TIMEOUT;Row=CM1_V;Status=1;Show=nz" description="error"/>
+    <node id="RECS_AWREADY_MAX_WAIT" mask="0x00020000" permission="r" parameters="Table=C2C;Column=AXI_WA_READY_TIMEOUT;Row=CM1_V;Status=1;Show=nz" description="error"/>
+    <node id="WRITE_RESPONSE_BUSY" mask="0x00010000" permission="r" description="error. Indicates whether there are outstanding write transactions that still need to be completed on the SI; deasserts as soon as outstanding writes decrement to zero. (Not masked while writes are in normal operating mode.)"  parameters="Table=C2C;Column=AXI_OUTSTANDING_WRITES;Row=CM1_V;Status=1;Show=nz"/>
+    <node id="ERRS_RID" mask="0x00000010" permission="r" parameters="Table=C2C;Column=AXI_BAD_RID;Row=CM1_V;Status=1;Show=nz" description="error"/>
+    <node id="ERRS_RDATA_NUM ro" mask="0x00000008" permission="r" parameters="Table=C2C;Column=AXI_RLEN_MISMATCH;Row=CM1_V;Status=1;Show=nz" description="error"/>
+    <node id="RECS_CONTINUOUS_RTRANSFERS_MAX_WAIT" mask="0x00000004" permission="r" parameters="Table=C2C;Column=AXI_RVALID_TIMEOUT;Row=CM1_V;Status=1;Show=nz" description="error"/>
+    <node id="RECS_ARREADY_MAX_WAIT" mask="0x00000002" permission="r" parameters="Table=C2C;Column=AXI_AR_READY_TIMEOUT;Row=CM1_V;Status=1;Show=nz" description="error"/>
+    <node id="READ_RESPONSE_BUSY" mask="0x00000001" permission="r" description="error. Indicates whether there are outstanding read transactions that still need to be completed on the SI; deasserts as soon as outstanding reads decrements to zero. (Not masked while reads are in normal operating mode.)" parameters="Table=C2C;Column=AXI_OUTSTANDING_WRITES;Row=CM1_V;Status=1;Show=nz"/>
+  </node>
+  <node id="UNBLOCK" address="0x2"  mask="0x00000001" permission="w" parameters="Unblock=C2C2"/>
+  <node id="MAX_WAITS" address="0xC">         
+    <node id="CONTINIOUS_R_TRANSFER" address="0x0" mask="0x0000FFFF"/>         
+    <node id="WRITE_TO_BVALID"       address="0x1" mask="0x0000FFFF"/>         
+    <node id="ARREADY"         address="0x2" mask="0x0000FFFF"/>    
+    <node id="AWREADY"         address="0x3" mask="0x0000FFFF"/>    
+    <node id="WREADY"          address="0x4" mask="0x0000FFFF"/>    
+  </node>
+</node>

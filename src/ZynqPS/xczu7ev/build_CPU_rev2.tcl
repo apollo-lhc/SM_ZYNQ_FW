@@ -3,12 +3,12 @@
 #================================================================================
 #This code is directly sourced and builds the Zynq CPU
 
+global ZYNQ_NAME
 set ZYNQ_NAME ZynqMPSoC
 
 startgroup
 
 #create the zynq MPSoC
-#create_bd_cell -type ip -vlnv xilinx.com:ip:zynq_ultra_ps_e:3.2 zynq_ultra_ps_e_0
 create_bd_cell -type ip -vlnv [get_ipdefs -filter {NAME == zynq_ultra_ps_e}] ${ZYNQ_NAME}
 
 #configure the Zynq system
@@ -55,6 +55,7 @@ set_property CONFIG.PSU__USE__M_AXI_GP1 {1}			    [get_bd_cells ${ZYNQ_NAME}]
 
 #connect FCLK_CLK0 to the master AXI_GP0 clock
 #set AXI_MASTER_CLK ${ZYNQ_NAME}/pl_clk1
+global AXI_MASTER_CLK
 set AXI_MASTER_CLK ${ZYNQ_NAME}/pl_clk1
 make_bd_pins_external -name axi_clk [get_bd_pins ${AXI_MASTER_CLK}]
 
@@ -63,8 +64,8 @@ set_property CONFIG.PSU__MAXIGP1__DATA_WIDTH {32}		    [get_bd_cells ${ZYNQ_NAME
 
 connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins ${ZYNQ_NAME}/maxihpm0_fpd_aclk]
 connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins ${ZYNQ_NAME}/maxihpm1_fpd_aclk]
-#connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins ${ZYNQ_NAME}/maxihpm0_lpd_aclk]
 
+global ZYNQ_RESETN
 set ZYNQ_RESETN ${ZYNQ_NAME}/pl_resetn0
 
 ###############################
@@ -80,7 +81,9 @@ IP_SYS_RESET [dict create \
 		  external_reset_n ${ZYNQ_RESETN} \
 		  slowest_clk ${AXI_MASTER_CLK}]
 ####set interconnect reset
+global AXI_PRIMARY_MASTER_RSTN
 set AXI_PRIMARY_MASTER_RSTN [get_bd_pins ${SYS_RESETTER_PRIMARY}/interconnect_aresetn]
+global AXI_PRIMARY_SLAVE_RSTN
 set AXI_PRIMARY_SLAVE_RSTN [get_bd_pins ${SYS_RESETTER_PRIMARY}/peripheral_aresetn]
 make_bd_pins_external -name axi_rst_n [get_bd_pins ${AXI_PRIMARY_SLAVE_RSTN}]
 
@@ -95,18 +98,17 @@ IP_SYS_RESET [dict create \
 		  external_reset_n ${ZYNQ_RESETN} \
 		  slowest_clk ${AXI_MASTER_CLK} \
 		  aux_reset ${SYS_RESETTER_C2C_RST} \
-	     ]
+		 ]
+global AXI_C2C_MASTER_RSTN
 set AXI_C2C_MASTER_RSTN [get_bd_pins ${SYS_RESETTER_C2C}/interconnect_aresetn]
+global AXI_C2C_SLAVE_RSTN
 set AXI_C2C_SLAVE_RSTN [get_bd_pins ${SYS_RESETTER_C2C}/peripheral_aresetn]
 make_bd_pins_external -name axi_c2c_rst_n [get_bd_pins ${AXI_C2C_SLAVE_RSTN}]
-
-
-
-
-
 
 
 #add interrupts from PL to PS
 set_property CONFIG.PSU__USE__IRQ0 {1} [get_bd_cells ${ZYNQ_NAME}]
 
+#validate the design
+validate_bd_design
 endgroup

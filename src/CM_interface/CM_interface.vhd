@@ -45,10 +45,11 @@ entity CM_intf is
     clk_C2C           : in  std_logic_vector(4 downto 1);
     DRP_clk           : in  std_logic_vector(4 downto 1);
     reset_c2c         : out std_logic;
+    C2C_REFCLK_FREQ   : in  std_logic_vector(31 downto  0);
     CM_C2C_Mon        : in  C2C_Monitor_t;
     CM_C2C_Ctrl       : out C2C_Control_t;
-    UART_Rx           : in  std_logic;
-    UART_Tx           : out std_logic
+    UART_Rx           : in  std_logic_vector(2 downto 1);
+    UART_Tx           : out std_logic_vector(2 downto 1)
     );
 end entity CM_intf;
 
@@ -116,22 +117,22 @@ begin
   reset <= not reset_axi_n;
 
   --For signals variable on CM_COUNT
-  phycontrol_en(1) <=                    from_CM.CM(1).PWR_good and CTRL.CM(1).C2C(1).ENABLE_PHY_CTRL;
+--  phycontrol_en(1) <=                    from_CM.CM(1).PWR_good and CTRL.CM(1).C2C(1).ENABLE_PHY_CTRL;
   counter_en(1)    <= from_CM.CM(1).PWR_good;
   
-  phycontrol_en(2) <= phylanelock(1) and from_CM.CM(1).PWR_good and CTRL.CM(1).C2C(2).ENABLE_PHY_CTRL;
+--  phycontrol_en(2) <= phylanelock(1) and from_CM.CM(1).PWR_good and CTRL.CM(1).C2C(2).ENABLE_PHY_CTRL;
   counter_en(2)    <= from_CM.CM(1).PWR_good;
 
   CM_CTRL_GENERATE_1: if CM_COUNT = 1 generate
-    phycontrol_en(3) <= phylanelock(1) and from_CM.CM(1).PWR_good and CTRL.CM(2).C2C(1).ENABLE_PHY_CTRL;
+--    phycontrol_en(3) <= phylanelock(1) and from_CM.CM(1).PWR_good and CTRL.CM(2).C2C(1).ENABLE_PHY_CTRL;
     counter_en(3)    <= from_CM.CM(1).PWR_good;
-    phycontrol_en(4) <= phylanelock(1) and from_CM.CM(1).PWR_good and CTRL.CM(2).C2C(2).ENABLE_PHY_CTRL;
+--    phycontrol_en(4) <= phylanelock(1) and from_CM.CM(1).PWR_good and CTRL.CM(2).C2C(2).ENABLE_PHY_CTRL;
     counter_en(4)    <= from_CM.CM(1).PWR_good;
   end generate CM_CTRL_GENERATE_1;
   CM_CTRL_GENERATE_2: if CM_COUNT = 2 generate
-    phycontrol_en(3) <=                    from_CM.CM(2).PWR_good and CTRL.CM(2).C2C(1).ENABLE_PHY_CTRL;
+--    phycontrol_en(3) <=                    from_CM.CM(2).PWR_good and CTRL.CM(2).C2C(1).ENABLE_PHY_CTRL;
     counter_en(3)    <= from_CM.CM(2).PWR_good;
-    phycontrol_en(4) <= phylanelock(3) and from_CM.CM(2).PWR_good and CTRL.CM(2).C2C(2).ENABLE_PHY_CTRL;
+--    phycontrol_en(4) <= phylanelock(3) and from_CM.CM(2).PWR_good and CTRL.CM(2).C2C(2).ENABLE_PHY_CTRL;
     counter_en(4)    <= from_CM.CM(2).PWR_good;
   end generate CM_CTRL_GENERATE_2;
 
@@ -200,9 +201,9 @@ begin
 
 
 
-  Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.ADDR_LSB      <= x"00000000";--std_logic_vector(AXI_ADDR_C2C1_AXI_BRIDGE(31 downto 0));
+  Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.ADDR_LSB      <= std_logic_vector(AXI_ADDR_C2C1_AXI_BRIDGE(31 downto 0));
   Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.ADDR_MSB      <= x"00000000";
-  Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.SIZE          <= x"00000000";-- std_logic_vector(AXI_RANGE_C2C1_AXI_BRIDGE);
+  Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.SIZE          <= std_logic_vector(AXI_RANGE_C2C1_AXI_BRIDGE);
   Mon.CM(1).C2C(1).BRIDGE_INFO.AXI.VALID         <= '1';
   Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.ADDR_LSB  <= x"00000000";
   Mon.CM(1).C2C(1).BRIDGE_INFO.AXILITE.ADDR_MSB  <= x"00000000";
@@ -213,15 +214,15 @@ begin
   Mon.CM(1).C2C(2).BRIDGE_INFO.AXI.ADDR_MSB      <= x"00000000";
   Mon.CM(1).C2C(2).BRIDGE_INFO.AXI.SIZE          <= x"00000000";
   Mon.CM(1).C2C(2).BRIDGE_INFO.AXI.VALID         <= '0';
-  Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.ADDR_LSB  <=  x"00000000";--std_logic_vector(AXI_ADDR_C2C1B_AXI_LITE_BRIDGE(31 downto 0));
+  Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.ADDR_LSB  <= std_logic_vector(AXI_ADDR_C2C1B_AXI_LITE_BRIDGE(31 downto 0));
   Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.ADDR_MSB  <= x"00000000";
-  Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.SIZE      <=  x"00000000";--std_logic_vector(AXI_RANGE_C2C1B_AXI_LITE_BRIDGE);
+  Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.SIZE      <= std_logic_vector(AXI_RANGE_C2C1B_AXI_LITE_BRIDGE);
   Mon.CM(1).C2C(2).BRIDGE_INFO.AXILITE.VALID     <= '1';
 
   
-  Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.ADDR_LSB      <=  x"00000000";--std_logic_vector(AXI_ADDR_C2C2_AXI_BRIDGE(31 downto 0));
+  Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.ADDR_LSB      <= std_logic_vector(AXI_ADDR_C2C2_AXI_BRIDGE(31 downto 0));
   Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.ADDR_MSB      <= x"00000000";
-  Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.SIZE          <=  x"00000000";--std_logic_vector(AXI_RANGE_C2C2_AXI_BRIDGE);
+  Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.SIZE          <= std_logic_vector(AXI_RANGE_C2C2_AXI_BRIDGE);
   Mon.CM(2).C2C(1).BRIDGE_INFO.AXI.VALID         <= '1';
   Mon.CM(2).C2C(1).BRIDGE_INFO.AXILITE.ADDR_LSB  <= x"00000000";
   Mon.CM(2).C2C(1).BRIDGE_INFO.AXILITE.ADDR_MSB  <= x"00000000";
@@ -232,35 +233,12 @@ begin
   Mon.CM(2).C2C(2).BRIDGE_INFO.AXI.ADDR_MSB      <= x"00000000";
   Mon.CM(2).C2C(2).BRIDGE_INFO.AXI.SIZE          <= x"00000000";
   Mon.CM(2).C2C(2).BRIDGE_INFO.AXI.VALID         <= '0';
-  Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.ADDR_LSB  <= x"00000000";--std_logic_vector(AXI_ADDR_C2C2b_AXI_LITE_BRIDGE(31 downto 0));
+  Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.ADDR_LSB  <= std_logic_vector(AXI_ADDR_C2C2b_AXI_LITE_BRIDGE(31 downto 0));
   Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.ADDR_MSB  <= x"00000000";
-  Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.SIZE      <= x"00000000";--std_logic_vector(AXI_RANGE_C2C2b_AXI_LITE_BRIDGE);
+  Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.SIZE      <= std_logic_vector(AXI_RANGE_C2C2b_AXI_LITE_BRIDGE);
   Mon.CM(2).C2C(2).BRIDGE_INFO.AXILITE.VALID     <= '1';
 
-  rd_dv: process(clk_axi) is
-  begin
-    if clk_axi'event and clk_axi = '1' then
-      MON.PB.MEM.rd_data_valid <= CTRL.PB.MEM.enable;
-    end if;
-  end process rd_dv;
-  uC_1: entity work.uC
-    generic map(
-      LINK_COUNT => 4)
-    port map (
-      clk                   => clk_axi,
-      reset                 => reset,
-      reprogram_addr        => CTRL.PB.MEM.address,
-      reprogram_wen         => CTRL.PB.MEM.wr_enable,
-      reprogram_di          => CTRL.PB.MEM.wr_data,
-      reprogram_do          => MON.PB.MEM.rd_data,
-      reprogram_reset       => CTRL.PB.reset,
-      UART_Rx               => UART_Rx,
-      UART_Tx               => UART_Tx,
-      irq_count             => CTRL.PB.IRQ_COUNT,
-      link_INFO_in          => link_INFO_in,
-      link_INFO_out         => link_INFO_out
-      );
-
+  Mon.C2C_REFCLK_FREQ <= C2C_REFCLK_FREQ;
   
   GENERATE_LOOP: for iCM in 1 to 2 generate
 
@@ -320,8 +298,31 @@ begin
     -------------------------------------------------------------------------------
     -- AXI 
     -------------------------------------------------------------------------------
-
-
+    rd_dv: process(clk_axi) is
+    begin
+      if clk_axi'event and clk_axi = '1' then
+        MON.CM(iCM).PB.MEM.rd_data_valid <= CTRL.CM(iCM).PB.MEM.enable;
+      end if;
+    end process rd_dv;
+    uC_1: entity work.uC
+    generic map(
+      LINK_COUNT => 2)
+      port map (
+        clk                   => clk_axi,
+        reset                 => reset,
+        reprogram_addr        => CTRL.CM(iCM).PB.MEM.address,
+        reprogram_wen         => CTRL.CM(iCM).PB.MEM.wr_enable,
+        reprogram_di          => CTRL.CM(iCM).PB.MEM.wr_data,
+        reprogram_do          => MON.CM(iCM).PB.MEM.rd_data,
+        reprogram_reset       => CTRL.CM(iCM).PB.reset,
+        UART_Rx               => UART_Rx(iCM),
+        UART_Tx               => UART_Tx(iCM),
+        irq_count             => CTRL.CM(iCM).PB.IRQ_COUNT,
+        link_INFO_in          => link_INFO_in (2*(iCM-1) to (2*iCM)-1),
+        link_INFO_out         => link_INFO_out(2*(iCM-1) to (2*iCM)-1)
+        );
+    
+    
     GENERATE_LANE_LOOP: for iLane in 1 to 2 generate
       signal linkID : integer := 2*(iCM-1) + (iLane);
     begin      

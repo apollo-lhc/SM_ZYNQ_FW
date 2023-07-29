@@ -1,0 +1,89 @@
+AXI_SLAVES:
+  C2C1:
+    TCL_CALL:
+      command: "AXI_IP_C2C"
+      device_name: "C2C1"
+      primary_serdes: "1"
+      init_clk: "${::INIT_CLK}"
+      refclk_freq: "100"
+      irq_port: IRQ0_INTR_CTRL
+      speed: 5
+      singleend_refclk: True
+      axi_control: "${::AXI_C2C_CTRL}"
+      addr:
+        offset: 0xB0000000
+        range: "16M"
+    SUB_SLAVES:
+      C2C1_AXI_FW:
+        TCL_CALL:
+          command: "AXI_IP_AXI_FW"
+          axi_fw_bus: "/C2C1/s_axi"
+          axi_control: "${::AXI_MASTER_CTRL}"
+        XML: "address_table/modules/C2C1_AXI_FW.xml"
+        UHAL_BASE: 0x0D000000
+  C2C1B:
+    TCL_CALL:
+      command: "AXI_IP_C2C"
+      device_name: "C2C1B"
+      primary_serdes: 1
+      init_clk: "${::INIT_CLK}"
+      refclk_freq: "100"
+      irq_port: IRQ0_INTR_CTRL
+      speed: 5
+      singleend_refclk: True
+      axi_control: "${::AXI_C2C_CTRL}"
+      addr_lite:
+        offset: 0xB1000000
+        range: "16M"
+    SUB_SLAVES:
+      C2C1_AXILITE_FW:
+        TCL_CALL:
+          command: "AXI_IP_AXI_FW"
+          axi_fw_bus: "/C2C1B/s_axi_lite"
+          axi_control: "${::AXI_MASTER_CTRL}"
+        XML: "address_table/modules/C2C1_AXILITE_FW.xml"
+        UHAL_BASE: 0x0E000000
+  C2C2:
+    TCL_CALL:
+      command: "AXI_IP_C2C"
+      device_name: "C2C2"
+      axi_control: "${::AXI_C2C_CTRL}"
+      primary_serdes: 1
+      init_clk: "${::INIT_CLK}"
+      irq_port: IRQ0_INTR_CTRL
+      speed: 5
+      singleend_refclk: True
+      refclk_freq: "100"
+      addr:
+        offset: 0xB2000000
+        range: "16M"
+    SUB_SLAVES:
+      C2C2_AXI_FW:
+        TCL_CALL:
+          command: "AXI_IP_AXI_FW"
+          axi_fw_bus: "/C2C2/s_axi"
+          axi_control: "${::AXI_MASTER_CTRL}"
+        XML: "address_table/modules/C2C2_AXI_FW.xml"
+        UHAL_BASE: 0x13000000
+  C2C2B:
+    TCL_CALL:
+      command: "AXI_IP_C2C"
+      device_name: "C2C2B"
+      axi_control: "${::AXI_C2C_CTRL}"
+      primary_serdes: 1
+      init_clk: "${::INIT_CLK}"
+      irq_port: IRQ0_INTR_CTRL
+      refclk_freq: "100"
+      speed: 5
+      singleend_refclk: True
+      addr_lite:
+        offset: 0xB3000000
+        range: "16M"
+    SUB_SLAVES:
+      C2C2_AXILITE_FW:
+        TCL_CALL:
+          command: "AXI_IP_AXI_FW"
+          axi_fw_bus: "/C2C2B/s_axi_lite"
+          axi_control: "${::AXI_MASTER_CTRL}"
+        XML: "address_table/modules/C2C2_AXILITE_FW.xml"
+        UHAL_BASE: 0x14000000
