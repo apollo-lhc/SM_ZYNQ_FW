@@ -22,8 +22,8 @@ entity CM_intf is
     CM2_LANES        : std_logic_vector(2 downto 1) := "01"; -- active links on
                                                              -- CM1 
     COUNTER_COUNT    : integer := 2;               --Count for counters in loop
-    CLKFREQ          : integer := 50000000;       --clk frequency in Hz
-    ERROR_WAIT_TIME  : integer := 50000000;       --Wait time for error checking states
+    CLK_FREQ         : integer ;                   --clk frequency in Hz
+    ERROR_WAIT_TIME  : integer := 50000000;        --Wait time for error checking states
     ALLOCATED_MEMORY_RANGE : integer);            
   port (
     clk_axi           : in  std_logic;
@@ -104,8 +104,8 @@ architecture behavioral of CM_intf is
 
   signal soft_error_rate : slv32_array_t(HW_LINK_COUNT*COUNTER_COUNT downto 1);
   signal hard_error_rate : slv32_array_t(HW_LINK_COUNT*COUNTER_COUNT downto 1);
-  signal link_INFO_out : uC_Link_out_t_array(0 to 3);
-  signal link_INFO_in  : uC_Link_in_t_array (0 to 3);
+  signal link_INFO_out : C2CLinkInfo_out_array_t(0 to 3);
+  signal link_INFO_in  : C2CLinkInfo_in_array_t (0 to 3);
 
   signal drp_en_signal : std_logic_vector(4 downto 1);
 
@@ -297,9 +297,9 @@ begin
         UART_Rx         => UART_Rx(iCM),
         UART_Tx         => UART_Tx(iCM),
         irq_count       => CTRL.CM(iCM).PB.IRQ_COUNT,
-        clk_c2c         => clk_c2c(linkID),
-        link_INFO_in          => link_INFO_in (2*(iCM-1) to (2*iCM)-1),
-        link_INFO_out         => link_INFO_out(2*(iCM-1) to (2*iCM)-1)
+        clk_c2c         => clk_c2c((2*iCM) downto 2*(iCM-1)+1),
+        link_INFO_in    => link_INFO_in (2*(iCM-1) to (2*iCM)-1),
+        link_INFO_out   => link_INFO_out(2*(iCM-1) to (2*iCM)-1)
         );
     
     GENERATE_LANE_LOOP: for iLane in 1 to 2 generate
@@ -331,7 +331,7 @@ begin
           clk_out         => clk_C2C(linkID),
           reset           => reset,
           pass_in         => CTRL.CM(iCM).C2C(iLane).DEBUG.RX.PRBS_SEL,
-          pass_out        => CDC_PASSTHROUGH(linkID));
+          pass_out        => CDC_PASSTHROUGH(linkID)(CDC_PRBS_SEL_LENGTH downto 1));
 
 
       --Convert monitoring packages
@@ -378,36 +378,36 @@ begin
         port map (
           clkA       => CTRL.CM(iCM).C2C(iLane).DRP.clk,
           resetA     => reset,
-          clkB       => DRP_clk(2*(iCM-1) + (iLane)),
+          clkB       => DRP_clk(linkID),
           resetB     => reset,
           inA(0)     => CTRL.CM(iCM).C2C(iLane).DRP.wr_enable,
-          inA_valid  => drp_en_signal(2*(iCM-1) + (iLane)),
-          outB(0)    => DRP_MOSI(2*(iCM-1) + (iLane)).wr_enable,
-          outB_valid => DRP_MOSI(2*(iCM-1) + (iLane)).enable);
+          inA_valid  => drp_en_signal(linkID),
+          outB(0)    => DRP_MOSI(linkID).wr_enable,
+          outB_valid => open);
       DRP_DATA_to_DRP2 : entity work.data_CDC
         generic map (
           WIDTH => CTRL.CM(iCM).C2C(iLane).DRP.address'LENGTH )
         port map (
           clkA       => CTRL.CM(iCM).C2C(iLane).DRP.clk,
           resetA     => reset,
-          clkB       => DRP_clk(2*(iCM-1) + (iLane)),
+          clkB       => DRP_clk(linkID),
           resetB     => reset,
           inA        => CTRL.CM(iCM).C2C(iLane).DRP.address,
-          inA_valid  => drp_en_signal(2*(iCM-1) + (iLane)),
-          outB       => DRP_MOSI(2*(iCM-1) + (iLane)).address,
-          outB_valid => DRP_MOSI(2*(iCM-1) + (iLane)).enable);
+          inA_valid  => drp_en_signal(linkID),
+          outB       => DRP_MOSI(linkID).address,
+          outB_valid => open);
       DRP_DATA_to_DRP3 : entity work.data_CDC
         generic map (
           WIDTH => CTRL.CM(iCM).C2C(iLane).DRP.wr_data'LENGTH )
         port map (
           clkA       => CTRL.CM(iCM).C2C(iLane).DRP.clk,
           resetA     => reset,
-          clkB       => DRP_clk(2*(iCM-1) + (iLane)),
+          clkB       => DRP_clk(linkID),
           resetB     => reset,
           inA        => CTRL.CM(iCM).C2C(iLane).DRP.wr_data,        
-          inA_valid  => drp_en_signal(2*(iCM-1) + (iLane)),          
-          outB       => DRP_MOSI(2*(iCM-1) + (iLane)).wr_data,
-          outB_valid => DRP_MOSI(2*(iCM-1) + (iLane)).enable);
+          inA_valid  => drp_en_signal(linkID),          
+          outB       => DRP_MOSI(linkID).wr_data,
+          outB_valid => DRP_MOSI(linkID).enable);
 
       
       DRP_DATA_from_DRP: entity work.data_CDC

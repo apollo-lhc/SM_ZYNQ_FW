@@ -57,6 +57,5 @@ set xdc_files "\
 
 
 set include_files "\
-                  src/i2cAXIMaster/files.tcl    \
                   src/CM_interface/C2C_Module/files.tcl \
                   "

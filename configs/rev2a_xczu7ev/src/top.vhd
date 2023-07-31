@@ -1025,7 +1025,7 @@ begin  -- architecture structure
     generic map (
       CM_COUNT             => 2,
       COUNTER_COUNT        => 2,
-      CLKFREQ              => AXI_MASTER_CLK_FREQ,
+      CLK_FREQ             => AXI_MASTER_CLK_FREQ,
       ERROR_WAIT_TIME      => AXI_MASTER_CLK_FREQ,
       ALLOCATED_MEMORY_RANGE => to_integer(AXI_RANGE_CM)
       )
