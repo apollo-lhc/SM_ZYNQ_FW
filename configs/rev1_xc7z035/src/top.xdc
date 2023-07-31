@@ -166,25 +166,27 @@ set_property -dict {PACKAGE_PIN  R5}  [get_ports refclk_C2C_N[0] ]
 set_property -dict {PACKAGE_PIN  U6}  [get_ports refclk_C2C_P[1] ]
 set_property -dict {PACKAGE_PIN  U5}  [get_ports refclk_C2C_N[1] ]
 
-set_property -dict {PACKAGE_PIN U2}  [get_ports AXI_C2C_CM1_Tx_P[0] ]
-set_property -dict {PACKAGE_PIN U1}  [get_ports AXI_C2C_CM1_Tx_N[0] ]
-set_property -dict {PACKAGE_PIN V4}  [get_ports AXI_C2C_CM1_Rx_P[0] ]
-set_property -dict {PACKAGE_PIN V3}  [get_ports AXI_C2C_CM1_Rx_N[0] ]
-
-set_property -dict {PACKAGE_PIN R2}  [get_ports AXI_C2C_CM1_Tx_P[1] ]
-set_property -dict {PACKAGE_PIN R1}  [get_ports AXI_C2C_CM1_Tx_N[1] ]
-set_property -dict {PACKAGE_PIN T4}  [get_ports AXI_C2C_CM1_Rx_P[1] ]
-set_property -dict {PACKAGE_PIN T3}  [get_ports AXI_C2C_CM1_Rx_N[1] ]
+set_property -dict {PACKAGE_PIN W2}  [get_ports AXI_C2C_CM2_Tx_P[1] ]
+set_property -dict {PACKAGE_PIN W1}  [get_ports AXI_C2C_CM2_Tx_N[1] ]
+set_property -dict {PACKAGE_PIN Y4}  [get_ports AXI_C2C_CM2_Rx_P[1] ]
+set_property -dict {PACKAGE_PIN Y3}  [get_ports AXI_C2C_CM2_Rx_N[1] ]
 
 set_property -dict {PACKAGE_PIN AA2}  [get_ports AXI_C2C_CM2_Tx_P[0] ]
 set_property -dict {PACKAGE_PIN AA1}  [get_ports AXI_C2C_CM2_Tx_N[0] ]
 set_property -dict {PACKAGE_PIN AB4}  [get_ports AXI_C2C_CM2_Rx_P[0] ]
 set_property -dict {PACKAGE_PIN AB3}  [get_ports AXI_C2C_CM2_Rx_N[0] ]
 
-set_property -dict {PACKAGE_PIN W2}  [get_ports AXI_C2C_CM2_Tx_P[1] ]
-set_property -dict {PACKAGE_PIN W1}  [get_ports AXI_C2C_CM2_Tx_N[1] ]
-set_property -dict {PACKAGE_PIN Y4}  [get_ports AXI_C2C_CM2_Rx_P[1] ]
-set_property -dict {PACKAGE_PIN Y3}  [get_ports AXI_C2C_CM2_Rx_N[1] ]
+set_property -dict {PACKAGE_PIN R2}  [get_ports AXI_C2C_CM1_Tx_P[1] ]
+set_property -dict {PACKAGE_PIN R1}  [get_ports AXI_C2C_CM1_Tx_N[1] ]
+set_property -dict {PACKAGE_PIN T4}  [get_ports AXI_C2C_CM1_Rx_P[1] ]
+set_property -dict {PACKAGE_PIN T3}  [get_ports AXI_C2C_CM1_Rx_N[1] ]
+
+set_property -dict {PACKAGE_PIN U2}  [get_ports AXI_C2C_CM1_Tx_P[0] ]
+set_property -dict {PACKAGE_PIN U1}  [get_ports AXI_C2C_CM1_Tx_N[0] ]
+set_property -dict {PACKAGE_PIN V4}  [get_ports AXI_C2C_CM1_Rx_P[0] ]
+set_property -dict {PACKAGE_PIN V3}  [get_ports AXI_C2C_CM1_Rx_N[0] ]
+
+
 
 
 

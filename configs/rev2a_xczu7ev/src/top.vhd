@@ -92,7 +92,9 @@ entity top is
 
     -------------------------------------
     -- GPIOs CPLD
-    ZYNQ_CPLD_GPIO    : in std_logic_vector(3 downto 0);
+    ZYNQ_TO_CPLD      : out std_logic_vector(2 downto 0);
+    ZYNQ_FROM_CPLD    : in  std_logic_vector(0 downto 0);
+    
 
     -------------------------------------
     -- GPIOs Zynq
@@ -444,21 +446,55 @@ begin  -- architecture structure
   	      CLRMASK => '1', 
   	      DIV => "000",
   	      I => c2c_refclk_odiv2
-        );
-    rate_counter_c2c: entity work.rate_counter
-      generic map (
-        CLK_A_1_SECOND => AXI_MASTER_CLK_FREQ)
-      port map (
-        clk_A         => axi_clk,
-        clk_B         => buf_c2c_refclk_odiv2,
-        reset_A_async => not axi_reset_n,
-        event_b       => '1',
-        rate          => c2c_refclk_freq);                
-
-
-
-  zynq_bd_wrapper_1: entity work.zynq_bd_wrapper
+              );
+  rate_counter_c2c: entity work.rate_counter
+    generic map (
+      CLK_A_1_SECOND => AXI_MASTER_CLK_FREQ)
     port map (
+      clk_A         => axi_clk,
+      clk_B         => buf_c2c_refclk_odiv2,
+      reset_A_async => not axi_reset_n,
+      event_b       => '1',
+      rate          => c2c_refclk_freq);                
+
+
+
+  zynq_bd_sane_wrapper_1: entity work.zynq_bd_sane_wrapper
+    port map (
+      --AXI master--
+      AXIM_PL_RMOSI   => AXI_MSTR_RMOSI,
+      AXIM_PL_RMISO   => AXI_MSTR_RMISO,
+      AXIM_PL_WMOSI   => AXI_MSTR_WMOSI,
+      AXIM_PL_WMISO   => AXI_MSTR_WMISO,
+      --AXI endpoint--  
+      CM_RMOSI        => AXI_BUS_RMOSI(2),
+      CM_RMISO        => AXI_BUS_RMISO(2),
+      CM_WMOSI        => AXI_BUS_WMOSI(2),
+      CM_WMISO        => AXI_BUS_WMISO(2),
+      --AXI endpoint--  
+      PLXVC_RMOSI     => AXI_BUS_RMOSI(6),
+      PLXVC_RMISO     => AXI_BUS_RMISO(6),
+      PLXVC_WMOSI     => AXI_BUS_WMOSI(6),
+      PLXVC_WMISO     => AXI_BUS_WMISO(6),
+      --AXI endpoint--  
+      SERV_RMOSI      => AXI_BUS_RMOSI(0),
+      SERV_RMISO      => AXI_BUS_RMISO(0),
+      SERV_WMOSI      => AXI_BUS_WMOSI(0),
+      SERV_WMISO      => AXI_BUS_WMISO(0),
+      --AXI endpoint--  
+      SLAVE_I2C_RMOSI => AXI_BUS_RMOSI(1),
+      SLAVE_I2C_RMISO => AXI_BUS_RMISO(1),
+      SLAVE_I2C_WMOSI => AXI_BUS_WMOSI(1),
+      SLAVE_I2C_WMISO => AXI_BUS_WMISO(1),
+      --AXI endpoint--  
+      SM_INFO_RMOSI   => AXI_BUS_RMOSI(3),
+      SM_INFO_RMISO   => AXI_BUS_RMISO(3),
+      SM_INFO_WMOSI   => AXI_BUS_WMOSI(3),
+      SM_INFO_WMISO   => AXI_BUS_WMISO(3),
+      
+
+
+      
 --      clk_125              => clk_125Mhz,
       AXI_RST_N(0)         => axi_reset_n,
       AXI_CLK              => AXI_clk,
@@ -475,130 +511,7 @@ begin  -- architecture structure
       SI_sda_i                  => SDA_i_phy,--SDA_i_normal,
       SI_sda_o                  => SDA_o_phy,--SDA_o_normal,
       SI_sda_t                  => SDA_t_phy,--SDA_t_normal,
---      AXI_CLK_PL                => pl_clk,
---      AXI_RSTN_PL               => axi_reset_n,
-      AXIM_PL_awaddr            => AXI_MSTR_WMOSI.address,
-      AXIM_PL_awprot            => AXI_MSTR_WMOSI.protection_type,
-      AXIM_PL_awvalid           => AXI_MSTR_WMOSI.address_valid,
-      AXIM_PL_awready           => AXI_MSTR_WMISO.ready_for_address,
-      AXIM_PL_wdata             => AXI_MSTR_WMOSI.data,
-      AXIM_PL_wstrb             => AXI_MSTR_WMOSI.data_write_strobe,
-      AXIM_PL_wvalid            => AXI_MSTR_WMOSI.data_valid,
-      AXIM_PL_wready            => AXI_MSTR_WMISO.ready_for_data,
-      AXIM_PL_bresp             => AXI_MSTR_WMISO.response,
-      AXIM_PL_bvalid            => AXI_MSTR_WMISO.response_valid,
-      AXIM_PL_bready            => AXI_MSTR_WMOSI.ready_for_response,
-      AXIM_PL_araddr            => AXI_MSTR_RMOSI.address,
-      AXIM_PL_arprot            => AXI_MSTR_RMOSI.protection_type,
-      AXIM_PL_arvalid           => AXI_MSTR_RMOSI.address_valid,
-      AXIM_PL_arready           => AXI_MSTR_RMISO.ready_for_address,
-      AXIM_PL_rdata             => AXI_MSTR_RMISO.data,
-      AXIM_PL_rresp             => AXI_MSTR_RMISO.response,
-      AXIM_PL_rvalid            => AXI_MSTR_RMISO.data_valid,
-      AXIM_PL_rready            => AXI_MSTR_RMOSI.ready_for_data,
---      PL_CLK                    => pl_clk,
---      PL_RESET_N                => pl_reset_n,
-      SERV_araddr               => AXI_BUS_RMOSI(0).address,
-      SERV_arprot               => AXI_BUS_RMOSI(0).protection_type,
-      SERV_arready              => AXI_BUS_RMISO(0).ready_for_address,
-      SERV_arvalid              => AXI_BUS_RMOSI(0).address_valid,
-      SERV_awaddr               => AXI_BUS_WMOSI(0).address,
-      SERV_awprot               => AXI_BUS_WMOSI(0).protection_type,
-      SERV_awready              => AXI_BUS_WMISO(0).ready_for_address,
-      SERV_awvalid              => AXI_BUS_WMOSI(0).address_valid,
-      SERV_bready               => AXI_BUS_WMOSI(0).ready_for_response,
-      SERV_bresp                => AXI_BUS_WMISO(0).response,
-      SERV_bvalid               => AXI_BUS_WMISO(0).response_valid,
-      SERV_rdata                => AXI_BUS_RMISO(0).data,
-      SERV_rready               => AXI_BUS_RMOSI(0).ready_for_data,
-      SERV_rresp                => AXI_BUS_RMISO(0).response,
-      SERV_rvalid               => AXI_BUS_RMISO(0).data_valid,
-      SERV_wdata                => AXI_BUS_WMOSI(0).data,
-      SERV_wready               => AXI_BUS_WMISO(0).ready_for_data,
-      SERV_wstrb                => AXI_BUS_WMOSI(0).data_write_strobe,
-      SERV_wvalid               => AXI_BUS_WMOSI(0).data_valid,
 
-      SLAVE_I2C_araddr               => AXI_BUS_RMOSI(1).address,
-      SLAVE_I2C_arprot               => AXI_BUS_RMOSI(1).protection_type,
-      SLAVE_I2C_arready              => AXI_BUS_RMISO(1).ready_for_address,
-      SLAVE_I2C_arvalid              => AXI_BUS_RMOSI(1).address_valid,
-      SLAVE_I2C_awaddr               => AXI_BUS_WMOSI(1).address,
-      SLAVE_I2C_awprot               => AXI_BUS_WMOSI(1).protection_type,
-      SLAVE_I2C_awready              => AXI_BUS_WMISO(1).ready_for_address,
-      SLAVE_I2C_awvalid              => AXI_BUS_WMOSI(1).address_valid,
-      SLAVE_I2C_bready               => AXI_BUS_WMOSI(1).ready_for_response,
-      SLAVE_I2C_bresp                => AXI_BUS_WMISO(1).response,
-      SLAVE_I2C_bvalid               => AXI_BUS_WMISO(1).response_valid,
-      SLAVE_I2C_rdata                => AXI_BUS_RMISO(1).data,
-      SLAVE_I2C_rready               => AXI_BUS_RMOSI(1).ready_for_data,
-      SLAVE_I2C_rresp                => AXI_BUS_RMISO(1).response,
-      SLAVE_I2C_rvalid               => AXI_BUS_RMISO(1).data_valid,
-      SLAVE_I2C_wdata                => AXI_BUS_WMOSI(1).data,
-      SLAVE_I2C_wready               => AXI_BUS_WMISO(1).ready_for_data,
-      SLAVE_I2C_wstrb                => AXI_BUS_WMOSI(1).data_write_strobe,
-      SLAVE_I2C_wvalid               => AXI_BUS_WMOSI(1).data_valid,
-
-      CM_araddr               => AXI_BUS_RMOSI(2).address,
-      CM_arprot               => AXI_BUS_RMOSI(2).protection_type,
-      CM_arready              => AXI_BUS_RMISO(2).ready_for_address,
-      CM_arvalid              => AXI_BUS_RMOSI(2).address_valid,
-      CM_awaddr               => AXI_BUS_WMOSI(2).address,
-      CM_awprot               => AXI_BUS_WMOSI(2).protection_type,
-      CM_awready              => AXI_BUS_WMISO(2).ready_for_address,
-      CM_awvalid              => AXI_BUS_WMOSI(2).address_valid,
-      CM_bready               => AXI_BUS_WMOSI(2).ready_for_response,
-      CM_bresp                => AXI_BUS_WMISO(2).response,
-      CM_bvalid               => AXI_BUS_WMISO(2).response_valid,
-      CM_rdata                => AXI_BUS_RMISO(2).data,
-      CM_rready               => AXI_BUS_RMOSI(2).ready_for_data,
-      CM_rresp                => AXI_BUS_RMISO(2).response,
-      CM_rvalid               => AXI_BUS_RMISO(2).data_valid,
-      CM_wdata                => AXI_BUS_WMOSI(2).data,
-      CM_wready               => AXI_BUS_WMISO(2).ready_for_data,
-      CM_wstrb                => AXI_BUS_WMOSI(2).data_write_strobe,
-      CM_wvalid               => AXI_BUS_WMOSI(2).data_valid,
-
-      SM_INFO_araddr          => AXI_BUS_RMOSI(3).address,
-      SM_INFO_arprot          => AXI_BUS_RMOSI(3).protection_type,
-      SM_INFO_arready         => AXI_BUS_RMISO(3).ready_for_address,
-      SM_INFO_arvalid         => AXI_BUS_RMOSI(3).address_valid,
-      SM_INFO_awaddr          => AXI_BUS_WMOSI(3).address,
-      SM_INFO_awprot          => AXI_BUS_WMOSI(3).protection_type,
-      SM_INFO_awready         => AXI_BUS_WMISO(3).ready_for_address,
-      SM_INFO_awvalid         => AXI_BUS_WMOSI(3).address_valid,
-      SM_INFO_bready          => AXI_BUS_WMOSI(3).ready_for_response,
-      SM_INFO_bresp           => AXI_BUS_WMISO(3).response,
-      SM_INFO_bvalid          => AXI_BUS_WMISO(3).response_valid,
-      SM_INFO_rdata           => AXI_BUS_RMISO(3).data,
-      SM_INFO_rready          => AXI_BUS_RMOSI(3).ready_for_data,
-      SM_INFO_rresp           => AXI_BUS_RMISO(3).response,
-      SM_INFO_rvalid          => AXI_BUS_RMISO(3).data_valid,
-      SM_INFO_wdata           => AXI_BUS_WMOSI(3).data,
-      SM_INFO_wready          => AXI_BUS_WMISO(3).ready_for_data,
-      SM_INFO_wstrb           => AXI_BUS_WMOSI(3).data_write_strobe,
-      SM_INFO_wvalid          => AXI_BUS_WMOSI(3).data_valid,
-
-
-
-      PLXVC_araddr               => AXI_BUS_RMOSI(6).address,
-      PLXVC_arprot               => AXI_BUS_RMOSI(6).protection_type,
-      PLXVC_arready              => AXI_BUS_RMISO(6).ready_for_address,
-      PLXVC_arvalid              => AXI_BUS_RMOSI(6).address_valid,
-      PLXVC_awaddr               => AXI_BUS_WMOSI(6).address,
-      PLXVC_awprot               => AXI_BUS_WMOSI(6).protection_type,
-      PLXVC_awready              => AXI_BUS_WMISO(6).ready_for_address,
-      PLXVC_awvalid              => AXI_BUS_WMOSI(6).address_valid,
-      PLXVC_bready               => AXI_BUS_WMOSI(6).ready_for_response,
-      PLXVC_bresp                => AXI_BUS_WMISO(6).response,
-      PLXVC_bvalid               => AXI_BUS_WMISO(6).response_valid,
-      PLXVC_rdata                => AXI_BUS_RMISO(6).data,
-      PLXVC_rready               => AXI_BUS_RMOSI(6).ready_for_data,
-      PLXVC_rresp                => AXI_BUS_RMISO(6).response,
-      PLXVC_rvalid               => AXI_BUS_RMISO(6).data_valid,
-      PLXVC_wdata                => AXI_BUS_WMOSI(6).data,
-      PLXVC_wready               => AXI_BUS_WMISO(6).ready_for_data,
-      PLXVC_wstrb                => AXI_BUS_WMOSI(6).data_write_strobe,
-      PLXVC_wvalid               => AXI_BUS_WMOSI(6).data_valid,
 
 
       init_clk                  =>  AXI_C2C_aurora_init_clk,
@@ -952,6 +865,8 @@ begin  -- architecture structure
       CPLD_Mon        => CPLD_Mon,
       CPLD_Ctrl       => CPLD_Ctrl);
 
+  ZYNQ_TO_CPLD             <= CPLD_Ctrl.GPIO_TO_CPLD;
+  CPLD_Mon.GPIO_FROM_CPLD  <= ZYNQ_FROM_CPLD(0);
   SM_info_1: entity work.SM_info
     generic map (
       ALLOCATED_MEMORY_RANGE => to_integer(AXI_RANGE_SM_INFO)
@@ -992,23 +907,11 @@ begin  -- architecture structure
   -------------------------------------------------------------------------------
   -- Command modules and C2C links
   -------------------------------------------------------------------------------
-  AXI_C2C_powerdown <= (others => '0');
---  AXI_C2C_powerdown(1) <= not CM_enable_IOs(1);
---  AXI_C2C_powerdown(2) <= not CM_enable_IOs(1);
+--  AXI_C2C_powerdown <= (others => '0');
+  AXI_C2C_powerdown(1) <= not CM_enable_IOs(1);
+  AXI_C2C_powerdown(2) <= not CM_enable_IOs(1);
 
-  CM_COUNT_IS_1_ASSIGNMENTS: if CM_COUNT = 1 generate
---    AXI_C2C_powerdown(3) <= not CM_enable_IOs(1);
---    AXI_C2C_powerdown(4) <= not CM_enable_IOs(1);
---    CM_C2C_Mon.Link(3).status.phy_mmcm_lol  <= '0';
---    CM_C2C_Mon.Link(3).debug.cpll_lock      <= '0';
---    CM_C2C_Mon.Link(4).status.phy_mmcm_lol  <= '0';
---    CM_C2C_Mon.Link(4).debug.cpll_lock      <= '0';
-  end generate CM_COUNT_IS_1_ASSIGNMENTS;
   
-  CM_COUNT_IS_2_ASSIGNMENTS: if CM_COUNT = 2 generate
---    AXI_C2C_powerdown(3) <= not CM_enable_IOs(2);
---    AXI_C2C_powerdown(4) <= not CM_enable_IOs(2);
-  end generate CM_COUNT_IS_2_ASSIGNMENTS;
 
   CM_interface_1: entity work.CM_intf
     generic map (

@@ -50,8 +50,10 @@
     <node id="STATUS" address="0x00" mask="0x0000FFFF" permission="r" description="Ethernet switch LEDs"/>
   </node>
   <node id="CPLD" address="0x30">
-    <node id="ENABLE_JTAG" address="0x00" mask="0x00000001" permission="rw" description="Enable the JTAG lines to the CPLD" parameters="default=0x0"/>
-    <node id="IO" address="0x02" mask="0x0000000F" permission="r" description="inputs(for now) from CPLD"/>
+    <node id="ENABLE_JTAG"    address="0x00" mask="0x00000001" permission="rw" description="Enable the JTAG lines to the CPLD" parameters="default=0x0"/>
+    <node id="GPIO_TO_CPLD"   address="0x02" mask="0x00000007" permission="rw" description="outputs to CPLD"/>
+    <node id="GPIO_FROM_CPLD" address="0x02" mask="0x00000008" permission="r"  description="inputs from CPLD"/>    
+    
   </node>
   <node id="MISC" address="0x50">
     <node id="ETH1_RESET_N" address="0x0" permission="rw" mask="0x1" parameters="default=0x1" />

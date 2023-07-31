@@ -92,10 +92,10 @@ set_property -dict {PACKAGE_PIN A12  IOSTANDARD LVCMOS33}               [get_por
 
 #LVCMOS12, but has level shifters on SoM for conn-A VCCIO)
 #CPLD CLK pin
-set_property -dict {PACKAGE_PIN AH16 IOSTANDARD LVCMOS12  DRIVE 8 }               [get_ports {ZYNQ_CPLD_GPIO[0]}]   
-set_property -dict {PACKAGE_PIN C13  IOSTANDARD LVCMOS33}               [get_ports {ZYNQ_CPLD_GPIO[1]}]
-set_property -dict {PACKAGE_PIN G16  IOSTANDARD LVCMOS33}               [get_ports {ZYNQ_CPLD_GPIO[2]}]
-set_property -dict {PACKAGE_PIN G15  IOSTANDARD LVCMOS33}               [get_ports {ZYNQ_CPLD_GPIO[3]}]
+set_property -dict {PACKAGE_PIN AH16 IOSTANDARD LVCMOS12  DRIVE 8 }     [get_ports {ZYNQ_TO_CPLD[0]}]   
+set_property -dict {PACKAGE_PIN C13  IOSTANDARD LVCMOS33}               [get_ports {ZYNQ_TO_CPLD[1]}]
+set_property -dict {PACKAGE_PIN G16  IOSTANDARD LVCMOS33}               [get_ports {ZYNQ_TO_CPLD[2]}]
+set_property -dict {PACKAGE_PIN G15  IOSTANDARD LVCMOS33}               [get_ports {ZYNQ_FROM_CPLD[0]}]
 
 # -------------------------------------------------------------------------------------------------
 # bank 33 & 34

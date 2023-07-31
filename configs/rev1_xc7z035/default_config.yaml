@@ -18,9 +18,10 @@ AXI_CONTROL_SETS:
 AXI_SLAVES:
   C2C1:
     TCL_CALL:
-      command: "AXI_C2C_MASTER"
+      command: "AXI_IP_C2C"
       device_name: "C2C1"
       primary_serdes: "1"
+      singleend_refclk: True
       init_clk: "${::INIT_CLK}"
       refclk_freq: "100.000"
       irq_port: "${::IRQ0_INTR_CTRL}"
@@ -33,7 +34,7 @@ AXI_SLAVES:
     SUB_SLAVES:
       C2C1B:
         TCL_CALL:
-          command: "AXI_C2C_MASTER"
+          command: "AXI_IP_C2C"
           device_name: "C2C1B"
           primary_serdes: "C2C1_PHY"
           init_clk: "${::INIT_CLK}"
@@ -46,8 +47,9 @@ AXI_SLAVES:
             range: "16M"
       C2C2:
         TCL_CALL:
-          command: "AXI_C2C_MASTER"
+          command: "AXI_IP_C2C"
           device_name: "C2C2"
+          singleend_refclk: True
           axi_control: "${::AXI_C2C_CTRL}"
           primary_serdes: "C2C1_PHY"
           init_clk: "${::INIT_CLK}"
@@ -61,7 +63,7 @@ AXI_SLAVES:
         SUB_SLAVES:
           C2C2B:
             TCL_CALL:
-              command: "AXI_C2C_MASTER"
+              command: "AXI_IP_C2C"
               device_name: "C2C2B"
               axi_control: "${::AXI_C2C_CTRL}"
               primary_serdes: "C2C1_PHY"
@@ -255,7 +257,7 @@ AXI_SLAVES:
         range: "8K"
       dt_data: "port-number = <3>;"
 
-  CM_PB_UART:
+  CM_PB_UART1:
     TCL_CALL:
       command: "AXI_IP_UART"
       baud_rate: "115200"
@@ -263,16 +265,14 @@ AXI_SLAVES:
       axi_control: "${::AXI_MASTER_CTRL}"
       remote_slave: "0"
       dt_data: "port-number = <100>;"
-
-#  PL_MEM:
-#    TCL_CALL:
-#      command: "AXI_IP_BRAM"
-#      axi_control: "${::AXI_MASTER_CTRL}"
-#      addr:
-#        offset: "0x40000000"
-#        range: "8K"
-#    XML: "address_table/modules/PL_MEM.xml"
-#    UHAL_BASE: 0x15000000
+  CM_PB_UART2:
+    TCL_CALL:
+      command: "AXI_IP_UART"
+      baud_rate: "115200"
+      irq_port: "${::IRQ0_INTR_CTRL}"
+      axi_control: "${::AXI_MASTER_CTRL}"
+      remote_slave: "0"
+      dt_data: "port-number = <200>;"
 
   SI:
     TCL_CALL:
@@ -318,7 +318,7 @@ AXI_SLAVES:
 CORES:
   onboardclk:
     TCL_CALL:
-      command: BuildClockWizard
+      command: IP_CORE_ClockWizard
       in_clk_type: Differential_clock_capable_pin
       in_clk_freq_MHZ: 200
       out_clks:
