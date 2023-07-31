@@ -52,6 +52,7 @@ entity JTAG_FIFO is
          FIFO_STATE         : out std_logic_vector(5 downto 0);
          TDO_vector         : out std_logic_vector(31 downto 0);  --axi tdo output
          busy               : out std_logic;                      --virtualJTAG is outputting
+				 FIFO_IRQ						: out std_logic;
          interupt           : out std_logic);                     --interupt
          
 end JTAG_FIFO;
@@ -73,10 +74,26 @@ COMPONENT fifo_generator_0
     data_count : OUT STD_LOGIC_VECTOR(10 DOWNTO 0) 
   );
 END COMPONENT;
+
+COMPONENT fifo_generator_length
+  PORT (
+    clk : IN STD_LOGIC;
+    srst : IN STD_LOGIC;
+    din : IN STD_LOGIC_VECTOR(5 DOWNTO 0);
+    wr_en : IN STD_LOGIC;
+    rd_en : IN STD_LOGIC;
+    dout : OUT STD_LOGIC_VECTOR(5 DOWNTO 0);
+    full : OUT STD_LOGIC;
+    overflow : OUT STD_LOGIC;
+    empty : OUT STD_LOGIC;
+    valid : OUT STD_LOGIC;
+    data_count : OUT STD_LOGIC_VECTOR(10 DOWNTO 0) 
+  );
+END COMPONENT;
 -- COMP_TAG_END ------ End COMPONENT Declaration ------------
 
 -- *** StateMachine *** --
-  type states is (IDLE, OPERATING, FULL, WAITING_DONE, FIFO_RESET, WAITING_IRQ);
+  type states is (IDLE, OPERATING, OVERFLOW, WAITING_DONE, FIFO_RESET, WAITING_IRQ);
   signal STATE          : STATES;
   signal interrupt_sr   : std_logic;
 
@@ -108,55 +125,60 @@ END COMPONENT;
   signal TMS_count       : std_logic_vector(10 DOWNTO 0);
   signal TDI_count       : std_logic_vector(10 DOWNTO 0);
   signal length_count    : std_logic_vector(10 DOWNTO 0);
-  
+
+	signal TMS_overflow		 : std_logic;
+  signal TDI_overflow		 : std_logic;
+	signal length_overflow : std_logic;
+
   signal TMS_fifo_out    : std_logic_vector(31 downto 0);
   signal TDI_fifo_out    : std_logic_vector(31 downto 0);
   signal length_fifo_out : std_logic_vector(31 downto 0); 
   
-  signal f_reset     : std_logic; 
+  signal f_reset     		 : std_logic := '0';
+	signal F_IRQ 					 : std_logic := '0'; 
 
 begin
-------------- Begin Cut here for INSTANTIATION Template ----- INST_TAG
-TDI_FIFO: fifo_generator_0
-  PORT MAP (
-    clk => axi_clk,
-    srst => reset,
-    din => TDI_vector,
-    wr_en => TDI_w_en,
-    rd_en => TDI_r_en,
-    dout => TDI_fifo_out,
-    full => TDI_full,
-    overflow => open,
-    empty => TDI_empty,
-    valid => TDI_valid,
-    data_count => TDI_count
-  );
-  
+------------- Begin Cut here for INSTANTIATION Template ----- INST_TAG 
 TMS_FIFO: fifo_generator_0
   PORT MAP (
     clk => axi_clk,
-    srst => reset,
+    srst => f_reset,
     din => TMS_vector,
     wr_en => TMS_w_en,
     rd_en => TMS_r_en,
     dout => TMS_fifo_out,
     full => TMS_full,
-    overflow => open,
+    overflow => TMS_overflow,
     empty => TMS_empty,
     valid => TMS_valid,
     data_count => TMS_count
   );
-  
-Length_FIFO: fifo_generator_0
+
+TDI_FIFO: fifo_generator_0
   PORT MAP (
     clk => axi_clk,
-    srst => reset,
+    srst => f_reset,
+    din => TDI_vector,
+    wr_en => TDI_w_en,
+    rd_en => TDI_r_en,
+    dout => TDI_fifo_out,
+    full => TDI_full,
+    overflow => TDI_overflow,
+    empty => TDI_empty,
+    valid => TDI_valid,
+    data_count => TDI_count
+  );
+  
+Length_FIFO: fifo_generator_length
+  PORT MAP (
+    clk => axi_clk,
+    srst => f_reset,
     din => length,
     wr_en => length_w_en,
     rd_en => length_r_en,
     dout => length_fifo_out,
     full => length_full,
-    overflow => open,
+    overflow => length_overflow,
     empty => length_empty,
     valid => length_valid,
     data_count => length_count
@@ -238,8 +260,26 @@ Length_FIFO: fifo_generator_0
             length_w_en <= '1';
           else 
             length_w_en <= '0';
-          end if;    
-        
+          end if;
+				
+				when WAITING_IRQ =>
+					if (TMS_full = '0' and TMS_valid_in  = '1') then
+						TMS_w_en <= '1';
+					else
+						TMS_w_en <= '0';
+					end if;
+
+					if (TDI_full = '0' and TDI_valid_in = '1') then
+						TDI_w_en <= '1';
+					else
+						TDI_w_en <= '0';
+					end if;
+
+					if (length_full = '0' and length_valid_in = '1') then
+						length_w_en <= '1';
+					else 
+						length_w_en <= '0';
+					end if;
         
         when others =>
           TMS_w_en <= '0';
@@ -274,16 +314,10 @@ Length_FIFO: fifo_generator_0
             length_r_en <= '0';          
           end if;
           
-        when FULL =>
-          if (TMS_valid = '1' and TDI_valid = '1' and length_valid = '1') then
-            TMS_r_en <= '1';
-            TDI_r_en <= '1';
-            length_r_en <= '1';
-          else
+        when OVERFLOW =>
             TMS_r_en <= '0';
             TDI_r_en <= '0';
             length_r_en <= '0';          
-          end if;
         
         when others =>
           TMS_r_en <= '0';
@@ -296,14 +330,16 @@ Length_FIFO: fifo_generator_0
   StateMachine: process(axi_clk,reset)
   begin
    if (reset = '1') then
-      STATE <= IDLE;
+			STATE <= FIFO_RESET;
       interupt <= '0';
       go <= '0';
+			F_IRQ <= '0';
 
    elsif (axi_clk'event and axi_clk='1') then
       case STATE is
         when IDLE => 
           interupt <= '0';
+					F_IRQ <= '0';
           if (CTRL = '1' and valid = '1') then
             fifo_enable <= '1';
             STATE <= OPERATING;
@@ -316,48 +352,59 @@ Length_FIFO: fifo_generator_0
         when OPERATING =>
           fifo_enable <= '0';
           go <= '1';
-          if (length_full = '1' or TMS_full = '1' or TDI_full = '1') then
-             STATE <= FULL;
+					F_IRQ <= '0';
+          if (length_overflow = '1' or TMS_overflow = '1' or TDI_overflow = '1') then
+            STATE <= OVERFLOW;
+					elsif (CTRL = '0') then
+						go <= '0';
+						STATE <= IDLE;
           elsif (done = '0') then
-             STATE <= WAITING_DONE;  
-          elsif (CTRL = '0') then
-             go <= '0';
-             STATE <= IDLE;
+            STATE <= WAITING_DONE;
+					elsif (length_empty = '1' and TMS_empty = '1' and TDI_empty = '1') then
+						STATE <= WAITING_IRQ;
           else
              STATE <= STATE;
           end if;
-        
-        when FULL =>
-          go <= '1';
-          if (length_full = '0' and TMS_full = '0' and TDI_full = '0') then
-            STATE <= OPERATING;
-          elsif (length_full = '1' or TMS_full = '1' or TDI_full = '1') then
-            STATE <= STATE;
-          elsif (done = '0') then
-            STATE <= WAITING_DONE;
+
+        when OVERFLOW =>
+          go <= '0';
+					if (length_overflow = '1' or TMS_overflow = '1' or TDI_overflow = '1') then
+						STATE <= STATE;
           else
-            go <= '0';
             STATE <= IDLE;
           end if;
         
         when WAITING_DONE =>
           go <= '1';
-          if (length_full = '1' or TMS_full = '1' or TDI_full = '1') then
-            STATE <= FULL;
-          elsif (done = '1') then
+					F_IRQ <= '0';
+          if (done = '1') then
             STATE <= OPERATING;
           elsif (CTRL = '0') then
              go <= '0';
              STATE <= IDLE;
+					elsif (length_empty = '1' and TMS_empty = '1' and TDI_empty = '1') then
+						STATE <= WAITING_IRQ;
           else
             STATE <= STATE;
           end if;
+			
+				when WAITING_IRQ =>
+					F_IRQ <= '1';
+					if(length_empty = '1' and TMS_empty = '1' and TDI_empty = '1') then
+						STATE <= STATE;
+					elsif (CTRL = '0') then
+						STATE <= IDLE;
+					end if;
           
        when FIFO_RESET =>
           f_reset <= '1';
-          if (length_full = '1' and length_empty = '1') then
+					F_IRQ <= '0';
+          if (length_full = '1' and length_empty = '1' and TMS_empty = '1' and TMS_full = '1' and TDI_empty = '1' and TDI_full = '1') then
             STATE <= STATE;
-          end if;           
+					else
+						STATE <= IDLE;
+						f_reset <= '0';
+					end if;           
        end case;
    end if;
   end process StateMachine;
@@ -369,7 +416,7 @@ Length_FIFO: fifo_generator_0
         FIFO_STATE <= b"100000";
       when OPERATING =>
         FIFO_STATE <= b"010000";
-      when FULL =>
+      when OVERFLOW =>
         FIFO_STATE <= b"001000";
       when WAITING_DONE =>
         FIFO_STATE <= b"000100";
