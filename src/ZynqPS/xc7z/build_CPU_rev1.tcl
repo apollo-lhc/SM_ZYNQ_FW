@@ -2,6 +2,8 @@
 #  Create and configure the basic zynq 7000 series processing system.
 #================================================================================
 #This code is directly sourced and builds the Zynq CPU
+
+global ZYNQ_NAME
 set ZYNQ_NAME Zynq7
 
 startgroup
@@ -37,12 +39,14 @@ set_property CONFIG.PCW_USE_M_AXI_GP1      {1} [get_bd_cells ${ZYNQ_NAME}]
 set_property CONFIG.PCW_M_AXI_GP1_ENABLE_STATIC_REMAP {1} [get_bd_cells ${ZYNQ_NAME}]
 
 #connect FCLK_CLK0 to the master AXI_GP0 clock
+global AXI_MASTER_CLK
 set AXI_MASTER_CLK ${ZYNQ_NAME}/FCLK_CLK0
 make_bd_pins_external -name axi_clk [get_bd_pins ${AXI_MASTER_CLK}]
 
 connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins ${ZYNQ_NAME}/M_AXI_GP0_ACLK]
 connect_bd_net [get_bd_pins $AXI_MASTER_CLK] [get_bd_pins ${ZYNQ_NAME}/M_AXI_GP1_ACLK]
 
+global ZYNQ_RESETN
 set ZYNQ_RESETN ${ZYNQ_NAME}/FCLK_RESET0_N
 
 ###############################
@@ -66,7 +70,9 @@ IP_SYS_RESET [dict create \
 		  slowest_clk ${AXI_MASTER_CLK}]
 
 ####set interconnect reset
+global AXI_PRIMARY_MASTER_RSTN
 set AXI_PRIMARY_MASTER_RSTN [get_bd_pins ${SYS_RESETTER_PRIMARY}/interconnect_aresetn]
+global AXI_PRIMARY_SLAVE_RSTN
 set AXI_PRIMARY_SLAVE_RSTN [get_bd_pins ${SYS_RESETTER_PRIMARY}/peripheral_aresetn]
 make_bd_pins_external -name axi_rst_n [get_bd_pins ${AXI_PRIMARY_SLAVE_RSTN}]
 
@@ -82,8 +88,10 @@ IP_SYS_RESET [dict create \
 		  external_reset_n ${ZYNQ_RESETN} \
 		  slowest_clk ${AXI_MASTER_CLK} \
 		  aux_reset ${SYS_RESETTER_C2C_RST} \
-	     ]
+		 ]
+global AXI_C2C_MASTER_RSTN
 set AXI_C2C_MASTER_RSTN [get_bd_pins ${SYS_RESETTER_C2C}/interconnect_aresetn]
+global AXI_C2C_SLAVE_RSTN
 set AXI_C2C_SLAVE_RSTN [get_bd_pins ${SYS_RESETTER_C2C}/peripheral_aresetn]
 make_bd_pins_external -name axi_c2c_rst_n [get_bd_pins ${AXI_C2C_SLAVE_RSTN}]
 
@@ -91,9 +99,6 @@ make_bd_pins_external -name axi_c2c_rst_n [get_bd_pins ${AXI_C2C_SLAVE_RSTN}]
 #add interrupts from PL to PS
 set_property -dict [list CONFIG.PCW_USE_FABRIC_INTERRUPT {1}] [get_bd_cells ${ZYNQ_NAME}]
 set_property -dict [list CONFIG.PCW_IRQ_F2P_INTR {1}] [get_bd_cells ${ZYNQ_NAME}]
-
-
-
 
 #validate the design
 validate_bd_design

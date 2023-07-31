@@ -7,4 +7,11 @@
   <node id="CTRL"        address="0x1000"  module="file://CM_CTRL.xml"/>
   <!-- MONITOR 0x0 -> 0xA mapped to 0xd10 -> 0xd1a -->
   <node id="MONITOR"    address="0x1070"  module="file://CM_Mon.xml"/>
+
+  <node id="PB" address="0x1700">
+    <node id="RESET"     address="0x000" mask="0x00000001" permission="rw"/>
+    <node id="IRQ_COUNT" address="0x001" mask="0xFFFFFFFF" permission="rw" parameters="default=5000000"/>   
+    <node id="MEM"       address="0x100" mode="incremental" size="0x800" fwinfo="type=mem18_0x800" />
+  </node>
+
 </node>                                                                                                 

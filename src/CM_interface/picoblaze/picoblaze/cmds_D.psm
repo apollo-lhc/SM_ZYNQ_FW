@@ -4,6 +4,72 @@
 ;;; | name         | s0 | s1 | s2 | s3 | s4 | s5 | s6 | s7 | s8 | s9 | sA | sB |
 ;;; | CMD_DumpB    | x  | x  | x  |    |    |    |    |    |    |    |    |    |
 
+
+STRING b_reg0$, " reg0"
+str_b_reg0:
+	LOAD&RETURN s1, b_reg0$
+	LOAD&RETURN s1, 00
+STRING b_reg1$, " reg1"
+str_b_reg1:
+	LOAD&RETURN s1, b_reg1$
+	LOAD&RETURN s1, 00
+STRING b_reg2$, " reg2"
+str_b_reg2:
+	LOAD&RETURN s1, b_reg2$
+	LOAD&RETURN s1, 00
+STRING b_reg3$, " reg3"
+str_b_reg3:
+	LOAD&RETURN s1, b_reg3$
+	LOAD&RETURN s1, 00
+STRING b_reg4$, " reg4"
+str_b_reg4:
+	LOAD&RETURN s1, b_reg4$
+	LOAD&RETURN s1, 00
+STRING b_reg5$, " reg5"
+str_b_reg5:
+	LOAD&RETURN s1, b_reg5$
+	LOAD&RETURN s1, 00
+STRING b_reg6$, " reg6"
+str_b_reg6:
+	LOAD&RETURN s1, b_reg6$
+	LOAD&RETURN s1, 00
+STRING b_reg7$, " reg7"
+str_b_reg7:
+	LOAD&RETURN s1, b_reg7$
+	LOAD&RETURN s1, 00
+STRING b_reg8$, " reg8"
+str_b_reg8:
+	LOAD&RETURN s1, b_reg8$
+	LOAD&RETURN s1, 00
+STRING b_reg9$, " reg9"
+str_b_reg9:
+	LOAD&RETURN s1, b_reg9$
+	LOAD&RETURN s1, 00
+STRING b_regA$, " regA"
+str_b_regA:
+	LOAD&RETURN s1, b_regA$
+	LOAD&RETURN s1, 00
+STRING b_regB$, " regB"
+str_b_regB:
+	LOAD&RETURN s1, b_regB$
+	LOAD&RETURN s1, 00
+STRING b_regC$, " SB/MB errors above threshold count"
+str_b_regC:
+	LOAD&RETURN s1, b_regC$
+	LOAD&RETURN s1, 00
+STRING b_regD$, " failed link-good/link-up count"
+str_b_regD:
+	LOAD&RETURN s1, b_regD$
+	LOAD&RETURN s1, 00
+STRING b_regE$, " failed reset dones count"
+str_b_regE:
+	LOAD&RETURN s1, b_regE$
+	LOAD&RETURN s1, 00
+STRING b_regF$, " machine state"
+str_b_regF:
+	LOAD&RETURN s1, b_regF$
+	LOAD&RETURN s1, 00
+
 CMD_DumpB_print_common:
 	CALL util_print_hex_byte
 
@@ -26,6 +92,11 @@ CMD_DumpB:
 	STAR s0,s0
 	REGBANK A
 	CALL util_print_hex_byte
+	
+	LOAD sB, str_b_reg0'upper
+	LOAD sA, str_b_reg0'lower
+	CALL util_print_string
+	
 	CALL util_print_EOL
 
 
@@ -39,6 +110,11 @@ CMD_DumpB:
 	STAR s0,s1
 	REGBANK A
 	CALL util_print_hex_byte
+
+	LOAD sB, str_b_reg1'upper
+	LOAD sA, str_b_reg1'lower
+	CALL util_print_string
+
 	CALL util_print_EOL
 
 
@@ -51,6 +127,11 @@ CMD_DumpB:
 	STAR s0,s2
 	REGBANK A
 	CALL util_print_hex_byte
+
+	LOAD sB, str_b_reg2'upper
+	LOAD sA, str_b_reg2'lower
+	CALL util_print_string
+
 	CALL util_print_EOL
 
 
@@ -63,6 +144,11 @@ CMD_DumpB:
 	STAR s0,s3
 	REGBANK A
 	CALL util_print_hex_byte
+
+	LOAD sB, str_b_reg3'upper
+	LOAD sA, str_b_reg3'lower
+	CALL util_print_string
+
 	CALL util_print_EOL
 
 
@@ -75,6 +161,11 @@ CMD_DumpB:
 	STAR s0,s4
 	REGBANK A
 	CALL util_print_hex_byte
+
+	LOAD sB, str_b_reg4'upper
+	LOAD sA, str_b_reg4'lower
+	CALL util_print_string
+
 	CALL util_print_EOL
 
 
@@ -87,6 +178,11 @@ CMD_DumpB:
 	STAR s0,s5
 	REGBANK A
 	CALL util_print_hex_byte
+
+	LOAD sB, str_b_reg5'upper
+	LOAD sA, str_b_reg5'lower
+	CALL util_print_string
+
 	CALL util_print_EOL
 
 
@@ -99,6 +195,11 @@ CMD_DumpB:
 	STAR s0,s6
 	REGBANK A
 	CALL util_print_hex_byte
+
+	LOAD sB, str_b_reg6'upper
+	LOAD sA, str_b_reg6'lower
+	CALL util_print_string
+
 	CALL util_print_EOL
 
 
@@ -111,6 +212,11 @@ CMD_DumpB:
 	STAR s0,s7
 	REGBANK A
 	CALL util_print_hex_byte
+
+	LOAD sB, str_b_reg7'upper
+	LOAD sA, str_b_reg7'lower
+	CALL util_print_string
+
 	CALL util_print_EOL
 
 
@@ -123,6 +229,11 @@ CMD_DumpB:
 	STAR s0,s8
 	REGBANK A
 	CALL util_print_hex_byte
+
+	LOAD sB, str_b_reg8'upper
+	LOAD sA, str_b_reg8'lower
+	CALL util_print_string
+
 	CALL util_print_EOL
 
 
@@ -135,6 +246,11 @@ CMD_DumpB:
 	STAR s0,s9
 	REGBANK A
 	CALL util_print_hex_byte
+
+	LOAD sB, str_b_reg9'upper
+	LOAD sA, str_b_reg9'lower
+	CALL util_print_string
+
 	CALL util_print_EOL
 
 
@@ -147,6 +263,11 @@ CMD_DumpB:
 	STAR s0,sA
 	REGBANK A
 	CALL util_print_hex_byte
+
+	LOAD sB, str_b_regA'upper
+	LOAD sA, str_b_regA'lower
+	CALL util_print_string
+
 	CALL util_print_EOL
 
 
@@ -159,6 +280,11 @@ CMD_DumpB:
 	STAR s0,sB
 	REGBANK A
 	CALL util_print_hex_byte
+
+	LOAD sB, str_b_regB'upper
+	LOAD sA, str_b_regB'lower
+	CALL util_print_string
+
 	CALL util_print_EOL
 
 
@@ -171,6 +297,11 @@ CMD_DumpB:
 	STAR s0,sC
 	REGBANK A
 	CALL util_print_hex_byte
+
+	LOAD sB, str_b_regC'upper
+	LOAD sA, str_b_regC'lower
+	CALL util_print_string
+
 	CALL util_print_EOL
 
 
@@ -183,6 +314,11 @@ CMD_DumpB:
 	STAR s0,sD
 	REGBANK A
 	CALL util_print_hex_byte
+
+	LOAD sB, str_b_regD'upper
+	LOAD sA, str_b_regD'lower
+	CALL util_print_string
+
 	CALL util_print_EOL
 
 
@@ -195,6 +331,11 @@ CMD_DumpB:
 	STAR s0,sE
 	REGBANK A
 	CALL util_print_hex_byte
+
+	LOAD sB, str_b_regE'upper
+	LOAD sA, str_b_regE'lower
+	CALL util_print_string
+
 	CALL util_print_EOL
 
 
@@ -207,6 +348,11 @@ CMD_DumpB:
 	STAR s0,sF
 	REGBANK A
 	CALL util_print_hex_byte
+
+	LOAD sB, str_b_regF'upper
+	LOAD sA, str_b_regF'lower
+	CALL util_print_string
+
 	CALL util_print_EOL
 
 	

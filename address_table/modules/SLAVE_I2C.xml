@@ -33,14 +33,16 @@
 	  <node id="BYTE_5" address="0x1"        permission="r" mask="0x0000FF00" description="eth1 mac adder byte 6"/>
 	  <node id="CHECKSUM" address="0x1"      permission="r" mask="0x00FF0000" description="8-bit checksum for ETH1"/>
 	</node>
+	<node id="TEMP" address="0x09">
+	  <node id="TEMP" address="0x0"      permission="rw" mask="0x000000FF" description="8bit temp of zynq for IPMC"/>
+	  <node id="TEMP_MAX" address="0x0"      permission="rw" mask="0x0000FF00" description="8bit max temp of zynq for IPMC"/>
+	  <node id="TEMP_MIN"  address="0x0"      permission="rw" mask="0x00FF0000" description="8bit min temp of zynq for IPMC"/>
+	</node>
     </node>      
-    <node id="CM" address="0x09">
+    <node id="CM" address="0x0A">
       <node id="DONE_KINTEX" address="0x0"        permission="rw" mask="0x00000001" description="KINTEX_PGRM_DONE" parameters="Table=STATUS;Row=CM_FPGA;Column=_4;Format=u;Status=1"/>
       <node id="DONE_VIRTEX" address="0x0"        permission="rw" mask="0x00000010" description="KINTEX_PGRM_DONE" parameters="Table=STATUS;Row=CM_FPGA;Column=_4;Format=u;Status=1"/>
     </node>
-    <!-- <node id="3"  address="0x3" permission="rw"/> -->
-    <!-- <node id="4"  address="0x4" permission="rw"/> -->
-    <!-- <node id="9"  address="0x9" permission="rw"/> -->
     <!-- <node id="A"  address="0xA" permission="rw"/> -->
     <!-- <node id="B"  address="0xB" permission="rw"/> -->
     <!-- <node id="C"  address="0xC" permission="rw"/> -->
@@ -136,6 +138,16 @@
     <!-- <node id="E"  address="0xE" permission="rw"/> -->
     <!-- <node id="F"  address="0xF" permission="rw"/> -->
   </node>
+  <node id="S6" address ="0x50">
+    <node id="SITE_NUMBER" permission="r" address="0x0" description="Physical site number of the blade." />
+    <node id="SHELF_ID"    permission="r" address="0x1" mode="incremental" size="0x5" parameters="Format=c;" description="20-byte shelf ID.">
+      <node id="WORD_1" permission="r" address="0x0" parameters="Format=c;" />
+      <node id="WORD_2" permission="r" address="0x1" parameters="Format=c;" />
+      <node id="WORD_3" permission="r" address="0x2" parameters="Format=c;" />
+      <node id="WORD_4" permission="r" address="0x3" parameters="Format=c;" />
+      <node id="WORD_5" permission="r" address="0x4" parameters="Format=c;" />
+    </node>
+  </node>
   <!-- <node id="S6" address ="0x50"> -->
   <!--   <node id="0"  address="0x0" permission="rw"/> -->
   <!--   <node id="1"  address="0x1" permission="rw"/> -->
@@ -201,12 +213,14 @@
 	<node id="BYTE_4"      address="0x1"        permission="r" mask="0x000000FF" description="IPMC mac adder byte 5"/>
 	<node id="BYTE_5"      address="0x1"        permission="r" mask="0x0000FF00" description="IPMC mac adder byte 6"/>
     </node>
-    <node id="IPMC_IP" address="0x2" parameters="Table=IPMC;Row=ETH;Column=IP;Status=1;Format=IP;Show=nz">
+    <node id="IPMC_IP" address="0x2" parameters="Table=IPMC;Row=ETH;Column=IP;Status=2;Format=IP;Show=nz">
 	<node id="BYTE_0"      address="0x0"        permission="r" mask="0x000000FF" description="IPMC IP adder byte 1"/>
 	<node id="BYTE_1"      address="0x0"        permission="r" mask="0x0000FF00" description="IPMC IP adder byte 2"/>
 	<node id="BYTE_2"      address="0x0"        permission="r" mask="0x00FF0000" description="IPMC IP adder byte 3"/>
 	<node id="BYTE_3"      address="0x0"        permission="r" mask="0xFF000000" description="IPMC IP adder byte 4"/>
     </node>      
+    <node id="IPMC_FW_GIT_HASH" address="0x4" permission="r" mask="0xFFFFFFFF" description="32-bit git hash for the IPMC FW."/>          
+    <node id="IPMC_UID"         address="0x5" permission="r" mask="0xFFFFFFFF" description="Unique 32-bit identifier for the installed IPMC."/>      
     <!-- <node id="3"  address="0x3" permission="rw"/> -->
     <!-- <node id="4"  address="0x4" permission="rw"/> -->
     <!-- <node id="5"  address="0x5" permission="rw"/> -->

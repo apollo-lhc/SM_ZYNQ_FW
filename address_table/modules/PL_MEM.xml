@@ -1,9 +1,25 @@
 <node id="PL_MEM">  
-  <node id="CM" address="0x00000000" module="file://PL_MEM_CM.xml"/>
   <node id="NETWORK" address="0x00000061">
     <node id="ETH0" address="0x00000000">
       <node id="RX" address="0x00000000" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=_4;Status=1;Format=m_1_1_1000_1_0_1;Format=d;" description="Rate of ETH0_RX at kB/sec"/>
       <node id="TX" address="0x00000001" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=_4;Status=1;Format=m_1_1_1000_1_0_1;Format=d;" description="Rate of ETH0_TX at kB/sec"/>
+    </node>
+  </node>
+  <node id="INVENTORY" address="0x000007C0">
+    <node id="SM_FW" address="0x0">
+      <node id="DB_MATCH" address="0x0" mask="0xF" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=u;Status=1" />
+      <node id="IS_LATEST_TAG" address="0x0" mask="0xF0" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=u;Status=1" />
+    </node>
+    <node id="CM_MCU_FW" address="0x1">
+      <node id="DB_MATCH" address="0x0" mask="0xF" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=u;Status=1" />
+      <node id="IS_LATEST_TAG" address="0x0" mask="0xF0" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=u;Status=1" />
+    </node>
+    <node id="IPMC_FW" address="0x2">
+      <node id="DB_MATCH" address="0x0" mask="0xF" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=u;Status=1" />
+      <node id="IS_LATEST_TAG" address="0x0" mask="0xF0" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=u;Status=1" />
+    </node>
+    <node id="IPMC_UID" address="0x3">
+      <node id="DB_MATCH" address="0x0" mask="0xF" permission="rw" parameters="Table=INVENTORY;Row=_3;Column=_4;Format=u;Status=1" />
     </node>
   </node>
   <node id="SM_POWER" address="0x000007D0">
@@ -54,9 +70,10 @@
       <node id="MINS"    mask="0x0000FFFF" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=_4;Format=m_1_1_100_1_0_1;Status=1;Show=nz"/>
       <node id="HOURS"   mask="0xFFFF0000" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=_4;Format=m_1_1_100_1_0_1;Status=1;Show=nz"/>
       <node id="DAYS"    address="0x1" mask="0xFFFFFFFF" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=_4;Format=m_1_1_100_1_0_1;Status=1;Show=nz"/>
+      <node id="RAW"     address="0x2" mask="0xFFFFFFFF" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=sec;Status=1;Format=u"/>
     </node>
   </node>
-  <node id="XVC_LOCK" address="0x000007E5">
+  <node id="XVC_LOCK" address="0x000007E6">
     <node id="XVC1"       address="0x0" mask="0x1" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=Locked;Status=1;Show=nz" description="warning"/>
     <node id="XVC2"       address="0x1" mask="0x1" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=Locked;Status=1;Show=nz" description="warning"/>
     <node id="XVC_LOCAL"  address="0x2" mask="0x1" permission="rw" parameters="Table=ZYNQ_OS;Row=_3;Column=Locked;Status=1;Show=nz" description="warning"/>                       
