@@ -20,7 +20,7 @@ entity plXVC_intf is
     readMISO    : out AXIReadMISO := DefaultAXIReadMISO;
     writeMOSI   : in  AXIWriteMOSI;
     writeMISO   : out AXIWriteMISO := DefaultAXIWriteMISO;
-
+    IRQ         : out std_logic; --interupt request
     --signals for in out to virtualJTAG module
     TMS         : out std_logic_vector((COUNT - 1) downto 0);
     TDI         : out std_logic_vector((COUNT - 1) downto 0);
@@ -41,6 +41,12 @@ architecture behavioral of plXVC_intf is
 
   -- *** For reset *** ---
   signal reset  : std_logic;
+  
+  ---*** For FIFO ***---
+  signal FIFO   : PLXVC_Ctrl_t;
+  
+  ---*** For MUX ***---
+  signal MUX    :PLXVC_Ctrl_t;
   
 begin
 
@@ -64,7 +70,40 @@ begin
 
 --Generate loop
   GENERATE_JTAG: for I in 1 to COUNT generate
-
+  
+    JTAG_FIFO_X: entity work.JTAG_FIFO
+        port map (
+        axi_clk => clk_axi,
+        reset => reset,
+        done => '1',
+        valid => '1',
+        TMS_valid_in => '1',
+        TDI_valid_in => '1',
+        length_valid_in => '1',
+        TMS_vector => Ctrl.XVC(I).TMS_VECTOR,
+        TDI_vector => Ctrl.XVC(I).TDI_VECTOR,
+        TDO       => TDO(I - 1),
+        length  => Ctrl.XVC(I).LENGTH,
+        TMS_vector_out => FIFO.XVC(I).TMS_VECTOR,
+        TDI_vector_out => FIFO.XVC(I).TDI_VECTOR,
+        Length_out => FIFO.XVC(I).LENGTH,
+        go => FIFO.XVC(I).GO,
+        CTRL => Ctrl.XVC(I).GO,
+        TDO_vector => MON_TDO_VECTOR(I),
+        busy      => MON_BUSY(I - 1),
+        interupt => open,
+        FIFO_STATE => open);
+  
+  MUX_X: entity work.MUX
+        port map (
+        axi_clk => clk_axi,
+        reset => reset,
+        fifo_enable => '1',
+        FIFO => FIFO,
+        CTRL_in => CTRL,
+        CTRL_out => MUX);
+    
+    
 --Create virtualJTAG modules
     virtualJTAG_X: entity work.virtualJTAG
       generic map(
