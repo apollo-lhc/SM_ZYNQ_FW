@@ -20,7 +20,7 @@ entity plXVC_intf is
     readMISO    : out AXIReadMISO := DefaultAXIReadMISO;
     writeMOSI   : in  AXIWriteMOSI;
     writeMISO   : out AXIWriteMISO := DefaultAXIWriteMISO;
-    IRQ         : out std_logic; --interupt request
+    IRQ         : out std_logic_vector((COUNT - 1) downto 0); --interupt request
     --signals for in out to virtualJTAG module
     TMS         : out std_logic_vector((COUNT - 1) downto 0);
     TDI         : out std_logic_vector((COUNT - 1) downto 0);
@@ -37,16 +37,17 @@ architecture behavioral of plXVC_intf is
   signal Mon_TDO_VECTOR : slv32_array_t(1 to COUNT); --Array of 32bit vectors
 
   -- *** Control record *** --
-  signal Ctrl   : PLXVC_Ctrl_t;
+  signal Ctrl    : PLXVC_Ctrl_t;
 
   -- *** For reset *** ---
-  signal reset  : std_logic;
+  signal reset   : std_logic;
   
   ---*** For FIFO ***---
-  signal FIFO   : PLXVC_Ctrl_t;
+  signal FIFO    : PLXVC_Ctrl_t;
+  signal f_state : std_logic_vector(6 downto 0);
   
   ---*** For MUX ***---
-  signal MUX    :PLXVC_Ctrl_t;
+  signal MUX     : PLXVC_Ctrl_t;
   
 begin
 
@@ -75,7 +76,7 @@ begin
         port map (
         axi_clk => clk_axi,
         reset => reset,
-        done => '1',
+        done => MON_BUSY(I - 1),
         valid => '1',
         TMS_valid_in => '1',
         TDI_valid_in => '1',
@@ -90,10 +91,19 @@ begin
         go => FIFO.XVC(I).GO,
         CTRL => Ctrl.XVC(I).GO,
         TDO_vector => MON_TDO_VECTOR(I),
-        busy      => MON_BUSY(I - 1),
-        interupt => open,
-        FIFO_STATE => open);
+        FIFO_STATE => f_state
+        FIFO_IRQ => IRQ(I - 1));
   
+    -- stateDecoder: process
+    -- begin
+    --   case f_state is 
+    --     when b"0000001" =>
+    --       FIFO_full <= '1';
+    --     when others =>
+    --       FIFO_full <= '0';
+    --   end case;
+    -- end process stateDecoder;
+
   MUX_X: entity work.MUX
         port map (
         axi_clk => clk_axi,
@@ -112,11 +122,11 @@ begin
       port map (
         axi_clk   => clk_axi,
         reset     => reset,
-        TMS_vector => Ctrl.XVC(I).TMS_VECTOR,
-        TDI_vector => Ctrl.XVC(I).TDI_VECTOR,
+        TMS_vector => MUX.XVC(I).TMS_VECTOR,
+        TDI_vector => MUX.XVC(I).TDI_VECTOR,
         TDO       => TDO(I - 1),
-        length  => Ctrl.XVC(I).LENGTH,
-        CTRL => Ctrl.XVC(I).GO,
+        length  => MUX.XVC(I).LENGTH,
+        CTRL => MUX.XVC(I).GO,
         TMS => TMS(I - 1),
         TDI => TDI(I - 1),
         TDO_vector => MON_TDO_VECTOR(I),

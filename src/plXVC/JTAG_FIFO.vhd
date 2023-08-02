@@ -49,11 +49,9 @@ entity JTAG_FIFO is
          TDI_vector_out     : out std_logic_vector(31 downto 0);  --fifo tdi output
          length_out         : out std_logic_vector(31 downto 0);  --fifo length output
          go                 : out std_logic;
-         FIFO_STATE         : out std_logic_vector(5 downto 0);
+         FIFO_STATE         : out std_logic_vector(6 downto 0);
          TDO_vector         : out std_logic_vector(31 downto 0);  --axi tdo output
-         busy               : out std_logic;                      --virtualJTAG is outputting
-				 FIFO_IRQ						: out std_logic;
-         interupt           : out std_logic);                     --interupt
+		 FIFO_IRQ			: out std_logic);                     --interupt request
          
 end JTAG_FIFO;
 
@@ -93,14 +91,13 @@ END COMPONENT;
 -- COMP_TAG_END ------ End COMPONENT Declaration ------------
 
 -- *** StateMachine *** --
-  type states is (IDLE, OPERATING, OVERFLOW, WAITING_DONE, FIFO_RESET, WAITING_IRQ);
+  type states is (IDLE, OPERATING, OVERFLOW, WAITING_DONE, FIFO_RESET, WAITING_IRQ, FULL);
   signal STATE          : STATES;
-  signal interrupt_sr   : std_logic;
 
 -- *** FIFOControl *** --
   --signal write_enable   : std_logic;
-  signal read_enable    : std_logic;
-  signal fifo_enable    : std_logic;
+  --signal read_enable    : std_logic;
+  --signal fifo_enable    : std_logic;
 
   signal TMS_r_en       : std_logic;
   signal TDI_r_en       : std_logic;
@@ -132,7 +129,7 @@ END COMPONENT;
 
   signal TMS_fifo_out    : std_logic_vector(31 downto 0);
   signal TDI_fifo_out    : std_logic_vector(31 downto 0);
-  signal length_fifo_out : std_logic_vector(31 downto 0); 
+  signal length_fifo_out : std_logic_vector(5 downto 0); 
   
   signal f_reset     		 : std_logic := '0';
 	signal F_IRQ 					 : std_logic := '0'; 
@@ -173,7 +170,7 @@ Length_FIFO: fifo_generator_length
   PORT MAP (
     clk => axi_clk,
     srst => f_reset,
-    din => length,
+    din => length(5 downto 0),
     wr_en => length_w_en,
     rd_en => length_r_en,
     dout => length_fifo_out,
@@ -184,8 +181,8 @@ Length_FIFO: fifo_generator_length
     data_count => length_count
   );
     
-  interupt <= interrupt_sr;
-  
+  FIFO_IRQ <= F_IRQ;
+
   Outputting: process(axi_clk,reset)
   begin
     if (reset = '1') then
@@ -196,7 +193,7 @@ Length_FIFO: fifo_generator_length
         if(TMS_r_en = '1' and TDI_r_en = '1' and length_r_en = '1' ) then 
           TMS_vector_out <= TMS_fifo_out;
           TDI_vector_out <= TDI_fifo_out;
-          length_out <= length_fifo_out;
+          length_out <= length_fifo_out & X"000000" & b"00";
         else
           TMS_vector_out <= X"00000000";
           TDI_vector_out <= X"00000000";
@@ -218,69 +215,25 @@ Length_FIFO: fifo_generator_length
           TDI_w_en <= '0';
           length_w_en <= '0';
 
-        when OPERATING =>
-          if fifo_enable = '1' then
-              TMS_w_en <= '1';
-              TDI_w_en <= '1';
-              length_w_en <= '1';
-          else
-              if (TMS_full = '0' and TMS_valid_in  = '1') then
-                TMS_w_en <= '1';
-              else
-                TMS_w_en <= '0';
-              end if;
-    
-              if (TDI_full = '0' and TDI_valid_in = '1') then
-                TDI_w_en <= '1';
-              else
-                TDI_w_en <= '0';
-              end if;
-    
-              if (length_full = '0' and length_valid_in = '1') then
-                length_w_en <= '1';
-              else 
-                length_w_en <= '0';
-              end if;
-          end if;
-        
-        when WAITING_DONE =>
-           if (TMS_full = '0' and TMS_valid_in  = '1') then
+        when OPERATING | WAITING_DONE | WAITING_IRQ =>
+          if ( TMS_valid_in  = '1' and TMS_full = '0') then
             TMS_w_en <= '1';
           else
             TMS_w_en <= '0';
           end if;
 
-          if (TDI_full = '0' and TDI_valid_in = '1') then
+          if (TDI_valid_in = '1' and TDI_full = '0') then
             TDI_w_en <= '1';
           else
             TDI_w_en <= '0';
           end if;
 
-          if (length_full = '0' and length_valid_in = '1') then
+          if (length_valid_in = '1' and length_full = '0') then
             length_w_en <= '1';
           else 
             length_w_en <= '0';
           end if;
-				
-				when WAITING_IRQ =>
-					if (TMS_full = '0' and TMS_valid_in  = '1') then
-						TMS_w_en <= '1';
-					else
-						TMS_w_en <= '0';
-					end if;
 
-					if (TDI_full = '0' and TDI_valid_in = '1') then
-						TDI_w_en <= '1';
-					else
-						TDI_w_en <= '0';
-					end if;
-
-					if (length_full = '0' and length_valid_in = '1') then
-						length_w_en <= '1';
-					else 
-						length_w_en <= '0';
-					end if;
-        
         when others =>
           TMS_w_en <= '0';
           TDI_w_en <= '0';
@@ -303,7 +256,7 @@ Length_FIFO: fifo_generator_length
           TDI_r_en <= '0';
           length_r_en <= '0';
         
-        when OPERATING =>
+        when OPERATING | FULL =>
           if (TMS_empty = '0' and TDI_empty = '0' and length_empty = '0') then
             TMS_r_en <= '1';
             TDI_r_en <= '1';
@@ -312,12 +265,7 @@ Length_FIFO: fifo_generator_length
             TMS_r_en <= '0';
             TDI_r_en <= '0';
             length_r_en <= '0';          
-          end if;
-          
-        when OVERFLOW =>
-            TMS_r_en <= '0';
-            TDI_r_en <= '0';
-            length_r_en <= '0';          
+          end if;        
         
         when others =>
           TMS_r_en <= '0';
@@ -331,17 +279,15 @@ Length_FIFO: fifo_generator_length
   begin
    if (reset = '1') then
 			STATE <= FIFO_RESET;
-      interupt <= '0';
+      f_reset <= '1';
       go <= '0';
 			F_IRQ <= '0';
 
    elsif (axi_clk'event and axi_clk='1') then
       case STATE is
         when IDLE => 
-          interupt <= '0';
 					F_IRQ <= '0';
           if (CTRL = '1' and valid = '1') then
-            fifo_enable <= '1';
             STATE <= OPERATING;
             go <= '1';
           else
@@ -350,7 +296,6 @@ Length_FIFO: fifo_generator_length
           end if;
         
         when OPERATING =>
-          fifo_enable <= '0';
           go <= '1';
 					F_IRQ <= '0';
           if (length_overflow = '1' or TMS_overflow = '1' or TDI_overflow = '1') then
@@ -358,6 +303,8 @@ Length_FIFO: fifo_generator_length
 					elsif (CTRL = '0') then
 						go <= '0';
 						STATE <= IDLE;
+          elsif (length_full = '1' or TMS_full = '1' or TDI_full = '1') then
+            STATE <= FULL;
           elsif (done = '0') then
             STATE <= WAITING_DONE;
 					elsif (length_empty = '1' and TMS_empty = '1' and TDI_empty = '1') then
@@ -377,11 +324,17 @@ Length_FIFO: fifo_generator_length
         when WAITING_DONE =>
           go <= '1';
 					F_IRQ <= '0';
-          if (done = '1') then
-            STATE <= OPERATING;
-          elsif (CTRL = '0') then
+         
+          if (CTRL = '0') then
              go <= '0';
              STATE <= IDLE;
+          
+          elsif (length_overflow = '1' or TMS_overflow = '1' or TDI_overflow = '1') then
+              STATE <= OVERFLOW;
+          elsif (length_full = '1' or TMS_full = '1' or TDI_full = '1') then
+              STATE <= FULL;
+          elsif (done = '1') then
+              STATE <= OPERATING;
 					elsif (length_empty = '1' and TMS_empty = '1' and TDI_empty = '1') then
 						STATE <= WAITING_IRQ;
           else
@@ -390,41 +343,65 @@ Length_FIFO: fifo_generator_length
 			
 				when WAITING_IRQ =>
 					F_IRQ <= '1';
-					if(length_empty = '1' and TMS_empty = '1' and TDI_empty = '1') then
-						STATE <= STATE;
-					elsif (CTRL = '0') then
+
+					if (CTRL = '0') then
 						STATE <= IDLE;
+          elsif(length_empty = '0' or TMS_empty = '0' or TDI_empty = '0') then
+            STATE <= OPERATING;
+          elsif (length_full = '1' or TMS_full = '1' or TDI_full = '1') then
+            STATE <= FULL;
+          elsif(length_empty = '1' and TMS_empty = '1' and TDI_empty = '1') then
+						STATE <= STATE;
 					end if;
-          
-       when FIFO_RESET =>
+    
+        when FULL =>
+          go <= '1';
+          if (length_overflow = '1' or TMS_overflow = '1' or TDI_overflow = '1') then
+            STATE <= OVERFLOW;
+          elsif (length_full = '0' and TMS_full = '0' and TDI_full = '0') then
+            STATE <= OPERATING;
+          elsif (length_full = '1' or TMS_full = '1' or TDI_full = '1') then
+            STATE <= STATE;
+          else
+            go <= '0';
+            STATE <= IDLE;
+          end if;
+
+        when FIFO_RESET =>
           f_reset <= '1';
 					F_IRQ <= '0';
-          if (length_full = '1' and length_empty = '1' and TMS_empty = '1' and TMS_full = '1' and TDI_empty = '1' and TDI_full = '1') then
+          if ((length_full = '1' and length_empty = '1' and TMS_empty = '1' and TMS_full = '1' and TDI_empty = '1' and TDI_full = '1') or reset = '1') then
             STATE <= STATE;
 					else
 						STATE <= IDLE;
 						f_reset <= '0';
 					end if;           
-       end case;
+        end case;
    end if;
   end process StateMachine;
   
-  StateEncoder: process
+  StateEncoder: process (axi_clk, reset)
   begin
-    case STATE is 
-      when IDLE =>
-        FIFO_STATE <= b"100000";
-      when OPERATING =>
-        FIFO_STATE <= b"010000";
-      when OVERFLOW =>
-        FIFO_STATE <= b"001000";
-      when WAITING_DONE =>
-        FIFO_STATE <= b"000100";
-      when FIFO_RESET =>
-        FIFO_STATE <= b"000010";
-      when WAITING_IRQ =>
-        FIFO_STATE <= b"000001";
-    end case;
+    if (reset = '1') then
+      FIFO_STATE <= b"0000100";
+   elsif (axi_clk'event and axi_clk='1') then
+      case STATE is 
+        when IDLE =>
+          FIFO_STATE <= b"1000000";
+        when OPERATING =>
+          FIFO_STATE <= b"0100000";
+        when OVERFLOW =>
+          FIFO_STATE <= b"0010000";
+        when WAITING_DONE =>
+          FIFO_STATE <= b"0001000";
+        when FIFO_RESET =>
+          FIFO_STATE <= b"0000100";
+        when WAITING_IRQ =>
+          FIFO_STATE <= b"0000010";
+        when FULL =>
+          FIFO_STATE <= b"0000001";
+      end case;
+    end if;
   end process StateEncoder;
   
 end Behavioral;
