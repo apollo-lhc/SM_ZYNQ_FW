@@ -35,28 +35,27 @@ use work.plXVC_CTRL.all;
 entity MUX is
   Port ( axi_clk        : in  std_logic;                      --Input axi_clk
          reset          : in  std_logic;                      --reset 
-         FIFO           : in  PLXVC_Ctrl_t;
-         CTRL_in        : in  PLXVC_Ctrl_t;
+         FIFO           : in  PLXVC_XVC_CTRL_t;
+         CTRL_in        : in  PLXVC_XVC_CTRL_t;
          fifo_enable    : in  std_logic;
-         CTRL_out       : out PLXVC_Ctrl_t);
+         CTRL_out       : out PLXVC_XVC_CTRL_t);
 end MUX;
 
 architecture Behavioral of MUX is
-    signal fifo_en      : std_logic;
-    signal CTRL         : PLXVC_Ctrl_t;
+    signal CTRL         : PLXVC_XVC_CTRL_t;
 begin
   
-  fifo_en <= fifo_enable;
+  
   CTRL_out <= CTRL;
   
   Multiplexer: process(axi_clk,reset)
   begin
     if (reset = '1') then
-      fifo_en <= '0';
+
    elsif (axi_clk'event and axi_clk='1') then
-      if (fifo_en = '1') then
+      if (fifo_enable = '1') then
         CTRL <= FIFO;
-      else 
+      elsif(fifo_enable = '0') then
         CTRL <= CTRL_in;
       end if;
     end if;
