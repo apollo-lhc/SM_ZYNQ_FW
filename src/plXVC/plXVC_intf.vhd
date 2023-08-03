@@ -91,7 +91,7 @@ begin
         go => FIFO.XVC(I).GO,
         CTRL => Ctrl.XVC(I).GO,
         TDO_vector => MON_TDO_VECTOR(I),
-        FIFO_STATE => f_state
+        FIFO_STATE => f_state,
         FIFO_IRQ => IRQ(I - 1));
   
     -- stateDecoder: process
