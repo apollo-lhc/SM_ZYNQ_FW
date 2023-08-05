@@ -340,8 +340,6 @@ Length_FIFO: fifo_generator_length
           go <= '0';
 					if (length_overflow = '1' or TMS_overflow = '1' or TDI_overflow = '1') then
 						STATE <= STATE;
-          else
-            STATE <= IDLE;
           end if;
         
         when WAITING_DONE =>
