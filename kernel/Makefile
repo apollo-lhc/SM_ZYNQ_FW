@@ -71,11 +71,9 @@ ROOTFS_CONFIG_SRC_PATH=$(CONFIG_BASE)/configs/rootfs/
 ROOTFS_CONFIG_DST_PATH=$(YOCTO_CONFIG_BASE)/
 
 BOOT_CONFIG_SRC_PATH=$(CONFIG_BASE)/configs/boot_config/
+BOOT_CONFIG_SRC_FILENAME?=config
 BOOT_CONFIG_DST_PATH=$(YOCTO_CONFIG_BASE)/
-BOOD_CONFIG_INSTALL_COMMAND ?=	@cp 	$(BOOT_CONFIG_SRC_PATH)/config  \
-				$(BOOT_CONFIG_DST_PATH)/config 	 || :   \
-				@cp 	$(BOOT_CONFIG_SRC_PATH)/config  \
-				$(BOOT_CONFIG_DST_PATH)/config.old || :			$(OUTPUT_MARKUP)
+
 
 
 UBOOT_MOD_SRC_PATH=$(CONFIG_BASE)/u-boot/
@@ -141,7 +139,10 @@ define copy_configs =
 
 #	BOOT MODS ===============================================================
 	@echo "adding boot mods" 					$(OUTPUT_MARKUP)
-	$(BOOD_CONFIG_INSTALL_COMMAND)
+	@cp 	$(BOOT_CONFIG_SRC_PATH)/$(BOOT_CONFIG_SRC_FILENAME)  \
+		$(BOOT_CONFIG_DST_PATH)/config 	 || : 
+	@cp 	$(BOOT_CONFIG_SRC_PATH)/$(BOOT_CONFIG_SRC_FILENAME)  \
+		$(BOOT_CONFIG_DST_PATH)/config.old || :			$(OUTPUT_MARKUP)
 #       UBOOT Mods ==============================================================
 	@echo "adding u-boot files" 					$(OUTPUT_MARKUP)
 	@mkdir -p $(dir $(UBOOT_MOD_DST_PATH)) 				$(OUTPUT_MARKUP)
