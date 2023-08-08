@@ -170,6 +170,10 @@ begin
                 --STATE <= IDLE;
                 --busy <= '0';
               --end if;
+            elsif(length = X"00000000" and (TMS_latch /= X"00000000" or TDI_latch /= X"00000000")) then --forces interupt in case of a 0 length word
+              interupt_sr <= (others => '1');
+              STATE <= IDLE;
+              busy <= '0';
             else
               STATE <= IDLE;
               busy <= '0';
