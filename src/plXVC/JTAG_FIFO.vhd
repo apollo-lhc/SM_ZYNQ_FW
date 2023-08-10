@@ -92,7 +92,7 @@ END COMPONENT;
 -- COMP_TAG_END ------ End COMPONENT Declaration ------------
 
 -- *** StateMachine *** --
-  type states is (IDLE, OPERATING, OVERFLOW, WAITING_DONE, FIFO_RESET, WAITING_IRQ, FULL);
+  type states is (IDLE, OPERATING, OVERFLOW, WAITING_FOR_DONE, FIFO_RESET, WAITING_IRQ, FULL);
   signal STATE          : STATES;
   signal done           : std_logic;
 
@@ -234,7 +234,7 @@ Length_FIFO: fifo_generator_length
           TDI_w_en <= '0';
           length_w_en <= '0';
 
-        when OPERATING | WAITING_DONE | WAITING_IRQ =>
+        when OPERATING | WAITING_FOR_DONE | WAITING_IRQ =>
           if ( TMS_valid_in  = '1' and TMS_full = '0') then
             TMS_w_en <= '1';
           else
@@ -329,7 +329,7 @@ Length_FIFO: fifo_generator_length
           elsif (length_full = '1' or TMS_full = '1' or TDI_full = '1') then
             STATE <= FULL;
           elsif (done = '0' or word_out = '1') then
-            STATE <= WAITING_DONE;
+            STATE <= WAITING_FOR_DONE;
 					elsif (length_empty = '1' and TMS_empty = '1' and TDI_empty = '1') then
 						STATE <= WAITING_IRQ;
           else
@@ -342,7 +342,7 @@ Length_FIFO: fifo_generator_length
 						STATE <= STATE;
           end if;
         
-        when WAITING_DONE =>
+        when WAITING_FOR_DONE =>
           go <= '1';
 					F_IRQ <= '0';
          
@@ -368,8 +368,6 @@ Length_FIFO: fifo_generator_length
 						STATE <= IDLE;
           elsif(length_empty = '0' or TMS_empty = '0' or TDI_empty = '0') then
             STATE <= OPERATING;
-          elsif (length_full = '1' or TMS_full = '1' or TDI_full = '1') then
-            STATE <= FULL;
           elsif(length_empty = '1' and TMS_empty = '1' and TDI_empty = '1') then
 						STATE <= STATE;
 					end if;
@@ -381,7 +379,7 @@ Length_FIFO: fifo_generator_length
           elsif (length_full = '0' and TMS_full = '0' and TDI_full = '0') then
             STATE <= OPERATING;
           elsif (done = '0' or word_out = '1') then
-            STATE <= WAITING_DONE;
+            STATE <= WAITING_FOR_DONE;
           elsif (length_full = '1' or TMS_full = '1' or TDI_full = '1') then
             STATE <= STATE;
           else
@@ -414,7 +412,7 @@ Length_FIFO: fifo_generator_length
           FIFO_STATE <= b"0100000";
         when OVERFLOW =>
           FIFO_STATE <= b"0010000";
-        when WAITING_DONE =>
+        when WAITING_FOR_DONE =>
           FIFO_STATE <= b"0001000";
         when FIFO_RESET =>
           FIFO_STATE <= b"0000100";
