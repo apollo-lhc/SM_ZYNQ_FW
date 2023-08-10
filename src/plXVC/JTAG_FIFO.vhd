@@ -45,14 +45,15 @@ entity JTAG_FIFO is
          length_valid_in    : in  std_logic;
          TMS_vector         : in  std_logic_vector(31 downto 0);  --axi tms input
          TDI_vector         : in  std_logic_vector(31 downto 0);  --axi tdi input
-         length             : in  std_logic_vector(31 downto 0);  --lenght of operation in bits, express as an unsigned decimal
+         length             : in  std_logic_vector(31 downto 0);  --length of operation in bits, express as an unsigned decimal
          TMS_vector_out     : out std_logic_vector(31 downto 0);  --fifo tms output
          TDI_vector_out     : out std_logic_vector(31 downto 0);  --fifo tdi output
          length_out         : out std_logic_vector(31 downto 0);  --fifo length output
          go                 : out std_logic;
          FIFO_STATE         : out std_logic_vector(6 downto 0);
          TDO_vector         : out std_logic_vector(31 downto 0);  --axi tdo output
-		 FIFO_IRQ			: out std_logic);                     --interupt request
+		     FIFO_IRQ			      : out std_logic;
+         BUS_ERROR          : out std_logic);                     --interupt request
          
 end JTAG_FIFO;
 
@@ -66,6 +67,7 @@ COMPONENT fifo_generator_0
     wr_en : IN STD_LOGIC;
     rd_en : IN STD_LOGIC;
     dout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+    almost_full: OUT STD_LOGIC;
     full : OUT STD_LOGIC;
     overflow : OUT STD_LOGIC;
     empty : OUT STD_LOGIC;
@@ -82,6 +84,7 @@ COMPONENT fifo_generator_length
     wr_en : IN STD_LOGIC;
     rd_en : IN STD_LOGIC;
     dout : OUT STD_LOGIC_VECTOR(5 DOWNTO 0);
+    almost_full: OUT STD_LOGIC;
     full : OUT STD_LOGIC;
     overflow : OUT STD_LOGIC;
     empty : OUT STD_LOGIC;
@@ -101,44 +104,48 @@ END COMPONENT;
   --signal read_enable    : std_logic;
   --signal fifo_enable    : std_logic;
 
-  signal TMS_r_en       : std_logic;
-  signal TDI_r_en       : std_logic;
-  signal length_r_en    : std_logic; 
+  signal TMS_r_en           : std_logic;
+  signal TDI_r_en           : std_logic;
+  signal length_r_en        : std_logic; 
   
-  signal TMS_w_en       : std_logic;
-  signal TDI_w_en       : std_logic;
-  signal length_w_en    : std_logic;
+  signal TMS_w_en           : std_logic;
+  signal TDI_w_en           : std_logic;
+  signal length_w_en        : std_logic;
   
-  signal TMS_full       : std_logic;
-  signal TDI_full       : std_logic;
-  signal length_full    : std_logic;
+  signal TMS_full           : std_logic;
+  signal TDI_full           : std_logic;
+  signal length_full        : std_logic;
   
-  signal TMS_empty      : std_logic;
-  signal TDI_empty      : std_logic;
-  signal length_empty   : std_logic;
+  signal TMS_empty          : std_logic;
+  signal TDI_empty          : std_logic;
+  signal length_empty       : std_logic;
 
-  signal TMS_valid      : std_logic;
-  signal TDI_valid      : std_logic;
-  signal length_valid   : std_logic;
+  signal TMS_valid          : std_logic;
+  signal TDI_valid          : std_logic;
+  signal length_valid       : std_logic;
 
-  signal TMS_count       : std_logic_vector(10 DOWNTO 0);
-  signal TDI_count       : std_logic_vector(10 DOWNTO 0);
-  signal length_count    : std_logic_vector(10 DOWNTO 0);
+  signal TMS_count          : std_logic_vector(10 DOWNTO 0);
+  signal TDI_count          : std_logic_vector(10 DOWNTO 0);
+  signal length_count       : std_logic_vector(10 DOWNTO 0);
 
-	signal TMS_overflow		 : std_logic;
-  signal TDI_overflow		 : std_logic;
-	signal length_overflow : std_logic;
+	signal TMS_overflow		    : std_logic;
+  signal TDI_overflow		    : std_logic;
+	signal length_overflow    : std_logic;
 
-  signal TMS_fifo_out    : std_logic_vector(31 downto 0);
-  signal TDI_fifo_out    : std_logic_vector(31 downto 0);
-  signal length_fifo_out : std_logic_vector(5 downto 0); 
+  signal TMS_almost_full    : std_logic;
+  signal TDI_almost_full    : std_logic;
+  signal length_almost_full : std_logic;
+
+  signal TMS_fifo_out       : std_logic_vector(31 downto 0);
+  signal TDI_fifo_out       : std_logic_vector(31 downto 0);
+  signal length_fifo_out    : std_logic_vector(5 downto 0); 
   
-  signal f_reset     		 : std_logic := '0';
-	signal F_IRQ 					 : std_logic := '0';
-  signal word_out        : std_logic; 
+  signal f_reset     		    : std_logic := '0';
+	signal F_IRQ 					    : std_logic := '0';
+  signal word_out           : std_logic; 
 
-  signal zero_l_out      : std_logic;
-
+  signal zero_l_out         : std_logic;
+  
 begin
 
   done <= not virtual_busy;
@@ -152,6 +159,7 @@ TMS_FIFO: fifo_generator_0
     wr_en => TMS_w_en,
     rd_en => TMS_r_en,
     dout => TMS_fifo_out,
+    almost_full => TMS_almost_full,
     full => TMS_full,
     overflow => TMS_overflow,
     empty => TMS_empty,
@@ -167,6 +175,7 @@ TDI_FIFO: fifo_generator_0
     wr_en => TDI_w_en,
     rd_en => TDI_r_en,
     dout => TDI_fifo_out,
+    almost_full => TDI_almost_full,
     full => TDI_full,
     overflow => TDI_overflow,
     empty => TDI_empty,
@@ -183,6 +192,7 @@ Length_FIFO: fifo_generator_length
     rd_en => length_r_en,
     dout => length_fifo_out,
     full => length_full,
+    almost_full => length_almost_full,
     overflow => length_overflow,
     empty => length_empty,
     valid => length_valid,
@@ -217,9 +227,25 @@ Length_FIFO: fifo_generator_length
     elsif (axi_clk'event and axi_clk='1') then
       if(length_fifo_out = b"000000" and TMS_r_en = '1' and TDI_r_en = '1' and length_r_en = '1') then 
         zero_l_out <= '1';
+      else
+        zero_l_out <= '0';
       end if;
     end if;
   end process Length_Check;
+
+  Bus_Error_Check: process(axi_clk,reset)
+  begin
+    if (reset = '1') then
+      BUS_ERROR <='0';
+    elsif (axi_clk'event and axi_clk='1') then
+      if((TMS_valid_in = '1' and (TMS_almost_full = '1' or TMS_full = '1')) or (TDI_valid_in = '1' and 
+      (TDI_almost_full = '1' or TDI_full = '1')) or (length_valid_in = '1' and (length_almost_full = '1' or length_full = '1'))) then
+        BUS_ERROR <= '1';
+      else
+        BUS_ERROR <= '0';
+      end if;
+    end if;
+  end process Bus_Error_Check;
   
   Writing: process(axi_clk,reset)
   begin
@@ -235,19 +261,19 @@ Length_FIFO: fifo_generator_length
           length_w_en <= '0';
 
         when OPERATING | WAITING_FOR_DONE | WAITING_IRQ =>
-          if ( TMS_valid_in  = '1' and TMS_full = '0') then
+          if ( TMS_valid_in  = '1' and TMS_full = '0' and TMS_almost_full = '0') then
             TMS_w_en <= '1';
           else
             TMS_w_en <= '0';
           end if;
 
-          if (TDI_valid_in = '1' and TDI_full = '0') then
+          if (TDI_valid_in = '1' and TDI_full = '0' and TDI_almost_full = '0') then
             TDI_w_en <= '1';
           else
             TDI_w_en <= '0';
           end if;
 
-          if (length_valid_in = '1' and length_full = '0') then
+          if (length_valid_in = '1' and length_full = '0' and length_almost_full = '0') then
             length_w_en <= '1';
           else 
             length_w_en <= '0';

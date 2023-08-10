@@ -31,6 +31,7 @@ entity plXVC_intf is
     -- for FIFO
     FIFO_full   : out std_logic_vector((COUNT - 1) downto 0);
     FIFO_overflow : out std_logic_vector((COUNT - 1) downto 0);
+    BUS_ERROR   : out std_logic_vector((COUNT - 1) downto 0);
     --for testing, delete later
     Ctrl        : in PLXVC_Ctrl_t;
     Mon         : out PLXVC_Mon_t
@@ -49,7 +50,7 @@ architecture behavioral of plXVC_intf is
 
   -- *** For reset *** ---
   signal reset   : std_logic;
-  
+
   ---*** For FIFO ***---
   signal FIFO         : PLXVC_Ctrl_t;
   signal f_state      : slv7_array_t(1 to COUNT);
@@ -105,7 +106,8 @@ begin
         CTRL => Ctrl.XVC(I).GO,
         TDO_vector => MON_TDO_VECTOR(I),
         FIFO_STATE => f_state(I),
-        FIFO_IRQ => IRQ(I - 1));
+        FIFO_IRQ => IRQ(I - 1),
+        BUS_ERROR => BUS_ERROR(I - 1));
   
      stateDecoder: process (clk_axi, reset)
      begin
