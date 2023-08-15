@@ -18,15 +18,15 @@ use IEEE.NUMERIC_STD.ALL; --For unsigned numbers
              reset        : in  std_logic;                      --reset
              TMS_vector   : in  std_logic_vector(31 downto 0);  --axi tms input
              TDI_vector   : in  std_logic_vector(31 downto 0);  --axi tdi input
-             TDO          : in  std_logic;                      --JTAG tdo input
+  --           TDO          : in  std_logic;                      --JTAG tdo input
              length       : in  std_logic_vector(31 downto 0);  --lenght of operation in bits, express as an unsigned decimal
              CTRL         : in  std_logic;                      --Enable operation
              TMS          : out std_logic;                      --JTAG tms output
              TDI          : out std_logic;                      --JTAG tdi output
-             TDO_vector   : out std_logic_vector(31 downto 0);  --axi tdo output
+    --         TDO_vector   : out std_logic_vector(31 downto 0);  --axi tdo output
              TCK          : out std_logic;                      --output TCK
              busy         : out std_logic;                      --virtualJTAG is outputting
-             interupt     : out std_logic);                     --interupt
+             done     : out std_logic);                     --done
   end virtualJTAG;
 
 architecture Behavioral of virtualJTAG is
@@ -46,14 +46,14 @@ architecture Behavioral of virtualJTAG is
 -- *** StateMachine *** --
   type states is (IDLE, OPERATING);
   signal STATE          : states;
-  signal interupt_sr    : std_logic_vector((IRQ_LENGTH - 1) downto 0);
+  signal done_sr    : std_logic_vector((IRQ_LENGTH - 1) downto 0);
   constant ready        : std_logic_vector((IRQ_LENGTH - 1) downto 0) := (others => '0');
 
 begin
 
   TCK <= TCK_buffer;            --Assign TCK from buffer
-  TDO_vector <= TDO_buffer;     --Assign TDO from buffer
-  interupt <= interupt_sr(0);   --Assign interupt from shift reg
+--  TDO_vector <= TDO_buffer;     --Assign TDO from buffer
+  done <= done_sr(0);   --Assign done from shift reg
   --Assign TDI and TMS from latches
   --TDI <= TDI_latch(31); --if MSB of AXI is bit 0
   --TMS <= TMS_latch(31); --if MSB of AXI is bit 0
@@ -153,25 +153,25 @@ begin
   begin
     if (reset = '1') then
       STATE <= IDLE;
-      TDO_buffer <= X"00000000";
-      interupt_sr <= (others => '0');
+      --TDO_buffer <= X"00000000";
+      done_sr <= (others => '0');
       
     elsif (axi_clk'event and axi_clk='1') then
       case STATE is
         when IDLE =>
-          interupt_sr <= '0' & interupt_sr((IRQ_LENGTH - 1) downto 1);
+          done_sr <= '0' & done_sr((IRQ_LENGTH - 1) downto 1);
           if (CTRL = '1') then
             if (length /= X"00000000") then --don't do anything if length is 0
-              --if (interupt_sr = ready) then --not still in interupt
+              --if (done_sr = ready) then --not still in done
                 STATE <= OPERATING;
-                TDO_buffer <= X"00000000";
+                --TDO_buffer <= X"00000000";
                 busy <= '1';
               --else
                 --STATE <= IDLE;
                 --busy <= '0';
               --end if;
-            elsif(length = X"00000000" and (TMS_latch /= X"00000000" or TDI_latch /= X"00000000")) then --forces interupt in case of a 0 length word
-              interupt_sr <= (others => '1');
+            elsif(length = X"00000000" and (TMS_latch /= X"00000000" or TDI_latch /= X"00000000")) then --forces done in case of a 0 length word
+              done_sr <= (others => '1');
               STATE <= IDLE;
               busy <= '0';
             else
@@ -184,34 +184,34 @@ begin
           end if;
           
         when OPERATING =>
-          TDO_buffer(to_integer(TCK_counter) - 1) <= TDO; --if MSB of AXI is bit 31???
+          --TDO_buffer(to_integer(TCK_counter) - 1) <= TDO; --if MSB of AXI is bit 31???
           if (TCK_counter = length_latch) then 
             if (timer = TCK_RATIO) then
               if (TCK_buffer = '1') then --After (length + 1) TCK clocks
                 STATE <= IDLE;
                 busy <= '0';
-                interupt_sr <= (others => '1');
+                done_sr <= (others => '1');
               else
                 STATE <= STATE;
                 busy <= '1';
-                interupt_sr <= '0' & interupt_sr((IRQ_LENGTH - 1) downto 1);
+                done_sr <= '0' & done_sr((IRQ_LENGTH - 1) downto 1);
               end if;
             else
               STATE <= STATE;
               busy <= '1';
-              interupt_sr <= '0' & interupt_sr((IRQ_LENGTH - 1) downto 1);
+              done_sr <= '0' & done_sr((IRQ_LENGTH - 1) downto 1);
             end if;
           else
             STATE <= STATE;
             busy <= '1';
-            interupt_sr <= '0' & interupt_sr((IRQ_LENGTH - 1) downto 1);
+            done_sr <= '0' & done_sr((IRQ_LENGTH - 1) downto 1);
           end if;
           
         when others => --default to IDLE
           STATE <= IDLE;
           TDO_buffer <= X"00000000";
           busy <= '0';
-          interupt_sr <= (others => '0');
+          done_sr <= (others => '0');
       end case;
     end if;
   end process StateMachine;

@@ -25,7 +25,6 @@ entity plXVC_intf is
     --signals for in out to virtualJTAG module
     TMS         : out std_logic_vector((COUNT - 1) downto 0);
     TDI         : out std_logic_vector((COUNT - 1) downto 0);
-    TDO         : in  std_logic_vector((COUNT - 1) downto 0);
     TCK         : out std_logic_vector((COUNT - 1) downto 0);
     PS_RST      : out std_logic_vector((COUNT - 1) downto 0);
     -- for FIFO
@@ -43,7 +42,7 @@ architecture behavioral of plXVC_intf is
   -- *** Monitor record *** --
   --signal Mon            : PLXVC_Mon_t;
   signal Mon_BUSY       : std_logic_vector((COUNT - 1) downto 0);
-  signal Mon_TDO_VECTOR : slv32_array_t(1 to COUNT); --Array of 32bit vectors
+  --signal Mon_TDO_VECTOR : slv32_array_t(1 to COUNT); --Array of 32bit vectors
 
   -- *** Control record *** --
   --signal Ctrl    : PLXVC_Ctrl_t;
@@ -57,7 +56,7 @@ architecture behavioral of plXVC_intf is
   signal TMS_valid    : std_logic;
   signal TDI_valid    : std_logic;
   signal l_valid      : std_logic;
-  signal v_interrupt  : std_logic_vector((COUNT - 1) downto 0);
+  signal v_done  : std_logic_vector((COUNT - 1) downto 0);
 
   ---*** For MUX ***---
   signal MUX     : PLXVC_Ctrl_t;
@@ -90,21 +89,19 @@ begin
         axi_clk => clk_axi,
         reset => reset,
         virtual_busy => MON_BUSY(I - 1),
-        virtual_interrupt => v_interrupt(I-1),
+        virtual_done => v_done(I-1),
         valid => '1',
         TMS_valid_in => TMS_valid,
         TDI_valid_in => TDI_valid,
         length_valid_in => l_valid,
         TMS_vector => Ctrl.XVC(I).TMS_VECTOR,
         TDI_vector => Ctrl.XVC(I).TDI_VECTOR,
-        TDO       => TDO(I - 1),
         length  => Ctrl.XVC(I).LENGTH,
         TMS_vector_out => FIFO.XVC(I).TMS_VECTOR,
         TDI_vector_out => FIFO.XVC(I).TDI_VECTOR,
         Length_out => FIFO.XVC(I).LENGTH,
         go => FIFO.XVC(I).GO,
         CTRL => Ctrl.XVC(I).GO,
-        TDO_vector => MON_TDO_VECTOR(I),
         FIFO_STATE => f_state(I),
         FIFO_IRQ => IRQ(I - 1),
         BUS_ERROR => BUS_ERROR(I - 1));
@@ -147,19 +144,17 @@ begin
         reset     => reset,
         TMS_vector => MUX.XVC(I).TMS_VECTOR,
         TDI_vector => MUX.XVC(I).TDI_VECTOR,
-        TDO       => TDO(I - 1),
         length  => MUX.XVC(I).LENGTH,
         CTRL => MUX.XVC(I).GO,
         TMS => TMS(I - 1),
         TDI => TDI(I - 1),
-        TDO_vector => MON_TDO_VECTOR(I),
         TCK       => TCK(I - 1),
         busy      => MON_BUSY(I - 1),
-        interupt => v_interrupt(I-1));
+        done => v_done(I-1));
     PS_RST(I-1) <= 'Z' when Ctrl.XVC(I).PS_RST = '1' else '0';
     --Assign monitor signals
     Mon.XVC(I).BUSY <= MON_BUSY(I - 1);
-    mon.XVC(I).TDO_VECTOR <= MON_TDO_VECTOR(I);
+    --mon.XVC(I).TDO_VECTOR <= MON_TDO_VECTOR(I);
     
   end generate GENERATE_JTAG;
 end architecture behavioral;
