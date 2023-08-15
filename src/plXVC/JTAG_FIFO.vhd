@@ -38,7 +38,6 @@ entity JTAG_FIFO is
          valid              : in  std_logic;
          virtual_busy       : in  std_logic;                      --virtualJTAG is busy
          virtual_interrupt  : in  std_logic;                      --virtualJTAG has finished outputting
-         TDO                : in  std_logic;                      --JTAG tdo input
          CTRL               : in  std_logic;                      --Enable operation
          TMS_valid_in       : in  std_logic;
          TDI_valid_in       : in  std_logic;
@@ -51,7 +50,6 @@ entity JTAG_FIFO is
          length_out         : out std_logic_vector(31 downto 0);  --fifo length output
          go                 : out std_logic;
          FIFO_STATE         : out std_logic_vector(6 downto 0);
-         TDO_vector         : out std_logic_vector(31 downto 0);  --axi tdo output
 		     FIFO_IRQ			      : out std_logic;
          BUS_ERROR          : out std_logic);                     --interupt request
          
@@ -145,6 +143,7 @@ END COMPONENT;
   signal word_out           : std_logic; 
 
   signal zero_l_out         : std_logic;
+  signal proceed            : std_logic;
   
 begin
 
@@ -220,26 +219,29 @@ Length_FIFO: fifo_generator_length
     end if;
   end process Outputting;
 
-  Length_Check: process(axi_clk, reset)
-  begin
-    if (reset = '1') then
-      zero_l_out <= '0';
-    elsif (axi_clk'event and axi_clk='1') then
-      if(length_fifo_out = b"000000" and TMS_r_en = '1' and TDI_r_en = '1' and length_r_en = '1') then 
-        zero_l_out <= '1';
-      else
-        zero_l_out <= '0';
-      end if;
-    end if;
-  end process Length_Check;
+  -- Length_Check: process(axi_clk, reset)
+  -- begin
+  --   if (reset = '1') then
+  --     zero_l_out <= '0';
+  --     proceed <= '0';
+  --   elsif (axi_clk'event and axi_clk='1') then
+  --     proceed <= zero_l_out;
+  --     if(length_fifo_out = b"000000" and TMS_r_en = '1' and TDI_r_en = '1' and length_r_en = '1') then 
+  --       zero_l_out <= '1';
+  --     else
+  --       zero_l_out <= '0';
+  --     end if;
+  --   end if;
+  -- end process Length_Check;
 
   Bus_Error_Check: process(axi_clk,reset)
   begin
     if (reset = '1') then
       BUS_ERROR <='0';
     elsif (axi_clk'event and axi_clk='1') then
-      if((TMS_valid_in = '1' and (TMS_almost_full = '1' or TMS_full = '1')) or (TDI_valid_in = '1' and 
-      (TDI_almost_full = '1' or TDI_full = '1')) or (length_valid_in = '1' and (length_almost_full = '1' or length_full = '1'))) then
+      if((TMS_valid_in = '1' and (TMS_almost_full = '1' or TMS_full = '1')) or 
+      (TDI_valid_in = '1' and (TDI_almost_full = '1' or TDI_full = '1')) or 
+      (length_valid_in = '1' and (length_almost_full = '1' or length_full = '1'))) then
         BUS_ERROR <= '1';
       else
         BUS_ERROR <= '0';
@@ -379,7 +381,7 @@ Length_FIFO: fifo_generator_length
               STATE <= OVERFLOW;
           elsif (length_full = '1' or TMS_full = '1' or TDI_full = '1') then
               STATE <= FULL;
-          elsif ((done = '1' and virtual_interrupt = '1') or zero_l_out = '1') then
+          elsif (done = '1' and virtual_interrupt = '1') then
               STATE <= OPERATING;
 					elsif (length_empty = '1' and TMS_empty = '1' and TDI_empty = '1') then
 						STATE <= WAITING_IRQ;
