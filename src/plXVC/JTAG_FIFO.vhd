@@ -18,10 +18,11 @@
 -- 
 ----------------------------------------------------------------------------------
 
+Library xpm;
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-
+use xpm.vcomponents.all;
 use work.plXVC_CTRL.all; 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
@@ -37,7 +38,7 @@ entity JTAG_FIFO is
          reset              : in  std_logic;                      --reset
          valid              : in  std_logic;
          virtual_busy       : in  std_logic;                      --virtualJTAG is busy
-         virtual_interrupt  : in  std_logic;                      --virtualJTAG has finished outputting
+         virtual_done       : in  std_logic;                      --virtualJTAG has finished outputting
          CTRL               : in  std_logic;                      --Enable operation
          TMS_valid_in       : in  std_logic;
          TDI_valid_in       : in  std_logic;
@@ -54,43 +55,7 @@ entity JTAG_FIFO is
          BUS_ERROR          : out std_logic);                     --interupt request
          
 end JTAG_FIFO;
-
 architecture Behavioral of JTAG_FIFO is
-------------- Begin Cut here for COMPONENT Declaration ------ COMP_TAG
-COMPONENT fifo_generator_0
-  PORT (
-    clk : IN STD_LOGIC;
-    srst : IN STD_LOGIC;
-    din : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-    wr_en : IN STD_LOGIC;
-    rd_en : IN STD_LOGIC;
-    dout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-    almost_full: OUT STD_LOGIC;
-    full : OUT STD_LOGIC;
-    overflow : OUT STD_LOGIC;
-    empty : OUT STD_LOGIC;
-    valid : OUT STD_LOGIC;
-    data_count : OUT STD_LOGIC_VECTOR(10 DOWNTO 0) 
-  );
-END COMPONENT;
-
-COMPONENT fifo_generator_length
-  PORT (
-    clk : IN STD_LOGIC;
-    srst : IN STD_LOGIC;
-    din : IN STD_LOGIC_VECTOR(5 DOWNTO 0);
-    wr_en : IN STD_LOGIC;
-    rd_en : IN STD_LOGIC;
-    dout : OUT STD_LOGIC_VECTOR(5 DOWNTO 0);
-    almost_full: OUT STD_LOGIC;
-    full : OUT STD_LOGIC;
-    overflow : OUT STD_LOGIC;
-    empty : OUT STD_LOGIC;
-    valid : OUT STD_LOGIC;
-    data_count : OUT STD_LOGIC_VECTOR(10 DOWNTO 0) 
-  );
-END COMPONENT;
--- COMP_TAG_END ------ End COMPONENT Declaration ------------
 
 -- *** StateMachine *** --
   type states is (IDLE, OPERATING, OVERFLOW, WAITING_FOR_DONE, FIFO_RESET, WAITING_IRQ, FULL);
@@ -122,10 +87,6 @@ END COMPONENT;
   signal TDI_valid          : std_logic;
   signal length_valid       : std_logic;
 
-  signal TMS_count          : std_logic_vector(10 DOWNTO 0);
-  signal TDI_count          : std_logic_vector(10 DOWNTO 0);
-  signal length_count       : std_logic_vector(10 DOWNTO 0);
-
 	signal TMS_overflow		    : std_logic;
   signal TDI_overflow		    : std_logic;
 	signal length_overflow    : std_logic;
@@ -149,11 +110,12 @@ begin
 
   done <= not virtual_busy;
 
-------------- Begin Cut here for INSTANTIATION Template ----- INST_TAG 
-TMS_FIFO: fifo_generator_0
-  PORT MAP (
-    clk => axi_clk,
-    srst => f_reset,
+------------- Begin Cut here for INSTANTIATION Template ----- INST_TAG
+
+TMS_FIFO: entity work.FIFO_32_bit 
+  port map (
+    wr_clk => axi_clk,
+    rst => f_reset,
     din => TMS_vector,
     wr_en => TMS_w_en,
     rd_en => TMS_r_en,
@@ -162,14 +124,12 @@ TMS_FIFO: fifo_generator_0
     full => TMS_full,
     overflow => TMS_overflow,
     empty => TMS_empty,
-    valid => TMS_valid,
-    data_count => TMS_count
-  );
+    data_valid => TMS_valid);
 
-TDI_FIFO: fifo_generator_0
-  PORT MAP (
-    clk => axi_clk,
-    srst => f_reset,
+TDI_FIFO: entity work.FIFO_32_bit 
+  port map (
+    wr_clk => axi_clk,
+    rst => f_reset,
     din => TDI_vector,
     wr_en => TDI_w_en,
     rd_en => TDI_r_en,
@@ -178,14 +138,13 @@ TDI_FIFO: fifo_generator_0
     full => TDI_full,
     overflow => TDI_overflow,
     empty => TDI_empty,
-    valid => TDI_valid,
-    data_count => TDI_count
-  );
-  
-Length_FIFO: fifo_generator_length
-  PORT MAP (
-    clk => axi_clk,
-    srst => f_reset,
+    data_valid => TDI_valid);
+
+-- End of xpm_fifo_sync_inst instantiation
+Length_FIFO: entity work.FIFO_6_bit
+    port map(
+    wr_clk => axi_clk,
+    rst => f_reset,
     din => length(5 downto 0),
     wr_en => length_w_en,
     rd_en => length_r_en,
@@ -194,9 +153,7 @@ Length_FIFO: fifo_generator_length
     almost_full => length_almost_full,
     overflow => length_overflow,
     empty => length_empty,
-    valid => length_valid,
-    data_count => length_count
-  );
+    data_valid => length_valid);
     
   FIFO_IRQ <= F_IRQ;
 
@@ -381,7 +338,7 @@ Length_FIFO: fifo_generator_length
               STATE <= OVERFLOW;
           elsif (length_full = '1' or TMS_full = '1' or TDI_full = '1') then
               STATE <= FULL;
-          elsif (done = '1' and virtual_interrupt = '1') then
+          elsif (done = '1' and virtual_done = '1') then
               STATE <= OPERATING;
 					elsif (length_empty = '1' and TMS_empty = '1' and TDI_empty = '1') then
 						STATE <= WAITING_IRQ;
