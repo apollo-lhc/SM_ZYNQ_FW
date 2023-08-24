@@ -30,22 +30,19 @@ entity plXVC_intf is
     -- for FIFO
     FIFO_full   : out std_logic_vector((COUNT - 1) downto 0);
     FIFO_overflow : out std_logic_vector((COUNT - 1) downto 0);
-    BUS_ERROR   : out std_logic_vector((COUNT - 1) downto 0);
-    --for testing, delete later
-    Ctrl        : in PLXVC_Ctrl_t;
-    Mon         : out PLXVC_Mon_t
+    BUS_ERROR   : out std_logic_vector((COUNT - 1) downto 0)
     );
 end entity plXVC_intf;
 
 architecture behavioral of plXVC_intf is
 
   -- *** Monitor record *** --
-  --signal Mon            : PLXVC_Mon_t;
+  signal Mon            : PLXVC_Mon_t;
   signal Mon_BUSY       : std_logic_vector((COUNT - 1) downto 0);
   --signal Mon_TDO_VECTOR : slv32_array_t(1 to COUNT); --Array of 32bit vectors
 
   -- *** Control record *** --
-  --signal Ctrl    : PLXVC_Ctrl_t;
+  signal Ctrl    : PLXVC_Ctrl_t;
 
   -- *** For reset *** ---
   signal reset   : std_logic;
@@ -64,19 +61,19 @@ architecture behavioral of plXVC_intf is
 begin
 
 --Instansiate plXVC_interface Module
---  PLXVC_interface_1: entity work.PLXVC_map
---    generic map(
---      ALLOCATED_MEMORY_RANGE => ALLOCATED_MEMORY_RANGE
---      )
---    port map (
---      clk_axi             => clk_axi,     --AXI_clk in
---      reset_axi_n         => reset_axi_n, --AXI_reset in
---      slave_readMOSI      => readMOSI,    --read MOSI in
---      slave_readMISO      => readMISO,    --read MISO out
---      slave_writeMOSI     => writeMOSI,   --write MOSI in
---      slave_writeMISO     => writeMISO,   --write MISO out
---      Mon                 => Mon,         --Monitor in
---      Ctrl                => Ctrl);       --Ctrl out
+ PLXVC_interface_1: entity work.PLXVC_map
+   generic map(
+     ALLOCATED_MEMORY_RANGE => ALLOCATED_MEMORY_RANGE
+     )
+   port map (
+     clk_axi             => clk_axi,     --AXI_clk in
+     reset_axi_n         => reset_axi_n, --AXI_reset in
+     slave_readMOSI      => readMOSI,    --read MOSI in
+     slave_readMISO      => readMISO,    --read MISO out
+     slave_writeMOSI     => writeMOSI,   --write MOSI in
+     slave_writeMISO     => writeMISO,   --write MISO out
+     Mon                 => Mon,         --Monitor in
+     Ctrl                => Ctrl);       --Ctrl out
   
   --invert reset for virtualJTAG module
   reset <= not reset_axi_n;
