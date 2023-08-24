@@ -7,7 +7,7 @@ use ieee.numeric_std.all;
 use work.AXIRegWidthPkg.all;
 use work.AXIRegPkg.all;
 use work.types.all;
-
+use work.fifoPortPkg.all;
 use work.plXVC_Ctrl.all;
 
 
@@ -49,8 +49,15 @@ architecture behavioral of plXVC_map is
 
 
   constant FIFO_COUNT       : integer := 9;
-  constant FIFO_range       : int_array_t(0 to FIFO_COUNT-1) := ();
-  constant FIFO_addr        : slv32_array_t(0 to FIFO_COUNT-1) := ();
+  constant FIFO_addr        : slv32_array_t(0 to FIFO_COUNT-1) := (0 => x"0000000A"
+,                       1 => x"0000001A"
+,                       2 => x"0000002A"
+,                       3 => x"0000000B"
+,                       4 => x"0000001B"
+,                       5 => x"0000002B"
+,                       6 => x"0000000C"
+,                       7 => x"0000001C"
+,                       8 => x"0000002C");
   signal FIFO_MOSI          : FIFOPortMOSI_array_t(0 to FIFO_COUNT-1);
   signal FIFO_MISO          : FIFOPortMISO_array_t(0 to FIFO_COUNT-1);
 
@@ -242,42 +249,42 @@ elsif FIFO_MISO(8).rd_data_valid = '1' then
     if reset_axi_n = '0' then                 -- asynchronous reset (active low)
       localWrAck <= '0';
       localWrErr <= '0';
-    elsif clk'event and clk_axi = '1' then
+    elsif clk_axi'event and clk_axi = '1' then
       localWrAck <= '0';
       localWrErr <= '0';
       if regWrAck = '1' then
         localWrAck <= '1';
         localWrErr <= '0';
 
-      elsif FIFO_MISO(0).wr_data_valid = '1' then
+      elsif FIFO_MOSI(0).wr_enable = '1' then
         localWrAck        <= '1';
         localWrErr        <= FIFO_MISO(0).wr_response;
-elsif FIFO_MISO(1).wr_data_valid = '1' then
+elsif FIFO_MOSI(1).wr_enable = '1' then
         localWrAck        <= '1';
         localWrErr        <= FIFO_MISO(1).wr_response;
-elsif FIFO_MISO(2).wr_data_valid = '1' then
+elsif FIFO_MOSI(2).wr_enable = '1' then
         localWrAck        <= '1';
         localWrErr        <= FIFO_MISO(2).wr_response;
-elsif FIFO_MISO(3).wr_data_valid = '1' then
+elsif FIFO_MOSI(3).wr_enable = '1' then
         localWrAck        <= '1';
         localWrErr        <= FIFO_MISO(3).wr_response;
-elsif FIFO_MISO(4).wr_data_valid = '1' then
+elsif FIFO_MOSI(4).wr_enable = '1' then
         localWrAck        <= '1';
         localWrErr        <= FIFO_MISO(4).wr_response;
-elsif FIFO_MISO(5).wr_data_valid = '1' then
+elsif FIFO_MOSI(5).wr_enable = '1' then
         localWrAck        <= '1';
         localWrErr        <= FIFO_MISO(5).wr_response;
-elsif FIFO_MISO(6).wr_data_valid = '1' then
+elsif FIFO_MOSI(6).wr_enable = '1' then
         localWrAck        <= '1';
         localWrErr        <= FIFO_MISO(6).wr_response;
-elsif FIFO_MISO(7).wr_data_valid = '1' then
+elsif FIFO_MOSI(7).wr_enable = '1' then
         localWrAck        <= '1';
         localWrErr        <= FIFO_MISO(7).wr_response;
-elsif FIFO_MISO(8).wr_data_valid = '1' then
+elsif FIFO_MOSI(8).wr_enable = '1' then
         localWrAck        <= '1';
         localWrErr        <= FIFO_MISO(8).wr_response;
 
-
+        end if;
     end if;
   end process write_ack_proc;
 
@@ -432,7 +439,7 @@ elsif FIFO_MISO(8).wr_data_valid = '1' then
         FIFO_MOSI(iFIFO).rd_enable  <= '0';
       elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
         FIFO_MOSI(iFIFO).rd_enable  <= '0';
-        if localAddress(5 downto FIFO_range(iFIFO)) = FIFO_addr(iFIFO)(5 downto FIFO_range(iFIFO)) then
+        if localAddress(5 downto 0) = FIFO_addr(iFIFO)(5 downto 0) then
           FIFO_MOSI(iFIFO).rd_enable  <= localRdReq;
         end if;
       end if;
@@ -507,6 +514,8 @@ elsif FIFO_MISO(8).wr_data_valid = '1' then
 
   FIFO_MISO(0).rd_error <= Mon.XVC(1).FIFO_MODE.LENGTH.rd_error;
 
+  FIFO_MISO(0).wr_response <= Mon.XVC(1).FIFO_MODE.LENGTH.wr_response;
+
   FIFO_MISO(0).wr_error <= Mon.XVC(1).FIFO_MODE.LENGTH.wr_error;
 
   FIFO_MISO(1).rd_data(32-1 downto 0) <= Mon.XVC(2).FIFO_MODE.LENGTH.rd_data;
@@ -514,6 +523,8 @@ elsif FIFO_MISO(8).wr_data_valid = '1' then
   FIFO_MISO(1).rd_data_valid <= Mon.XVC(2).FIFO_MODE.LENGTH.rd_data_valid;
 
   FIFO_MISO(1).rd_error <= Mon.XVC(2).FIFO_MODE.LENGTH.rd_error;
+
+  FIFO_MISO(1).wr_response <= Mon.XVC(2).FIFO_MODE.LENGTH.wr_response;
 
   FIFO_MISO(1).wr_error <= Mon.XVC(2).FIFO_MODE.LENGTH.wr_error;
 
@@ -523,6 +534,8 @@ elsif FIFO_MISO(8).wr_data_valid = '1' then
 
   FIFO_MISO(2).rd_error <= Mon.XVC(3).FIFO_MODE.LENGTH.rd_error;
 
+  FIFO_MISO(2).wr_response <= Mon.XVC(3).FIFO_MODE.LENGTH.wr_response;
+
   FIFO_MISO(2).wr_error <= Mon.XVC(3).FIFO_MODE.LENGTH.wr_error;
 
   FIFO_MISO(3).rd_data(32-1 downto 0) <= Mon.XVC(1).FIFO_MODE.TMS_VECTOR.rd_data;
@@ -530,6 +543,8 @@ elsif FIFO_MISO(8).wr_data_valid = '1' then
   FIFO_MISO(3).rd_data_valid <= Mon.XVC(1).FIFO_MODE.TMS_VECTOR.rd_data_valid;
 
   FIFO_MISO(3).rd_error <= Mon.XVC(1).FIFO_MODE.TMS_VECTOR.rd_error;
+
+  FIFO_MISO(3).wr_response <= Mon.XVC(1).FIFO_MODE.TMS_VECTOR.wr_response;
 
   FIFO_MISO(3).wr_error <= Mon.XVC(1).FIFO_MODE.TMS_VECTOR.wr_error;
 
@@ -539,6 +554,8 @@ elsif FIFO_MISO(8).wr_data_valid = '1' then
 
   FIFO_MISO(4).rd_error <= Mon.XVC(2).FIFO_MODE.TMS_VECTOR.rd_error;
 
+  FIFO_MISO(4).wr_response <= Mon.XVC(2).FIFO_MODE.TMS_VECTOR.wr_response;
+
   FIFO_MISO(4).wr_error <= Mon.XVC(2).FIFO_MODE.TMS_VECTOR.wr_error;
 
   FIFO_MISO(5).rd_data(32-1 downto 0) <= Mon.XVC(3).FIFO_MODE.TMS_VECTOR.rd_data;
@@ -546,6 +563,8 @@ elsif FIFO_MISO(8).wr_data_valid = '1' then
   FIFO_MISO(5).rd_data_valid <= Mon.XVC(3).FIFO_MODE.TMS_VECTOR.rd_data_valid;
 
   FIFO_MISO(5).rd_error <= Mon.XVC(3).FIFO_MODE.TMS_VECTOR.rd_error;
+
+  FIFO_MISO(5).wr_response <= Mon.XVC(3).FIFO_MODE.TMS_VECTOR.wr_response;
 
   FIFO_MISO(5).wr_error <= Mon.XVC(3).FIFO_MODE.TMS_VECTOR.wr_error;
 
@@ -555,6 +574,8 @@ elsif FIFO_MISO(8).wr_data_valid = '1' then
 
   FIFO_MISO(6).rd_error <= Mon.XVC(1).FIFO_MODE.TDI_VECTOR.rd_error;
 
+  FIFO_MISO(6).wr_response <= Mon.XVC(1).FIFO_MODE.TDI_VECTOR.wr_response;
+
   FIFO_MISO(6).wr_error <= Mon.XVC(1).FIFO_MODE.TDI_VECTOR.wr_error;
 
   FIFO_MISO(7).rd_data(32-1 downto 0) <= Mon.XVC(2).FIFO_MODE.TDI_VECTOR.rd_data;
@@ -563,6 +584,8 @@ elsif FIFO_MISO(8).wr_data_valid = '1' then
 
   FIFO_MISO(7).rd_error <= Mon.XVC(2).FIFO_MODE.TDI_VECTOR.rd_error;
 
+  FIFO_MISO(7).wr_response <= Mon.XVC(2).FIFO_MODE.TDI_VECTOR.wr_response;
+
   FIFO_MISO(7).wr_error <= Mon.XVC(2).FIFO_MODE.TDI_VECTOR.wr_error;
 
   FIFO_MISO(8).rd_data(32-1 downto 0) <= Mon.XVC(3).FIFO_MODE.TDI_VECTOR.rd_data;
@@ -570,6 +593,8 @@ elsif FIFO_MISO(8).wr_data_valid = '1' then
   FIFO_MISO(8).rd_data_valid <= Mon.XVC(3).FIFO_MODE.TDI_VECTOR.rd_data_valid;
 
   FIFO_MISO(8).rd_error <= Mon.XVC(3).FIFO_MODE.TDI_VECTOR.rd_error;
+
+  FIFO_MISO(8).wr_response <= Mon.XVC(3).FIFO_MODE.TDI_VECTOR.wr_response;
 
   FIFO_MISO(8).wr_error <= Mon.XVC(3).FIFO_MODE.TDI_VECTOR.wr_error;
 
@@ -582,7 +607,7 @@ elsif FIFO_MISO(8).wr_data_valid = '1' then
         FIFO_MOSI(iFIFO).wr_enable   <= '0';
       elsif clk_axi'event and clk_axi = '1' then  -- rising clock edge
         FIFO_MOSI(iFIFO).wr_enable   <= '0';
-        if localAddress(5 downto FIFO_range(iFIFO)) = FIFO_addr(iFIFO)(5 downto FIFO_range(iFIFO)) then
+        if localAddress(5 downto 0) = FIFO_addr(iFIFO)(5 downto 0) then
           FIFO_MOSI(iFIFO).wr_enable   <= localWrEn;
         end if;
       end if;

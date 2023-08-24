@@ -8,7 +8,7 @@ use ieee.std_logic_1164.all;
 use work.types.all;
 
 package FIFOPortPkg is
-  type FIROPortMOSI_t is record
+  type FIFOPortMOSI_t is record
     clk       : std_logic;
     rd_enable : std_logic;
     reset     : std_logic;

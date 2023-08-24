@@ -5,11 +5,12 @@ use ieee.numeric_std.all; --maybe don't need
 use work.types.all; --maybe don't need
 use work.AXIRegPkg.all; --for AXIReadMOSI, AXIReadMISO, AXIWriteMOSI, and AXIWriteMISO
 use work.plXVC_CTRL.all; --for plXVC_MON_t and plXVC_CTRL_t
+use work.fifoPortPkg.all; -- for FIFOPortMOSI_t and FIFOPortMISO_t
 
 entity plXVC_intf is
   generic (
     --TCK_RATIO : integer := 1; --ratio of axi_clk to TCK
-    COUNT       : integer :=2;  --Number of plXVCs inside of array
+    COUNT       : integer :=3;  --Number of plXVCs inside of array
     IRQ_LENGTH  : integer :=1;  --Length of IRQ in axi_clk ticks
     IRQ_ENABLE  : std_logic := '1';
     ALLOCATED_MEMORY_RANGE : integer :=1);            
@@ -48,11 +49,15 @@ architecture behavioral of plXVC_intf is
   signal reset   : std_logic;
 
   ---*** For FIFO ***---
+  signal TMS_FIFO_MOSI  : FIFOPortMOSI_array_t(1 to COUNT);
+  signal TDI_FIFO_MOSI  : FIFOPortMOSI_array_t(1 to COUNT);
+  signal l_FIFO_MOSI    : FIFOPortMOSI_array_t(1 to COUNT);
+  signal TMS_FIFO_MISO  : FIFOPortMISO_array_t(1 to COUNT);
+  signal TDI_FIFO_MISO  : FIFOPortMISO_array_t(1 to COUNT);
+  signal l_FIFO_MISO    : FIFOPortMISO_array_t(1 to COUNT);
   signal FIFO         : PLXVC_Ctrl_t;
   signal f_state      : slv7_array_t(1 to COUNT);
-  signal TMS_valid    : std_logic;
-  signal TDI_valid    : std_logic;
-  signal l_valid      : std_logic;
+
   signal v_done  : std_logic_vector((COUNT - 1) downto 0);
 
   ---*** For MUX ***---
@@ -80,7 +85,7 @@ begin
 
 --Generate loop
   GENERATE_JTAG: for I in 1 to COUNT generate
-  
+
     JTAG_FIFO_X: entity work.JTAG_FIFO
         port map (
         axi_clk => clk_axi,
@@ -88,12 +93,12 @@ begin
         virtual_busy => MON_BUSY(I - 1),
         virtual_done => v_done(I-1),
         valid => '1',
-        TMS_valid_in => TMS_valid,
-        TDI_valid_in => TDI_valid,
-        length_valid_in => l_valid,
-        TMS_vector => Ctrl.XVC(I).TMS_VECTOR,
-        TDI_vector => Ctrl.XVC(I).TDI_VECTOR,
-        length  => Ctrl.XVC(I).LENGTH,
+        TMS_valid_in => Ctrl.XVC(I).FIFO_MODE.TMS_VECTOR.wr_enable,
+        TDI_valid_in => Ctrl.XVC(I).FIFO_MODE.TDI_VECTOR.wr_enable,
+        length_valid_in =>  Ctrl.XVC(I).FIFO_MODE.LENGTH.wr_enable,
+        TMS_vector =>  Ctrl.XVC(I).FIFO_MODE.TMS_VECTOR.wr_data,
+        TDI_vector => Ctrl.XVC(I).FIFO_MODE.TDI_VECTOR.wr_data,
+        length  => Ctrl.XVC(I).FIFO_MODE.LENGTH.wr_data,
         TMS_vector_out => FIFO.XVC(I).TMS_VECTOR,
         TDI_vector_out => FIFO.XVC(I).TDI_VECTOR,
         Length_out => FIFO.XVC(I).LENGTH,
@@ -101,8 +106,9 @@ begin
         CTRL => Ctrl.XVC(I).GO,
         FIFO_STATE => f_state(I),
         FIFO_IRQ => IRQ(I - 1),
-        BUS_ERROR => BUS_ERROR(I - 1));
-  
+        BUS_ERROR => BUS_ERROR(I - 1)
+        --write_response => ;
+        );
      stateDecoder: process (clk_axi, reset)
      begin
      if (reset = '1') then
@@ -125,7 +131,7 @@ begin
         port map (
         axi_clk => clk_axi,
         reset => reset,
-        fifo_enable => '1',
+        fifo_enable => Ctrl.XVC(I).FIFO_MODE.ENABLE,
         FIFO => FIFO.XVC(I),
         CTRL_in => CTRL.XVC(I),
         CTRL_out => MUX.XVC(I));

@@ -27,6 +27,7 @@ package plXVC_CTRL is
     rd_data_valid   : std_logic;
     rd_error        : std_logic;
     wr_error        : std_logic;
+    wr_response     : std_logic;
   end record plXVC_XVC_FIFO_MODE_LENGTH_MISO_t;
   constant Default_plXVC_XVC_FIFO_MODE_LENGTH_MOSI_t : plXVC_XVC_FIFO_MODE_LENGTH_MOSI_t := (
                                                      clk       => '0',
@@ -47,6 +48,7 @@ package plXVC_CTRL is
     rd_data_valid   : std_logic;
     rd_error        : std_logic;
     wr_error        : std_logic;
+    wr_response     : std_logic;
   end record plXVC_XVC_FIFO_MODE_TMS_VECTOR_MISO_t;
   constant Default_plXVC_XVC_FIFO_MODE_TMS_VECTOR_MOSI_t : plXVC_XVC_FIFO_MODE_TMS_VECTOR_MOSI_t := (
                                                      clk       => '0',
@@ -67,6 +69,7 @@ package plXVC_CTRL is
     rd_data_valid   : std_logic;
     rd_error        : std_logic;
     wr_error        : std_logic;
+    wr_response     : std_logic;
   end record plXVC_XVC_FIFO_MODE_TDI_VECTOR_MISO_t;
   constant Default_plXVC_XVC_FIFO_MODE_TDI_VECTOR_MOSI_t : plXVC_XVC_FIFO_MODE_TDI_VECTOR_MOSI_t := (
                                                      clk       => '0',
