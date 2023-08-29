@@ -36,10 +36,9 @@ use work.plXVC_CTRL.all;
 entity JTAG_FIFO is
     port (axi_clk           : in  std_logic;                      --Input axi_clk
          reset              : in  std_logic;                      --reset
-         valid              : in  std_logic;
          virtual_busy       : in  std_logic;                      --virtualJTAG is busy
          virtual_done       : in  std_logic;                      --virtualJTAG has finished outputting
-         CTRL               : in  std_logic;                      --Enable operation
+         enable             : in  std_logic;                      --Enable operation
          TMS_valid_in       : in  std_logic;
          TDI_valid_in       : in  std_logic;
          length_valid_in    : in  std_logic;
@@ -51,8 +50,9 @@ entity JTAG_FIFO is
          length_out         : out std_logic_vector(31 downto 0);  --fifo length output
          go                 : out std_logic;
          FIFO_STATE         : out std_logic_vector(6 downto 0);
-		     FIFO_IRQ			      : out std_logic;
-         BUS_ERROR          : out std_logic);                     --interupt request
+		 FIFO_IRQ			: out std_logic;
+         BUS_ERROR          : out std_logic_vector(2 downto 0); -- encoded index 0 - length, 1 - TMS, 2 - TDI
+         write_response     : out std_logic_vector(2 downto 0)); -- encoded index 0 - length, 1 - TMS, 2 - TDI
          
 end JTAG_FIFO;
 architecture Behavioral of JTAG_FIFO is
@@ -194,14 +194,30 @@ Length_FIFO: entity work.FIFO_6_bit
   Bus_Error_Check: process(axi_clk,reset)
   begin
     if (reset = '1') then
-      BUS_ERROR <='0';
+      BUS_ERROR <= (others => '0');
     elsif (axi_clk'event and axi_clk='1') then
-      if((TMS_valid_in = '1' and (TMS_almost_full = '1' or TMS_full = '1')) or 
-      (TDI_valid_in = '1' and (TDI_almost_full = '1' or TDI_full = '1')) or 
-      (length_valid_in = '1' and (length_almost_full = '1' or length_full = '1'))) then
-        BUS_ERROR <= '1';
-      else
-        BUS_ERROR <= '0';
+      write_response <= (others => '0');
+      BUS_ERROR <= (others => '0');
+      if TMS_valid_in = '1' then
+        write_response(1) <= '1';
+        if (TMS_almost_full = '1' or TMS_full = '1') then
+            BUS_ERROR(1) <= '1';
+            write_response(1) <= '0';
+        end if;
+      end if;
+      if TDI_valid_in = '1' then 
+        write_response(2) <= '1';
+        if (TDI_almost_full = '1' or TDI_full = '1') then
+            BUS_ERROR(2) <= '1';
+            write_response(2) <= '0';
+        end if;
+       end if;
+      if length_valid_in = '1' then
+        write_response(0) <= '1';
+        if (length_almost_full = '1' or length_full = '1') then
+            BUS_ERROR(0) <= '1';
+            write_response(0) <= '0';
+         end if;
       end if;
     end if;
   end process Bus_Error_Check;
@@ -295,7 +311,7 @@ Length_FIFO: entity work.FIFO_6_bit
       case STATE is
         when IDLE => 
 					F_IRQ <= '0';
-          if (CTRL = '1' and valid = '1') then
+          if (enable = '1') then
             STATE <= OPERATING;
             go <= '1';
           else
@@ -308,7 +324,7 @@ Length_FIFO: entity work.FIFO_6_bit
 					F_IRQ <= '0';
           if (length_overflow = '1' or TMS_overflow = '1' or TDI_overflow = '1') then
             STATE <= OVERFLOW;
-					elsif (CTRL = '0') then
+					elsif (enable = '0') then
 						go <= '0';
 						STATE <= IDLE;
           elsif (length_full = '1' or TMS_full = '1' or TDI_full = '1') then
@@ -331,7 +347,7 @@ Length_FIFO: entity work.FIFO_6_bit
           go <= '1';
 					F_IRQ <= '0';
          
-          if (CTRL = '0') then
+          if (enable = '0') then
              go <= '0';
              STATE <= IDLE;          
           elsif (length_overflow = '1' or TMS_overflow = '1' or TDI_overflow = '1') then
@@ -349,7 +365,7 @@ Length_FIFO: entity work.FIFO_6_bit
 				when WAITING_IRQ =>
 					F_IRQ <= '1';
 
-					if (CTRL = '0') then
+					if (enable = '0') then
 						STATE <= IDLE;
           elsif(length_empty = '0' or TMS_empty = '0' or TDI_empty = '0') then
             STATE <= OPERATING;

@@ -30,8 +30,8 @@ entity plXVC_intf is
     PS_RST      : out std_logic_vector((COUNT - 1) downto 0);
     -- for FIFO
     FIFO_full   : out std_logic_vector((COUNT - 1) downto 0);
-    FIFO_overflow : out std_logic_vector((COUNT - 1) downto 0);
-    BUS_ERROR   : out std_logic_vector((COUNT - 1) downto 0)
+    FIFO_overflow : out std_logic_vector((COUNT - 1) downto 0)
+    --BUS_ERROR   : out std_logic_vector((COUNT - 1) downto 0)
     );
 end entity plXVC_intf;
 
@@ -92,7 +92,6 @@ begin
         reset => reset,
         virtual_busy => MON_BUSY(I - 1),
         virtual_done => v_done(I-1),
-        valid => '1',
         TMS_valid_in => Ctrl.XVC(I).FIFO_MODE.TMS_VECTOR.wr_enable,
         TDI_valid_in => Ctrl.XVC(I).FIFO_MODE.TDI_VECTOR.wr_enable,
         length_valid_in =>  Ctrl.XVC(I).FIFO_MODE.LENGTH.wr_enable,
@@ -103,11 +102,15 @@ begin
         TDI_vector_out => FIFO.XVC(I).TDI_VECTOR,
         Length_out => FIFO.XVC(I).LENGTH,
         go => FIFO.XVC(I).GO,
-        CTRL => Ctrl.XVC(I).GO,
+        enable => Ctrl.XVC(I).FIFO_MODE.ENABLE,
         FIFO_STATE => f_state(I),
         FIFO_IRQ => IRQ(I - 1),
-        BUS_ERROR => BUS_ERROR(I - 1)
-        --write_response => ;
+        BUS_ERROR(0) => Mon.XVC(I).FIFO_MODE.LENGTH.wr_error,
+        BUS_ERROR(1) => Mon.XVC(I).FIFO_MODE.TMS_VECTOR.wr_error,
+        BUS_ERROR(2) => Mon.XVC(I).FIFO_MODE.TDI_VECTOR.wr_error,
+        write_response(0) => Mon.XVC(I).FIFO_MODE.LENGTH.wr_response,
+        write_response(1) => Mon.XVC(I).FIFO_MODE.TMS_VECTOR.wr_response,
+        write_response(2) => Mon.XVC(I).FIFO_MODE.TDI_VECTOR.wr_response
         );
      stateDecoder: process (clk_axi, reset)
      begin

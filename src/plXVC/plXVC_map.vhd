@@ -7,6 +7,7 @@ use ieee.numeric_std.all;
 use work.AXIRegWidthPkg.all;
 use work.AXIRegPkg.all;
 use work.types.all;
+
 use work.fifoPortPkg.all;
 use work.plXVC_Ctrl.all;
 
@@ -284,7 +285,7 @@ elsif FIFO_MOSI(8).wr_enable = '1' then
         localWrAck        <= '1';
         localWrErr        <= FIFO_MISO(8).wr_response;
 
-        end if;
+      end if;
     end if;
   end process write_ack_proc;
 
