@@ -195,6 +195,7 @@ Length_FIFO: entity work.FIFO_6_bit
   begin
     if (reset = '1') then
       BUS_ERROR <= (others => '0');
+      write_response <= (others => '0');
     elsif (axi_clk'event and axi_clk='1') then
       write_response <= (others => '0');
       BUS_ERROR <= (others => '0');
