@@ -1,1 +1,0 @@
-build_Zynq_rev1_xc7z035.tcl
